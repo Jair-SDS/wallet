@@ -23,15 +23,18 @@ import { logout } from "@redux/CheckAuth";
 import Modal from "@components/Modal";
 import ThemeModal from "./themeModal";
 import { ThemesEnum } from "@/const";
-import { useAppDispatch } from "@redux/Store";
+import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setLoading } from "@redux/assets/AssetReducer";
 import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import bigInt from "big-integer";
+import { Principal } from "@dfinity/principal";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { onLanguageChange } = LanguageHook();
+  const { ingressActor } = useAppSelector((state) => state.asset);
 
   const { theme, themeOpen, setThemeOpen } = ThemeHook();
   const { authClient } = AccountHook();
@@ -94,6 +97,24 @@ const TopBarComponent = () => {
             />
           </div>
         </div>
+        <button
+          onClick={async () => {
+            try {
+              const res = await ingressActor.openVirtualAccount(
+                { ft: BigInt(108) },
+                Principal.fromText("bmovq-2avtn-scud3-oaiod-eihl6-nhpiv-iuf7b-b72vo-orcrw-72c6z-fqe"),
+                { ft: BigInt(0) },
+                BigInt(2),
+                BigInt(0),
+              );
+              console.log("create virtual res", res);
+            } catch (e) {
+              console.log("create virtual err:", e);
+            }
+          }}
+        >
+          Create new Sub
+        </button>
         <div className="flex flex-row justify-start items-center pr-9 gap-9">
           <div className="flex flex-row justify-start items-center gap-2 text-md">
             <WalletIcon className="fill-SvgColor dark:fill-SvgColor max-w-[1.5rem] h-auto"></WalletIcon>

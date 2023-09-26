@@ -1,7 +1,8 @@
 import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/const";
+import { AccountState, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/ingress/service.did";
 import { z } from "zod";
 
-// Models
+// ICRC1 Models
 const SubAccount = z.object({
   name: z.string(),
   sub_account_id: z.string(),
@@ -101,3 +102,35 @@ const TransactionList = z.object({
 });
 
 export type TransactionList = z.infer<typeof TransactionList>;
+
+// HPL Models
+const HPLVirtualSubAcc = z.object({
+  name: z.string(),
+  virt_sub_acc_id: z.bigint(),
+  amount: z.bigint(),
+  currency_amount: z.string(),
+});
+
+export type HPLVirtualSubAcc = z.infer<typeof HPLVirtualSubAcc>;
+
+const HPLSubAccount = z.object({
+  name: z.string(),
+  sub_account_id: z.bigint(),
+  amount: z.bigint(),
+  currency_amount: z.string(),
+  transaction_fee: z.string(),
+  decimal: z.number(),
+  symbol: z.string(),
+  ft: z.bigint(),
+  virtuals: z.array(HPLVirtualSubAcc),
+  logo: z.string().optional(),
+});
+
+export type HPLSubAccount = z.infer<typeof HPLSubAccount>;
+
+export interface ResQueryState {
+  ftSupplies: Array<[AssetId, FtSupply]>;
+  virtualAccounts: Array<[VirId, [] | [[AccountState, SubId, Time]]]>;
+  accounts: Array<[SubId, AccountState]>;
+  remoteAccounts: Array<[RemoteId, [] | [[AccountState, Time]]]>;
+}

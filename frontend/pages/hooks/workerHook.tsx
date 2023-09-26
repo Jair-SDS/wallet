@@ -2,7 +2,12 @@ import { AssetSymbolEnum, WorkerTaskEnum, defaultTokens } from "@/const";
 import { hexToUint8Array } from "@/utils";
 // import { AssetList, Metadata } from "@candid/metadata/service.did";
 import store, { useAppSelector } from "@redux/Store";
-import { getAllTransactionsICP, getAllTransactionsICRC1, updateAllBalances } from "@redux/assets/AssetActions";
+import {
+  getAllTransactionsICP,
+  getAllTransactionsICRC1,
+  updateAllBalances,
+  updateHPLBalances,
+} from "@redux/assets/AssetActions";
 import { setTokens, setTxWorker } from "@redux/assets/AssetReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
@@ -47,6 +52,7 @@ export const WorkerHook = () => {
   };
 
   const getAssetsWorker = async () => {
+    // ICRC1
     const userData = localStorage.getItem(authClient);
     if (userData) {
       const userDataJson = JSON.parse(userData);
@@ -56,6 +62,8 @@ export const WorkerHook = () => {
       const { tokens } = await updateAllBalances(true, userAgent, defaultTokens, true);
       store.dispatch(setTokens(tokens));
     }
+    // HPL
+    updateHPLBalances(userAgent);
   };
 
   // TRANSACTION WEB WORKER

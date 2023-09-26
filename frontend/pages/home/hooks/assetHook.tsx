@@ -1,20 +1,35 @@
-import { defaultTokens } from "@/const";
+import { ProtocolType, ProtocolTypeEnum, defaultTokens } from "@/const";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { updateAllBalances } from "@redux/assets/AssetActions";
-import { setAcordeonAssetIdx, setLoading, setSelectedAccount, setSelectedAsset } from "@redux/assets/AssetReducer";
+import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
+import {
+  setAcordeonAssetIdx,
+  setLoading,
+  setProtocol,
+  setSelectedAccount,
+  setSelectedAsset,
+} from "@redux/assets/AssetReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
-  const { tokens, assets, assetLoading, selectedAsset, selectedAccount, acordeonIdx, tokensMarket } = useAppSelector(
-    (state) => state.asset,
-  );
+  const {
+    protocol,
+    tokens,
+    assets,
+    assetLoading,
+    selectedAsset,
+    selectedAccount,
+    acordeonIdx,
+    tokensMarket,
+    subaccounts,
+  } = useAppSelector((state) => state.asset);
   const { userAgent } = useAppSelector((state) => state.auth);
 
   const [searchKey, setSearchKey] = useState("");
   const setAcordeonIdx = (assetIdx: string) => dispatch(setAcordeonAssetIdx(assetIdx));
+  const setProtocolType = (prot: ProtocolType) => dispatch(setProtocol(prot));
   const [assetInfo, setAssetInfo] = useState<Asset | undefined>();
 
   const [editNameId, setEditNameId] = useState("");
@@ -25,6 +40,7 @@ export const AssetHook = () => {
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateHPLBalances(userAgent);
   };
 
   const getTotalAmountInCurrency = () => {
@@ -41,32 +57,37 @@ export const AssetHook = () => {
   };
 
   useEffect(() => {
-    const auxAssets = assets.filter((asset) => {
-      let includeInSub = false;
-      asset.subAccounts.map((sa) => {
-        if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+    if (protocol === ProtocolTypeEnum.Enum.ICRC1) {
+      const auxAssets = assets.filter((asset) => {
+        let includeInSub = false;
+        asset.subAccounts.map((sa) => {
+          if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+        });
+
+        return asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "";
       });
 
-      return asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "";
-    });
-
-    if (auxAssets.length > 0)
-      if (selectedAsset && !auxAssets.includes(selectedAsset)) {
-        setAcordeonIdx(`asset-${auxAssets[0].sort_index}`);
-        dispatch(setSelectedAsset(auxAssets[0]));
-        auxAssets[0].subAccounts.length > 0 && dispatch(setSelectedAccount(auxAssets[0].subAccounts[0]));
-      }
-  }, [searchKey]);
+      if (auxAssets.length > 0)
+        if (selectedAsset && !auxAssets.includes(selectedAsset)) {
+          setAcordeonIdx(`asset-${auxAssets[0].sort_index}`);
+          dispatch(setSelectedAsset(auxAssets[0]));
+          auxAssets[0].subAccounts.length > 0 && dispatch(setSelectedAccount(auxAssets[0].subAccounts[0]));
+        }
+    }
+  }, [searchKey, protocol]);
 
   return {
+    protocol,
+    setProtocolType,
+    reloadBallance,
+    searchKey,
+    setSearchKey,
+    // ICRC1
     tokens,
     assets,
     assetLoading,
     selectedAsset,
     selectedAccount,
-
-    searchKey,
-    setSearchKey,
     acordeonIdx,
     setAcordeonIdx,
     assetInfo,
@@ -80,8 +101,8 @@ export const AssetHook = () => {
     setNewSub,
     hexChecked,
     setHexChecked,
-
-    reloadBallance,
     getTotalAmountInCurrency,
+    // HPL
+    subaccounts,
   };
 };

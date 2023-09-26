@@ -1,10 +1,23 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Token, TokenMarketInfo } from "@redux/models/TokenModels";
-import { Asset, ICPSubAccount, SubAccount, Transaction, TransactionList } from "@redux/models/AccountModels";
+import {
+  Asset,
+  HPLSubAccount,
+  ICPSubAccount,
+  SubAccount,
+  Transaction,
+  TransactionList,
+} from "@redux/models/AccountModels";
 import bigInt from "big-integer";
 import { hexToNumber } from "@/utils";
+import { ActorSubclass } from "@dfinity/agent";
+import { _SERVICE as IngressActor } from "@candid/ingress/service.did.d";
+import { ProtocolType, ProtocolTypeEnum } from "@/const";
 
+const defaultValue = {} as any;
 interface AssetState {
+  protocol: ProtocolType;
+  // ICRC 1
   ICPSubaccounts: Array<ICPSubAccount>;
   assetLoading: boolean;
   tokens: Token[];
@@ -18,9 +31,14 @@ interface AssetState {
   selectedTransaction: Transaction | undefined;
   txWorker: Array<TransactionList>;
   txLoad: boolean;
+  // HPL LEDGER
+  ingressActor: ActorSubclass<IngressActor>;
+  subaccounts: HPLSubAccount[];
 }
 
 const initialState: AssetState = {
+  protocol: ProtocolTypeEnum.Enum.ICRC1,
+  // ICRC 1
   ICPSubaccounts: [],
   assetLoading: false,
   tokens: [],
@@ -34,12 +52,18 @@ const initialState: AssetState = {
   selectedTransaction: undefined,
   txWorker: [],
   txLoad: false,
+  // HPL LEDGER
+  ingressActor: defaultValue,
+  subaccounts: [],
 };
 
 const assetSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    setProtocol(state, action: PayloadAction<ProtocolType>) {
+      state.protocol = action.payload;
+    },
     setICPSubaccounts(state, action: PayloadAction<ICPSubAccount[]>) {
       state.ICPSubaccounts = action.payload;
     },
@@ -210,6 +234,12 @@ const assetSlice = createSlice({
     setAcordeonAssetIdx(state, action: PayloadAction<string>) {
       state.acordeonIdx = action.payload;
     },
+    setIngressActor(state, action: PayloadAction<ActorSubclass<IngressActor>>) {
+      state.ingressActor = action.payload;
+    },
+    setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
+      state.subaccounts = action.payload;
+    },
     clearDataAsset(state) {
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -221,12 +251,14 @@ const assetSlice = createSlice({
       state.selectedAccount = undefined;
       state.selectedAsset = undefined;
       state.selectedTransaction = undefined;
+      state.ingressActor = defaultValue;
     },
   },
 });
 
 export const {
   clearDataAsset,
+  setProtocol,
   setICPSubaccounts,
   setLoading,
   setTokens,
@@ -245,6 +277,9 @@ export const {
   setTxWorker,
   setTxLoad,
   setAcordeonAssetIdx,
+  // HPL LEDGER
+  setIngressActor,
+  setHPLSubAccounts,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

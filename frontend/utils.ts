@@ -4,12 +4,21 @@ import { sha224 } from "@dfinity/principal/lib/cjs/utils/sha224.js";
 import { Buffer } from "buffer";
 import bigInt from "big-integer";
 import store from "@redux/Store";
-import { Transaction, Operation, RosettaTransaction, Asset } from "./redux/models/AccountModels";
+import {
+  Transaction,
+  Operation,
+  RosettaTransaction,
+  Asset,
+  HPLSubAccount,
+  ResQueryState,
+  HPLVirtualSubAcc,
+} from "./redux/models/AccountModels";
 import { IcrcTokenMetadataResponse, IcrcAccount, encodeIcrcAccount } from "@dfinity/ledger";
 import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, TransactionType } from "./const";
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
+import { AccountType, SubId } from "@candid/ingress/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -379,4 +388,35 @@ export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
   return assets.find((a: Asset) => {
     return a.tokenSymbol === symbol;
   })?.symbol;
+};
+
+export const formatHPLSubaccounts = (infoSubs: Array<[SubId, AccountType]>, stateData: ResQueryState) => {
+  const auxSubaccounts: HPLSubAccount[] = [];
+  stateData.accounts.map((sa, k) => {
+    const auxVirtuals: HPLVirtualSubAcc[] = [];
+    stateData.virtualAccounts.map((va) => {
+      if (va[1][0] && va[1][0][1] === sa[0]) {
+        auxVirtuals.push({
+          name: "",
+          virt_sub_acc_id: va[0],
+          amount: va[1][0][0].ft,
+          currency_amount: "0.00",
+        });
+      }
+    });
+    const asset = infoSubs.find((sub) => sub[0] === sa[0]);
+    auxSubaccounts.push({
+      name: "",
+      sub_account_id: sa[0],
+      amount: sa[1].ft,
+      currency_amount: "0.00",
+      transaction_fee: "0",
+      decimal: 0,
+      symbol: `HPL-${asset ? asset[1].ft : BigInt(0)}`,
+      ft: asset ? asset[1].ft : BigInt(0),
+      virtuals: auxVirtuals,
+      logo: "",
+    });
+  });
+  return auxSubaccounts;
 };

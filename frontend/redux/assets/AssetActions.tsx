@@ -1,4 +1,4 @@
-import { HttpAgent } from "@dfinity/agent";
+import { Actor, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
@@ -10,12 +10,22 @@ import {
   getUSDfromToken,
   hexToUint8Array,
   hexToNumber,
+  formatHPLSubaccounts,
 } from "@/utils";
-import { setAssets, setTransactions, setTokenMarket, setICPSubaccounts } from "./AssetReducer";
+import {
+  setAssets,
+  setTransactions,
+  setTokenMarket,
+  setICPSubaccounts,
+  setIngressActor,
+  setHPLSubAccounts,
+} from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { Asset, ICPSubAccount, SubAccount } from "@redux/models/AccountModels";
+import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
+import { _SERVICE as IngressActor } from "@candid/ingress/service.did.d";
+import { idlFactory as IngressIDLFactory } from "@candid/ingress/candid.did";
 import bigInt from "big-integer";
 
 export const updateAllBalances = async (
@@ -240,6 +250,26 @@ export const updateAllBalances = async (
       return a.id_number - b.id_number;
     }),
   };
+};
+
+export const updateHPLBalances = async (myAgent: HttpAgent) => {
+  try {
+    const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
+      agent: myAgent,
+      canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
+    });
+    store.dispatch(setIngressActor(ingressActor));
+    const subAccInfo = await ingressActor.accountInfo({ idRange: [BigInt(0), []] });
+    const state: ResQueryState = await ingressActor.state({
+      ftSupplies: [{ idRange: [BigInt(0), []] }],
+      virtualAccounts: [{ idRange: [BigInt(0), []] }],
+      accounts: [{ idRange: [BigInt(0), []] }],
+      remoteAccounts: [],
+    });
+    store.dispatch(setHPLSubAccounts(formatHPLSubaccounts(subAccInfo, state)));
+  } catch {
+    //
+  }
 };
 
 export const getAllTransactionsICP = async (subaccount_index: string, loading: boolean) => {

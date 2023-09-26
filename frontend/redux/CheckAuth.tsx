@@ -10,7 +10,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { updateAllBalances } from "./assets/AssetActions";
+import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
 import { clearDataAsset, setTokens } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, defaultTokens } from "@/const";
@@ -57,7 +57,10 @@ export const handleLoginApp = async (authIdentity: Identity) => {
 
   const myPrincipal = await myAgent.getPrincipal();
 
-  // TOKENS
+  // HPL TOKENS
+  await updateHPLBalances(myAgent);
+
+  // ICRC 1TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
     const userDataJson = JSON.parse(userData);
