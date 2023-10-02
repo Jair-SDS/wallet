@@ -42,31 +42,6 @@ const TopBarComponent = () => {
 
   const [langOpen, setLangOpen] = useState(false);
 
-  const changeLanguage = (lang: string) => {
-    onLanguageChange(lang);
-    i18n.changeLanguage(lang, () => {
-      localStorage.setItem("language", lang);
-    });
-  };
-
-  // Tailwind CSS constants
-  const flag = clsx("mr-1", "max-h-[1.5rem]");
-  const gearPopItem = clsx(
-    "flex",
-    "flex-row",
-    "justify-start",
-    "items-center",
-    "py-2",
-    "px-4",
-    "bg-none",
-    "w-full",
-    "min-w-[13rem]",
-    "cursor-pointer",
-    "outline-none",
-    "hover:bg-PopSelectColorLight",
-    "dark:hover:bg-PopSelectColor",
-  );
-
   const langOpts = [
     { abrev: "en", name: "english", flag: <UsaFlagIcon className={flag} /> },
     { abrev: "es", name: "spanish", flag: <SpainFlagIcon className={flag} /> },
@@ -90,10 +65,7 @@ const TopBarComponent = () => {
               className={`h-4 w-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor ${
                 assetLoading ? "do-spin" : ""
               }`}
-              onClick={() => {
-                dispatch(setLoading(true));
-                reloadBallance();
-              }}
+              onClick={handleReloadButton}
             />
           </div>
         </div>
@@ -190,6 +162,35 @@ const TopBarComponent = () => {
       </Modal>
     </Fragment>
   );
-};
 
+  function handleReloadButton() {
+    dispatch(setLoading(true));
+    reloadBallance();
+  }
+
+  function changeLanguage(lang: string) {
+    onLanguageChange(lang);
+    i18n.changeLanguage(lang, () => {
+      localStorage.setItem("language", lang);
+    });
+  }
+};
 export default TopBarComponent;
+
+// Tailwind CSS constants
+const flag = clsx("mr-1", "max-h-[1.5rem]");
+const gearPopItem = clsx(
+  "flex",
+  "flex-row",
+  "justify-start",
+  "items-center",
+  "py-2",
+  "px-4",
+  "bg-none",
+  "w-full",
+  "min-w-[13rem]",
+  "cursor-pointer",
+  "outline-none",
+  "hover:bg-PopSelectColorLight",
+  "dark:hover:bg-PopSelectColor",
+);

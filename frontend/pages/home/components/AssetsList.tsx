@@ -52,11 +52,7 @@ const AssetsList = () => {
           />
           <div
             className="flex flex-row justify-center items-center w-8 h-8 bg-SelectRowColor rounded-md cursor-pointer"
-            onClick={() => {
-              setTimeout(() => {
-                setAssetOpen(true);
-              }, 150);
-            }}
+            onClick={onAddAsset}
           >
             <img src={PlusIcon} alt="plus-icon" />
           </div>
@@ -102,9 +98,7 @@ const AssetsList = () => {
               defaultValue="asset-0"
               collapsible
               value={acordeonIdx}
-              onValueChange={(e) => {
-                if (e !== "") setAcordeonIdx(e);
-              }}
+              onValueChange={onValueChange}
             >
               {subaccounts?.map((asset: HPLSubAccount, idx: number) => {
                 let includeInSub = false;
@@ -137,6 +131,16 @@ const AssetsList = () => {
       </div>
     </Fragment>
   );
+
+  function onAddAsset() {
+    setTimeout(() => {
+      setAssetOpen(true);
+    }, 150);
+  }
+
+  function onValueChange(e: string) {
+    if (e !== "") setAcordeonIdx(e);
+  }
 };
 
 export default AssetsList;

@@ -39,9 +39,7 @@ const Menu = () => {
             border={"underline"}
             className="flex flex-row justify-start items-center mb-4"
             onClick={() => {
-              if (window.location.pathname !== menu.path) {
-                history.push(menu.path);
-              }
+              handleMenuClic(menu.path);
             }}
           >
             <p
@@ -58,6 +56,12 @@ const Menu = () => {
       </div>
     </Fragment>
   );
+
+  function handleMenuClic(path: string) {
+    if (window.location.pathname !== path) {
+      history.push(path);
+    }
+  }
 };
 
 export default Menu;
