@@ -327,7 +327,6 @@ export const getAllTransactionsICRC1 = async (
   subaccount_index: Uint8Array,
   loading: boolean,
   assetSymbol: string,
-  symbol: string,
   canister: string,
   subNumber?: string,
 ) => {
