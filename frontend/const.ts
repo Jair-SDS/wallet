@@ -11,6 +11,9 @@ import { z } from "zod";
 import { Token } from "@redux/models/TokenModels";
 
 // Enums
+export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN"]);
+export type RoutingPath = z.infer<typeof RoutingPathEnum>;
+
 export const TransactionTypeEnum = z.enum(["RECEIVE", "SEND", "NONE"]);
 export type TransactionType = z.infer<typeof TransactionTypeEnum>;
 
