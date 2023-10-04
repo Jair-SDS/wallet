@@ -5,6 +5,7 @@ import {
   clearDataAuth,
   setAuthLoading,
   setAuthenticated,
+  setRoutingPath,
   setUnauthenticated,
   setUserAgent,
   setUserPrincipal,
@@ -13,7 +14,7 @@ import { AuthClient } from "@dfinity/auth-client";
 import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
 import { clearDataAsset, setTokens } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
-import { AuthNetworkTypeEnum, defaultTokens } from "@/const";
+import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
@@ -82,6 +83,7 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
   store.dispatch(setUserAgent(myAgent));
   store.dispatch(setUserPrincipal(myPrincipal));
+  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
 };
 
 export const logout = async () => {

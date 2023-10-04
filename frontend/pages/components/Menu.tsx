@@ -1,29 +1,28 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
-import history from "@pages/history";
-import { CONTACTS, HOME } from "@pages/paths";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useContacts } from "@pages/contacts/hooks/contactsHook";
-import { ProtocolTypeEnum } from "@/const";
+import { useAppDispatch, useAppSelector } from "@redux/Store";
+import { setRoutingPath } from "@redux/auth/AuthReducer";
+import { RoutingPath, RoutingPathEnum } from "@/const";
 
 const Menu = () => {
   const { t } = useTranslation();
-
-  const { protocol, assets, subaccounts } = AssetHook();
+  const dispatch = useAppDispatch();
+  const { route } = useAppSelector((state) => state.auth);
+  const { assets, assetLoading } = AssetHook();
   const { contacts } = useContacts();
 
   const menuList = [
     {
       name: "Assets",
-      path: HOME,
-      label: `${assets?.length !== 1 ? t("assets") : t("asset")} (${
-        protocol === ProtocolTypeEnum.Enum.ICRC1 ? assets?.length : subaccounts.length
-      })`,
+      path: RoutingPathEnum.Enum.HOME,
+      label: `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`,
     },
     {
       name: "Contacts",
-      path: CONTACTS,
+      path: RoutingPathEnum.Enum.CONTACTS,
       label: `${assets?.length !== 1 ? t("contacts") : t("contact")} (${contacts?.length})`,
     },
   ];
@@ -44,7 +43,7 @@ const Menu = () => {
           >
             <p
               className={`!font-normal  mr-2 ${
-                window.location.pathname !== menu.path
+                route !== menu.path
                   ? " text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60"
                   : "border-b border-SelectRowColor"
               }`}
@@ -57,10 +56,8 @@ const Menu = () => {
     </Fragment>
   );
 
-  function handleMenuClic(path: string) {
-    if (window.location.pathname !== path) {
-      history.push(path);
-    }
+  function handleMenuClic(path: RoutingPath) {
+    dispatch(setRoutingPath(path));
   }
 };
 
