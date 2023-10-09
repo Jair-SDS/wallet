@@ -12,7 +12,7 @@ import {
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
-import { clearDataAsset, setTokens } from "./assets/AssetReducer";
+import { clearDataAsset, setHPLAssets, setHPLSubsData, setHPLVTsData, setTokens } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
@@ -61,7 +61,7 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   // HPL TOKENS
   await updateHPLBalances(myAgent);
 
-  // ICRC 1TOKENS
+  // ICRC-1 TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
     const userDataJson = JSON.parse(userData);
@@ -71,12 +71,30 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true);
     store.dispatch(setTokens(tokens));
   }
-
-  // CONTACTS
+  // ICRC-1 CONTACTS
   const contactsData = localStorage.getItem("contacts-" + authIdentity.getPrincipal().toString());
   if (contactsData) {
     const contactsDataJson = JSON.parse(contactsData);
     store.dispatch(setContacts(contactsDataJson.contacts));
+  }
+
+  // HPL FT
+  const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
+  if (hplFTsData) {
+    const hplFTsDataJson = JSON.parse(hplFTsData);
+    store.dispatch(setHPLAssets(hplFTsDataJson.ft));
+  }
+  // HPL SUBACCOUNTS
+  const hplSubsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
+  if (hplSubsData) {
+    const hplSubsDataJson = JSON.parse(hplSubsData);
+    store.dispatch(setHPLSubsData(hplSubsDataJson.subs));
+  }
+  // HPL VIRTUALS
+  const hplVTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
+  if (hplVTsData) {
+    const hplVTsDataJson = JSON.parse(hplVTsData);
+    store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
   }
 
   store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));

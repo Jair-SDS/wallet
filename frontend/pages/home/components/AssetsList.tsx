@@ -12,9 +12,11 @@ import Menu from "@pages/components/Menu";
 import { WorkerHook } from "@pages/hooks/workerHook";
 import { AssetHook } from "../hooks/assetHook";
 import { UseAsset } from "../hooks/useAsset";
-import Protocol from "@pages/components/Protocol";
 import { ProtocolTypeEnum } from "@/const";
-import HplSubaccountElem from "./HplSubaccountElem";
+import HplSubaccountElem from "./HPL/HplSubaccountElem";
+import AddSubaccount from "./HPL/AddSubaccount";
+import { useHPL } from "@pages/hooks/hplHook";
+import EditHplAsset from "./HPL/EditHplAsset";
 
 const AssetsList = () => {
   const { t } = useTranslation();
@@ -34,13 +36,13 @@ const AssetsList = () => {
     tokens,
     subaccounts,
   } = AssetHook();
+  const { editedFt, setEditedFt } = useHPL(false);
 
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pl-9 pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
-        <Protocol />
+      <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
         <Menu />
-        <div className="flex flex-row justify-start items-center w-full mb-4 gap-3 pr-5">
+        <div className="flex flex-row justify-start items-center w-full mb-4 pl-4 gap-3 pr-5">
           <input
             className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
             type="text"
@@ -58,19 +60,16 @@ const AssetsList = () => {
           </div>
         </div>
         <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light">
-          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-            assets?.length > 0 && (
-              <Accordion.Root
-                className=""
-                type="single"
-                defaultValue="asset-0"
-                collapsible
-                value={acordeonIdx}
-                onValueChange={(e) => {
-                  if (e !== "") setAcordeonIdx(e);
-                }}
-              >
-                {assets?.map((asset: Asset, idx: number) => {
+          <Accordion.Root
+            className=""
+            type="single"
+            defaultValue="asset-0"
+            collapsible
+            value={acordeonIdx}
+            onValueChange={onValueChange}
+          >
+            {protocol === ProtocolTypeEnum.Enum.ICRC1
+              ? assets?.map((asset: Asset, idx: number) => {
                   let includeInSub = false;
                   asset.subAccounts.map((sa) => {
                     if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
@@ -88,46 +87,51 @@ const AssetsList = () => {
                         tokens={tokens}
                       ></AssetElement>
                     );
-                })}
-              </Accordion.Root>
-            )
-          ) : (
-            <Accordion.Root
-              className=""
-              type="single"
-              defaultValue="asset-0"
-              collapsible
-              value={acordeonIdx}
-              onValueChange={onValueChange}
-            >
-              {subaccounts?.map((asset: HPLSubAccount, idx: number) => {
-                let includeInSub = false;
-                asset.virtuals.map((sa) => {
-                  if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
-                });
+                })
+              : subaccounts?.map((sub: HPLSubAccount, idx: number) => {
+                  let includeInSub = false;
+                  sub.virtuals.map((vt) => {
+                    if (vt.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+                  });
 
-                if (asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
-                  return (
-                    <HplSubaccountElem key={idx} asset={asset} idx={idx} acordeonIdx={acordeonIdx}></HplSubaccountElem>
-                  );
-              })}
-            </Accordion.Root>
-          )}
+                  if (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
+                    return (
+                      <HplSubaccountElem
+                        key={idx}
+                        sub={sub}
+                        idx={idx}
+                        setEditedFt={setEditedFt}
+                        setAssetOpen={setAssetOpen}
+                      ></HplSubaccountElem>
+                    );
+                })}
+          </Accordion.Root>
         </div>
       </div>
       <div
         id="asset-drower"
-        className={`h-[calc(100%-4.5rem)] fixed top-4.5rem w-[28rem] z-[990] overflow-x-hidden transition-{right} duration-500 ${
+        className={`h-[calc(100%-4.5rem)] fixed top-4.5rem w-[28rem] z-[1000] overflow-x-hidden transition-{right} duration-500 ${
           assetOpen ? "!right-0" : "right-[-30rem]"
         }`}
       >
-        <AddAsset
-          setAssetOpen={setAssetOpen}
-          asset={assetInfo}
-          setAssetInfo={setAssetInfo}
-          tokens={tokens}
-          assetOpen={assetOpen}
-        />
+        {editedFt ? (
+          <EditHplAsset
+            setAssetOpen={setAssetOpen}
+            open={assetOpen}
+            setEditedFt={setEditedFt}
+            editedFt={editedFt}
+          ></EditHplAsset>
+        ) : protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+          <AddAsset
+            setAssetOpen={setAssetOpen}
+            asset={assetInfo}
+            setAssetInfo={setAssetInfo}
+            tokens={tokens}
+            assetOpen={assetOpen}
+          />
+        ) : (
+          <AddSubaccount setAssetOpen={setAssetOpen} open={assetOpen} />
+        )}
       </div>
     </Fragment>
   );

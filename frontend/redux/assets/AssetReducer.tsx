@@ -2,7 +2,11 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Token, TokenMarketInfo } from "@redux/models/TokenModels";
 import {
   Asset,
+  HPLAsset,
+  HPLAssetData,
   HPLSubAccount,
+  HPLSubData,
+  HPLVirtualData,
   ICPSubAccount,
   SubAccount,
   Transaction,
@@ -34,6 +38,11 @@ interface AssetState {
   // HPL LEDGER
   ingressActor: ActorSubclass<IngressActor>;
   subaccounts: HPLSubAccount[];
+  hplFTs: HPLAsset[];
+  hplFTsData: HPLAssetData[];
+  hplSubsData: HPLSubData[];
+  hplVTsData: HPLVirtualData[];
+  selectSub: HPLSubAccount | undefined;
 }
 
 const initialState: AssetState = {
@@ -55,6 +64,11 @@ const initialState: AssetState = {
   // HPL LEDGER
   ingressActor: defaultValue,
   subaccounts: [],
+  hplFTs: [],
+  hplFTsData: [],
+  hplSubsData: [],
+  hplVTsData: [],
+  selectSub: undefined,
 };
 
 const assetSlice = createSlice({
@@ -240,6 +254,21 @@ const assetSlice = createSlice({
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
     },
+    setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
+      state.hplFTs = action.payload;
+    },
+    setHPLAssetsData(state, action: PayloadAction<HPLAssetData[]>) {
+      state.hplFTsData = action.payload;
+    },
+    setHPLSubsData(state, action: PayloadAction<HPLSubData[]>) {
+      state.hplSubsData = action.payload;
+    },
+    setHPLVTsData(state, action: PayloadAction<HPLVirtualData[]>) {
+      state.hplVTsData = action.payload;
+    },
+    setHPLSelectedSub(state, action: PayloadAction<HPLSubAccount | undefined>) {
+      state.selectSub = action.payload;
+    },
     clearDataAsset(state) {
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -252,6 +281,12 @@ const assetSlice = createSlice({
       state.selectedAsset = undefined;
       state.selectedTransaction = undefined;
       state.ingressActor = defaultValue;
+      state.ingressActor = defaultValue;
+      state.subaccounts = [];
+      state.hplFTs = [];
+      state.hplFTsData = [];
+      state.hplSubsData = [];
+      state.hplVTsData = [];
     },
   },
 });
@@ -280,6 +315,11 @@ export const {
   // HPL LEDGER
   setIngressActor,
   setHPLSubAccounts,
+  setHPLAssets,
+  setHPLAssetsData,
+  setHPLSubsData,
+  setHPLVTsData,
+  setHPLSelectedSub,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

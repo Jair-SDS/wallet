@@ -19,6 +19,7 @@ import {
   setICPSubaccounts,
   setIngressActor,
   setHPLSubAccounts,
+  setHPLAssets,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -260,13 +261,24 @@ export const updateHPLBalances = async (myAgent: HttpAgent) => {
     });
     store.dispatch(setIngressActor(ingressActor));
     const subAccInfo = await ingressActor.accountInfo({ idRange: [BigInt(0), []] });
+    const ftInfo = await ingressActor.ftInfo({ idRange: [BigInt(0), []] });
     const state: ResQueryState = await ingressActor.state({
       ftSupplies: [{ idRange: [BigInt(0), []] }],
       virtualAccounts: [{ idRange: [BigInt(0), []] }],
       accounts: [{ idRange: [BigInt(0), []] }],
       remoteAccounts: [],
     });
-    store.dispatch(setHPLSubAccounts(formatHPLSubaccounts(subAccInfo, state)));
+    const ftData = store.getState().asset.hplFTsData;
+    const subData = store.getState().asset.hplSubsData;
+    const vtData = store.getState().asset.hplVTsData;
+    const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
+      subAccInfo,
+      ftInfo,
+      { ft: ftData, sub: subData, vt: vtData },
+      state,
+    );
+    store.dispatch(setHPLSubAccounts(auxSubaccounts));
+    store.dispatch(setHPLAssets(auxFT));
   } catch {
     //
   }

@@ -6,6 +6,8 @@ import { useAppSelector } from "@redux/Store";
 import { ThemeHook } from "./hooks/themeHook";
 import Loader from "./components/Loader";
 import { RoutingPathEnum, ThemesEnum } from "@/const";
+import { Redirect, Router, Switch } from "react-router-dom";
+import PrivateRoute from "./components/privateRoute";
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
 
@@ -33,32 +35,39 @@ const SwitchRoute = () => {
   ) : (
     <>
       {blur && <div className="fixed w-full h-full bg-black/50 z-[900]"></div>}
-      {!superAdmin && authenticated && (
-        <LayoutComponent role={1} history={history}>
-          {getComponentAuth()}
-        </LayoutComponent>
-      )}
-      {!superAdmin && !authenticated && getComponentNoAuth()}
+      <Router history={history}>
+        {!superAdmin && authenticated && (
+          <LayoutComponent>
+            <Switch>
+              <PrivateRoute
+                exact
+                path="/"
+                authenticated={authenticated}
+                allowByRole={true}
+                Component={getComponentAuth()}
+              />
+              <Redirect to="/" />
+            </Switch>
+          </LayoutComponent>
+        )}
+        {!superAdmin && !authenticated && (
+          <Switch>
+            <PrivateRoute exact path="/" authenticated={authenticated} allowByRole={true} Component={Login} />
+            <Redirect to="/" />
+          </Switch>
+        )}
+      </Router>
     </>
   );
 
   function getComponentAuth() {
     switch (route) {
       case RoutingPathEnum.Enum.CONTACTS:
-        return <Contacts></Contacts>;
+        return Contacts;
       case RoutingPathEnum.Enum.HOME:
-        return <Home></Home>;
+        return Home;
       default:
-        return <Home></Home>;
-    }
-  }
-  function getComponentNoAuth() {
-    switch (route) {
-      case RoutingPathEnum.Enum.LOGIN:
-        return <Login></Login>;
-
-      default:
-        return <Login></Login>;
+        return Home;
     }
   }
 };

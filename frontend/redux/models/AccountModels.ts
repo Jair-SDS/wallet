@@ -106,8 +106,8 @@ export type TransactionList = z.infer<typeof TransactionList>;
 
 // HPL Models
 const HPLVirtualSubAcc = z.object({
-  name: z.string(),
   virt_sub_acc_id: z.bigint(),
+  name: z.string(),
   amount: z.bigint(),
   currency_amount: z.string(),
 });
@@ -115,8 +115,8 @@ const HPLVirtualSubAcc = z.object({
 export type HPLVirtualSubAcc = z.infer<typeof HPLVirtualSubAcc>;
 
 const HPLSubAccount = z.object({
-  name: z.string(),
   sub_account_id: z.bigint(),
+  name: z.string(),
   amount: z.bigint(),
   currency_amount: z.string(),
   transaction_fee: z.string(),
@@ -129,12 +129,55 @@ const HPLSubAccount = z.object({
 
 export type HPLSubAccount = z.infer<typeof HPLSubAccount>;
 
+const HPLAsset = z.object({
+  id: z.bigint(),
+  name: z.string(),
+  token_name: z.string(),
+  symbol: z.string(),
+  token_symbol: z.string(),
+  decimal: z.number(),
+  description: z.string(),
+  logo: z.string().optional(),
+});
+
+export type HPLAsset = z.infer<typeof HPLAsset>;
+
 export interface ResQueryState {
   ftSupplies: Array<[AssetId, FtSupply]>;
   virtualAccounts: Array<[VirId, [] | [[AccountState, SubId, Time]]]>;
   accounts: Array<[SubId, AccountState]>;
   remoteAccounts: Array<[RemoteId, [] | [[AccountState, Time]]]>;
 }
+
+const HPLAssetData = z.object({
+  id: z.bigint(),
+  name: z.string(),
+  symbol: z.string(),
+});
+
+export type HPLAssetData = z.infer<typeof HPLAssetData>;
+
+const HPLSubData = z.object({
+  id: z.bigint(),
+  name: z.string(),
+});
+
+export type HPLSubData = z.infer<typeof HPLSubData>;
+
+const HPLVirtualData = z.object({
+  id: z.bigint(),
+  name: z.string(),
+});
+
+export type HPLVirtualData = z.infer<typeof HPLVirtualData>;
+
+const HPLData = z.object({
+  ft: z.array(HPLAssetData),
+  sub: z.array(HPLSubData),
+  vt: z.array(HPLVirtualData),
+});
+
+export type HPLData = z.infer<typeof HPLData>;
 
 // Process Interfaces
 const AssetToAdd = z.object({

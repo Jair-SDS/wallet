@@ -8,9 +8,9 @@ const Contacts = () => {
   const { searchKey, setSearchKey, assetFilter, setAssetFilter } = useContacts();
   return (
     <Fragment>
-      <div className="flex flex-col w-full h-full px-9 pt-6">
+      <div className="flex flex-col w-full h-full pt-6">
         <Menu />
-        <div className="flex flex-col justify-start items-start w-full h-full">
+        <div className="flex flex-col justify-start items-start w-full h-full mx-4">
           <ContactFilters
             searchKey={searchKey}
             assetFilter={assetFilter}
