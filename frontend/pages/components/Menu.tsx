@@ -11,7 +11,7 @@ const Menu = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
-  const { assets, assetLoading } = AssetHook();
+  const { assets } = AssetHook();
   const { contacts } = useContacts();
 
   const menuList = [

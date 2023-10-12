@@ -32,6 +32,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     setNewHplSub,
     addSubErr,
     setAddSubErr,
+    getAssetLogo,
     reloadHPLBallance,
   } = useHPL(open);
   return (
@@ -45,7 +46,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           />
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
-          <p className="opacity-60">{t("token.contract.address")}</p>
+          <p className="opacity-60">{t("name")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -56,7 +57,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           />
         </div>
         <div className="flex flex-col justify-between items-center w-full mb-3">
-          <p className="w-full text-left opacity-60">{t("network")}</p>
+          <p className="w-full text-left opacity-60">{t("asset")}</p>
           <DropdownMenu.Root
             open={selAssetOpen}
             onOpenChange={(e: boolean) => {
@@ -87,7 +88,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                   ) : (
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
-                        <p>LOGO</p>
+                        <img src={getAssetLogo(selAsset.id)} className="w-8 h-8" alt="info-icon" />
                         <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                           <p className=" text-PrimaryTextColor">{selAsset.id.toString()}</p>
                         </div>
@@ -141,11 +142,11 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                               onSelectAsset(ft);
                             }}
                           >
-                            <p>LOGO</p>
+                            <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />
                             <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                               <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
                             </div>
-                            <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " / " : ""}${
+                            <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " - " : ""}${
                               ft.symbol !== "" ? ft.symbol : ""
                             }`}</p>
                           </button>
@@ -189,9 +190,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   async function onAdd() {
     if (selAsset && newHplSub.name.trim() !== "")
       try {
-        const res = (await ingressActor.openAccounts(BigInt(1), { ft: selAsset.id })) as any;
-        console.log(res);
-
+        const res = (await ingressActor.openAccounts(BigInt(1), { ft: BigInt(selAsset.id) })) as any;
         if (res.err) {
           if (res.err.InvalidArguments) setAddSubErr("InvalidArguments");
           else if (res.err.NoSpaceForPrincipal === null) setAddSubErr("NoSpaceForPrincipal");

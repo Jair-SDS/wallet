@@ -20,7 +20,7 @@ import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, Transactio
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { AccountType, AssetId, SubId } from "@candid/ingress/service.did";
+import { AccountType, AssetId, SubId, VirId } from "@candid/ingress/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -404,45 +404,49 @@ export const formatHPLSubaccounts = (
       },
     ]
   >,
+  infoVT: Array<[VirId, [] | [[AccountType, Principal]]]>,
   hplData: HPLData,
   stateData: ResQueryState,
 ) => {
   const auxSubaccounts: HPLSubAccount[] = [];
+
   stateData.accounts.map((sa) => {
-    const subData = hplData.sub.find((sub) => sub.id === sa[0]);
+    const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
+
     const asset = infoSubs.find((sub) => sub[0] === sa[0]);
     const auxVirtuals: HPLVirtualSubAcc[] = [];
     stateData.virtualAccounts.map((va) => {
-      const vtData = hplData.vt.find((vt) => vt.id === va[0]);
+      const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
+      const vtInfo = infoVT.find((vt) => vt[0].toString() === va[0].toString());
       if (va[1][0] && va[1][0][1] === sa[0]) {
         auxVirtuals.push({
           name: vtData ? vtData.name : "",
-          virt_sub_acc_id: va[0],
-          amount: va[1][0][0].ft,
+          virt_sub_acc_id: va[0].toString(),
+          amount: va[1][0][0].ft.toString(),
           currency_amount: "0.00",
+          expiration: Number(va[1][0][2].toString()),
+          accesBy: vtInfo ? (vtInfo[1][0] ? vtInfo[1][0][1].toString() : "") : "",
+          backing: va[1][0][1].toString(),
         });
       }
     });
 
     auxSubaccounts.push({
       name: subData ? subData.name : "",
-      sub_account_id: sa[0],
-      amount: sa[1].ft,
+      sub_account_id: sa[0].toString(),
+      amount: sa[1].ft.toString(),
       currency_amount: "0.00",
       transaction_fee: "0",
-      decimal: 0,
-      symbol: `[ ${asset ? asset[1].ft : BigInt(0)} ]`,
-      ft: asset ? asset[1].ft : BigInt(0),
+      ft: asset ? asset[1].ft.toString() : "0",
       virtuals: auxVirtuals,
-      logo: "",
     });
   });
   const auxFT: HPLAsset[] = [];
   stateData.ftSupplies.map((asst) => {
-    const ftData = hplData.ft.find((ft) => ft.id === asst[0]);
+    const ftData = hplData.ft.find((ft) => ft.id === asst[0].toString());
     const ft = infoFT.find((ft) => asst[0] === ft[0]);
     auxFT.push({
-      id: asst[0],
+      id: asst[0].toString(),
       name: ftData ? ftData.name : "",
       token_name: "",
       symbol: ftData ? ftData.symbol : "",

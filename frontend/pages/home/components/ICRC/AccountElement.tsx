@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
+import CheckIcon from "@assets/svg/files/check.svg";
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
@@ -9,7 +10,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { SubAccount } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
 import { ChangeEvent, Fragment, useState } from "react";
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { toFullDecimal } from "@/utils";
 import { CustomInput } from "@components/Input";
 import { useTranslation } from "react-i18next";
@@ -85,23 +86,23 @@ const AccountElement = ({
                 autoFocus
                 onChange={onNameChange}
               />
-              <button
-                className="flex justify-center items-center ml-2 p-0.5 bg-RadioCheckColor rounded cursor-pointer"
+              <div
+                className="flex justify-center items-center ml-2 p-1 bg-RadioCheckColor rounded cursor-pointer"
                 onClick={onSave}
               >
-                <p className="text-sm text-PrimaryTextColor">{t("save")}</p>
-              </button>
-              <button
-                className="flex justify-center items-center ml-2 p-1 bg-LockColor rounded cursor-pointer"
-                onClick={onAdd}
+                <img src={CheckIcon} className="w-4 h-4 p-" alt="info-icon" />
+              </div>
+              <div
+                className="flex justify-center items-center ml-2 p-0 bg-LockColor rounded cursor-pointer"
+                onClick={onCancel}
               >
-                <img src={PlusIcon} className="w-4 h-4 rotate-45" alt="info-icon" />
-              </button>
+                <img src={PlusIcon} className="w-6 h-6 rotate-45" alt="info-icon" />
+              </div>
             </div>
           ) : (
-            <button className="p-0 w-full text-left min-h-[1.645rem]" onDoubleClick={onDoubleClick}>
+            <div className="p-0 w-full text-left min-h-[1.645rem]" onDoubleClick={onDoubleClick}>
               <p className={`${accName()} break-words max-w-[9rem]`}>{`${subAccount?.name}`}</p>
-            </button>
+            </div>
           )}
           <div className="flex flex-row justify-start items-center gap-3 min-h-5">
             <p className={`${accId()} break-words max-w-[9rem] text-left`}>{subAccount?.sub_account_id}</p>
@@ -120,14 +121,14 @@ const AccountElement = ({
             <p className={accCurrencyAmnt()}>{`≈ $${Number(subAccount?.currency_amount).toFixed(2)}`}</p>
           </div>
           {subAccount?.sub_account_id !== "0x0" && Number(subAccount?.amount) === 0 && !newSub && (
-            <button
+            <div
               className="p-0"
               onClick={() => {
                 setDeleteModal(true);
               }}
             >
               <TrashIcon className=" fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
-            </button>
+            </div>
           )}
         </div>
       </div>
@@ -211,7 +212,7 @@ const AccountElement = ({
     }
   }
 
-  function onAdd() {
+  function onCancel() {
     setEditNameId("");
     setNewSub(undefined);
   }

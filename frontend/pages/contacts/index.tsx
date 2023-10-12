@@ -10,7 +10,7 @@ const Contacts = () => {
     <Fragment>
       <div className="flex flex-col w-full h-full pt-6">
         <Menu />
-        <div className="flex flex-col justify-start items-start w-full h-full mx-4">
+        <div className="flex flex-col justify-start items-start w-full h-full px-4">
           <ContactFilters
             searchKey={searchKey}
             assetFilter={assetFilter}

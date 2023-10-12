@@ -26,7 +26,7 @@ export const TableHook = () => {
         <Fragment>
           {((selectedTransaction?.hash && selectedTransaction?.hash === info.getValue().hash) ||
             (selectedTransaction?.idx && selectedTransaction?.idx === info.getValue().idx)) && (
-            <div className="absolute w-2 h-[4.05rem] left-0 bg-SelectRowColor"></div>
+            <div className="absolute w-2 h-[4.05rem] left-5 bg-SelectRowColor"></div>
           )}
           <div className="flex w-full justify-center my-2 h-12">
             <div className="flex justify-center items-center p-2 rounded-md border border-BorderColorTwoLight dark:border-BorderColorTwo">

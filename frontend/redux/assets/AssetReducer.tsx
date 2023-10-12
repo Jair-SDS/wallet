@@ -7,6 +7,7 @@ import {
   HPLSubAccount,
   HPLSubData,
   HPLVirtualData,
+  HPLVirtualSubAcc,
   ICPSubAccount,
   SubAccount,
   Transaction,
@@ -43,6 +44,7 @@ interface AssetState {
   hplSubsData: HPLSubData[];
   hplVTsData: HPLVirtualData[];
   selectSub: HPLSubAccount | undefined;
+  selectVt: HPLVirtualSubAcc | undefined;
 }
 
 const initialState: AssetState = {
@@ -69,10 +71,11 @@ const initialState: AssetState = {
   hplSubsData: [],
   hplVTsData: [],
   selectSub: undefined,
+  selectVt: undefined,
 };
 
 const assetSlice = createSlice({
-  name: "auth",
+  name: "asset",
   initialState,
   reducers: {
     setProtocol(state, action: PayloadAction<ProtocolType>) {
@@ -269,6 +272,55 @@ const assetSlice = createSlice({
     setHPLSelectedSub(state, action: PayloadAction<HPLSubAccount | undefined>) {
       state.selectSub = action.payload;
     },
+    setHPLSelectedVt(state, action: PayloadAction<HPLVirtualSubAcc | undefined>) {
+      state.selectVt = action.payload;
+    },
+    editHPLAsset: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          ftEdited: HPLAsset;
+          ftData: HPLAssetData[];
+        }>,
+      ) {
+        const { ftEdited, ftData } = action.payload;
+        const auxFts = state.hplFTs.map((ft) => {
+          if (ft.id === ftEdited.id) {
+            return ftEdited;
+          } else return ft;
+        });
+        state.hplFTs = auxFts;
+        state.hplFTsData = ftData;
+      },
+      prepare(ftEdited: HPLAsset, ftData: HPLAssetData[]) {
+        return {
+          payload: { ftEdited, ftData },
+        };
+      },
+    },
+    editHPLSub: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          subEdited: HPLSubAccount;
+          subData: HPLSubData[];
+        }>,
+      ) {
+        const { subEdited, subData } = action.payload;
+        const auxSubs = state.subaccounts.map((sb) => {
+          if (sb.sub_account_id === subEdited.sub_account_id) {
+            return subEdited;
+          } else return sb;
+        });
+        state.subaccounts = auxSubs;
+        state.hplSubsData = subData;
+      },
+      prepare(subEdited: HPLSubAccount, subData: HPLSubData[]) {
+        return {
+          payload: { subEdited, subData },
+        };
+      },
+    },
     clearDataAsset(state) {
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -320,6 +372,9 @@ export const {
   setHPLSubsData,
   setHPLVTsData,
   setHPLSelectedSub,
+  setHPLSelectedVt,
+  editHPLAsset,
+  editHPLSub,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

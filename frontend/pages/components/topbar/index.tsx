@@ -23,17 +23,15 @@ import { logout } from "@redux/CheckAuth";
 import Modal from "@components/Modal";
 import ThemeModal from "./themeModal";
 import { ThemesEnum } from "@/const";
-import { useAppDispatch, useAppSelector } from "@redux/Store";
+import { useAppDispatch } from "@redux/Store";
 import { setLoading } from "@redux/assets/AssetReducer";
 import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
-import { Principal } from "@dfinity/principal";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { onLanguageChange } = LanguageHook();
-  const { ingressActor } = useAppSelector((state) => state.asset);
 
   const { theme, themeOpen, setThemeOpen } = ThemeHook();
   const { authClient } = AccountHook();

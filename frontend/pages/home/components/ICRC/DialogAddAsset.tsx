@@ -8,7 +8,7 @@ import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
 import { checkHexString, hexToNumber, removeLeadingZeros } from "@/utils";
 import { SubAccount } from "@redux/models/AccountModels";
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
 import { useAppDispatch } from "@redux/Store";
 import { addSubAccount } from "@redux/assets/AssetReducer";

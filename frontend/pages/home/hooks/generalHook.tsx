@@ -1,5 +1,5 @@
 // svg
-import GenericTokenIcon from "@/assets/svg/files/generic-token.svg";
+import GenericTokenIcon from "@/assets/svg/files/dafaultICRC1.svg";
 //
 import { Asset, SubAccount, Transaction } from "@redux/models/AccountModels";
 import { useAppDispatch, useAppSelector } from "@redux/Store";

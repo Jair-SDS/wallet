@@ -42,7 +42,13 @@ const TabNetwork = ({ children }: TabNetworkProps) => {
               onSelectTab(ntw);
             }}
           >
-            <p className={`${ntw === protocol ? "text-SelectRowColor" : ""}`}>{ntw}</p>
+            <p
+              className={`${
+                ntw === protocol ? "text-SelectRowColor" : " text-PrimaryTextColorLight dark:text-PrimaryTextColor"
+              }`}
+            >
+              {ntw}
+            </p>
           </button>
         </div>
       </div>

@@ -65,6 +65,9 @@ export type DeleteContactTypeEnum = z.infer<typeof DeleteContactTypeEnum>;
 export const TimerActionTypeEnum = z.enum(["TRANSACTIONS", "ASSETS"]);
 export type TimerActionType = z.infer<typeof TimerActionTypeEnum>;
 
+export const SubaccountInfoEnum = z.enum(["TRANSACTIONS", "VIRTUALS"]);
+export type SubaccountInfo = z.infer<typeof SubaccountInfoEnum>;
+
 //
 export const ICRC1systemAssets: Array<Token> = [
   {

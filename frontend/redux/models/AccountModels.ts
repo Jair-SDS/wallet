@@ -106,38 +106,38 @@ export type TransactionList = z.infer<typeof TransactionList>;
 
 // HPL Models
 const HPLVirtualSubAcc = z.object({
-  virt_sub_acc_id: z.bigint(),
+  virt_sub_acc_id: z.string(),
   name: z.string(),
-  amount: z.bigint(),
+  amount: z.string(),
   currency_amount: z.string(),
+  expiration: z.number(),
+  accesBy: z.string(),
+  backing: z.string(),
 });
 
 export type HPLVirtualSubAcc = z.infer<typeof HPLVirtualSubAcc>;
 
 const HPLSubAccount = z.object({
-  sub_account_id: z.bigint(),
+  sub_account_id: z.string(),
   name: z.string(),
-  amount: z.bigint(),
+  amount: z.string(),
   currency_amount: z.string(),
   transaction_fee: z.string(),
-  decimal: z.number(),
-  symbol: z.string(),
-  ft: z.bigint(),
+  ft: z.string(),
   virtuals: z.array(HPLVirtualSubAcc),
-  logo: z.string().optional(),
 });
 
 export type HPLSubAccount = z.infer<typeof HPLSubAccount>;
 
 const HPLAsset = z.object({
-  id: z.bigint(),
+  id: z.string(),
   name: z.string(),
   token_name: z.string(),
   symbol: z.string(),
   token_symbol: z.string(),
   decimal: z.number(),
   description: z.string(),
-  logo: z.string().optional(),
+  logo: z.string(),
 });
 
 export type HPLAsset = z.infer<typeof HPLAsset>;
@@ -150,7 +150,7 @@ export interface ResQueryState {
 }
 
 const HPLAssetData = z.object({
-  id: z.bigint(),
+  id: z.string(),
   name: z.string(),
   symbol: z.string(),
 });
@@ -158,14 +158,14 @@ const HPLAssetData = z.object({
 export type HPLAssetData = z.infer<typeof HPLAssetData>;
 
 const HPLSubData = z.object({
-  id: z.bigint(),
+  id: z.string(),
   name: z.string(),
 });
 
 export type HPLSubData = z.infer<typeof HPLSubData>;
 
 const HPLVirtualData = z.object({
-  id: z.bigint(),
+  id: z.string(),
   name: z.string(),
 });
 

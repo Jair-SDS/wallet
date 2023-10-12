@@ -1,11 +1,11 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import AssetElement from "./AssetElement";
+import AssetElement from "./ICRC/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
 import { Fragment } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
-import AddAsset from "./AddAsset";
+import AddAsset from "./ICRC/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
 import { useTranslation } from "react-i18next";
 import Menu from "@pages/components/Menu";
@@ -36,7 +36,7 @@ const AssetsList = () => {
     tokens,
     subaccounts,
   } = AssetHook();
-  const { editedFt, setEditedFt } = useHPL(false);
+  const { editedFt, setEditedFt, editNameId, setEditNameId } = useHPL(false);
 
   return (
     <Fragment>
@@ -60,52 +60,56 @@ const AssetsList = () => {
           </div>
         </div>
         <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light">
-          <Accordion.Root
-            className=""
-            type="single"
-            defaultValue="asset-0"
-            collapsible
-            value={acordeonIdx}
-            onValueChange={onValueChange}
-          >
-            {protocol === ProtocolTypeEnum.Enum.ICRC1
-              ? assets?.map((asset: Asset, idx: number) => {
-                  let includeInSub = false;
-                  asset.subAccounts.map((sa) => {
-                    if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
-                  });
+          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+            <Accordion.Root
+              className=""
+              type="single"
+              defaultValue="asset-0"
+              collapsible
+              value={acordeonIdx}
+              onValueChange={onValueChange}
+            >
+              {assets?.map((asset: Asset, idx: number) => {
+                let includeInSub = false;
+                asset.subAccounts.map((sa) => {
+                  if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+                });
 
-                  if (asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
-                    return (
-                      <AssetElement
-                        key={idx}
-                        asset={asset}
-                        idx={idx}
-                        acordeonIdx={acordeonIdx}
-                        setAssetInfo={setAssetInfo}
-                        setAssetOpen={setAssetOpen}
-                        tokens={tokens}
-                      ></AssetElement>
-                    );
-                })
-              : subaccounts?.map((sub: HPLSubAccount, idx: number) => {
-                  let includeInSub = false;
-                  sub.virtuals.map((vt) => {
-                    if (vt.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
-                  });
+                if (asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
+                  return (
+                    <AssetElement
+                      key={idx}
+                      asset={asset}
+                      idx={idx}
+                      acordeonIdx={acordeonIdx}
+                      setAssetInfo={setAssetInfo}
+                      setAssetOpen={setAssetOpen}
+                      tokens={tokens}
+                    ></AssetElement>
+                  );
+              })}
+            </Accordion.Root>
+          ) : (
+            subaccounts?.map((sub: HPLSubAccount, idx: number) => {
+              let includeInSub = false;
+              sub.virtuals.map((vt) => {
+                if (vt.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+              });
 
-                  if (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
-                    return (
-                      <HplSubaccountElem
-                        key={idx}
-                        sub={sub}
-                        idx={idx}
-                        setEditedFt={setEditedFt}
-                        setAssetOpen={setAssetOpen}
-                      ></HplSubaccountElem>
-                    );
-                })}
-          </Accordion.Root>
+              if (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
+                return (
+                  <HplSubaccountElem
+                    key={idx}
+                    sub={sub}
+                    idx={idx}
+                    setEditedFt={setEditedFt}
+                    setAssetOpen={setAssetOpen}
+                    editNameId={editNameId}
+                    setEditNameId={setEditNameId}
+                  ></HplSubaccountElem>
+                );
+            })
+          )}
         </div>
       </div>
       <div

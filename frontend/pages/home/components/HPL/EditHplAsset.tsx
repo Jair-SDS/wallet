@@ -6,7 +6,8 @@ import { useHPL } from "@pages/hooks/hplHook";
 import { ChangeEvent, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
-import { HPLAsset } from "@redux/models/AccountModels";
+import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
+import { AccountHook } from "@pages/hooks/accountHook";
 
 interface EditHplAssetProps {
   setAssetOpen(value: boolean): void;
@@ -17,7 +18,8 @@ interface EditHplAssetProps {
 
 const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAssetProps) => {
   const { t } = useTranslation();
-  const { ingressActor, selAsset, newHplSub, setNewHplSub, addSubErr, setAddSubErr, reloadHPLBallance } = useHPL(open);
+  const { authClient } = AccountHook();
+  const { addSubErr, editSelAsset, hplFTsData, getAssetLogo } = useHPL(open);
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
@@ -29,7 +31,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
           />
         </div>
         <div className="flex flex-col items-center justify-center w-full my-3 gap-1">
-          <p>LOGO</p>
+          {getAssetLogo(editedFt.id)}
           <p className="font-semibold">{`${editedFt?.token_name} - ${editedFt?.token_symbol}`}</p>
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
@@ -39,7 +41,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             intent={"secondary"}
             placeholder=""
             compOutClass=""
-            value={newHplSub.name}
+            value={editedFt.name}
             onChange={onNameChange}
           />
           <p className="opacity-60 mt-4">{t("asset.symbol")}</p>
@@ -48,8 +50,8 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             intent={"secondary"}
             placeholder=""
             compOutClass=""
-            value={newHplSub.name}
-            onChange={onNameChange}
+            value={editedFt.symbol}
+            onChange={onSymbolChange}
           />
         </div>
 
@@ -69,29 +71,40 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
   }
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setNewHplSub((prev: any) => {
-      return { ...prev, name: e.target.value };
-    });
+    if (e.target.value.length < 65 && e.target.value.length > 0) setEditedFt({ ...editedFt, name: e.target.value });
+  }
+
+  function onSymbolChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.value.length < 9 && e.target.value.length > 0) setEditedFt({ ...editedFt, symbol: e.target.value });
   }
 
   async function onAdd() {
-    if (selAsset && newHplSub.name.trim() !== "")
-      try {
-        const res = (await ingressActor.openAccounts(BigInt(1), { ft: selAsset.id })) as any;
-        console.log(res);
-
-        if (res.err) {
-          if (res.err.InvalidArguments) setAddSubErr("InvalidArguments");
-          else if (res.err.NoSpaceForPrincipal === null) setAddSubErr("NoSpaceForPrincipal");
-          else setAddSubErr("NoSpaceForSubaccount");
-        } else {
-          reloadHPLBallance();
-          onClose();
-        }
-      } catch (e) {
-        setAddSubErr("Server Error");
-      }
-    else setAddSubErr("Check mandatory fields");
+    const auxFt = hplFTsData.find((ft) => ft.id === editedFt.id);
+    let auxFtsdata: HPLAssetData[] = [];
+    if (auxFt) {
+      hplFTsData.map((ft) => {
+        if (ft.id === editedFt.id) {
+          auxFtsdata.push({ id: ft.id, name: editedFt.name.trim(), symbol: editedFt.symbol.trim() });
+        } else auxFtsdata.push(ft);
+      });
+    } else {
+      auxFtsdata = [
+        ...hplFTsData,
+        {
+          id: editedFt.id,
+          name: editedFt.name.trim(),
+          symbol: editedFt.symbol.trim(),
+        },
+      ];
+    }
+    localStorage.setItem(
+      "hplFT-" + authClient,
+      JSON.stringify({
+        ft: auxFtsdata,
+      }),
+    );
+    editSelAsset(editedFt, auxFtsdata);
+    onClose();
   }
 };
 

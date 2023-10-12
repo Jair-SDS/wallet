@@ -1,7 +1,7 @@
 // svgs
 import { ReactComponent as InfoIcon } from "@assets/svg/files/info-icon.svg";
 //
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { IcrcLedgerCanister } from "@dfinity/ledger";
 import { getMetadataInfo } from "@/utils";
 import { CustomInput } from "@components/Input";

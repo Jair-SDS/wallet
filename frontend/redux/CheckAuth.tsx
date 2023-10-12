@@ -12,7 +12,7 @@ import {
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
-import { clearDataAsset, setHPLAssets, setHPLSubsData, setHPLVTsData, setTokens } from "./assets/AssetReducer";
+import { clearDataAsset, setHPLAssetsData, setHPLSubsData, setHPLVTsData, setTokens } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
@@ -29,7 +29,7 @@ export const handleAuthenticated = async (opt: AuthNetwork) => {
       identityProvider:
         opt?.type === AuthNetworkTypeEnum.Values.NFID && opt?.type !== undefined && opt?.type !== null
           ? opt?.network + AUTH_PATH
-          : undefined,
+          : "https://identity.ic0.app",
       onSuccess: () => {
         handleLoginApp(authClient.getIdentity());
         resolve();
@@ -58,9 +58,6 @@ export const handleLoginApp = async (authIdentity: Identity) => {
 
   const myPrincipal = await myAgent.getPrincipal();
 
-  // HPL TOKENS
-  await updateHPLBalances(myAgent);
-
   // ICRC-1 TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
@@ -80,19 +77,19 @@ export const handleLoginApp = async (authIdentity: Identity) => {
 
   // HPL FT
   const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
-  if (hplFTsData) {
+  if (hplFTsData != null) {
     const hplFTsDataJson = JSON.parse(hplFTsData);
-    store.dispatch(setHPLAssets(hplFTsDataJson.ft));
+    store.dispatch(setHPLAssetsData(hplFTsDataJson.ft));
   }
   // HPL SUBACCOUNTS
-  const hplSubsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
-  if (hplSubsData) {
+  const hplSubsData = localStorage.getItem("hplSUB-" + authIdentity.getPrincipal().toString());
+  if (hplSubsData != null) {
     const hplSubsDataJson = JSON.parse(hplSubsData);
-    store.dispatch(setHPLSubsData(hplSubsDataJson.subs));
+    store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
   }
   // HPL VIRTUALS
-  const hplVTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
-  if (hplVTsData) {
+  const hplVTsData = localStorage.getItem("hplVT-" + authIdentity.getPrincipal().toString());
+  if (hplVTsData != null) {
     const hplVTsDataJson = JSON.parse(hplVTsData);
     store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
   }
@@ -102,6 +99,8 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   store.dispatch(setUserAgent(myAgent));
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+  // HPL TOKENS
+  await updateHPLBalances(myAgent);
 };
 
 export const logout = async () => {

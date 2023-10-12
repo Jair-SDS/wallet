@@ -25,7 +25,7 @@ import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
-import { _SERVICE as IngressActor } from "@candid/ingress/service.did.d";
+import { AccountType, AssetId, _SERVICE as IngressActor, VirId } from "@candid/ingress/service.did.d";
 import { idlFactory as IngressIDLFactory } from "@candid/ingress/candid.did";
 import bigInt from "big-integer";
 
@@ -254,33 +254,88 @@ export const updateAllBalances = async (
 };
 
 export const updateHPLBalances = async (myAgent: HttpAgent) => {
+  const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
+    agent: myAgent,
+    canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
+  });
+  store.dispatch(setIngressActor(ingressActor));
+
+  let subAccInfo: [bigint, AccountType][] = [];
   try {
-    const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
-      agent: myAgent,
-      canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
-    });
-    store.dispatch(setIngressActor(ingressActor));
-    const subAccInfo = await ingressActor.accountInfo({ idRange: [BigInt(0), []] });
-    const ftInfo = await ingressActor.ftInfo({ idRange: [BigInt(0), []] });
-    const state: ResQueryState = await ingressActor.state({
+    subAccInfo = await ingressActor.accountInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("err", e);
+  }
+  let ftInfo: [
+    AssetId,
+    {
+      controller: Principal;
+      decimals: number;
+      description: string;
+    },
+  ][] = [];
+  try {
+    ftInfo = await ingressActor.ftInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("err", e);
+  }
+  let vtInfo: [VirId, [] | [[AccountType, Principal]]][] = [];
+  try {
+    vtInfo = await ingressActor.virtualAccountInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("err", e);
+  }
+  const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
+  try {
+    const auxState = await ingressActor.state({
       ftSupplies: [{ idRange: [BigInt(0), []] }],
+      virtualAccounts: [],
+      accounts: [],
+      remoteAccounts: [],
+    });
+    state.ftSupplies = auxState.ftSupplies;
+  } catch (e) {
+    console.log("err", e);
+  }
+  try {
+    const auxState = await ingressActor.state({
+      ftSupplies: [],
       virtualAccounts: [{ idRange: [BigInt(0), []] }],
+      accounts: [],
+      remoteAccounts: [],
+    });
+    state.virtualAccounts = auxState.virtualAccounts;
+  } catch (e) {
+    console.log("err", e);
+  }
+  try {
+    const auxState = await ingressActor.state({
+      ftSupplies: [],
+      virtualAccounts: [],
       accounts: [{ idRange: [BigInt(0), []] }],
       remoteAccounts: [],
     });
+    state.accounts = auxState.accounts;
+  } catch (e) {
+    console.log("err", e);
+  }
+
+  try {
     const ftData = store.getState().asset.hplFTsData;
     const subData = store.getState().asset.hplSubsData;
     const vtData = store.getState().asset.hplVTsData;
     const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
       subAccInfo,
       ftInfo,
+      vtInfo,
       { ft: ftData, sub: subData, vt: vtData },
       state,
     );
+
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
-  } catch {
-    //
+  } catch (e) {
+    console.log("err", e);
   }
 };
 
