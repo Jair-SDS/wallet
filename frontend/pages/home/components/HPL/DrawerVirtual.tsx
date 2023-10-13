@@ -47,7 +47,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     selAssetOpen,
     setSelAssetOpen,
     hplVTsData,
-    editVtDAta,
+    editVtData,
     reloadHPLBallance,
   } = useHPL(false);
   const [searchKey, setSearchKey] = useState("");
@@ -372,7 +372,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         vt: auxVts,
       }),
     );
-    editVtDAta(auxVts);
+    editVtData(auxVts);
     reloadHPLBallance();
     onClose();
   }

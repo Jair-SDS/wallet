@@ -9,6 +9,7 @@ import {
   editHPLSub,
   setHPLSelectedSub,
   setHPLSelectedVt,
+  setHPLSubsData,
   setHPLVTsData,
   setLoading,
 } from "@redux/assets/AssetReducer";
@@ -70,7 +71,10 @@ export const useHPL = (open: boolean) => {
   const editSelSub = (subEdited: HPLSubAccount, subData: HPLSubData[]) => {
     dispatch(editHPLSub(subEdited, subData));
   };
-  const editVtDAta = (vtData: HPLVirtualData[]) => {
+  const editSubData = (subData: HPLSubData[]) => {
+    dispatch(setHPLSubsData(subData));
+  };
+  const editVtData = (vtData: HPLVirtualData[]) => {
     dispatch(setHPLVTsData(vtData));
   };
 
@@ -168,7 +172,8 @@ export const useHPL = (open: boolean) => {
     setEditedFt,
     editSelAsset,
     editSelSub,
-    editVtDAta,
+    editSubData,
+    editVtData,
     getFtFromSub,
     getSubFromVt,
     getFtFromVt,

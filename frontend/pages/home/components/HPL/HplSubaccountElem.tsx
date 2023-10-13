@@ -106,7 +106,7 @@ const HplSubaccountElem = ({
               <div className="flex flex-row justify-between items-center w-full">
                 <div className="flex flex-row justify-start items-center">
                   <p className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}>{`${
-                    getFtFromSub(sub.ft).name
+                    getFtFromSub(sub.ft).name === "" ? `[ ${getFtFromSub(sub.ft).id} ]` : getFtFromSub(sub.ft).name
                   }`}</p>
                   <div className="p-0" onClick={setEditFt}>
                     <img src={InfoIcon} className="ml-1" alt="info-icon" />

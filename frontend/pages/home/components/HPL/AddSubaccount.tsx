@@ -5,12 +5,14 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
 import { CustomInput } from "@components/Input";
 import { useHPL } from "@pages/hooks/hplHook";
-import { ChangeEvent, Fragment } from "react";
+import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { clsx } from "clsx";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { CustomButton } from "@components/Button";
+import LoadingLoader from "@components/Loader";
+import { AccountHook } from "@pages/hooks/accountHook";
 
 interface AddSubaccountProps {
   setAssetOpen(value: boolean): void;
@@ -19,6 +21,7 @@ interface AddSubaccountProps {
 
 const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   const { t } = useTranslation();
+  const { authClient } = AccountHook();
   const {
     ingressActor,
     hplFTs,
@@ -33,8 +36,16 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     addSubErr,
     setAddSubErr,
     getAssetLogo,
+    hplSubsData,
+    editSubData,
     reloadHPLBallance,
   } = useHPL(open);
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(false);
+  }, [open]);
+
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
@@ -160,8 +171,8 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
         </div>
         <div className="flex flex-row justify-between items-center w-full gap-2">
           <p className="text-TextErrorColor text-sm">{addSubErr != "" ? addSubErr : ""}</p>
-          <CustomButton className="min-w-[5rem]" onClick={onAdd}>
-            <p>{t("add")}</p>
+          <CustomButton className="min-w-[5rem]" onClick={onAdd} size={"small"}>
+            {loading ? <LoadingLoader className="mt-1" /> : <p>{t("add")}</p>}
           </CustomButton>
         </div>
       </div>
@@ -188,6 +199,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   }
 
   async function onAdd() {
+    setLoading(true);
     if (selAsset && newHplSub.name.trim() !== "")
       try {
         const res = (await ingressActor.openAccounts(BigInt(1), { ft: BigInt(selAsset.id) })) as any;
@@ -196,6 +208,14 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           else if (res.err.NoSpaceForPrincipal === null) setAddSubErr("NoSpaceForPrincipal");
           else setAddSubErr("NoSpaceForSubaccount");
         } else {
+          const auxSubs = [...hplSubsData, { id: (res.ok.first as bigint).toString(), name: newHplSub.name.trim() }];
+          localStorage.setItem(
+            "hplSUB-" + authClient,
+            JSON.stringify({
+              sub: auxSubs,
+            }),
+          );
+          editSubData(auxSubs);
           reloadHPLBallance();
           onClose();
         }
@@ -203,6 +223,8 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
         setAddSubErr("Server Error");
       }
     else setAddSubErr("Check mandatory fields");
+
+    setLoading(false);
   }
 };
 

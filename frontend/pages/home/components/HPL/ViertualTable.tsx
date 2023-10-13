@@ -16,6 +16,7 @@ import { CustomButton } from "@components/Button";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
+import LoadingLoader from "@components/Loader";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -29,9 +30,11 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setErrMsg("");
+    setLoading(false);
   }, [deleteModal]);
 
   return (
@@ -150,7 +153,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
           <div className="w-full flex flex-row justify-between items-center gap-2">
             <p className="text-sm text-TextErrorColor">{errMsg}</p>
             <CustomButton className="min-w-[5rem]" onClick={onConfirmDelete} size={"small"}>
-              <p>{t("yes")}</p>
+              {loading ? <LoadingLoader className="mt-1" /> : <p>{t("yes")}</p>}
             </CustomButton>
           </div>
         </div>
@@ -191,6 +194,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
     setDeleteModal(true);
   }
   async function onConfirmDelete() {
+    setLoading(true);
     if (selectVt) {
       const res = (await ingressActor.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id))) as any;
       if (res.err) {
@@ -208,6 +212,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
         setSelVt(undefined);
       }
     }
+    setLoading(false);
   }
   // Tailwind CSS
   function rowStyle(date: number) {

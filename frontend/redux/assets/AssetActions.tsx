@@ -324,6 +324,8 @@ export const updateHPLBalances = async (myAgent: HttpAgent) => {
     const ftData = store.getState().asset.hplFTsData;
     const subData = store.getState().asset.hplSubsData;
     const vtData = store.getState().asset.hplVTsData;
+    console.log({ ft: ftData || [], sub: subData || [], vt: vtData || [] });
+
     const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
       subAccInfo,
       ftInfo,
