@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import { DateTimeValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
+import LoadingLoader from "@components/Loader";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -51,8 +52,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   } = useHPL(false);
   const [searchKey, setSearchKey] = useState("");
   const [expiration, setExpiration] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
+    setLoading(false);
+    setErrMsg("");
     if (drawerOpen) {
       if (selectVt) {
         setNewVt(selectVt);
@@ -67,7 +72,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         name: "",
         amount: "",
         currency_amount: "",
-        expiration: 0,
+        expiration: dayjs().add(7, "day").valueOf(),
         accesBy: "",
         backing: "",
       });
@@ -240,16 +245,17 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         </div>
       ) : (
         <div className="flex flex-row justify-between items-center w-full p-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack rounded-md">
-          <p className="opacity-60">{t("acces.by")}</p>
+          <p className="opacity-60">{t("access.by")}</p>
           <div className="flex flex-row justify-start items-center gap-2">
             <p className="">{shortAddress(selectVt.accesBy, 6, 4)}</p>
             <CustomCopy size={"xSmall"} className="p-0" copyText={selectVt.accesBy} />
           </div>
         </div>
       )}
-      <div className="w-full flex flex-row justify-end items-center mt-12">
-        <CustomButton className="min-w-[5rem]" onClick={onSave}>
-          <p>{t(selectVt ? "save" : "add")}</p>
+      <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
+        <p className="text-sm text-TextErrorColor text-left">{errMsg}</p>
+        <CustomButton className="min-w-[5rem]" onClick={onSave} size={"small"}>
+          {loading ? <LoadingLoader className="mt-1" /> : <p>{t(selectVt ? "save" : "add")}</p>}
         </CustomButton>
       </div>
     </div>
@@ -266,6 +272,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     setNewVt((prev) => {
       return { ...prev, backing: sub.sub_account_id };
     });
+    setSelAssetOpen(false);
   }
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     setNewVt((prev) => {
@@ -297,38 +304,50 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   }
 
   async function onSave() {
-    if (!verifyVirtualData(newVt).err)
+    setLoading(true);
+    const { err, errMsg } = verifyVirtualData(newVt);
+    if (!err) {
+      setErrMsg("");
       if (selectVt) {
         const res = (await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
           backingAccount: [BigInt(newVt.backing)],
-          expiration: [BigInt(newVt.expiration)],
           state: [{ ft_set: BigInt(newVt.amount) }],
+          expiration: [BigInt(newVt.expiration * 1000000)],
         })) as any;
         if (res.err) {
-          console.log(res.err);
+          setErrMsg("err.back");
         } else {
-          console.log(res.ok);
-          const auxVt = hplVTsData.map((vt) => {
-            if (vt.id === selectVt.virt_sub_acc_id) return { id: vt.id, name: newVt.name };
-            else return vt;
-          });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
-          reloadHPLBallance();
-          onClose();
         }
       } else {
-        // add
+        const res = (await ingressActor.openVirtualAccount(
+          { ft: BigInt(getFtFromVt(newVt.backing).id) },
+          Principal.fromText(newVt.accesBy),
+          { ft: BigInt(newVt.amount) },
+          BigInt(newVt.backing),
+          BigInt(newVt.expiration * 1000000),
+        )) as any;
+        if (res.err) {
+          setErrMsg("err.back");
+        } else {
+          saveInLocalstorage({ id: (res.ok.id as bigint).toString(), name: newVt.name }, selectVt!, false);
+        }
       }
+    } else {
+      setErrMsg(errMsg);
+    }
+    setLoading(false);
   }
 
   function verifyVirtualData(vt: HPLVirtualSubAcc) {
-    const res: { err: boolean; errMsg: string } = { err: false, errMsg: "" };
-    if (vt.backing === "") res.err = true;
-    if (vt.expiration != 0 && dayjs(vt.expiration).isBefore(dayjs())) res.err = true;
+    let res: { err: boolean; errMsg: string } = { err: false, errMsg: "" };
+    if (vt.backing === "") res = { err: true, errMsg: res.errMsg + " " + t("err.backing") };
+    if (vt.expiration != 0 && dayjs(vt.expiration).isBefore(dayjs()))
+      res = { err: true, errMsg: res.errMsg + " " + t("err.expiration") };
     try {
       Principal.fromText(vt.accesBy);
     } catch {
-      res.err = true;
+      res = { err: true, errMsg: res.errMsg + " " + t("err.principal") };
     }
     return res;
   }
@@ -354,6 +373,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       }),
     );
     editVtDAta(auxVts);
+    reloadHPLBallance();
+    onClose();
   }
 };
 export default DrawerVirtual;

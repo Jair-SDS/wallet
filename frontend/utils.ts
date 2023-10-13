@@ -424,7 +424,7 @@ export const formatHPLSubaccounts = (
           virt_sub_acc_id: va[0].toString(),
           amount: va[1][0][0].ft.toString(),
           currency_amount: "0.00",
-          expiration: Number(va[1][0][2].toString()),
+          expiration: Math.trunc(Number(va[1][0][2].toString()) / 1000000),
           accesBy: vtInfo ? (vtInfo[1][0] ? vtInfo[1][0][1].toString() : "") : "",
           backing: va[1][0][1].toString(),
         });

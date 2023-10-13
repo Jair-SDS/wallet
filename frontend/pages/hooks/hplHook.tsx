@@ -10,6 +10,7 @@ import {
   setHPLSelectedSub,
   setHPLSelectedVt,
   setHPLVTsData,
+  setLoading,
 } from "@redux/assets/AssetReducer";
 import {
   HPLAsset,
@@ -19,6 +20,7 @@ import {
   HPLVirtualData,
   HPLVirtualSubAcc,
 } from "@redux/models/AccountModels";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
@@ -41,7 +43,7 @@ export const useHPL = (open: boolean) => {
     name: "",
     amount: "",
     currency_amount: "",
-    expiration: 0,
+    expiration: dayjs().add(7, "day").valueOf(),
     accesBy: "",
     backing: "",
   });
@@ -93,8 +95,15 @@ export const useHPL = (open: boolean) => {
     if (!selectSub && subaccounts.length > 0) setSelSub(subaccounts[0]);
   }, [subaccounts]);
 
-  const reloadHPLBallance = () => {
-    updateHPLBalances(userAgent);
+  const reloadHPLBallance = async () => {
+    dispatch(setLoading(true));
+    const { subs } = await updateHPLBalances(userAgent);
+    if (selectSub) {
+      const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
+      setSelSub(auxSub);
+      setSelVt(undefined);
+    }
+    dispatch(setLoading(false));
   };
 
   const getFtFromSub = (sub: string) => {

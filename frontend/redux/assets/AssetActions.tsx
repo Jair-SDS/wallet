@@ -334,9 +334,11 @@ export const updateHPLBalances = async (myAgent: HttpAgent) => {
 
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
+    return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
     console.log("err", e);
   }
+  return { subs: [], fts: [] };
 };
 
 export const getAllTransactionsICP = async (subaccount_index: string, loading: boolean) => {
