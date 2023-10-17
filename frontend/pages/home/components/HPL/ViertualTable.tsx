@@ -25,7 +25,7 @@ interface VirtualTableProps {
 const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
-  const { ingressActor, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
+  const { hplClient, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
     useHPL(false);
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -93,7 +93,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
                       <DropdownMenu.Trigger>
                         <MoreIcon className="cursor-pointer fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
                       </DropdownMenu.Trigger>
-                      <DropdownMenu.Portal className="w-full">
+                      <DropdownMenu.Portal>
                         <DropdownMenu.Content
                           className=" w-[8rem] bg-PrimaryColorLight rounded-md dark:bg-SecondaryColor !z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor dark:border dark:border-BorderColorTwo shadow-md shadow-PrimaryColor/30 dark:shadow-black/20"
                           sideOffset={5}
@@ -196,10 +196,8 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
   async function onConfirmDelete() {
     setLoading(true);
     if (selectVt) {
-      const res = (await ingressActor.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id))) as any;
-      if (res.err) {
-        setErrMsg("err.back");
-      } else {
+      try {
+        await hplClient.ledger.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id));
         const auxVts = hplVTsData.filter((vt) => vt.id != selectVt.virt_sub_acc_id);
         localStorage.setItem(
           "hplVT-" + authClient,
@@ -210,6 +208,8 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
         reloadHPLBallance();
         setDeleteModal(false);
         setSelVt(undefined);
+      } catch {
+        setErrMsg("err.back");
       }
     }
     setLoading(false);

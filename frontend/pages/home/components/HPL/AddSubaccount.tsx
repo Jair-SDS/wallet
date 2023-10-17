@@ -23,7 +23,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
   const {
-    ingressActor,
+    hplClient,
     hplFTs,
     selAsset,
     setSelAsset,
@@ -118,7 +118,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                 </div>
               </div>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Portal className="w-full">
+            <DropdownMenu.Portal>
               <DropdownMenu.Content
                 className="text-lg bg-PrimaryColorLight w-[25rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-SelectRowColor"
                 sideOffset={5}
@@ -202,27 +202,22 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     setLoading(true);
     if (selAsset && newHplSub.name.trim() !== "")
       try {
-        const res = (await ingressActor.openAccounts(BigInt(1), { ft: BigInt(selAsset.id) })) as any;
-        if (res.err) {
-          if (res.err.InvalidArguments) setAddSubErr("InvalidArguments");
-          else if (res.err.NoSpaceForPrincipal === null) setAddSubErr("NoSpaceForPrincipal");
-          else setAddSubErr("NoSpaceForSubaccount");
-        } else {
-          const auxSubs = [...hplSubsData, { id: (res.ok.first as bigint).toString(), name: newHplSub.name.trim() }];
-          localStorage.setItem(
-            "hplSUB-" + authClient,
-            JSON.stringify({
-              sub: auxSubs,
-            }),
-          );
-          editSubData(auxSubs);
-          reloadHPLBallance();
-          onClose();
-        }
+        const res = await hplClient.ledger.openAccounts({ ft: BigInt(selAsset.id) }, 1);
+
+        const auxSubs = [...hplSubsData, { id: res.first.toString(), name: newHplSub.name.trim() }];
+        localStorage.setItem(
+          "hplSUB-" + authClient,
+          JSON.stringify({
+            sub: auxSubs,
+          }),
+        );
+        editSubData(auxSubs);
+        reloadHPLBallance();
+        onClose();
       } catch (e) {
-        setAddSubErr("Server Error");
+        setAddSubErr("server.error");
       }
-    else setAddSubErr("Check mandatory fields");
+    else setAddSubErr("check.mandatory.fields");
 
     setLoading(false);
   }

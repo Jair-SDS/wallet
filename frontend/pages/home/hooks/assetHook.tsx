@@ -24,6 +24,7 @@ export const AssetHook = () => {
     acordeonIdx,
     tokensMarket,
     subaccounts,
+    hplClient,
   } = useAppSelector((state) => state.asset);
   const { userAgent } = useAppSelector((state) => state.auth);
 
@@ -40,7 +41,7 @@ export const AssetHook = () => {
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
-    updateHPLBalances(userAgent);
+    updateHPLBalances(hplClient);
   };
 
   const getTotalAmountInCurrency = () => {

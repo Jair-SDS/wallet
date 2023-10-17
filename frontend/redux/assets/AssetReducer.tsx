@@ -15,9 +15,8 @@ import {
 } from "@redux/models/AccountModels";
 import bigInt from "big-integer";
 import { hexToNumber } from "@/utils";
-import { ActorSubclass } from "@dfinity/agent";
-import { _SERVICE as IngressActor } from "@candid/ingress/service.did.d";
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
+import { HPLClient } from "@research-ag/hpl-client";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -37,7 +36,7 @@ interface AssetState {
   txWorker: Array<TransactionList>;
   txLoad: boolean;
   // HPL LEDGER
-  ingressActor: ActorSubclass<IngressActor>;
+  hplClient: HPLClient;
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
@@ -64,7 +63,7 @@ const initialState: AssetState = {
   txWorker: [],
   txLoad: false,
   // HPL LEDGER
-  ingressActor: defaultValue,
+  hplClient: defaultValue,
   subaccounts: [],
   hplFTs: [],
   hplFTsData: [],
@@ -251,8 +250,8 @@ const assetSlice = createSlice({
     setAcordeonAssetIdx(state, action: PayloadAction<string>) {
       state.acordeonIdx = action.payload;
     },
-    setIngressActor(state, action: PayloadAction<ActorSubclass<IngressActor>>) {
-      state.ingressActor = action.payload;
+    setHPLClient(state, action: PayloadAction<HPLClient>) {
+      state.hplClient = action.payload;
     },
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
@@ -332,8 +331,7 @@ const assetSlice = createSlice({
       state.selectedAccount = undefined;
       state.selectedAsset = undefined;
       state.selectedTransaction = undefined;
-      state.ingressActor = defaultValue;
-      state.ingressActor = defaultValue;
+      state.hplClient = defaultValue;
       state.subaccounts = [];
       state.hplFTs = [];
       state.hplFTsData = [];
@@ -365,7 +363,7 @@ export const {
   setTxLoad,
   setAcordeonAssetIdx,
   // HPL LEDGER
-  setIngressActor,
+  setHPLClient,
   setHPLSubAccounts,
   setHPLAssets,
   setHPLAssetsData,

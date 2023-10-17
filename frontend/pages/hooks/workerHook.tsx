@@ -15,7 +15,7 @@ import timer_script from "@workers/timerWorker";
 import { useEffect } from "react";
 
 export const WorkerHook = () => {
-  const { tokens, assets, txWorker } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, hplClient } = useAppSelector((state) => state.asset);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 
   const getTransactionsWorker = async () => {
@@ -72,7 +72,7 @@ export const WorkerHook = () => {
       store.dispatch(setTokens(tokens));
     }
     // HPL
-    updateHPLBalances(userAgent);
+    updateHPLBalances(hplClient);
   };
 
   // TRANSACTION WEB WORKER

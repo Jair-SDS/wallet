@@ -12,10 +12,18 @@ import {
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
-import { clearDataAsset, setHPLAssetsData, setHPLSubsData, setHPLVTsData, setTokens } from "./assets/AssetReducer";
+import {
+  clearDataAsset,
+  setHPLAssetsData,
+  setHPLClient,
+  setHPLSubsData,
+  setHPLVTsData,
+  setTokens,
+} from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
+import { HPLClient } from "@research-ag/hpl-client";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -100,7 +108,11 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
   // HPL TOKENS
-  await updateHPLBalances(myAgent);
+
+  const client = new HPLClient("rqx66-eyaaa-aaaap-aaona-cai", "ic");
+  await client.setIdentity(authIdentity as any);
+  store.dispatch(setHPLClient(client));
+  await updateHPLBalances(client);
 };
 
 export const logout = async () => {

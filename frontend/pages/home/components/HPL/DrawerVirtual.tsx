@@ -1,15 +1,11 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
-import ChevIcon from "@assets/svg/files/chev-icon.svg";
-import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
 import { CustomInput } from "@components/Input";
 import { useHPL } from "@pages/hooks/hplHook";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { clsx } from "clsx";
-import { HPLSubAccount, HPLVirtualData, HPLVirtualSubAcc } from "@redux/models/AccountModels";
+import { HPLVirtualData, HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -24,6 +20,7 @@ import { DateTimeValidationError, PickerChangeHandlerContext } from "@mui/x-date
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import LoadingLoader from "@components/Loader";
+import BackingSelector from "./BackingSelector";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -35,30 +32,26 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   const { theme } = ThemeHook();
   const { authClient } = AccountHook();
   const {
-    ingressActor,
-    subaccounts,
+    hplClient,
     selectSub,
     selectVt,
     setSelVt,
     newVt,
     setNewVt,
     getFtFromVt,
-    getSubFromVt,
-    selAssetOpen,
-    setSelAssetOpen,
     hplVTsData,
     editVtData,
     reloadHPLBallance,
   } = useHPL(false);
-  const [searchKey, setSearchKey] = useState("");
   const [expiration, setExpiration] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
-    setLoading(false);
-    setErrMsg("");
     if (drawerOpen) {
+      setLoading(false);
+      setErrMsg("");
+      setExpiration(false);
       if (selectVt) {
         setNewVt(selectVt);
         setExpiration(selectVt.expiration === 0);
@@ -90,102 +83,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           onClick={onClose}
         />
       </div>
-      <div className="flex flex-col justify-between items-center w-full mb-3">
-        <p className="w-full text-left opacity-60">{t("backing.account")}</p>
-        <DropdownMenu.Root
-          open={selAssetOpen}
-          onOpenChange={(e: boolean) => {
-            setSelAssetOpen(e);
-          }}
-        >
-          <DropdownMenu.Trigger asChild>
-            <div
-              className={clsx(
-                "flex justify-start items-start",
-                "border-BorderColorLight dark:border-BorderColor",
-                "cursor-pointer",
-                "!w-full",
-                "pr-0",
-              )}
-            >
-              <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorLight dark:border-BorderColor rounded-md">
-                {newVt.backing === "" ? (
-                  <div className="flex flex-row justify-between items-center w-full">
-                    <p className="opacity-60">{t("select.backing")}</p>
-                    <img
-                      src={ChevIcon}
-                      style={{ width: "2rem", height: "2rem" }}
-                      alt="chevron-icon"
-                      className={`${selAssetOpen ? "rotate-90" : ""}`}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-row justify-between items-center w-full">
-                    <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
-                      <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                        <p className=" text-PrimaryTextColor">{getSubFromVt(newVt.backing).sub_account_id}</p>
-                      </div>
-                      <p>{getSubFromVt(newVt.backing).name}</p>
-                    </div>
-                    <img
-                      src={ChevIcon}
-                      style={{ width: "2rem", height: "2rem" }}
-                      alt="chevron-icon"
-                      className={`${selAssetOpen ? "rotate-90" : ""}`}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Portal className="w-full">
-            <DropdownMenu.Content
-              className="text-lg bg-PrimaryColorLight w-[25rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-SelectRowColor"
-              sideOffset={5}
-              align="end"
-            >
-              <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
-                <CustomInput
-                  prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
-                  sizeInput={"small"}
-                  intent={"secondary"}
-                  placeholder=""
-                  compOutClass=""
-                  value={searchKey}
-                  onChange={onSearchChange}
-                />
-                <div className="flex flex-col justify-start items-start w-full scroll-y-light max-h-[calc(100vh-30rem)]">
-                  {subaccounts
-                    .filter((sub) => {
-                      const key = searchKey.toLowerCase();
-                      const editedValid = selectSub ? selectSub.ft === sub.ft : true;
-                      return (
-                        (sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key)) &&
-                        editedValid
-                      );
-                    })
-                    .map((sub, k) => {
-                      return (
-                        <button
-                          key={k}
-                          className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
-                          onClick={() => {
-                            onSelectBacking(sub);
-                          }}
-                        >
-                          <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                            <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
-                          </div>
-                          <p>{sub.name}</p>
-                        </button>
-                      );
-                    })}
-                </div>
-              </div>
-            </DropdownMenu.Content>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
-      </div>
+      <BackingSelector newVt={newVt} setNewVt={setNewVt} />
       <div className="flex flex-col items-start w-full mt-3 mb-3">
         <p className="opacity-60">{t("name")}</p>
         <CustomInput
@@ -265,15 +163,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     setDrawerOpen(false);
     setSelVt(undefined);
   }
-  function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
-    setSearchKey(e.target.value);
-  }
-  function onSelectBacking(sub: HPLSubAccount) {
-    setNewVt((prev) => {
-      return { ...prev, backing: sub.sub_account_id };
-    });
-    setSelAssetOpen(false);
-  }
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
     setNewVt((prev) => {
       return { ...prev, name: e.target.value };
@@ -286,7 +175,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       });
   }
   function onDateChange(value: dayjs.Dayjs | null, context: PickerChangeHandlerContext<DateTimeValidationError>) {
-    console.log(context);
     setNewVt((prev) => {
       return { ...prev, expiration: value ? value.valueOf() : 0 };
     });
@@ -309,28 +197,28 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     if (!err) {
       setErrMsg("");
       if (selectVt) {
-        const res = (await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
-          backingAccount: [BigInt(newVt.backing)],
-          state: [{ ft_set: BigInt(newVt.amount) }],
-          expiration: [BigInt(newVt.expiration * 1000000)],
-        })) as any;
-        if (res.err) {
-          setErrMsg("err.back");
-        } else {
+        try {
+          await hplClient.ledger.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
+            backingAccount: BigInt(newVt.backing),
+            state: { ft_set: BigInt(newVt.amount) },
+            expiration: newVt.expiration,
+          });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
+        } catch (e) {
+          setErrMsg(t("err.back"));
         }
       } else {
-        const res = (await ingressActor.openVirtualAccount(
-          { ft: BigInt(getFtFromVt(newVt.backing).id) },
-          Principal.fromText(newVt.accesBy),
-          { ft: BigInt(newVt.amount) },
-          BigInt(newVt.backing),
-          BigInt(newVt.expiration * 1000000),
-        )) as any;
-        if (res.err) {
-          setErrMsg("err.back");
-        } else {
-          saveInLocalstorage({ id: (res.ok.id as bigint).toString(), name: newVt.name }, selectVt!, false);
+        try {
+          const res = await hplClient.ledger.openVirtualAccount(
+            { type: "ft", assetId: BigInt(getFtFromVt(newVt.backing).id) },
+            newVt.accesBy,
+            { type: "ft", balance: BigInt(newVt.amount) },
+            BigInt(newVt.backing),
+            newVt.expiration,
+          );
+          saveInLocalstorage({ id: res.id.toString(), name: newVt.name }, selectVt!, false);
+        } catch {
+          setErrMsg(t("err.back"));
         }
       }
     } else {

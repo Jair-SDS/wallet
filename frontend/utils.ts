@@ -20,7 +20,8 @@ import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, Transactio
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { AccountType, AssetId, SubId, VirId } from "@candid/ingress/service.did";
+import { JsAccountInfo } from "@research-ag/hpl-client/dist/types/delegates/types";
+import { AssetId } from "@research-ag/hpl-client/dist/candid/ledger";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -393,7 +394,7 @@ export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
 };
 
 export const formatHPLSubaccounts = (
-  infoSubs: Array<[SubId, AccountType]>,
+  infoSubs: Array<[bigint, JsAccountInfo]>,
   infoFT: Array<
     [
       AssetId,
@@ -404,7 +405,16 @@ export const formatHPLSubaccounts = (
       },
     ]
   >,
-  infoVT: Array<[VirId, [] | [[AccountType, Principal]]]>,
+  infoVT: Array<
+    [
+      bigint,
+      {
+        type: "ft";
+        assetId: AssetId;
+        accessPrincipal: Principal;
+      },
+    ]
+  >,
   hplData: HPLData,
   stateData: ResQueryState,
 ) => {
@@ -418,15 +428,15 @@ export const formatHPLSubaccounts = (
     stateData.virtualAccounts.map((va) => {
       const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
       const vtInfo = infoVT.find((vt) => vt[0].toString() === va[0].toString());
-      if (va[1][0] && va[1][0][1] === sa[0]) {
+      if (va[1]?.backingSubaccountId === sa[0]) {
         auxVirtuals.push({
           name: vtData ? vtData.name : "",
           virt_sub_acc_id: va[0].toString(),
-          amount: va[1][0][0].ft.toString(),
+          amount: va[1].state.balance.toString(),
           currency_amount: "0.00",
-          expiration: Math.trunc(Number(va[1][0][2].toString()) / 1000000),
-          accesBy: vtInfo ? (vtInfo[1][0] ? vtInfo[1][0][1].toString() : "") : "",
-          backing: va[1][0][1].toString(),
+          expiration: Math.trunc(Number(va[1].expiration.toString()) / 1000000),
+          accesBy: vtInfo ? vtInfo[1].accessPrincipal.toString() : "",
+          backing: va[1].backingSubaccountId.toString(),
         });
       }
     });
@@ -434,10 +444,10 @@ export const formatHPLSubaccounts = (
     auxSubaccounts.push({
       name: subData ? subData.name : "",
       sub_account_id: sa[0].toString(),
-      amount: sa[1].ft.toString(),
+      amount: sa[1].balance.toString(),
       currency_amount: "0.00",
       transaction_fee: "0",
-      ft: asset ? asset[1].ft.toString() : "0",
+      ft: asset ? asset[1].assetId.toString() : "0",
       virtuals: auxVirtuals,
     });
   });

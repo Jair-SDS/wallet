@@ -26,10 +26,9 @@ import { useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
-
-  const { userAgent } = useAppSelector((state) => state.auth);
-  const { subaccounts, ingressActor, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData } =
-    useAppSelector((state) => state.asset);
+  const { subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, hplClient } = useAppSelector(
+    (state) => state.asset,
+  );
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
   const [editNameId, setEditNameId] = useState("");
@@ -101,7 +100,7 @@ export const useHPL = (open: boolean) => {
 
   const reloadHPLBallance = async () => {
     dispatch(setLoading(true));
-    const { subs } = await updateHPLBalances(userAgent);
+    const { subs } = await updateHPLBalances(hplClient);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);
@@ -151,7 +150,7 @@ export const useHPL = (open: boolean) => {
   };
 
   return {
-    ingressActor,
+    hplClient,
     subaccounts,
     hplFTs,
     selAsset,

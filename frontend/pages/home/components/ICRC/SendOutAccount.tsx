@@ -73,7 +73,7 @@ const SendOutAccount = ({
                     }}
                   />
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Portal className="w-full">
+                <DropdownMenu.Portal>
                   <DropdownMenu.Content
                     className=" w-[22.6rem] max-h-[calc(100vh-15rem)] scroll-y-light bg-PrimaryColorLight rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-AccpetButtonColor cursor-pointer"
                     sideOffset={12}
