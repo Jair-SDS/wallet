@@ -40,6 +40,7 @@
   "sending": "Invio",
   "network": "Rete",
   "error": "ERRORE",
+  "non.zero.balance": "Saldi diversi da zero",
   "succes.caps": "SUCCESSO",
   "subacc": "AcSec",
   "sub-acc": "Sub-account",

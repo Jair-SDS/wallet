@@ -16,7 +16,6 @@ import { CustomButton } from "@components/Button";
 import { CustomCopy } from "@components/CopyTooltip";
 import { shortAddress } from "@/utils";
 import dayjs from "dayjs";
-import { DateTimeValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import LoadingLoader from "@components/Loader";
@@ -174,7 +173,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         return { ...prev, amount: e.target.value.trim() };
       });
   }
-  function onDateChange(value: dayjs.Dayjs | null, context: PickerChangeHandlerContext<DateTimeValidationError>) {
+  function onDateChange(value: dayjs.Dayjs | null) {
     setNewVt((prev) => {
       return { ...prev, expiration: value ? value.valueOf() : 0 };
     });

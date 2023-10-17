@@ -328,17 +328,6 @@ export const updateHPLBalances = async (client: HPLClient) => {
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
 
-    // HPL CLIENT
-    try {
-      const a = await client.ledger.state({
-        ftSupplies: { idRange: [BigInt(0), []] },
-        virtualAccounts: { idRange: [BigInt(0), []] },
-        accounts: { idRange: [BigInt(0), []] },
-      });
-    } catch (e) {
-      console.log("HPL CLient Err:", e);
-    }
-
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
     console.log("err", e);

@@ -3,7 +3,7 @@ import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import AssetElement from "./ICRC/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AddAsset from "./ICRC/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
@@ -20,7 +20,6 @@ import EditHplAsset from "./HPL/EditHplAsset";
 
 const AssetsList = () => {
   const { t } = useTranslation();
-
   WorkerHook();
   UseAsset();
   const { assetOpen, setAssetOpen } = DrawerHook();
@@ -37,12 +36,13 @@ const AssetsList = () => {
     subaccounts,
   } = AssetHook();
   const { editedFt, setEditedFt, editNameId, setEditNameId } = useHPL(false);
+  const [zeroBalance, setZeroBalance] = useState(false);
 
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
         <Menu />
-        <div className="flex flex-row justify-start items-center w-full mb-4 pl-4 gap-3 pr-5">
+        <div className="flex flex-row justify-start items-center w-full mb-2 pl-4 gap-3 pr-5">
           <input
             className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
             type="text"
@@ -59,6 +59,27 @@ const AssetsList = () => {
             <img src={PlusIcon} alt="plus-icon" />
           </div>
         </div>
+        {protocol === ProtocolTypeEnum.Enum.HPL && (
+          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3">
+            <div className="flex flex-row justify-start items-center gap-2">
+              <p className="text-md">{t("non.zero.balance")}</p>
+              <div
+                className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
+                  zeroBalance ? "bg-[#26A17B]" : "bg-[#7E7D91]"
+                }`}
+                onClick={() => {
+                  setZeroBalance(!zeroBalance);
+                }}
+              >
+                <div
+                  className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${
+                    zeroBalance ? "ml-5" : "ml-1"
+                  }`}
+                ></div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light">
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <Accordion.Root
@@ -95,8 +116,12 @@ const AssetsList = () => {
               sub.virtuals.map((vt) => {
                 if (vt.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
               });
-
-              if (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
+              let zero = true;
+              if (zeroBalance && BigInt(sub.amount) === BigInt(0)) zero = false;
+              if (
+                (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "") &&
+                zero
+              )
                 return (
                   <HplSubaccountElem
                     key={idx}

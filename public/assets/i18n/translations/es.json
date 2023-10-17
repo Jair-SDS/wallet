@@ -40,6 +40,7 @@
   "sending": "Enviando",
   "network": "Red",
   "error": "ERROR",
+  "non.zero.balance": "Saldos distintos de cero",
   "succes.caps": "ÉXITO",
   "subacc": "SubCnt",
   "sub-acc": "Sub-cuenta",
