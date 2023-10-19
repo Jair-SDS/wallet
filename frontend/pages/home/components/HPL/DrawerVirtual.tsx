@@ -42,7 +42,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     editVtData,
     reloadHPLBallance,
   } = useHPL(false);
-  const [expiration, setExpiration] = useState(false);
+  const [expiration, setExpiration] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
@@ -50,7 +50,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     if (drawerOpen) {
       setLoading(false);
       setErrMsg("");
-      setExpiration(false);
+      setExpiration(true);
       if (selectVt) {
         setNewVt(selectVt);
         setExpiration(selectVt.expiration === 0);
@@ -64,7 +64,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         name: "",
         amount: "",
         currency_amount: "",
-        expiration: dayjs().add(7, "day").valueOf(),
+        expiration: 0,
         accesBy: "",
         backing: "",
       });
@@ -112,7 +112,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               disabled={newVt.expiration === 0}
-              value={newVt.expiration === 0 ? dayjs() : dayjs(newVt.expiration)}
+              format={newVt.expiration === 0 ? "No EXP" : ""}
+              value={newVt.expiration === 0 ? null : dayjs(newVt.expiration)}
               onChange={onDateChange}
               className={`${theme === "light" ? "date-picker-light" : "date-picker"}`}
               timezone="system"
@@ -121,6 +122,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
                 minutes: renderTimeViewClock,
                 seconds: null,
               }}
+              disablePast
             />
           </LocalizationProvider>
           <button className="p-0 flex flex-row gap-2" onClick={onChangeExpirationCheck}>
@@ -204,6 +206,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
         } catch (e) {
+          console.log(e);
+
           setErrMsg(t("err.back"));
         }
       } else {

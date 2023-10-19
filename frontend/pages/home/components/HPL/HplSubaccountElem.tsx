@@ -3,13 +3,16 @@ import InfoIcon from "@assets/svg/files/info-icon.svg";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 import CheckIcon from "@assets/svg/files/check.svg";
 import { ReactComponent as VirtualIcon } from "@assets/svg/files/virtualIcon.svg";
+import { ReactComponent as VirtualIconLight } from "@assets/svg/files/virtualIconLight.svg";
 //
 import { HPLAsset, HPLSubAccount, HPLSubData } from "@redux/models/AccountModels";
 import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/Input";
 import { AccountHook } from "@pages/hooks/accountHook";
-import { toFullDecimal } from "@/utils";
+import { getFirstNChars, toFullDecimal } from "@/utils";
+import { ThemeHook } from "@pages/hooks/themeHook";
+import { ThemesEnum } from "@/const";
 
 interface HplSubaccountElemProps {
   sub: HPLSubAccount;
@@ -29,6 +32,7 @@ const HplSubaccountElem = ({
   setEditNameId,
 }: HplSubaccountElemProps) => {
   const { authClient } = AccountHook();
+  const { theme } = ThemeHook();
   const {
     hplFTs,
     hplSubsData,
@@ -45,7 +49,7 @@ const HplSubaccountElem = ({
   return (
     <Fragment>
       <button
-        className={`relative flex flex-row items-center w-full h-16 p-0 border-0 text-PrimaryColor dark:text-PrimaryColorLight cursor-pointer hover:bg-SecondaryColorLight dark:hover:bg-SecondaryColor ${
+        className={`relative flex flex-row items-center w-full min-h-[4rem] p-0 border-0 text-PrimaryColor dark:text-PrimaryColorLight cursor-pointer hover:bg-SecondaryColorLight dark:hover:bg-SecondaryColor ${
           sub.sub_account_id === selectSub?.sub_account_id ? "bg-SecondaryColorLight dark:bg-SecondaryColor" : ""
         } ${
           idx < subaccounts?.length ? "border-b-[0.1rem] dark:border-BorderColorThree border-BorderColorThreeLight" : ""
@@ -98,15 +102,25 @@ const HplSubaccountElem = ({
                 {editNameId != sub.sub_account_id && (
                   <div className="flex flex-row justify-start items-center gap-1">
                     <p className="font-semibold">{sub.virtuals.length}</p>
-                    <VirtualIcon className="mb-[0.15rem]" />
+                    {theme === ThemesEnum.enum.dark ? (
+                      <VirtualIcon className="mb-[0.15rem]" />
+                    ) : (
+                      <VirtualIconLight className="mb-[0.15rem]" />
+                    )}
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-row justify-between items-center w-full">
+              <div className="flex flex-row justify-between items-center w-full gap-2">
                 <div className="flex flex-row justify-start items-center">
-                  <p className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}>{`${
-                    getFtFromSub(sub.ft).name === "" ? `[ ${getFtFromSub(sub.ft).id} ]` : getFtFromSub(sub.ft).name
+                  <p
+                    className={`${
+                      sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
+                    } text-left w-full break-words`}
+                  >{`${
+                    getFtFromSub(sub.ft).name === ""
+                      ? `[ ${getFtFromSub(sub.ft).id} ]`
+                      : getFirstNChars(getFtFromSub(sub.ft).name, 18)
                   }`}</p>
                   <div className="p-0" onClick={setEditFt}>
                     <img src={InfoIcon} className="ml-1" alt="info-icon" />

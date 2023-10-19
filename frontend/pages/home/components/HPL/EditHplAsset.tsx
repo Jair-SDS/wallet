@@ -71,11 +71,11 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
   }
 
   function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.value.length < 65 && e.target.value.length > 0) setEditedFt({ ...editedFt, name: e.target.value });
+    if (e.target.value.length < 65 && e.target.value.length >= 0) setEditedFt({ ...editedFt, name: e.target.value });
   }
 
   function onSymbolChange(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.value.length < 9 && e.target.value.length > 0) setEditedFt({ ...editedFt, symbol: e.target.value });
+    if (e.target.value.length < 9 && e.target.value.length >= 0) setEditedFt({ ...editedFt, symbol: e.target.value });
   }
 
   async function onAdd() {

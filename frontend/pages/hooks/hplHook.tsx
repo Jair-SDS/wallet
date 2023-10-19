@@ -21,7 +21,6 @@ import {
   HPLVirtualData,
   HPLVirtualSubAcc,
 } from "@redux/models/AccountModels";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
@@ -29,6 +28,7 @@ export const useHPL = (open: boolean) => {
   const { subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, hplClient } = useAppSelector(
     (state) => state.asset,
   );
+  const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
   const [editNameId, setEditNameId] = useState("");
@@ -38,12 +38,14 @@ export const useHPL = (open: boolean) => {
   const [subInfoType, setSubInfoType] = useState<SubaccountInfo>(SubaccountInfoEnum.Enum.VIRTUALS);
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [editedFt, setEditedFt] = useState<HPLAsset | undefined>();
+  const [zeroBalance, setZeroBalance] = useState(false);
+  const [searchKeyHPL, setSearchKeyHPL] = useState("");
   const [newVt, setNewVt] = useState<HPLVirtualSubAcc>({
     virt_sub_acc_id: "",
     name: "",
     amount: "",
     currency_amount: "",
-    expiration: dayjs().add(7, "day").valueOf(),
+    expiration: 0,
     accesBy: "",
     backing: "",
   });
@@ -97,6 +99,25 @@ export const useHPL = (open: boolean) => {
   useEffect(() => {
     if (!selectSub && subaccounts.length > 0) setSelSub(subaccounts[0]);
   }, [subaccounts]);
+
+  useEffect(() => {
+    const auxSubs = subaccounts?.filter((sub: HPLSubAccount, idx: number) => {
+      let includeInSub = false;
+      sub.virtuals.map((vt) => {
+        if (vt.name.toLowerCase().includes(searchKeyHPL.toLowerCase())) includeInSub = true;
+      });
+      let zero = true;
+      if (zeroBalance && BigInt(sub.amount) === BigInt(0)) zero = false;
+      if ((sub.name.toLowerCase().includes(searchKeyHPL.toLowerCase()) || includeInSub || searchKeyHPL === "") && zero)
+        return true;
+    });
+    setSubsList(auxSubs);
+    const isSelected = auxSubs.find((sub) => sub.sub_account_id === selectSub?.sub_account_id);
+    if (!isSelected) {
+      if (auxSubs.length > 0) setSelSub(auxSubs[0]);
+      else setSelSub(undefined);
+    }
+  }, [zeroBalance, searchKeyHPL, subaccounts]);
 
   const reloadHPLBallance = async () => {
     dispatch(setLoading(true));
@@ -190,6 +211,11 @@ export const useHPL = (open: boolean) => {
     setSortVt,
     newVt,
     setNewVt,
+    zeroBalance,
+    setZeroBalance,
+    searchKeyHPL,
+    setSearchKeyHPL,
+    subsList,
     reloadHPLBallance,
   };
 };

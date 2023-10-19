@@ -3,7 +3,7 @@ import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import AssetElement from "./ICRC/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
-import { Fragment, useState } from "react";
+import { ChangeEvent, Fragment, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AddAsset from "./ICRC/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
@@ -23,20 +23,20 @@ const AssetsList = () => {
   WorkerHook();
   UseAsset();
   const { assetOpen, setAssetOpen } = DrawerHook();
+  const { protocol, assets, searchKey, setSearchKey, setAcordeonIdx, acordeonIdx, assetInfo, setAssetInfo, tokens } =
+    AssetHook();
   const {
-    protocol,
-    assets,
-    searchKey,
-    setSearchKey,
-    setAcordeonIdx,
-    acordeonIdx,
-    assetInfo,
-    setAssetInfo,
-    tokens,
+    editedFt,
+    setEditedFt,
+    editNameId,
+    setEditNameId,
     subaccounts,
-  } = AssetHook();
-  const { editedFt, setEditedFt, editNameId, setEditNameId } = useHPL(false);
-  const [zeroBalance, setZeroBalance] = useState(false);
+    zeroBalance,
+    setZeroBalance,
+    setSearchKeyHPL,
+    searchKeyHPL,
+    subsList,
+  } = useHPL(false);
 
   return (
     <Fragment>
@@ -47,10 +47,8 @@ const AssetsList = () => {
             className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
             type="text"
             placeholder={t("search")}
-            value={searchKey}
-            onChange={(e) => {
-              setSearchKey(e.target.value);
-            }}
+            value={protocol === ProtocolTypeEnum.Enum.HPL ? searchKeyHPL : searchKey}
+            onChange={setSearch}
           />
           <div
             className="flex flex-row justify-center items-center w-8 h-8 bg-SelectRowColor rounded-md cursor-pointer"
@@ -60,7 +58,7 @@ const AssetsList = () => {
           </div>
         </div>
         {protocol === ProtocolTypeEnum.Enum.HPL && (
-          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3">
+          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
             <div className="flex flex-row justify-start items-center gap-2">
               <p className="text-md">{t("non.zero.balance")}</p>
               <div
@@ -111,28 +109,18 @@ const AssetsList = () => {
               })}
             </Accordion.Root>
           ) : (
-            subaccounts?.map((sub: HPLSubAccount, idx: number) => {
-              let includeInSub = false;
-              sub.virtuals.map((vt) => {
-                if (vt.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
-              });
-              let zero = true;
-              if (zeroBalance && BigInt(sub.amount) === BigInt(0)) zero = false;
-              if (
-                (sub.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "") &&
-                zero
-              )
-                return (
-                  <HplSubaccountElem
-                    key={idx}
-                    sub={sub}
-                    idx={idx}
-                    setEditedFt={setEditedFt}
-                    setAssetOpen={setAssetOpen}
-                    editNameId={editNameId}
-                    setEditNameId={setEditNameId}
-                  ></HplSubaccountElem>
-                );
+            subsList?.map((sub: HPLSubAccount, idx: number) => {
+              return (
+                <HplSubaccountElem
+                  key={idx}
+                  sub={sub}
+                  idx={idx}
+                  setEditedFt={setEditedFt}
+                  setAssetOpen={setAssetOpen}
+                  editNameId={editNameId}
+                  setEditNameId={setEditNameId}
+                ></HplSubaccountElem>
+              );
             })
           )}
         </div>
@@ -164,6 +152,14 @@ const AssetsList = () => {
       </div>
     </Fragment>
   );
+
+  function setSearch(e: ChangeEvent<HTMLInputElement>) {
+    if (protocol === ProtocolTypeEnum.Enum.HPL) {
+      setSearchKeyHPL(e.target.value);
+    } else {
+      setSearchKey(e.target.value);
+    }
+  }
 
   function onAddAsset() {
     setTimeout(() => {

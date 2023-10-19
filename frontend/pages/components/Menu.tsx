@@ -5,20 +5,23 @@ import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useContacts } from "@pages/contacts/hooks/contactsHook";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
-import { RoutingPath, RoutingPathEnum } from "@/const";
+import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@/const";
 
 const Menu = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
-  const { assets } = AssetHook();
+  const { assets, subaccounts, protocol } = AssetHook();
   const { contacts } = useContacts();
 
   const menuList = [
     {
       name: "Assets",
       path: RoutingPathEnum.Enum.HOME,
-      label: `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`,
+      label:
+        protocol === ProtocolTypeEnum.Enum.ICRC1
+          ? `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`
+          : `${subaccounts?.length !== 1 ? t("accounts") : t("account")} (${subaccounts?.length})`,
     },
     {
       name: "Contacts",

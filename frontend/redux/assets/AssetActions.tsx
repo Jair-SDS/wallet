@@ -19,6 +19,7 @@ import {
   setICPSubaccounts,
   setHPLSubAccounts,
   setHPLAssets,
+  setHPLSelectedSub,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -327,6 +328,12 @@ export const updateHPLBalances = async (client: HPLClient) => {
 
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
+
+    const selectedSub = store.getState().asset.selectSub;
+    if (selectedSub) {
+      const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
+      store.dispatch(setHPLSelectedSub(sel));
+    }
 
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
