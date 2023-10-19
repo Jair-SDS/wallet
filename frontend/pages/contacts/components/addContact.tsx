@@ -103,7 +103,7 @@ const AddContact = ({ setAddOpen }: AddContactProps) => {
                       }
                     }
                     return !isIncluded;
-                  }).length != 0 && (
+                  }).length !== 0 && (
                     <ContactAssetPop
                       assets={assets.filter((ast) => {
                         let isIncluded = false;

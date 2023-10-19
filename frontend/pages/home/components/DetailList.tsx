@@ -13,10 +13,11 @@ import HPLSubaccountAction from "./HPL/SubaccountActions";
 import { AssetHook } from "../hooks/assetHook";
 import SubaccountInfo from "./HPL/SubaccountInfo";
 import DrawerVirtual from "./HPL/DrawerVirtual";
+import TransactionDrawer from "./HPL/TransactionDrawer";
 
 const DetailList = () => {
   const { protocol } = AssetHook();
-  const { drawerOption, setDrawerOption, drawerOpen, setDrawerOpen } = DrawerHook();
+  const { drawerOption, setDrawerOption, drawerOpen, setDrawerOpen, hplTx, setHplTx } = DrawerHook();
   const { selectedTransaction } = UseTransaction();
 
   return (
@@ -30,7 +31,7 @@ const DetailList = () => {
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <ICRCSubaccountAction setDrawerOption={setDrawerOption} setDrawerOpen={setDrawerOpen} />
           ) : (
-            <HPLSubaccountAction setDrawerOption={setDrawerOption} setDrawerOpen={setDrawerOpen} />
+            <HPLSubaccountAction setDrawerOption={setDrawerOption} setDrawerOpen={setDrawerOpen} setHplTx={setHplTx} />
           )}
         </div>
 
@@ -62,6 +63,14 @@ const DetailList = () => {
               </DrawerAction>
             </div>
           )
+        ) : hplTx ? (
+          <TransactionDrawer
+            setDrawerOpen={setDrawerOpen}
+            setHplTx={setHplTx}
+            drawerOption={drawerOption}
+            drawerOpen={drawerOpen}
+            locat="detail"
+          />
         ) : (
           <DrawerVirtual setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
         )}

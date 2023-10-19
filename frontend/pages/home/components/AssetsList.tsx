@@ -3,7 +3,7 @@ import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import AssetElement from "./ICRC/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
-import { ChangeEvent, Fragment, useState } from "react";
+import { ChangeEvent, Fragment } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AddAsset from "./ICRC/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
@@ -30,7 +30,6 @@ const AssetsList = () => {
     setEditedFt,
     editNameId,
     setEditNameId,
-    subaccounts,
     zeroBalance,
     setZeroBalance,
     setSearchKeyHPL,

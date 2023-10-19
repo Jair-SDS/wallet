@@ -63,7 +63,7 @@ const BackingSelector = ({ newVt, setNewVt }: BackingSelectorProps) => {
                     <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                       <p className=" text-PrimaryTextColor">{getSubFromVt(newVt.backing).sub_account_id}</p>
                     </div>
-                    <p>{getSubFromVt(newVt.backing).name}</p>
+                    <p className="text-left">{getSubFromVt(newVt.backing).name}</p>
                   </div>
                   <img
                     src={ChevIcon}
@@ -114,7 +114,7 @@ const BackingSelector = ({ newVt, setNewVt }: BackingSelectorProps) => {
                         <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                           <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
                         </div>
-                        <p>{sub.name}</p>
+                        <p className="text-left">{sub.name}</p>
                       </button>
                     );
                   })}

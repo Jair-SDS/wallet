@@ -1,7 +1,7 @@
 // svgs
 import ArrowBottomLeftIcon from "@assets/svg/files/arrow-bottom-left-icon.svg";
 import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
-import WrapIcon from "@assets/svg/files/wrap-icon.svg";
+// import WrapIcon from "@assets/svg/files/wrap-icon.svg";
 //
 import { DrawerOption, DrawerOptionEnum, IconTypeEnum } from "@/const";
 import { toFullDecimal } from "@/utils";
@@ -53,7 +53,7 @@ const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccount
           </div>
           <p className="text-md">{t("receive")}</p>
         </div>
-        <div className="flex flex-col justify-center items-center w-1/3 gap-1">
+        {/* <div className="flex flex-col justify-center items-center w-1/3 gap-1">
           <div
             className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
             onClick={() => {
@@ -63,7 +63,7 @@ const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccount
             <img src={WrapIcon} className="w-4 h-4" alt="wrap-icon" />
           </div>
           <p className="text-md">{t("wrap")}</p>
-        </div>
+        </div> */}
       </div>
     </Fragment>
   );

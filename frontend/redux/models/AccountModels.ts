@@ -1,4 +1,4 @@
-import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/const";
+import { HplTransactionsEnum, OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
 import { AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 import { JsAccountState } from "@research-ag/hpl-client/dist/types/delegates/types";
@@ -205,3 +205,11 @@ const AssetToAdd = z.object({
   logo: z.string().optional(),
 });
 export type AssetToAdd = z.infer<typeof AssetToAdd>;
+
+const HplTxUser = z.object({
+  type: HplTransactionsEnum,
+  principal: z.string(),
+  vIdx: z.string(),
+  subaccount: HPLSubAccount.optional(),
+});
+export type HplTxUser = z.infer<typeof HplTxUser>;

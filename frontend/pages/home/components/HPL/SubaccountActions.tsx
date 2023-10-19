@@ -2,7 +2,7 @@
 import ArrowBottomLeftIcon from "@assets/svg/files/arrow-bottom-left-icon.svg";
 import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
 //
-import { DrawerOption, DrawerOptionEnum } from "@/const";
+import { DrawerOption, DrawerOptionEnum, ProtocolTypeEnum } from "@/const";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
@@ -10,10 +10,11 @@ import { toFullDecimal } from "@/utils";
 interface HPLSubaccountActionProps {
   setDrawerOption(value: DrawerOption): void;
   setDrawerOpen(value: boolean): void;
+  setHplTx(value: boolean): void;
 }
 
-const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen }: HPLSubaccountActionProps) => {
-  const { getAssetLogo, selectSub, getFtFromSub } = useHPL(false);
+const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen, setHplTx }: HPLSubaccountActionProps) => {
+  const { protocol, getAssetLogo, selectSub, getFtFromSub } = useHPL(false);
   const { t } = useTranslation();
   return (
     <Fragment>
@@ -51,6 +52,17 @@ const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen }: HPLSubaccountAc
           >
             <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />
           </div>
+          <p className="text-md">{t("pull")}</p>
+        </div>
+        <div className="flex flex-col justify-center items-center w-1/3 gap-1">
+          <div
+            className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
+            onClick={() => {
+              setDrawer(DrawerOptionEnum.Enum.HPL_QR);
+            }}
+          >
+            <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />
+          </div>
           <p className="text-md">{t("receive")}</p>
         </div>
       </div>
@@ -59,6 +71,7 @@ const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen }: HPLSubaccountAc
 
   function setDrawer(drawer: DrawerOption) {
     setDrawerOption(drawer);
+    protocol === ProtocolTypeEnum.Enum.HPL && setHplTx(true);
     setTimeout(() => {
       setDrawerOpen(true);
     }, 150);

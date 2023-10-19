@@ -25,9 +25,8 @@ import { useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
-  const { subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, hplClient } = useAppSelector(
-    (state) => state.asset,
-  );
+  const { protocol, subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, hplClient } =
+    useAppSelector((state) => state.asset);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
@@ -101,7 +100,7 @@ export const useHPL = (open: boolean) => {
   }, [subaccounts]);
 
   useEffect(() => {
-    const auxSubs = subaccounts?.filter((sub: HPLSubAccount, idx: number) => {
+    const auxSubs = subaccounts?.filter((sub: HPLSubAccount) => {
       let includeInSub = false;
       sub.virtuals.map((vt) => {
         if (vt.name.toLowerCase().includes(searchKeyHPL.toLowerCase())) includeInSub = true;
@@ -171,6 +170,7 @@ export const useHPL = (open: boolean) => {
   };
 
   return {
+    protocol,
     hplClient,
     subaccounts,
     hplFTs,
