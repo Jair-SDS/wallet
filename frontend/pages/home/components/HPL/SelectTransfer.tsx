@@ -5,7 +5,12 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 import QRIcon from "@assets/svg/files/qr.svg";
 //
-import { HplTransactions, HplTransactionsEnum, HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
+import {
+  HplTransactions,
+  HplTransactionsEnum,
+  HplTransactionsType,
+  HplTransactionsTypeEnum,
+} from "@/const";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { HPLSubAccount, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -22,7 +27,13 @@ interface SelectTransferProps {
   setQRview(value: string): void;
 }
 
-const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: SelectTransferProps) => {
+const SelectTransfer = ({
+  select,
+  setSelect,
+  subaccounts,
+  txType,
+  setQRview,
+}: SelectTransferProps) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
   const [searchKey, setSearchKey] = useState("");
@@ -48,7 +59,9 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
             >
               <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
             </RadioGroup.Item>
-            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ">{t("account")}</p>
+            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ">
+              {t("account")}
+            </p>
             <RadioGroup.Item
               className={`w-4 h-4 rounded-full border-2 ml-2  outline-none p-0 ${
                 select.type === HplTransactionsEnum.Enum.VIRTUAL
@@ -60,12 +73,16 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
             >
               <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
             </RadioGroup.Item>
-            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50">{t("virtual")}</p>
+            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50">
+              {t("virtual")}
+            </p>
           </div>
         </RadioGroup.Root>
       </div>
       <div className="flex flex-col justify-start items-start w-full ">
-        <p className="opacity-50">{t(txType === HplTransactionsTypeEnum.Enum.from ? "from" : "to")}</p>
+        <p className="opacity-50">
+          {t(txType === HplTransactionsTypeEnum.Enum.from ? "from" : "to")}
+        </p>
         {select.type === HplTransactionsEnum.Enum.SUBACCOUNT ? (
           <DropdownMenu.Root
             open={subsOpen}
@@ -80,7 +97,7 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
                   "border-BorderColorLight dark:border-BorderColor",
                   "cursor-pointer",
                   "!w-full",
-                  "pr-0",
+                  "pr-0"
                 )}
               >
                 <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-SecondaryColorLight dark:bg-SecondaryColor">
@@ -98,7 +115,9 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
                         <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                          <p className=" text-PrimaryTextColor">{select.subaccount.sub_account_id}</p>
+                          <p className=" text-PrimaryTextColor">
+                            {select.subaccount.sub_account_id}
+                          </p>
                         </div>
                         <p className="text-left">{select.subaccount.name}</p>
                       </div>
@@ -121,7 +140,13 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
               >
                 <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
                   <CustomInput
-                    prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
+                    prefix={
+                      <img
+                        src={SearchIcon}
+                        className="mx-2"
+                        alt="search-icon"
+                      />
+                    }
                     sizeInput={"small"}
                     intent={"secondary"}
                     placeholder=""
@@ -133,7 +158,10 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
                     {subaccounts
                       .filter((sub) => {
                         const key = searchKey.toLowerCase();
-                        return sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key);
+                        return (
+                          sub.name.toLowerCase().includes(key) ||
+                          sub.sub_account_id.toString().includes(key)
+                        );
                       })
                       .map((sub, k) => {
                         return (
@@ -145,7 +173,9 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
                             }}
                           >
                             <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                              <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
+                              <p className=" text-PrimaryTextColor">
+                                {sub.sub_account_id}
+                              </p>
                             </div>
                             <p className="text-left">{sub.name}</p>
                           </button>
@@ -225,7 +255,10 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
     setSelect({
       ...select,
       type: value,
-      subaccount: value === HplTransactionsEnum.Enum.SUBACCOUNT ? select.subaccount : undefined,
+      subaccount:
+        value === HplTransactionsEnum.Enum.SUBACCOUNT
+          ? select.subaccount
+          : undefined,
     });
   }
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
@@ -246,7 +279,7 @@ const SelectTransfer = ({ select, setSelect, subaccounts, txType, setQRview }: S
     if (value === "" || /^\+?([0-9]\d*)$/.test(value))
       setSelect({
         ...select,
-        vIdx: e.target.value === "" ? "" : Number(e.target.value).toString(),
+        vIdx: value === "" ? "" : Number(value).toString(),
       });
   }
 };
