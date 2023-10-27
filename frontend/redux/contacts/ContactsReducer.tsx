@@ -1,4 +1,5 @@
 import { getAccountIdentifier, hexToNumber } from "@/utils";
+import { HplContact } from "@redux/models/AccountModels";
 import { AssetContact, Contact } from "@redux/models/ContactsModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import bigInt from "big-integer";
@@ -6,10 +7,12 @@ import bigInt from "big-integer";
 interface ContactsState {
   storageCode: string;
   contacts: Contact[];
+  hplContacts: HplContact[];
 }
 const initialState: ContactsState = {
   storageCode: "",
   contacts: [],
+  hplContacts: [],
 };
 
 const contactsSlice = createSlice({
@@ -284,8 +287,13 @@ const contactsSlice = createSlice({
         };
       },
     },
+    setHplContacts(state, action: PayloadAction<HplContact[]>) {
+      state.hplContacts = action.payload;
+      setLocalHplContacts(action.payload, state.storageCode);
+    },
     clearDataContacts(state) {
       state.contacts = [];
+      state.hplContacts = [];
       state.storageCode = "";
     },
   },
@@ -294,6 +302,14 @@ const contactsSlice = createSlice({
 const setLocalContacts = (contacts: Contact[], code: string) => {
   localStorage.setItem(
     code,
+    JSON.stringify({
+      contacts: contacts,
+    }),
+  );
+};
+const setLocalHplContacts = (contacts: HplContact[], code: string) => {
+  localStorage.setItem(
+    "hpl-" + code,
     JSON.stringify({
       contacts: contacts,
     }),

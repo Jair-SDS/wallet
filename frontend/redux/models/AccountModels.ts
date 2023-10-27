@@ -198,6 +198,32 @@ const HPLData = z.object({
 
 export type HPLData = z.infer<typeof HPLData>;
 
+const HplRemote = z.object({
+  name: z.string(),
+  index: z.string(),
+  status: z.string(),
+  expired: z.number(),
+  amount: z.string(),
+  ftIndex: z.string(),
+});
+export type HplRemote = z.infer<typeof HplRemote>;
+
+const HplContact = z.object({
+  principal: z.string(),
+  name: z.string(),
+  remotes: z.array(HplRemote),
+});
+export type HplContact = z.infer<typeof HplContact>;
+
+const HplTxUser = z.object({
+  type: HplTransactionsEnum,
+  principal: z.string(),
+  vIdx: z.string(),
+  subaccount: HPLSubAccount.optional(),
+  remote: HplRemote.optional(),
+});
+export type HplTxUser = z.infer<typeof HplTxUser>;
+
 // Process Interfaces
 const AssetToAdd = z.object({
   symbol: z.string(),
@@ -205,11 +231,3 @@ const AssetToAdd = z.object({
   logo: z.string().optional(),
 });
 export type AssetToAdd = z.infer<typeof AssetToAdd>;
-
-const HplTxUser = z.object({
-  type: HplTransactionsEnum,
-  principal: z.string(),
-  vIdx: z.string(),
-  subaccount: HPLSubAccount.optional(),
-});
-export type HplTxUser = z.infer<typeof HplTxUser>;

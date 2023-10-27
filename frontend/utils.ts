@@ -84,6 +84,12 @@ export const shortAddress = (address: string, digitsL: number, digitsR: number, 
   return `${prefix ? prefix : ""}${address.slice(0, digitsL)} ... ${address.slice(-digitsR)}${sufix ? sufix : ""}`;
 };
 
+export const getContactColor = (idx: number) => {
+  if (idx % 3 === 0) return "bg-ContactColor1";
+  else if (idx % 3 === 1) return "bg-ContactColor2";
+  else return "bg-ContactColor3";
+};
+
 export const principalToAccountIdentifier = (p: string, s?: number[] | number) => {
   const padding = Buffer.from("\x0Aaccount-id");
   const array = new Uint8Array([...padding, ...Principal.fromText(p).toUint8Array(), ...getSubAccountArray(s)]);

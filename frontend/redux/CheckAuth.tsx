@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { HttpAgent, Identity } from "@dfinity/agent";
+import { Actor, HttpAgent, Identity } from "@dfinity/agent";
 import store from "./Store";
 import {
   clearDataAuth,
@@ -18,12 +18,16 @@ import {
   setHPLClient,
   setHPLSubsData,
   setHPLVTsData,
+  setIngressActor,
   setTokens,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
+import { _SERVICE as IngressActor } from "@candid/service.did.d";
+import { idlFactory as IngressIDLFactory } from "@candid/candid.did";
+import { Principal } from "@dfinity/principal";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -113,6 +117,20 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   await client.setIdentity(authIdentity as any);
   store.dispatch(setHPLClient(client));
   await updateHPLBalances(client);
+
+  try {
+    const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
+      agent: myAgent,
+      canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
+    });
+    store.dispatch(setIngressActor(ingressActor));
+    const a = await ingressActor.remoteAccountInfo({
+      idRange: [Principal.fromText("af76t-ckh44-h7nkx-idaq4-jw3ux-izeag-kb6ge-sar3p-wrxhb-ybfah-hae"), BigInt(0), []],
+    });
+    console.log("remotes", a);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const logout = async () => {

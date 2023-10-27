@@ -15,7 +15,7 @@ import {
 } from "@redux/models/ContactsModels";
 import { AccountIdentifier } from "@dfinity/nns";
 import ContactAssetPop from "./contactAssetPop";
-import { getInitialFromName, shortAddress } from "@/utils";
+import { getContactColor, getInitialFromName, shortAddress } from "@/utils";
 import TableAssets from "./tableAssets";
 import { ChangeEvent, Fragment } from "react";
 import { CustomCopy } from "@components/CopyTooltip";
@@ -240,12 +240,6 @@ const TableContacts = ({
       </tbody>
     </table>
   );
-
-  function getContactColor(idx: number) {
-    if (idx % 3 === 0) return "bg-ContactColor1";
-    else if (idx % 3 === 1) return "bg-ContactColor2";
-    else return "bg-ContactColor3";
-  }
 
   function getContactsToShow() {
     return contacts.filter((cntc) => {

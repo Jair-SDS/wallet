@@ -29,8 +29,12 @@
   "wrap": "Avvolgere",
   "test": "Probar",
   "save": "Guardar",
+  "clear": "Tiro",
   "account": "Account",
   "address": "Indirizzo",
+  "own": "Possedere",
+  "remote": "Remoto",
+  "pull": "Pull",
   "amount": "Importo",
   "asset": "Risorsa",
   "assets": "Risorse",
@@ -45,7 +49,9 @@
   "transfer": "Trasferimento",
   "network": "Rete",
   "error": "ERRORE",
+  "manual": "Manuale",
   "select.account": "Seleziona account",
+  "select.remote": "Seleziona Remoto",
   "non.zero.balance": "Saldi diversi da zero",
   "not.match.asset.id": "L'ID risorsa non corrisponde tra i conti",
   "not.same.subaccount": "Gli account non possono essere uguali",
@@ -164,5 +170,6 @@
   "acc.identifier": "Identificatore dell'account",
   "acc.subacc": "Account secondario",
   "acc.principal": "Principale",
-  "congrats": "Congratulazioni"
+  "congrats": "Congratulazioni",
+  "": ""
 }

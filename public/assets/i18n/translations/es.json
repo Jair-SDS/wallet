@@ -29,8 +29,12 @@
   "wrap": "Agrupar",
   "test": "Probar",
   "save": "Guardar",
+  "clear": "Limpiar",
   "account": "Cuenta",
   "address": "Dirección",
+  "own": "Propio",
+  "remote": "Remoto",
+  "pull": "Sacar",
   "amount": "Cantidad",
   "asset": "Activo",
   "assets": "Seleccionar",
@@ -45,7 +49,9 @@
   "transfer": "Transferencia",
   "network": "Red",
   "error": "ERROR",
-  "select.account": "Seleccionar cuenta",
+  "manual": "Manual",
+  "select.account": "Seleccionar Cuenta",
+  "select.remote": "Seleccionar Remota",
   "non.zero.balance": "Saldos distintos de cero",
   "not.match.asset.id": "El ID del activo no coincide entre las cuentas",
   "not.same.subaccount": "Las cuentas no pueden ser iguales",
@@ -164,5 +170,6 @@
   "acc.identifier": "Identificador de Cuenta",
   "acc.subacc": "Subcuenta",
   "acc.principal": "Principal",
-  "congrats": "Felicitaciones"
+  "congrats": "Felicitaciones",
+  "": ""
 }

@@ -17,6 +17,8 @@ import bigInt from "big-integer";
 import { hexToNumber } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { HPLClient } from "@research-ag/hpl-client";
+import { ActorSubclass } from "@dfinity/agent";
+import { _SERVICE as IngressActor } from "@candid/service.did.d";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -37,6 +39,7 @@ interface AssetState {
   txLoad: boolean;
   // HPL LEDGER
   hplClient: HPLClient;
+  ingressActor: ActorSubclass<IngressActor>;
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
@@ -64,6 +67,7 @@ const initialState: AssetState = {
   txLoad: false,
   // HPL LEDGER
   hplClient: defaultValue,
+  ingressActor: defaultValue,
   subaccounts: [],
   hplFTs: [],
   hplFTsData: [],
@@ -253,6 +257,9 @@ const assetSlice = createSlice({
     setHPLClient(state, action: PayloadAction<HPLClient>) {
       state.hplClient = action.payload;
     },
+    setIngressActor(state, action: PayloadAction<ActorSubclass<IngressActor>>) {
+      state.ingressActor = action.payload;
+    },
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
     },
@@ -364,6 +371,7 @@ export const {
   setAcordeonAssetIdx,
   // HPL LEDGER
   setHPLClient,
+  setIngressActor,
   setHPLSubAccounts,
   setHPLAssets,
   setHPLAssetsData,

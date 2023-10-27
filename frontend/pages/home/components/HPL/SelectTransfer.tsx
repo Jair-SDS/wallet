@@ -2,87 +2,112 @@
 // svgs
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
-import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 import QRIcon from "@assets/svg/files/qr.svg";
 //
-import {
-  HplTransactions,
-  HplTransactionsEnum,
-  HplTransactionsType,
-  HplTransactionsTypeEnum,
-} from "@/const";
+import { HplTransactions, HplTransactionsEnum, HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import { HPLSubAccount, HplTxUser } from "@redux/models/AccountModels";
+import { HPLAsset, HPLSubAccount, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChangeEvent, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
+import { getContactColor, getInitialFromName } from "@/utils";
 
 interface SelectTransferProps {
   select: HplTxUser;
   setSelect(sel: HplTxUser): void;
   subaccounts: HPLSubAccount[];
+  hplContacts: HplContact[];
   txType: HplTransactionsType;
   setQRview(value: string): void;
+  getAssetLogo(id: string): string;
+  getFtFromSub(id: string): HPLAsset;
 }
 
 const SelectTransfer = ({
   select,
   setSelect,
   subaccounts,
+  hplContacts,
   txType,
   setQRview,
+  getAssetLogo,
+  getFtFromSub,
 }: SelectTransferProps) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
+  const [manual, setManual] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   return (
     <div className="flex flex-col justify-start items-start w-full py-8 border-b border-BorderColorLight/50 dark:border-BorderColor/30 gap-3">
-      <div className="flex flex-row justify-start items-center w-full bg-ThemeColorBackLight dark:bg-ThemeColorBack gap-3 px-2 rounded text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
-        <p>{t("select")}</p>
-        <RadioGroup.Root
-          value={select.type}
-          onValueChange={(e) => {
-            handleChangeType(e as HplTransactions);
-          }}
-        >
-          <div className="flex flex-row items-center w-full p-3 gap-2">
-            <RadioGroup.Item
-              className={`w-4 h-4 rounded-full border-2  outline-none p-0 ${
-                select.type === HplTransactionsEnum.Enum.SUBACCOUNT
-                  ? "border-RadioCheckColor"
-                  : "border-RadioNoCheckColorLight"
-              }`}
-              value={HplTransactionsEnum.Enum.SUBACCOUNT}
-              id="r-light"
-            >
-              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
-            </RadioGroup.Item>
-            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ">
-              {t("account")}
-            </p>
-            <RadioGroup.Item
-              className={`w-4 h-4 rounded-full border-2 ml-2  outline-none p-0 ${
-                select.type === HplTransactionsEnum.Enum.VIRTUAL
-                  ? "border-RadioCheckColor"
-                  : "border-RadioNoCheckColorLight"
-              }`}
-              value={HplTransactionsEnum.Enum.VIRTUAL}
-              id="r-light"
-            >
-              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
-            </RadioGroup.Item>
-            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50">
-              {t("virtual")}
-            </p>
-          </div>
-        </RadioGroup.Root>
+      <div className="flex flex-row justify-between items-center w-full">
+        <p className="opacity-50">{t(txType === HplTransactionsTypeEnum.Enum.from ? "from" : "to")}</p>
+        <div className="flex flex-row justify-start items-center bg-ThemeColorBackLight dark:bg-ThemeColorBack gap-3 px-6 rounded text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+          <p>{t("select")}</p>
+          <RadioGroup.Root
+            value={select.type}
+            onValueChange={(e) => {
+              handleChangeType(e as HplTransactions);
+            }}
+          >
+            <div className="flex flex-row items-center w-full px-3 py-1 gap-2">
+              <RadioGroup.Item
+                className={`w-4 h-4 rounded-full border-2  outline-none p-0 ${
+                  select.type === HplTransactionsEnum.Enum.SUBACCOUNT
+                    ? "border-RadioCheckColor"
+                    : "border-RadioNoCheckColorLight"
+                }`}
+                value={HplTransactionsEnum.Enum.SUBACCOUNT}
+                id="r-light"
+              >
+                <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
+              </RadioGroup.Item>
+              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ">{t("own")}</p>
+              <RadioGroup.Item
+                className={`w-4 h-4 rounded-full border-2 ml-2  outline-none p-0 ${
+                  select.type === HplTransactionsEnum.Enum.VIRTUAL
+                    ? "border-RadioCheckColor"
+                    : "border-RadioNoCheckColorLight"
+                }`}
+                value={HplTransactionsEnum.Enum.VIRTUAL}
+                id="r-light"
+              >
+                <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
+              </RadioGroup.Item>
+              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50">{t("remote")}</p>
+            </div>
+          </RadioGroup.Root>
+        </div>
       </div>
+      {select.type === HplTransactionsEnum.Enum.VIRTUAL && (
+        <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex flex-row justify-start items-center gap-2">
+            <p>{t("manual")}</p>
+            <div
+              className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
+                manual ? "bg-[#26A17B]" : "bg-[#7E7D91]"
+              }`}
+              onClick={onManualToggle}
+            >
+              <div
+                className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${manual ? "ml-5" : "ml-1"}`}
+              ></div>
+            </div>
+          </div>
+          {manual && (
+            <img
+              src={QRIcon}
+              className="cursor-pointer"
+              alt="search-icon"
+              onClick={() => {
+                setQRview(txType);
+              }}
+            />
+          )}
+        </div>
+      )}
       <div className="flex flex-col justify-start items-start w-full ">
-        <p className="opacity-50">
-          {t(txType === HplTransactionsTypeEnum.Enum.from ? "from" : "to")}
-        </p>
         {select.type === HplTransactionsEnum.Enum.SUBACCOUNT ? (
           <DropdownMenu.Root
             open={subsOpen}
@@ -97,7 +122,7 @@ const SelectTransfer = ({
                   "border-BorderColorLight dark:border-BorderColor",
                   "cursor-pointer",
                   "!w-full",
-                  "pr-0"
+                  "pr-0",
                 )}
               >
                 <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-SecondaryColorLight dark:bg-SecondaryColor">
@@ -113,13 +138,19 @@ const SelectTransfer = ({
                     </div>
                   ) : (
                     <div className="flex flex-row justify-between items-center w-full">
-                      <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
-                        <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                          <p className=" text-PrimaryTextColor">
-                            {select.subaccount.sub_account_id}
-                          </p>
+                      <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
+                        <img src={getAssetLogo(select.subaccount.ft)} className="w-8 h-8" alt="info-icon" />
+                        <div className="flex flex-col justify-start items-start gap-1">
+                          <div className="flex flex-row justify-start items-center gap-2">
+                            <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">
+                              <p className=" text-PrimaryTextColor">{select.subaccount.sub_account_id}</p>
+                            </div>
+                            <p className="text-left">{select.subaccount.name}</p>
+                          </div>
+                          <p className="opacity-70">{`${select.subaccount.amount} ${
+                            getFtFromSub(select.subaccount.ft).symbol
+                          }`}</p>
                         </div>
-                        <p className="text-left">{select.subaccount.name}</p>
                       </div>
                       <img
                         src={ChevIcon}
@@ -140,13 +171,7 @@ const SelectTransfer = ({
               >
                 <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
                   <CustomInput
-                    prefix={
-                      <img
-                        src={SearchIcon}
-                        className="mx-2"
-                        alt="search-icon"
-                      />
-                    }
+                    prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
                     sizeInput={"small"}
                     intent={"secondary"}
                     placeholder=""
@@ -158,26 +183,27 @@ const SelectTransfer = ({
                     {subaccounts
                       .filter((sub) => {
                         const key = searchKey.toLowerCase();
-                        return (
-                          sub.name.toLowerCase().includes(key) ||
-                          sub.sub_account_id.toString().includes(key)
-                        );
+                        return sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key);
                       })
                       .map((sub, k) => {
                         return (
                           <button
                             key={k}
-                            className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                            className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
                             onClick={() => {
                               onSelectSub(sub);
                             }}
                           >
-                            <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                              <p className=" text-PrimaryTextColor">
-                                {sub.sub_account_id}
-                              </p>
+                            <img src={getAssetLogo(sub.ft)} className="w-8 h-8" alt="info-icon" />
+                            <div className="flex flex-col justify-start items-start gap-1">
+                              <div className="flex flex-row justify-start items-center gap-2">
+                                <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">
+                                  <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
+                                </div>
+                                <p className="text-left">{sub.name}</p>
+                              </div>
+                              <p className="opacity-70">{`${sub.amount} ${getFtFromSub(sub.ft).symbol}`}</p>
                             </div>
-                            <p className="text-left">{sub.name}</p>
                           </button>
                         );
                       })}
@@ -186,49 +212,9 @@ const SelectTransfer = ({
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-        ) : (
+        ) : manual ? (
           <div className="flex flex-col justify-start items-start w-full gap-2">
             <CustomInput
-              sufix={
-                <div className="flex flex-row justify-center items-center mx-2 gap-2">
-                  {
-                    <DropdownMenu.Root>
-                      <DropdownMenu.Trigger asChild>
-                        <img
-                          src={SendUserIcon}
-                          className="cursor-pointer"
-                          alt="search-icon"
-                          onClick={() => {
-                            //
-                          }}
-                        />
-                      </DropdownMenu.Trigger>
-                      <DropdownMenu.Portal>
-                        <DropdownMenu.Content
-                          className=" w-[22.6rem] max-h-[calc(100vh-15rem)] scroll-y-light bg-PrimaryColorLight rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-AccpetButtonColor cursor-pointer"
-                          sideOffset={12}
-                          align="end"
-                        >
-                          <DropdownMenu.Arrow
-                            className=" fill-AccpetButtonColor rounded-lg dark:fill-AccpetButtonColor"
-                            width={10}
-                            hanging={10}
-                          />
-                        </DropdownMenu.Content>
-                      </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
-                  }
-
-                  <img
-                    src={QRIcon}
-                    className="cursor-pointer"
-                    alt="search-icon"
-                    onClick={() => {
-                      setQRview(txType);
-                    }}
-                  />
-                </div>
-              }
               intent={"secondary"}
               placeholder={"Principal"}
               compOutClass="mb-1"
@@ -247,6 +233,122 @@ const SelectTransfer = ({
               border={"secondary"}
             />
           </div>
+        ) : (
+          <DropdownMenu.Root
+            open={subsOpen}
+            onOpenChange={(e: boolean) => {
+              setSubsOpen(e);
+            }}
+          >
+            <DropdownMenu.Trigger asChild>
+              <div
+                className={clsx(
+                  "flex justify-start items-start",
+                  "border-BorderColorLight dark:border-BorderColor",
+                  "cursor-pointer",
+                  "!w-full",
+                  "pr-0",
+                )}
+              >
+                <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-SecondaryColorLight dark:bg-SecondaryColor">
+                  {!select.remote ? (
+                    <div className="flex flex-row justify-between items-center w-full">
+                      <p className="opacity-60">{t("select.remote")}</p>
+                      <img
+                        src={ChevIcon}
+                        style={{ width: "2rem", height: "2rem" }}
+                        alt="chevron-icon"
+                        className={`${subsOpen ? "rotate-90" : ""}`}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-row justify-between items-center w-full">
+                      <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
+                        <div
+                          className={`flex justify-center items-center !min-w-[2rem] w-8 h-8 rounded-md ${getContactColor(
+                            0,
+                          )}`}
+                        >
+                          <p className="text-PrimaryTextColor">{getInitialFromName(select.remote.name, 2)}</p>
+                        </div>
+                        <div className="flex flex-col justify-start items-start w-full">
+                          <p>{select.remote.name}</p>
+                          <div className="flex flex-row justify-start items-center gap-3">
+                            <img src={getAssetLogo(select.remote.ftIndex)} className="w-8 h-8" alt="info-icon" />
+                            <p className="opacity-60">{`${select.remote.amount} ${
+                              getFtFromSub(select.remote.ftIndex).symbol
+                            }`}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <img
+                        src={ChevIcon}
+                        style={{ width: "2rem", height: "2rem" }}
+                        alt="chevron-icon"
+                        className={`${subsOpen ? "rotate-90" : ""}`}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className="text-lg bg-PrimaryColorLight w-[25rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-SelectRowColor"
+                sideOffset={5}
+                align="end"
+              >
+                <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
+                  <CustomInput
+                    prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
+                    sizeInput={"small"}
+                    intent={"secondary"}
+                    placeholder=""
+                    compOutClass=""
+                    value={searchKey}
+                    onChange={onSearchChange}
+                  />
+                  <div className="flex flex-col justify-start items-start w-full scroll-y-light max-h-[calc(100vh-30rem)]">
+                    {getRemotesToSelect().map(({ remote: rmt, principal: prin }, k) => {
+                      return (
+                        <button
+                          key={k}
+                          className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
+                          onClick={() => {
+                            onSelectRemote(rmt, prin);
+                          }}
+                        >
+                          <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
+                            <div
+                              className={`flex justify-center items-center !min-w-[2rem] w-8 h-8 rounded-md ${getContactColor(
+                                0,
+                              )}`}
+                            >
+                              <p className="text-PrimaryTextColor">{getInitialFromName(rmt.name, 2)}</p>
+                            </div>
+                            <div className="flex flex-col justify-start items-start w-full">
+                              <p>{rmt.name}</p>
+                              <div className="flex flex-row justify-start items-center gap-3">
+                                <img src={getAssetLogo(rmt.ftIndex)} className="w-8 h-8" alt="info-icon" />
+                                <p className="opacity-60">{`${rmt.amount} ${getFtFromSub(rmt.ftIndex).symbol}`}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        )}
+        {(select.subaccount || select.remote) && (
+          <div className="flex flex-row justify-end items-center w-full mt-1">
+            <p className="text-SelectRowColor underline cursor-pointer" onClick={onClear}>
+              {t("clear")}
+            </p>
+          </div>
         )}
       </div>
     </div>
@@ -255,17 +357,25 @@ const SelectTransfer = ({
     setSelect({
       ...select,
       type: value,
-      subaccount:
-        value === HplTransactionsEnum.Enum.SUBACCOUNT
-          ? select.subaccount
-          : undefined,
+      subaccount: value === HplTransactionsEnum.Enum.SUBACCOUNT ? select.subaccount : undefined,
     });
   }
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchKey(e.target.value);
   }
+  function onClear() {
+    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
+  }
   function onSelectSub(sub: HPLSubAccount) {
-    setSelect({ ...select, subaccount: sub, principal: "", vIdx: "" });
+    setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined });
+    setSubsOpen(false);
+  }
+  function onManualToggle() {
+    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
+    setManual(!manual);
+  }
+  function onSelectRemote(rmt: HplRemote, prin: string) {
+    setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt });
     setSubsOpen(false);
   }
   function onChangePrincipal(e: ChangeEvent<HTMLInputElement>) {
@@ -281,6 +391,16 @@ const SelectTransfer = ({
         ...select,
         vIdx: value === "" ? "" : Number(value).toString(),
       });
+  }
+
+  function getRemotesToSelect() {
+    const auxRemotes: { remote: HplRemote; principal: string }[] = [];
+    hplContacts.map((cntc) => {
+      cntc.remotes.map((rmt) => {
+        auxRemotes.push({ principal: cntc.principal, remote: { ...rmt, name: `${cntc.name} [${rmt.name}]` } });
+      });
+    });
+    return auxRemotes;
   }
 };
 

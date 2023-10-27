@@ -29,8 +29,12 @@
   "wrap": "Enrolar",
   "test": "Teste",
   "save": "Salvar",
+  "clear": "Liberar",
   "account": "Conta",
   "address": "Endereço",
+  "own": "Ter",
+  "remote": "Remoto",
+  "pull": "Puxar",
   "amount": "Quantidade",
   "asset": "Ativo",
   "assets": "Ativos",
@@ -45,7 +49,9 @@
   "transfer": "Transferir",
   "network": "Rede",
   "error": "ERROR",
+  "manual": "Manual",
   "select.account": "Selecionar conta",
+  "select.remote": "Selecione Remoto",
   "non.zero.balance": "Saldos diferentes de zero",
   "not.match.asset.id": "ID do ativo não corresponde entre contas",
   "not.same.subaccount": "As contas não podem ser iguais",
@@ -164,5 +170,6 @@
   "acc.identifier": "Identificador de conta",
   "acc.subacc": "Sub conta",
   "acc.principal": "Diretora",
-  "congrats": "Parabéns"
+  "congrats": "Parabéns",
+  "": ""
 }
