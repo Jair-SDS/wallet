@@ -312,7 +312,7 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
       const aggregator = await hplClient.pickAggregator();
       const amountToSend = BigInt(amnt);
       if (aggregator) {
-        console.log("tx", { txFrom: txFrom, txTo: txTo, ftId: BigInt(ftId), amountToSend: amountToSend });
+        console.log("tx: ", { txFrom: txFrom, txTo: txTo, ftId: BigInt(ftId), amountToSend: amountToSend });
 
         const { commit } = await hplClient.prepareSimpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
         const txId = await commit();
