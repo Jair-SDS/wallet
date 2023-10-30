@@ -112,7 +112,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               disabled={newVt.expiration === 0}
-              format={newVt.expiration === 0 ? "No EXP" : ""}
               value={newVt.expiration === 0 ? null : dayjs(newVt.expiration)}
               onChange={onDateChange}
               className={`${theme === "light" ? "date-picker-light" : "date-picker"}`}

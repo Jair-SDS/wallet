@@ -3,6 +3,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { useHPLTx } from "@pages/home/hooks/hplTxHook";
 import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@/const";
+import { decodeIcrcAccount } from "@dfinity/ledger";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SelectTransfer from "./SelectTransfer";
@@ -13,6 +14,7 @@ import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import LoadingLoader from "@components/Loader";
 import TxSummary from "./TxSummary";
+import { toNumberFromUint8Array } from "@/utils";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;
@@ -237,20 +239,16 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
   }
 
   function parseQrCode(code: string) {
-    const decode = code.split(".");
     try {
-      Principal.fromText(code[0]);
+      const princ = decodeIcrcAccount(code);
+      return {
+        principal: princ.owner.toString(),
+        id: toNumberFromUint8Array(princ.subaccount!).toString(),
+        err: false,
+      };
     } catch {
       return { principal: "", id: "", err: true };
     }
-    if (decode.length === 1) return { principal: code[0], id: "", err: false };
-    else if (decode.length === 3 && /^\+?([0-9]\d*)$/.test(decode[2])) {
-      return {
-        principal: code[0],
-        id: decode[2],
-        err: false,
-      };
-    } else return { principal: "", id: "", err: true };
   }
 };
 
