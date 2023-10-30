@@ -205,8 +205,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
         } catch (e) {
-          console.log(e);
-
           setErrMsg(t("err.back"));
         }
       } else {
