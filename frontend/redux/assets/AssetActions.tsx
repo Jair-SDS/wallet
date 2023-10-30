@@ -1,4 +1,4 @@
-import { HttpAgent } from "@dfinity/agent";
+import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
@@ -26,9 +26,8 @@ import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/A
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
-import { HPLClient } from "@research-ag/hpl-client";
-import { JsAccountInfo } from "@research-ag/hpl-client/dist/types/delegates/types";
-import { AssetId } from "@research-ag/hpl-client/dist/candid/ledger";
+import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
+import { _SERVICE as IngressActor } from "@candid/service.did.d";
 
 export const updateAllBalances = async (
   loading: boolean,
@@ -254,63 +253,67 @@ export const updateAllBalances = async (
   };
 };
 
-export const updateHPLBalances = async (client: HPLClient) => {
-  let subAccInfo: [bigint, JsAccountInfo][] = [];
+export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
+  let subAccInfo: Array<[SubId, AccountType]> = [];
   try {
-    subAccInfo = await client.ledger.accountInfo({ idRange: [BigInt(0), []] });
+    subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), []] });
   } catch (e) {
-    console.log("err", e);
+    console.log("errAccountInfo", e);
   }
-  let ftInfo: [
-    AssetId,
-    {
-      controller: Principal;
-      decimals: number;
-      description: string;
-    },
-  ][] = [];
+  let ftInfo: Array<
+    [
+      AssetId,
+      {
+        controller: Principal;
+        decimals: number;
+        description: string;
+      },
+    ]
+  > = [];
   try {
-    ftInfo = (await client.ledger.ftInfo({ idRange: [BigInt(0), []] })) as any;
+    ftInfo = await actor.ftInfo({ idRange: [BigInt(0), []] });
   } catch (e) {
-    console.log("err", e);
+    console.log("errFtInfor", e);
   }
-  let vtInfo: [
-    bigint,
-    {
-      type: "ft";
-      assetId: AssetId;
-      accessPrincipal: Principal;
-    },
-  ][] = [];
+  let vtInfo: Array<[VirId, [AccountType, Principal]]> = [];
   try {
-    vtInfo = (await client.ledger.virtualAccountInfo({ idRange: [BigInt(0), []] })) as any;
+    vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), []] });
   } catch (e) {
-    console.log("err", e);
+    console.log("errVirtualAccountInfo", e);
   }
   const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
   try {
-    const auxState = await client.ledger.state({
-      ftSupplies: { idRange: [BigInt(0), []] },
+    const auxState = await actor.state({
+      ftSupplies: [{ idRange: [BigInt(0), []] }],
+      virtualAccounts: [],
+      accounts: [],
+      remoteAccounts: [],
     });
     state.ftSupplies = auxState.ftSupplies;
   } catch (e) {
-    console.log("err", e);
+    console.log("errState-ft", e);
   }
   try {
-    const auxState = await client.ledger.state({
-      virtualAccounts: { idRange: [BigInt(0), []] },
+    const auxState = await actor.state({
+      ftSupplies: [],
+      virtualAccounts: [{ idRange: [BigInt(0), []] }],
+      accounts: [],
+      remoteAccounts: [],
     });
     state.virtualAccounts = auxState.virtualAccounts;
   } catch (e) {
-    console.log("err", e);
+    console.log("errState-vt", e);
   }
   try {
-    const auxState = await client.ledger.state({
-      accounts: { idRange: [BigInt(0), []] },
+    const auxState = await actor.state({
+      ftSupplies: [],
+      virtualAccounts: [],
+      accounts: [{ idRange: [BigInt(0), []] }],
+      remoteAccounts: [],
     });
     state.accounts = auxState.accounts;
   } catch (e) {
-    console.log("err", e);
+    console.log("errState-sub", e);
   }
 
   try {

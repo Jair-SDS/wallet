@@ -1,7 +1,13 @@
 import { HplTransactionsEnum, OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/const";
-import { Principal } from "@dfinity/principal";
-import { AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
-import { JsAccountState } from "@research-ag/hpl-client/dist/types/delegates/types";
+import {
+  AccountState,
+  AssetId,
+  FtSupply,
+  RemoteId,
+  SubId,
+  Time,
+  VirId,
+} from "@research-ag/hpl-client/dist/candid/ledger";
 import { z } from "zod";
 
 // ICRC1 Models
@@ -145,27 +151,10 @@ const HPLAsset = z.object({
 export type HPLAsset = z.infer<typeof HPLAsset>;
 
 export interface ResQueryState {
-  ftSupplies: Array<[AssetId, bigint]>;
-  virtualAccounts: Array<
-    [
-      VirId,
-      {
-        state: JsAccountState;
-        backingSubaccountId: bigint;
-        expiration: bigint;
-      } | null,
-    ]
-  >;
-  accounts: Array<[SubId, JsAccountState]>;
-  remoteAccounts: Array<
-    [
-      [Principal, VirId],
-      {
-        state: JsAccountState;
-        expiration: bigint;
-      } | null,
-    ]
-  >;
+  ftSupplies: Array<[AssetId, FtSupply]>;
+  virtualAccounts: Array<[VirId, [AccountState, SubId, Time]]>;
+  accounts: Array<[SubId, AccountState]>;
+  remoteAccounts: Array<[RemoteId, [AccountState, Time]]>;
 }
 
 const HPLAssetData = z.object({

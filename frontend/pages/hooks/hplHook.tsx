@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
-  const { protocol, subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, hplClient } =
+  const { protocol, subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, ingressActor } =
     useAppSelector((state) => state.asset);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
@@ -120,7 +120,7 @@ export const useHPL = (open: boolean) => {
 
   const reloadHPLBallance = async () => {
     dispatch(setLoading(true));
-    const { subs } = await updateHPLBalances(hplClient);
+    const { subs } = await updateHPLBalances(ingressActor);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);
@@ -171,7 +171,7 @@ export const useHPL = (open: boolean) => {
 
   return {
     protocol,
-    hplClient,
+    ingressActor,
     subaccounts,
     hplFTs,
     selAsset,

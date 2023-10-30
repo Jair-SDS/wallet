@@ -31,7 +31,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   const { theme } = ThemeHook();
   const { authClient } = AccountHook();
   const {
-    hplClient,
+    ingressActor,
     selectSub,
     selectVt,
     setSelVt,
@@ -82,7 +82,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           onClick={onClose}
         />
       </div>
-      <BackingSelector newVt={newVt} setNewVt={setNewVt} />
+      <BackingSelector newVt={newVt} setNewVt={setNewVt} edit={selectVt ? true : false} />
       <div className="flex flex-col items-start w-full mt-3 mb-3">
         <p className="opacity-60">{t("name")}</p>
         <CustomInput
@@ -199,10 +199,10 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       setErrMsg("");
       if (selectVt) {
         try {
-          await hplClient.ledger.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
-            backingAccount: BigInt(newVt.backing),
-            state: { ft_set: BigInt(newVt.amount) },
-            expiration: newVt.expiration,
+          await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
+            backingAccount: [BigInt(newVt.backing)],
+            state: [{ ft_set: BigInt(newVt.amount) }],
+            expiration: [BigInt(newVt.expiration)],
           });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
         } catch (e) {
@@ -212,14 +212,14 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         }
       } else {
         try {
-          const res = await hplClient.ledger.openVirtualAccount(
-            { type: "ft", assetId: BigInt(getFtFromVt(newVt.backing).id) },
-            newVt.accesBy,
-            { type: "ft", balance: BigInt(newVt.amount) },
+          const res = (await ingressActor.openVirtualAccount(
+            { ft: BigInt(getFtFromVt(newVt.backing).id) },
+            Principal.fromText(newVt.accesBy),
+            { ft: BigInt(newVt.amount) },
             BigInt(newVt.backing),
-            newVt.expiration,
-          );
-          saveInLocalstorage({ id: res.id.toString(), name: newVt.name }, selectVt!, false);
+            BigInt(newVt.expiration),
+          )) as any;
+          saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name }, selectVt!, false);
         } catch {
           setErrMsg(t("err.back"));
         }

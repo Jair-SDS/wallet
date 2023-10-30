@@ -17,9 +17,10 @@ import { CustomButton } from "@components/Button";
 interface BackingSelectorProps {
   newVt: HPLVirtualSubAcc;
   setNewVt(value: HPLVirtualSubAcc): void;
+  edit: boolean;
 }
 
-const BackingSelector = ({ newVt, setNewVt }: BackingSelectorProps) => {
+const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
   const { t } = useTranslation();
   const { subaccounts, selectSub, getSubFromVt, selAssetOpen, setSelAssetOpen, selectVt } = useHPL(false);
 
@@ -162,8 +163,13 @@ const BackingSelector = ({ newVt, setNewVt }: BackingSelectorProps) => {
     setSearchKey(e.target.value);
   }
   function onSelectBacking(sub: HPLSubAccount) {
-    setSelBacking({ id: sub.sub_account_id, name: sub.name });
-    setModalOpen(true);
+    if (edit) {
+      setSelBacking({ id: sub.sub_account_id, name: sub.name });
+      setModalOpen(true);
+    } else {
+      setNewVt({ ...newVt, backing: selBacking.id });
+      setSelAssetOpen(false);
+    }
   }
   function onConfirmChange() {
     setNewVt({ ...newVt, backing: selBacking.id });

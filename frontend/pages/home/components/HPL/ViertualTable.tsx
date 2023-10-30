@@ -25,7 +25,7 @@ interface VirtualTableProps {
 const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
-  const { hplClient, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
+  const { ingressActor, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
     useHPL(false);
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -197,7 +197,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
     setLoading(true);
     if (selectVt) {
       try {
-        await hplClient.ledger.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id));
+        await ingressActor.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id));
         const auxVts = hplVTsData.filter((vt) => vt.id != selectVt.virt_sub_acc_id);
         localStorage.setItem(
           "hplVT-" + authClient,

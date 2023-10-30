@@ -23,7 +23,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
   const {
-    hplClient,
+    ingressActor,
     hplFTs,
     selAsset,
     setSelAsset,
@@ -202,9 +202,9 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     setLoading(true);
     if (selAsset && newHplSub.name.trim() !== "")
       try {
-        const res = await hplClient.ledger.openAccounts({ ft: BigInt(selAsset.id) }, 1);
+        const res = (await ingressActor.openAccounts(BigInt(selAsset.id), { ft: BigInt(1) })) as any;
 
-        const auxSubs = [...hplSubsData, { id: res.first.toString(), name: newHplSub.name.trim() }];
+        const auxSubs = [...hplSubsData, { id: res.ok.firs.toString(), name: newHplSub.name.trim() }];
         localStorage.setItem(
           "hplSUB-" + authClient,
           JSON.stringify({

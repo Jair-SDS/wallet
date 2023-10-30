@@ -4,7 +4,7 @@ import { HplTxUser } from "@redux/models/AccountModels";
 import { useEffect, useState } from "react";
 
 export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: string) => {
-  const { hplClient, subaccounts, selectSub } = useAppSelector((state) => state.asset);
+  const { hplClient, ingressActor, subaccounts, selectSub } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const defaultUser = {
     type: HplTransactionsEnum.Enum.SUBACCOUNT,
@@ -58,6 +58,7 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
 
   return {
     hplClient,
+    ingressActor,
     subaccounts,
     selectSub,
     hplContacts,

@@ -20,6 +20,8 @@ interface SelectTransferProps {
   subaccounts: HPLSubAccount[];
   hplContacts: HplContact[];
   txType: HplTransactionsType;
+  manual: boolean;
+  setManual(value: boolean): void;
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
@@ -31,13 +33,14 @@ const SelectTransfer = ({
   subaccounts,
   hplContacts,
   txType,
+  manual,
+  setManual,
   setQRview,
   getAssetLogo,
   getFtFromSub,
 }: SelectTransferProps) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
-  const [manual, setManual] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   return (
     <div className="flex flex-col justify-start items-start w-full py-8 border-b border-BorderColorLight/50 dark:border-BorderColor/30 gap-3">
