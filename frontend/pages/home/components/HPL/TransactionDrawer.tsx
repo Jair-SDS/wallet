@@ -177,14 +177,14 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
     if (!data.err) {
       if (qrView === HplTransactionsTypeEnum.Enum.from) {
         setFrom({
-          type: HplTransactionsEnum.Enum.SUBACCOUNT,
+          type: HplTransactionsEnum.Enum.VIRTUAL,
           principal: data.principal,
           vIdx: data.id,
           subaccount: undefined,
         });
       } else {
         setTo({
-          type: HplTransactionsEnum.Enum.SUBACCOUNT,
+          type: HplTransactionsEnum.Enum.VIRTUAL,
           principal: data.principal,
           vIdx: data.id,
           subaccount: undefined,
