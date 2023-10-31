@@ -3,7 +3,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { CustomInput } from "@components/Input";
 import { useHPL } from "@pages/hooks/hplHook";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HPLVirtualData, HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -41,8 +41,15 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     hplVTsData,
     editVtData,
     reloadHPLBallance,
+    expiration,
+    setExpiration,
+    onNameChange,
+    onAccesChange,
+    onBalanceChange,
+    onChangeExpirationCheck,
+    onDateChange,
   } = useHPL(false);
-  const [expiration, setExpiration] = useState(true);
+
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
@@ -162,33 +169,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   function onClose() {
     setDrawerOpen(false);
     setSelVt(undefined);
-  }
-  function onNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setNewVt((prev) => {
-      return { ...prev, name: e.target.value };
-    });
-  }
-  function onBalanceChange(e: ChangeEvent<HTMLInputElement>) {
-    if (Number(e.target.value) >= 0)
-      setNewVt((prev) => {
-        return { ...prev, amount: e.target.value.trim() };
-      });
-  }
-  function onDateChange(value: dayjs.Dayjs | null) {
-    setNewVt((prev) => {
-      return { ...prev, expiration: value ? value.valueOf() : 0 };
-    });
-  }
-  function onChangeExpirationCheck() {
-    setNewVt((prev) => {
-      return { ...prev, expiration: expiration ? dayjs().valueOf() : 0 };
-    });
-    setExpiration(!expiration);
-  }
-  function onAccesChange(e: ChangeEvent<HTMLInputElement>) {
-    setNewVt((prev) => {
-      return { ...prev, accesBy: e.target.value.trim() };
-    });
   }
 
   async function onSave() {

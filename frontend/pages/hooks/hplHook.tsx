@@ -21,7 +21,8 @@ import {
   HPLVirtualData,
   HPLVirtualSubAcc,
 } from "@redux/models/AccountModels";
-import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { ChangeEvent, useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
@@ -39,6 +40,7 @@ export const useHPL = (open: boolean) => {
   const [editedFt, setEditedFt] = useState<HPLAsset | undefined>();
   const [zeroBalance, setZeroBalance] = useState(false);
   const [searchKeyHPL, setSearchKeyHPL] = useState("");
+  const [expiration, setExpiration] = useState(true);
   const [newVt, setNewVt] = useState<HPLVirtualSubAcc>({
     virt_sub_acc_id: "",
     name: "",
@@ -169,6 +171,34 @@ export const useHPL = (open: boolean) => {
     }
   };
 
+  function onNameChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewVt((prev) => {
+      return { ...prev, name: e.target.value };
+    });
+  }
+  function onBalanceChange(e: ChangeEvent<HTMLInputElement>) {
+    if (Number(e.target.value) >= 0)
+      setNewVt((prev) => {
+        return { ...prev, amount: e.target.value.trim() };
+      });
+  }
+  function onDateChange(value: dayjs.Dayjs | null) {
+    setNewVt((prev) => {
+      return { ...prev, expiration: value ? value.valueOf() : 0 };
+    });
+  }
+  function onChangeExpirationCheck() {
+    setNewVt((prev) => {
+      return { ...prev, expiration: expiration ? dayjs().valueOf() : 0 };
+    });
+    setExpiration(!expiration);
+  }
+  function onAccesChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewVt((prev) => {
+      return { ...prev, accesBy: e.target.value.trim() };
+    });
+  }
+
   return {
     protocol,
     ingressActor,
@@ -216,6 +246,13 @@ export const useHPL = (open: boolean) => {
     searchKeyHPL,
     setSearchKeyHPL,
     subsList,
+    expiration,
+    setExpiration,
+    onNameChange,
+    onBalanceChange,
+    onDateChange,
+    onChangeExpirationCheck,
+    onAccesChange,
     reloadHPLBallance,
   };
 };
