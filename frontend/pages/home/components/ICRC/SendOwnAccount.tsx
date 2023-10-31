@@ -9,13 +9,13 @@ import { IcrcAccount, IcrcLedgerCanister } from "@dfinity/ledger";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { IdentityHook } from "@hooks/identityHook";
 import { clsx } from "clsx";
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { hexToUint8Array, shortAddress, subUint8ArrayToHex, roundToDecimalN, toFullDecimal } from "@/utils";
 import { CustomInput } from "@components/Input";
 import { CustomButton } from "@components/Button";
-import { AssetHook } from "../hooks/assetHook";
+import { AssetHook } from "../../hooks/assetHook";
 import { ChangeEvent } from "react";
 
 interface SendOwnAccountProps {
@@ -94,7 +94,7 @@ const SendOwnAccount = ({
             />
           </div>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Portal className="w-full">
+        <DropdownMenu.Portal>
           <DropdownMenu.Content
             className="w-full text-lg max-h-[calc(100vh-17rem)] scroll-y-light bg-PrimaryColorLight rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor"
             sideOffset={5}
@@ -218,7 +218,7 @@ const SendOwnAccount = ({
   }
 
   function onChangeAmount(e: ChangeEvent<HTMLInputElement>) {
-    if (Number(e.target.value) >= 0) setAmount(e.target.value);
+    if (Number(e.target.value) >= 0) setAmount(e.target.value.trim());
   }
 
   function onMaxAmount() {

@@ -1,4 +1,4 @@
-import { HttpAgent } from "@dfinity/agent";
+import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
@@ -10,13 +10,24 @@ import {
   getUSDfromToken,
   hexToUint8Array,
   hexToNumber,
+  formatHPLSubaccounts,
 } from "@/utils";
-import { setAssets, setTransactions, setTokenMarket, setICPSubaccounts } from "./AssetReducer";
+import {
+  setAssets,
+  setTransactions,
+  setTokenMarket,
+  setICPSubaccounts,
+  setHPLSubAccounts,
+  setHPLAssets,
+  setHPLSelectedSub,
+} from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { Asset, ICPSubAccount, SubAccount } from "@redux/models/AccountModels";
+import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
+import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
+import { _SERVICE as IngressActor } from "@candid/service.did.d";
 
 export const updateAllBalances = async (
   loading: boolean,
@@ -240,6 +251,98 @@ export const updateAllBalances = async (
       return a.id_number - b.id_number;
     }),
   };
+};
+
+export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
+  let subAccInfo: Array<[SubId, AccountType]> = [];
+  try {
+    subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("errAccountInfo", e);
+  }
+  let ftInfo: Array<
+    [
+      AssetId,
+      {
+        controller: Principal;
+        decimals: number;
+        description: string;
+      },
+    ]
+  > = [];
+  try {
+    ftInfo = await actor.ftInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("errFtInfor", e);
+  }
+  let vtInfo: Array<[VirId, [AccountType, Principal]]> = [];
+  try {
+    vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), []] });
+  } catch (e) {
+    console.log("errVirtualAccountInfo", e);
+  }
+  const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
+  try {
+    const auxState = await actor.state({
+      ftSupplies: [{ idRange: [BigInt(0), []] }],
+      virtualAccounts: [],
+      accounts: [],
+      remoteAccounts: [],
+    });
+    state.ftSupplies = auxState.ftSupplies;
+  } catch (e) {
+    console.log("errState-ft", e);
+  }
+  try {
+    const auxState = await actor.state({
+      ftSupplies: [],
+      virtualAccounts: [{ idRange: [BigInt(0), []] }],
+      accounts: [],
+      remoteAccounts: [],
+    });
+    state.virtualAccounts = auxState.virtualAccounts;
+  } catch (e) {
+    console.log("errState-vt", e);
+  }
+  try {
+    const auxState = await actor.state({
+      ftSupplies: [],
+      virtualAccounts: [],
+      accounts: [{ idRange: [BigInt(0), []] }],
+      remoteAccounts: [],
+    });
+    state.accounts = auxState.accounts;
+  } catch (e) {
+    console.log("errState-sub", e);
+  }
+
+  try {
+    const ftData = store.getState().asset.hplFTsData;
+    const subData = store.getState().asset.hplSubsData;
+    const vtData = store.getState().asset.hplVTsData;
+
+    const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
+      subAccInfo,
+      ftInfo,
+      vtInfo,
+      { ft: ftData, sub: subData, vt: vtData },
+      state,
+    );
+
+    store.dispatch(setHPLSubAccounts(auxSubaccounts));
+    store.dispatch(setHPLAssets(auxFT));
+
+    const selectedSub = store.getState().asset.selectSub;
+    if (selectedSub) {
+      const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
+      store.dispatch(setHPLSelectedSub(sel));
+    }
+
+    return { subs: auxSubaccounts, fts: auxFT };
+  } catch (e) {
+    console.log("err", e);
+  }
+  return { subs: [], fts: [] };
 };
 
 export const getAllTransactionsICP = async (subaccount_index: string, loading: boolean) => {

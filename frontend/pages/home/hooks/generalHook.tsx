@@ -1,5 +1,5 @@
 // svg
-import GenericTokenIcon from "@/assets/svg/files/generic-token.svg";
+import GenericTokenIcon from "@/assets/svg/files/dafaultICRC1.svg";
 //
 import { Asset, SubAccount, Transaction } from "@redux/models/AccountModels";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
@@ -16,8 +16,16 @@ import { IconType, IconTypeEnum, symbolIconDict } from "@/const";
 export const GeneralHook = () => {
   const dispatch = useAppDispatch();
 
-  const { ICPSubaccounts, assets, accounts, transactions, selectedAsset, selectedAccount, selectedTransaction } =
-    useAppSelector((state) => state.asset);
+  const {
+    ICPSubaccounts,
+    assets,
+    accounts,
+    transactions,
+    selectedAsset,
+    selectedAccount,
+    selectedTransaction,
+    subaccounts,
+  } = useAppSelector((state) => state.asset);
   const { userAgent } = useAppSelector((state) => state.auth);
   const changeAssets = (value: Array<Asset>) => dispatch(setAssets(value));
   const changeAccounts = (value: Array<SubAccount>) => dispatch(setAccounts(value));
@@ -116,5 +124,7 @@ export const GeneralHook = () => {
     getAssetIcon,
     getTotalAsset,
     checkAssetAdded,
+    // HPL
+    subaccounts,
   };
 };

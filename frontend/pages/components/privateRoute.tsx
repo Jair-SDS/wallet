@@ -1,5 +1,4 @@
 import { Route, Redirect, RouteProps } from "react-router-dom";
-import { HOME } from "../paths";
 
 interface MyRouteProps extends RouteProps {
   Component: any;
@@ -16,7 +15,7 @@ const PrivateRoute = ({ Component, allowByRole, ...rest }: MyRouteProps) => {
         if (allowByRole) {
           return <Component {...props} history={props.history}></Component>;
         } else {
-          return <Redirect to={HOME} />;
+          return <Redirect to={"/"} />;
         }
       }}
     />

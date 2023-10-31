@@ -11,6 +11,12 @@ import { z } from "zod";
 import { Token } from "@redux/models/TokenModels";
 
 // Enums
+export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN"]);
+export type RoutingPath = z.infer<typeof RoutingPathEnum>;
+
+export const ProtocolTypeEnum = z.enum(["ICRC1", "HPL"]);
+export type ProtocolType = z.infer<typeof ProtocolTypeEnum>;
+
 export const TransactionTypeEnum = z.enum(["RECEIVE", "SEND", "NONE"]);
 export type TransactionType = z.infer<typeof TransactionTypeEnum>;
 
@@ -20,7 +26,7 @@ export type OperationStatus = z.infer<typeof OperationStatusEnum>;
 export const OperationTypeEnum = z.enum(["TRANSACTION", "FEE"]);
 export type OperationType = z.infer<typeof OperationTypeEnum>;
 
-export const DrawerOptionEnum = z.enum(["SEND", "RECEIVE", "WRAP"]);
+export const DrawerOptionEnum = z.enum(["SEND", "RECEIVE", "WRAP", "HPL_QR"]);
 export type DrawerOption = z.infer<typeof DrawerOptionEnum>;
 
 export const IconTypeEnum = z.enum(["ASSET", "HEADER", "FILTER"]);
@@ -58,6 +64,15 @@ export type DeleteContactTypeEnum = z.infer<typeof DeleteContactTypeEnum>;
 
 export const TimerActionTypeEnum = z.enum(["TRANSACTIONS", "ASSETS"]);
 export type TimerActionType = z.infer<typeof TimerActionTypeEnum>;
+
+export const SubaccountInfoEnum = z.enum(["TRANSACTIONS", "VIRTUALS"]);
+export type SubaccountInfo = z.infer<typeof SubaccountInfoEnum>;
+
+export const HplTransactionsEnum = z.enum(["SUBACCOUNT", "VIRTUAL"]);
+export type HplTransactions = z.infer<typeof HplTransactionsEnum>;
+
+export const HplTransactionsTypeEnum = z.enum(["from", "to"]);
+export type HplTransactionsType = z.infer<typeof HplTransactionsTypeEnum>;
 
 //
 export const ICRC1systemAssets: Array<Token> = [

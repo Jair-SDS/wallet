@@ -1,11 +1,12 @@
 import { HttpAgent } from "@dfinity/agent";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Asset } from "@redux/models/AccountModels";
-import { ThemesEnum } from "@/const";
+import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
 
 const defaultValue: any = {};
 interface AuthState {
+  route: RoutingPath;
   authLoading: boolean;
   authenticated: boolean;
   superAdmin: boolean;
@@ -20,6 +21,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
+  route: RoutingPathEnum.Enum.LOGIN,
   authLoading: true,
   authenticated: false,
   superAdmin: false,
@@ -36,6 +38,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    setRoutingPath(state, action) {
+      state.route = action.payload;
+    },
     setAuth(state) {
       state.authLoading = false;
     },
@@ -88,6 +93,7 @@ const authSlice = createSlice({
   },
 });
 export const {
+  setRoutingPath,
   clearDataAuth,
   setAuth,
   setAuthLoading,

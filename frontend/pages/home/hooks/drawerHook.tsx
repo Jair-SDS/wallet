@@ -10,6 +10,7 @@ export const DrawerHook = () => {
 
   const [drawerOption, setDrawerOption] = useState<DrawerOption>(DrawerOptionEnum.Enum.SEND);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [hplTx, setHplTx] = useState<boolean>(false);
 
   useEffect(() => {
     if (!assetOpen && !drawerOpen) dispatch(setBlur(false));
@@ -23,5 +24,7 @@ export const DrawerHook = () => {
     setDrawerOption,
     drawerOpen,
     setDrawerOpen,
+    hplTx,
+    setHplTx,
   };
 };

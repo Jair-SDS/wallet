@@ -2,6 +2,7 @@
 // svgs
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 import QRIcon from "@assets/svg/files/qr.svg";
+import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 //
 import { CustomButton } from "@components/Button";
 import { CustomInput } from "@components/Input";
@@ -9,7 +10,6 @@ import { IcrcAccount, decodeIcrcAccount, encodeIcrcAccount } from "@dfinity/ledg
 import { Principal } from "@dfinity/principal";
 import { getICRC1Acc, shortAddress, subUint8ArrayToHex, getFirstNFrom, hexToUint8Array } from "@/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 import { Contact, SubAccountContact } from "@redux/models/ContactsModels";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -73,7 +73,7 @@ const SendOutAccount = ({
                     }}
                   />
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Portal className="w-full">
+                <DropdownMenu.Portal>
                   <DropdownMenu.Content
                     className=" w-[22.6rem] max-h-[calc(100vh-15rem)] scroll-y-light bg-PrimaryColorLight rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-AccpetButtonColor cursor-pointer"
                     sideOffset={12}

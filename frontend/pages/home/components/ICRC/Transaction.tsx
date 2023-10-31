@@ -6,13 +6,13 @@ import { ReactComponent as DownBlueArrow } from "@assets/svg/files/down-blue-arr
 //
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { getAddress, getAssetSymbol, getICRC1Acc, hexToUint8Array, shortAddress, toFullDecimal } from "@/utils";
 import { AssetSymbolEnum, TransactionTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { IcrcAccount } from "@dfinity/ledger";
-import { AssetHook } from "../hooks/assetHook";
+import { AssetHook } from "../../hooks/assetHook";
 import { CustomCopy } from "@components/CopyTooltip";
 
 interface DrawerTransactionProps {

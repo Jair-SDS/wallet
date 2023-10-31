@@ -1,17 +1,11 @@
-const WorkerTrans = {
-  TRANSACTIONS: "TRANSACTIONS",
-  ASSETS: "ASSETS",
-};
-
-// eslint-disable-next-line no-restricted-globals
 const timerCode = () => {
   self.onmessage = () => {
-    self.postMessage(WorkerTrans.TRANSACTIONS);
+    self.postMessage("TRANSACTIONS");
     setInterval(() => {
-      self.postMessage(WorkerTrans.TRANSACTIONS);
+      self.postMessage("TRANSACTIONS");
     }, 5 * 60 * 1000);
     setInterval(() => {
-      self.postMessage(WorkerTrans.ASSETS);
+      self.postMessage("ASSETS");
     }, 5 * 60 * 1000);
   };
 };

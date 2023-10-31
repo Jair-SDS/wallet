@@ -1,10 +1,29 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Token, TokenMarketInfo } from "@redux/models/TokenModels";
-import { Asset, ICPSubAccount, SubAccount, Transaction, TransactionList } from "@redux/models/AccountModels";
+import {
+  Asset,
+  HPLAsset,
+  HPLAssetData,
+  HPLSubAccount,
+  HPLSubData,
+  HPLVirtualData,
+  HPLVirtualSubAcc,
+  ICPSubAccount,
+  SubAccount,
+  Transaction,
+  TransactionList,
+} from "@redux/models/AccountModels";
 import bigInt from "big-integer";
 import { hexToNumber } from "@/utils";
+import { ProtocolType, ProtocolTypeEnum } from "@/const";
+import { HPLClient } from "@research-ag/hpl-client";
+import { ActorSubclass } from "@dfinity/agent";
+import { _SERVICE as IngressActor } from "@candid/service.did.d";
 
+const defaultValue = {} as any;
 interface AssetState {
+  protocol: ProtocolType;
+  // ICRC 1
   ICPSubaccounts: Array<ICPSubAccount>;
   assetLoading: boolean;
   tokens: Token[];
@@ -18,9 +37,21 @@ interface AssetState {
   selectedTransaction: Transaction | undefined;
   txWorker: Array<TransactionList>;
   txLoad: boolean;
+  // HPL LEDGER
+  hplClient: HPLClient;
+  ingressActor: ActorSubclass<IngressActor>;
+  subaccounts: HPLSubAccount[];
+  hplFTs: HPLAsset[];
+  hplFTsData: HPLAssetData[];
+  hplSubsData: HPLSubData[];
+  hplVTsData: HPLVirtualData[];
+  selectSub: HPLSubAccount | undefined;
+  selectVt: HPLVirtualSubAcc | undefined;
 }
 
 const initialState: AssetState = {
+  protocol: ProtocolTypeEnum.Enum.ICRC1,
+  // ICRC 1
   ICPSubaccounts: [],
   assetLoading: false,
   tokens: [],
@@ -34,12 +65,25 @@ const initialState: AssetState = {
   selectedTransaction: undefined,
   txWorker: [],
   txLoad: false,
+  // HPL LEDGER
+  hplClient: defaultValue,
+  ingressActor: defaultValue,
+  subaccounts: [],
+  hplFTs: [],
+  hplFTsData: [],
+  hplSubsData: [],
+  hplVTsData: [],
+  selectSub: undefined,
+  selectVt: undefined,
 };
 
 const assetSlice = createSlice({
-  name: "auth",
+  name: "asset",
   initialState,
   reducers: {
+    setProtocol(state, action: PayloadAction<ProtocolType>) {
+      state.protocol = action.payload;
+    },
     setICPSubaccounts(state, action: PayloadAction<ICPSubAccount[]>) {
       state.ICPSubaccounts = action.payload;
     },
@@ -210,6 +254,79 @@ const assetSlice = createSlice({
     setAcordeonAssetIdx(state, action: PayloadAction<string>) {
       state.acordeonIdx = action.payload;
     },
+    setHPLClient(state, action: PayloadAction<HPLClient>) {
+      state.hplClient = action.payload;
+    },
+    setIngressActor(state, action: PayloadAction<ActorSubclass<IngressActor>>) {
+      state.ingressActor = action.payload;
+    },
+    setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
+      state.subaccounts = action.payload;
+    },
+    setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
+      state.hplFTs = action.payload;
+    },
+    setHPLAssetsData(state, action: PayloadAction<HPLAssetData[]>) {
+      state.hplFTsData = action.payload;
+    },
+    setHPLSubsData(state, action: PayloadAction<HPLSubData[]>) {
+      state.hplSubsData = action.payload;
+    },
+    setHPLVTsData(state, action: PayloadAction<HPLVirtualData[]>) {
+      state.hplVTsData = action.payload;
+    },
+    setHPLSelectedSub(state, action: PayloadAction<HPLSubAccount | undefined>) {
+      state.selectSub = action.payload;
+    },
+    setHPLSelectedVt(state, action: PayloadAction<HPLVirtualSubAcc | undefined>) {
+      state.selectVt = action.payload;
+    },
+    editHPLAsset: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          ftEdited: HPLAsset;
+          ftData: HPLAssetData[];
+        }>,
+      ) {
+        const { ftEdited, ftData } = action.payload;
+        const auxFts = state.hplFTs.map((ft) => {
+          if (ft.id === ftEdited.id) {
+            return ftEdited;
+          } else return ft;
+        });
+        state.hplFTs = auxFts;
+        state.hplFTsData = ftData;
+      },
+      prepare(ftEdited: HPLAsset, ftData: HPLAssetData[]) {
+        return {
+          payload: { ftEdited, ftData },
+        };
+      },
+    },
+    editHPLSub: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          subEdited: HPLSubAccount;
+          subData: HPLSubData[];
+        }>,
+      ) {
+        const { subEdited, subData } = action.payload;
+        const auxSubs = state.subaccounts.map((sb) => {
+          if (sb.sub_account_id === subEdited.sub_account_id) {
+            return subEdited;
+          } else return sb;
+        });
+        state.subaccounts = auxSubs;
+        state.hplSubsData = subData;
+      },
+      prepare(subEdited: HPLSubAccount, subData: HPLSubData[]) {
+        return {
+          payload: { subEdited, subData },
+        };
+      },
+    },
     clearDataAsset(state) {
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -221,12 +338,19 @@ const assetSlice = createSlice({
       state.selectedAccount = undefined;
       state.selectedAsset = undefined;
       state.selectedTransaction = undefined;
+      state.hplClient = defaultValue;
+      state.subaccounts = [];
+      state.hplFTs = [];
+      state.hplFTsData = [];
+      state.hplSubsData = [];
+      state.hplVTsData = [];
     },
   },
 });
 
 export const {
   clearDataAsset,
+  setProtocol,
   setICPSubaccounts,
   setLoading,
   setTokens,
@@ -245,6 +369,18 @@ export const {
   setTxWorker,
   setTxLoad,
   setAcordeonAssetIdx,
+  // HPL LEDGER
+  setHPLClient,
+  setIngressActor,
+  setHPLSubAccounts,
+  setHPLAssets,
+  setHPLAssetsData,
+  setHPLSubsData,
+  setHPLVTsData,
+  setHPLSelectedSub,
+  setHPLSelectedVt,
+  editHPLAsset,
+  editHPLSub,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

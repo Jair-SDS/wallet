@@ -6,7 +6,7 @@ import { CustomButton } from "@components/Button";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { clsx } from "clsx";
 import { useTranslation } from "react-i18next";
-import { GeneralHook } from "../hooks/generalHook";
+import { GeneralHook } from "../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
 
 interface AddAssetAutomaticProps {
@@ -78,9 +78,9 @@ const AddAssetAutomatic = ({
                 />
               </div>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Portal className="w-full">
+            <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="text-lg bg-PrimaryColorLight w-[8rem] rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor"
+                className="text-lg bg-PrimaryColorLight w-[8rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor"
                 sideOffset={2}
                 align="end"
               >
@@ -139,9 +139,9 @@ const AddAssetAutomatic = ({
                 />
               </div>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Portal className="w-full">
+            <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="text-lg bg-PrimaryColorLight w-[16rem] rounded-lg dark:bg-SecondaryColor z-[999] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor"
+                className="text-lg bg-PrimaryColorLight w-[16rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor"
                 sideOffset={2}
                 align="end"
               >

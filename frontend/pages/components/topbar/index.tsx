@@ -48,7 +48,7 @@ const TopBarComponent = () => {
 
   return (
     <Fragment>
-      <div className="flex flex-row justify-between min-h-[4.5rem] w-full bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor border-b border-BorderColorFourthLight dark:border-BorderColorFourth">
+      <div className="flex flex-row justify-between min-h-[4.5rem] w-full bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor ">
         <div className="flex flex-row justify-start items-center pl-9 gap-24 text-md">
           {theme === ThemesEnum.enum.dark ? (
             <ICRC1LogoDark className="max-w-[7rem] h-auto" />

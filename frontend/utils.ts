@@ -4,12 +4,23 @@ import { sha224 } from "@dfinity/principal/lib/cjs/utils/sha224.js";
 import { Buffer } from "buffer";
 import bigInt from "big-integer";
 import store from "@redux/Store";
-import { Transaction, Operation, RosettaTransaction, Asset } from "./redux/models/AccountModels";
+import {
+  Transaction,
+  Operation,
+  RosettaTransaction,
+  Asset,
+  HPLSubAccount,
+  ResQueryState,
+  HPLVirtualSubAcc,
+  HPLAsset,
+  HPLData,
+} from "./redux/models/AccountModels";
 import { IcrcTokenMetadataResponse, IcrcAccount, encodeIcrcAccount } from "@dfinity/ledger";
 import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, TransactionType } from "./const";
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
+import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -70,6 +81,12 @@ export const getFirstNChars = (str: string, digits: number) => {
 
 export const shortAddress = (address: string, digitsL: number, digitsR: number, prefix?: string, sufix?: string) => {
   return `${prefix ? prefix : ""}${address.slice(0, digitsL)} ... ${address.slice(-digitsR)}${sufix ? sufix : ""}`;
+};
+
+export const getContactColor = (idx: number) => {
+  if (idx % 3 === 0) return "bg-ContactColor1";
+  else if (idx % 3 === 1) return "bg-ContactColor2";
+  else return "bg-ContactColor3";
 };
 
 export const principalToAccountIdentifier = (p: string, s?: number[] | number) => {
@@ -379,4 +396,71 @@ export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
   return assets.find((a: Asset) => {
     return a.tokenSymbol === symbol;
   })?.symbol;
+};
+
+export const formatHPLSubaccounts = (
+  infoSubs: Array<[SubId, AccountType]>,
+  infoFT: Array<
+    [
+      AssetId,
+      {
+        controller: Principal;
+        decimals: number;
+        description: string;
+      },
+    ]
+  >,
+  infoVT: Array<[VirId, [AccountType, Principal]]>,
+  hplData: HPLData,
+  stateData: ResQueryState,
+) => {
+  const auxSubaccounts: HPLSubAccount[] = [];
+
+  stateData.accounts.map((sa) => {
+    const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
+
+    const asset = infoSubs.find((sub) => sub[0] === sa[0]);
+    const auxVirtuals: HPLVirtualSubAcc[] = [];
+    stateData.virtualAccounts.map((va) => {
+      const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
+      const vtInfo = infoVT.find((vt) => vt[0].toString() === va[0].toString());
+      if (va[1][1] === sa[0]) {
+        auxVirtuals.push({
+          name: vtData ? vtData.name : "",
+          virt_sub_acc_id: va[0].toString(),
+          amount: va[1][0].ft.toString(),
+          currency_amount: "0.00",
+          expiration: Math.trunc(Number(va[1][2].toString()) / 1000000),
+          accesBy: vtInfo ? vtInfo[1][1].toString() : "",
+          backing: va[1][1].toString(),
+        });
+      }
+    });
+
+    auxSubaccounts.push({
+      name: subData ? subData.name : "",
+      sub_account_id: sa[0].toString(),
+      amount: sa[1].ft.toString(),
+      currency_amount: "0.00",
+      transaction_fee: "0",
+      ft: asset ? asset[1].ft.toString() : "0",
+      virtuals: auxVirtuals,
+    });
+  });
+  const auxFT: HPLAsset[] = [];
+  stateData.ftSupplies.map((asst) => {
+    const ftData = hplData.ft.find((ft) => ft.id === asst[0].toString());
+    const ft = infoFT.find((ft) => asst[0] === ft[0]);
+    auxFT.push({
+      id: asst[0].toString(),
+      name: ftData ? ftData.name : "",
+      token_name: "",
+      symbol: ftData ? ftData.symbol : "",
+      token_symbol: "",
+      decimal: ft ? ft[1].decimals : 0,
+      description: ft ? ft[1].description : "",
+      logo: "",
+    });
+  });
+  return { auxSubaccounts, auxFT };
 };
