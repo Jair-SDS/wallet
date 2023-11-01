@@ -103,7 +103,7 @@ const AssetsList = () => {
                       setAssetInfo={setAssetInfo}
                       setAssetOpen={setAssetOpen}
                       tokens={tokens}
-                    ></AssetElement>
+                    />
                   );
               })}
             </Accordion.Root>
@@ -118,7 +118,7 @@ const AssetsList = () => {
                   setAssetOpen={setAssetOpen}
                   editNameId={editNameId}
                   setEditNameId={setEditNameId}
-                ></HplSubaccountElem>
+                />
               );
             })
           )}
