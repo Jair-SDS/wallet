@@ -6,16 +6,16 @@ import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
 import { DrawerOption, DrawerOptionEnum, IconTypeEnum } from "@/const";
 import { toFullDecimal } from "@/utils";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
-import { Fragment } from "react";
+import { FC, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 interface ICRCSubaccountActionProps {
-  setDrawerOption(value: DrawerOption): void;
-  setDrawerOpen(value: boolean): void;
+  onActionClick(value: DrawerOption): void;
 }
 
-const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccountActionProps) => {
+const ICRCSubaccountAction: FC<ICRCSubaccountActionProps> = ({ onActionClick }) => {
   const { getAssetIcon, selectedAsset, selectedAccount } = GeneralHook();
   const { t } = useTranslation();
+
   return (
     <Fragment>
       <div className="flex flex-col justify-center items-start bg-SelectRowColor w-[17rem] h-full rounded-l-md p-4 text-[#ffff]">
@@ -35,7 +35,7 @@ const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccount
           <div
             className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
             onClick={() => {
-              setDrawer(DrawerOptionEnum.Enum.SEND);
+              onActionClick(DrawerOptionEnum.Enum.SEND);
             }}
           >
             <img src={ArrowTopRightIcon} className="w-3 h-3" alt="send-icon" />
@@ -46,7 +46,7 @@ const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccount
           <div
             className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
             onClick={() => {
-              setDrawer(DrawerOptionEnum.Enum.RECEIVE);
+              onActionClick(DrawerOptionEnum.Enum.RECEIVE);
             }}
           >
             <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />
@@ -67,13 +67,6 @@ const ICRCSubaccountAction = ({ setDrawerOption, setDrawerOpen }: ICRCSubaccount
       </div>
     </Fragment>
   );
-
-  function setDrawer(drawer: DrawerOption) {
-    setDrawerOption(drawer);
-    setTimeout(() => {
-      setDrawerOpen(true);
-    }, 150);
-  }
 };
 
 export default ICRCSubaccountAction;

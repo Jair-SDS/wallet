@@ -1,21 +1,23 @@
 // svgs
 import ArrowBottomLeftIcon from "@assets/svg/files/arrow-bottom-left-icon.svg";
 import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
+import QRIcon from "@assets/svg/files/qr-white.svg";
 //
-import { DrawerOption, DrawerOptionEnum, ProtocolTypeEnum } from "@/const";
+import { DrawerOption, DrawerOptionEnum } from "@/const";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
 import { toFullDecimal } from "@/utils";
+
 interface HPLSubaccountActionProps {
-  setDrawerOption(value: DrawerOption): void;
-  setDrawerOpen(value: boolean): void;
-  setHplTx(value: boolean): void;
+  onActionClick(value: DrawerOption): void;
+  enableReceiveAction: boolean;
 }
 
-const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen, setHplTx }: HPLSubaccountActionProps) => {
-  const { protocol, getAssetLogo, selectSub, getFtFromSub } = useHPL(false);
+const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccountActionProps) => {
+  const { getAssetLogo, selectSub, getFtFromSub } = useHPL(false);
   const { t } = useTranslation();
+
   return (
     <Fragment>
       <div className="flex flex-col justify-center items-start bg-SelectRowColor w-[17rem] h-full rounded-l-md p-4 text-[#ffff]">
@@ -35,9 +37,7 @@ const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen, setHplTx }: HPLSu
         <div className="flex flex-col justify-center items-center w-1/3 gap-1">
           <div
             className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
-            onClick={() => {
-              setDrawer(DrawerOptionEnum.Enum.SEND);
-            }}
+            onClick={() => onActionClick(DrawerOptionEnum.Enum.SEND)}
           >
             <img src={ArrowTopRightIcon} className="w-3 h-3" alt="send-icon" />
           </div>
@@ -46,36 +46,28 @@ const HPLSubaccountAction = ({ setDrawerOption, setDrawerOpen, setHplTx }: HPLSu
         <div className="flex flex-col justify-center items-center w-1/3 gap-1">
           <div
             className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
-            onClick={() => {
-              setDrawer(DrawerOptionEnum.Enum.RECEIVE);
-            }}
+            onClick={() => onActionClick(DrawerOptionEnum.Enum.RECEIVE)}
           >
             <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />
           </div>
           <p className="text-md">{t("pull")}</p>
         </div>
-        <div className="flex flex-col justify-center items-center w-1/3 gap-1">
+        <div
+          className={`flex flex-col justify-center items-center w-1/3 gap-1 ${enableReceiveAction ? "" : "opacity-70"}`}
+        >
           <div
-            className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
-            onClick={() => {
-              setDrawer(DrawerOptionEnum.Enum.HPL_QR);
-            }}
+            className={`flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md ${
+              enableReceiveAction ? "cursor-pointer" : "cursor-not-allowed pointer-events-none"
+            }`}
+            onClick={() => onActionClick(DrawerOptionEnum.Enum.HPL_QR)}
           >
-            <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />
+            <img src={QRIcon} className="w-full h-full px-1" alt="receive-icon" />
           </div>
           <p className="text-md">{t("receive")}</p>
         </div>
       </div>
     </Fragment>
   );
-
-  function setDrawer(drawer: DrawerOption) {
-    setDrawerOption(drawer);
-    protocol === ProtocolTypeEnum.Enum.HPL && setHplTx(true);
-    setTimeout(() => {
-      setDrawerOpen(true);
-    }, 150);
-  }
 };
 
 export default HPLSubaccountAction;

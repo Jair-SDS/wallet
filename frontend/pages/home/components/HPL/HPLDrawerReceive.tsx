@@ -1,17 +1,22 @@
-import { Fragment } from "react";
-import { GeneralHook } from "../../hooks/generalHook";
+import { FC, Fragment } from "react";
 import { encodeIcrcAccount } from "@dfinity/ledger";
 import { Principal } from "@dfinity/principal";
-import { hexToUint8Array } from "@/utils";
+import { numToUint32Array } from "@/utils";
 import QRCode from "react-qr-code";
-import { CustomCopy } from "@components/CopyTooltip";
 import { AccountHook } from "@pages/hooks/accountHook";
+import { CustomCopy } from "@components/CopyTooltip";
 
-const DrawerReceive = () => {
-  const { selectedAccount } = GeneralHook();
+interface HPLDrawerReceive {
+  virtualAccount: string | null;
+}
+
+const HPLDrawerReceive: FC<HPLDrawerReceive> = ({ virtualAccount }) => {
   const { authClient } = AccountHook();
 
-  console.log({ asd: hexToUint8Array(selectedAccount?.sub_account_id || "0x0") });
+  const qrCodeValue = encodeIcrcAccount({
+    owner: Principal.fromText(authClient),
+    ...(virtualAccount ? { subaccount: numToUint32Array(parseInt(virtualAccount)) } : {}),
+  });
 
   return (
     <Fragment>
@@ -19,29 +24,22 @@ const DrawerReceive = () => {
         <div className="flex justify-center items-center w-[60%] border-4 border-SelectRowColor bg-white rounded-lg p-3">
           <QRCode
             style={{ height: "auto", maxWidth: "100%", width: "100%", borderRadius: "0.5rem" }}
-            value={copyValue()}
+            value={qrCodeValue}
           />
         </div>
         <div className="flex flex-row justify-center items-center p-2 border border-BorderColorLight dark:border-BorderColor bg-SecondaryColorLight dark:bg-SecondaryColor rounded">
-          <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-2 break-all">{copyValue()}</p>
+          <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-2 break-all">{qrCodeValue}</p>
           <CustomCopy
             background="default"
             copyStroke="fill-PrimaryTextColor"
             size={"small"}
             boxSize={"small"}
-            copyText={copyValue()}
+            copyText={qrCodeValue}
           />
         </div>
       </div>
     </Fragment>
   );
-
-  function copyValue() {
-    return encodeIcrcAccount({
-      owner: Principal.fromText(authClient),
-      subaccount: hexToUint8Array(selectedAccount?.sub_account_id || "0x0"),
-    });
-  }
 };
 
-export default DrawerReceive;
+export default HPLDrawerReceive;

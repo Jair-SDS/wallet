@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
+
 interface QRscannerProps {
   qrView: boolean;
   onSuccess(value: string): void;
@@ -12,6 +13,7 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
   const { t } = useTranslation();
   const [myScanner, setScanner] = useState<Html5QrcodeScanner>();
   const [myScannerErr, setScannerErr] = useState("");
+
   useEffect(() => {
     if (qrView) {
       const scanner = new Html5QrcodeScanner(
@@ -43,6 +45,11 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
     }
   }, [qrView]);
 
+  const handleBackButton = () => {
+    myScanner?.clear();
+    setQRview(false);
+  };
+
   return (
     <div className="flex flex-col justify-between items-start w-full h-full text-PrimaryTextColorLight dark:text-PrimaryTextColor">
       <div className="flex flex-col justify-center items-center w-full gap-2">
@@ -72,9 +79,5 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
       </div>
     </div>
   );
-  function handleBackButton() {
-    myScanner?.clear();
-    setQRview(false);
-  }
 };
 export default QRscanner;

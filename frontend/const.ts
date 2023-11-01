@@ -26,7 +26,7 @@ export type OperationStatus = z.infer<typeof OperationStatusEnum>;
 export const OperationTypeEnum = z.enum(["TRANSACTION", "FEE"]);
 export type OperationType = z.infer<typeof OperationTypeEnum>;
 
-export const DrawerOptionEnum = z.enum(["SEND", "RECEIVE", "WRAP", "HPL_QR"]);
+export const DrawerOptionEnum = z.enum(["SEND", "RECEIVE", "WRAP", "HPL_QR", "ADD_VIRTUAL", "EDIT_VIRTUAL"]);
 export type DrawerOption = z.infer<typeof DrawerOptionEnum>;
 
 export const IconTypeEnum = z.enum(["ASSET", "HEADER", "FILTER"]);
