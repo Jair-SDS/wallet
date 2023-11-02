@@ -47,13 +47,15 @@ const VirtualTable: FC<VirtualTableProps> = ({
     setLoading(false);
   }, [deleteModal]);
 
-  const handleVirtualAccountClick = (vId: string) => () => {
-    if (selectedVirtualAccount === vId) {
-      setSelectedVirtualAccount(null);
-    } else {
-      setSelectedVirtualAccount(vId);
-    }
-  };
+  function handleVirtualAccountClick(vId: string) {
+    return () => {
+      if (selectedVirtualAccount === vId) {
+        setSelectedVirtualAccount(null);
+      } else {
+        setSelectedVirtualAccount(vId);
+      }
+    };
+  }
 
   const getVirtualAccountClassNames = (isSelected: boolean) => {
     const defaultClassNames =

@@ -24,9 +24,9 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
   const selectedButton = "border-AccpetButtonColor";
   const unselectedButton = "text-PrimaryTextColorLight dark:text-PrimaryTextColor";
 
-  const getButtonSelectionStyle = (option: Option) => {
+  function getButtonSelectionStyle(option: Option) {
     return drawerOption === option.type ? selectedButton : unselectedButton;
-  };
+  }
 
   const getButtonClassNames = (option: Option) => {
     const defaultClassNames = "!font-light";

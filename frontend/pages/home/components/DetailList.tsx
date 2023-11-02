@@ -32,17 +32,17 @@ const DetailList = () => {
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
   const enableReceiveAction = selectedVirtualAccount !== null;
 
-  const handleAddVirtualAccount = () => {
+  function handleAddVirtualAccount() {
     setDrawerOpen(true);
     setDrawerOption(DrawerOptionEnum.Enum.ADD_VIRTUAL);
-  };
+  }
 
-  const handleActionClick = (drawer: DrawerOption) => {
+  function handleActionClick(drawer: DrawerOption) {
     setDrawerOption(drawer);
     setTimeout(() => {
       setDrawerOpen(true);
     }, 150);
-  };
+  }
 
   const getDrawers = (option: ProtocolType) => {
     switch (option) {
