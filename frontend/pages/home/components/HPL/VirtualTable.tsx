@@ -9,7 +9,7 @@ import { shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Fragment, useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import Modal from "@components/Modal";
 import { CustomButton } from "@components/Button";
@@ -17,16 +17,26 @@ import { AccountHook } from "@pages/hooks/accountHook";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
 import LoadingLoader from "@components/Loader";
+import { DrawerOption, DrawerOptionEnum } from "@/const";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
+  setDrawerOption(value: DrawerOption): void;
+  setSelectedVirtualAccount(value: string | null): void;
+  selectedVirtualAccount: string | null;
 }
 
-const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
+const VirtualTable: FC<VirtualTableProps> = ({
+  setDrawerOpen,
+  selectedVirtualAccount,
+  setSelectedVirtualAccount,
+  setDrawerOption,
+}) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
   const { ingressActor, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
     useHPL(false);
+
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
@@ -66,8 +76,9 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
           {getVirtualsSorted().map((vt, k) => {
             return (
               <tr
-                className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo hover:bg-SelectRowColor/20"
+                className={getVirtualAccountClassNames(vt.virt_sub_acc_id === selectedVirtualAccount)}
                 key={k}
+                onClick={handleVirtualAccountClick(vt.virt_sub_acc_id)}
               >
                 <td className={`${rowStyle(vt.expiration)}`}>{vt.virt_sub_acc_id}</td>
                 <td
@@ -160,6 +171,28 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
       </Modal>
     </Fragment>
   );
+
+  function handleVirtualAccountClick(vId: string) {
+    return () => {
+      if (selectedVirtualAccount === vId) {
+        setSelectedVirtualAccount(null);
+      } else {
+        setSelectedVirtualAccount(vId);
+      }
+    };
+  }
+
+  function getVirtualAccountClassNames(isSelected: boolean) {
+    const defaultClassNames =
+      "border-b border-BorderColorTwoLight dark:border-BorderColorTwo cursor-pointer hover:bg-SelectRowColor/20 focus:bg-SelectRowColor/20 cursor";
+    if (isSelected) {
+      const selectedClassNames =
+        "relative after:absolute after:w-[4px] after:h-full after:left-0 after:bg-[#33B2EF] bg-SelectRowColor/20";
+      return [defaultClassNames, selectedClassNames].join(" ");
+    }
+    return defaultClassNames;
+  }
+
   function getVirtualsSorted() {
     if (selectSub) {
       switch (sortVt) {
@@ -183,16 +216,20 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
   function onOpenMoreChange(k: number, e: boolean) {
     setOpenMore(e ? k : -1);
   }
+
   function onEdit(vt: HPLVirtualSubAcc) {
     setSelVt(vt);
     setDrawerOpen(true);
+    setDrawerOption(DrawerOptionEnum.Enum.EDIT_VIRTUAL);
     setOpenMore(-1);
   }
+
   function onDelete(vt: HPLVirtualSubAcc) {
     setSelVt(vt);
     setOpenMore(-1);
     setDeleteModal(true);
   }
+
   async function onConfirmDelete() {
     setLoading(true);
     if (selectVt) {
@@ -214,6 +251,7 @@ const VirtualTable = ({ setDrawerOpen }: VirtualTableProps) => {
     }
     setLoading(false);
   }
+
   // Tailwind CSS
   function rowStyle(date: number) {
     return clsx({

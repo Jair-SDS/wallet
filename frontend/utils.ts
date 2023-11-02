@@ -97,6 +97,7 @@ export const principalToAccountIdentifier = (p: string, s?: number[] | number) =
   const array2 = new Uint8Array([...checksum, ...hash]);
   return array2;
 };
+
 export const roundToDecimalN = (numb: number | string, decimal: number | string) => {
   return Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
 };
@@ -113,6 +114,7 @@ export function toFullDecimal(numb: number | string, decimal: number | string) {
   }
   return x.toString();
 }
+
 export const getUSDfromToken = (
   tokenAmount: string | number,
   marketPrice: string | number,
@@ -463,4 +465,16 @@ export const formatHPLSubaccounts = (
     });
   });
   return { auxSubaccounts, auxFT };
+};
+
+//
+export const numToUint32Array = (num: number) => {
+  let arr = new Uint8Array(32);
+
+  for (let i = 31; i >= 0; i--) {
+    arr[i] = num % 4294967296;
+    num = Math.floor(num / 4294967296);
+  }
+
+  return arr;
 };

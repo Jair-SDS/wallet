@@ -64,18 +64,23 @@ export const useHPL = (open: boolean) => {
   const setSelSub = (sub: HPLSubAccount | undefined) => {
     dispatch(setHPLSelectedSub(sub));
   };
+
   const setSelVt = (vt: HPLVirtualSubAcc | undefined) => {
     dispatch(setHPLSelectedVt(vt));
   };
+
   const editSelAsset = (ft: HPLAsset, ftData: HPLAssetData[]) => {
     dispatch(editHPLAsset(ft, ftData));
   };
+
   const editSelSub = (subEdited: HPLSubAccount, subData: HPLSubData[]) => {
     dispatch(editHPLSub(subEdited, subData));
   };
+
   const editSubData = (subData: HPLSubData[]) => {
     dispatch(setHPLSubsData(subData));
   };
+
   const editVtData = (vtData: HPLVirtualData[]) => {
     dispatch(setHPLVTsData(vtData));
   };
