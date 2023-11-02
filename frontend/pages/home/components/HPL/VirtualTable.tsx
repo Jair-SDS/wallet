@@ -47,27 +47,6 @@ const VirtualTable: FC<VirtualTableProps> = ({
     setLoading(false);
   }, [deleteModal]);
 
-  function handleVirtualAccountClick(vId: string) {
-    return () => {
-      if (selectedVirtualAccount === vId) {
-        setSelectedVirtualAccount(null);
-      } else {
-        setSelectedVirtualAccount(vId);
-      }
-    };
-  }
-
-  const getVirtualAccountClassNames = (isSelected: boolean) => {
-    const defaultClassNames =
-      "border-b border-BorderColorTwoLight dark:border-BorderColorTwo cursor-pointer hover:bg-SelectRowColor/20 focus:bg-SelectRowColor/20 cursor";
-    if (isSelected) {
-      const selectedClassNames =
-        "relative after:absolute after:w-[4px] after:h-full after:left-0 after:bg-[#33B2EF] bg-SelectRowColor/20";
-      return [defaultClassNames, selectedClassNames].join(" ");
-    }
-    return defaultClassNames;
-  };
-
   return (
     <Fragment>
       <table className="w-full text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60 text-md">
@@ -192,6 +171,28 @@ const VirtualTable: FC<VirtualTableProps> = ({
       </Modal>
     </Fragment>
   );
+
+  function handleVirtualAccountClick(vId: string) {
+    return () => {
+      if (selectedVirtualAccount === vId) {
+        setSelectedVirtualAccount(null);
+      } else {
+        setSelectedVirtualAccount(vId);
+      }
+    };
+  }
+
+  function getVirtualAccountClassNames(isSelected: boolean) {
+    const defaultClassNames =
+      "border-b border-BorderColorTwoLight dark:border-BorderColorTwo cursor-pointer hover:bg-SelectRowColor/20 focus:bg-SelectRowColor/20 cursor";
+    if (isSelected) {
+      const selectedClassNames =
+        "relative after:absolute after:w-[4px] after:h-full after:left-0 after:bg-[#33B2EF] bg-SelectRowColor/20";
+      return [defaultClassNames, selectedClassNames].join(" ");
+    }
+    return defaultClassNames;
+  }
+
   function getVirtualsSorted() {
     if (selectSub) {
       switch (sortVt) {

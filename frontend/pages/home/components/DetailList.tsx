@@ -32,6 +32,47 @@ const DetailList = () => {
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
   const enableReceiveAction = selectedVirtualAccount !== null;
 
+  return (
+    <>
+      <div
+        className={
+          "relative flex flex-col justify-start items-center bg-SecondaryColorLight dark:bg-SecondaryColor w-full pt-6 pr-4 pl-7 gap-2 h-fit min-h-full"
+        }
+      >
+        <div className="flex flex-row justify-between items-center w-full h-[4.75rem] bg-TransactionHeaderColorLight dark:bg-TransactionHeaderColor rounded-md">
+          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+            <ICRCSubaccountAction onActionClick={handleActionClick} />
+          ) : (
+            <HPLSubaccountAction onActionClick={handleActionClick} enableReceiveAction={enableReceiveAction} />
+          )}
+        </div>
+
+        <div className="w-full max-h-[calc(100vh-11.25rem)] scroll-y-light">
+          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+            <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
+          ) : (
+            <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
+              <VirtualTable
+                setSelectedVirtualAccount={setSelectedVirtualAccount}
+                selectedVirtualAccount={selectedVirtualAccount}
+                setDrawerOpen={setDrawerOpen}
+                setDrawerOption={setDrawerOption}
+              />
+            </SubaccountInfo>
+          )}
+        </div>
+      </div>
+      <div
+        id="right-drower"
+        className={`h-[calc(100%-4.5rem)] fixed z-[999] top-4.5rem w-[28rem] overflow-x-hidden transition-{right} duration-500 ${
+          drawerOpen ? "!right-0" : "right-[-30rem]"
+        }`}
+      >
+        {getDrawers(protocol)}
+      </div>
+    </>
+  );
+
   function handleAddVirtualAccount() {
     setDrawerOpen(true);
     setDrawerOption(DrawerOptionEnum.Enum.ADD_VIRTUAL);
@@ -44,7 +85,7 @@ const DetailList = () => {
     }, 150);
   }
 
-  const getDrawers = (option: ProtocolType) => {
+  function getDrawers(option: ProtocolType) {
     switch (option) {
       case "ICRC1":
         return selectedTransaction ? (
@@ -95,48 +136,7 @@ const DetailList = () => {
             return <DrawerVirtual setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />;
         }
     }
-  };
-
-  return (
-    <>
-      <div
-        className={
-          "relative flex flex-col justify-start items-center bg-SecondaryColorLight dark:bg-SecondaryColor w-full pt-6 pr-4 pl-7 gap-2 h-fit min-h-full"
-        }
-      >
-        <div className="flex flex-row justify-between items-center w-full h-[4.75rem] bg-TransactionHeaderColorLight dark:bg-TransactionHeaderColor rounded-md">
-          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-            <ICRCSubaccountAction onActionClick={handleActionClick} />
-          ) : (
-            <HPLSubaccountAction onActionClick={handleActionClick} enableReceiveAction={enableReceiveAction} />
-          )}
-        </div>
-
-        <div className="w-full max-h-[calc(100vh-11.25rem)] scroll-y-light">
-          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-            <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
-          ) : (
-            <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
-              <VirtualTable
-                setSelectedVirtualAccount={setSelectedVirtualAccount}
-                selectedVirtualAccount={selectedVirtualAccount}
-                setDrawerOpen={setDrawerOpen}
-                setDrawerOption={setDrawerOption}
-              />
-            </SubaccountInfo>
-          )}
-        </div>
-      </div>
-      <div
-        id="right-drower"
-        className={`h-[calc(100%-4.5rem)] fixed z-[999] top-4.5rem w-[28rem] overflow-x-hidden transition-{right} duration-500 ${
-          drawerOpen ? "!right-0" : "right-[-30rem]"
-        }`}
-      >
-        {getDrawers(protocol)}
-      </div>
-    </>
-  );
+  }
 };
 
 export default DetailList;

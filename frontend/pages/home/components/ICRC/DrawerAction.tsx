@@ -24,20 +24,6 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
   const selectedButton = "border-AccpetButtonColor";
   const unselectedButton = "text-PrimaryTextColorLight dark:text-PrimaryTextColor";
 
-  function getButtonSelectionStyle(option: Option) {
-    return drawerOption === option.type ? selectedButton : unselectedButton;
-  }
-
-  const getButtonClassNames = (option: Option) => {
-    const defaultClassNames = "!font-light";
-    if (option.disabled) return `${defaultClassNames} ${unselectedButton} pointer-events-none`;
-    return `${defaultClassNames} ${getButtonSelectionStyle(option)}`;
-  };
-
-  const handleDrawerOptionClick = (option: Option) => {
-    setDrawerOption(option.type);
-  };
-
   return (
     <Fragment>
       <div className="flex flex'row justify-between items-center w-full">
@@ -66,6 +52,20 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
       {children}
     </Fragment>
   );
+
+  function getButtonSelectionStyle(option: Option) {
+    return drawerOption === option.type ? selectedButton : unselectedButton;
+  }
+
+  function getButtonClassNames(option: Option) {
+    const defaultClassNames = "!font-light";
+    if (option.disabled) return `${defaultClassNames} ${unselectedButton} pointer-events-none`;
+    return `${defaultClassNames} ${getButtonSelectionStyle(option)}`;
+  }
+
+  function handleDrawerOptionClick(option: Option) {
+    setDrawerOption(option.type);
+  }
 };
 
 export default DrawerAction;

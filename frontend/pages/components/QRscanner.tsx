@@ -45,11 +45,6 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
     }
   }, [qrView]);
 
-  function handleBackButton() {
-    myScanner?.clear();
-    setQRview(false);
-  }
-
   return (
     <div className="flex flex-col justify-between items-start w-full h-full text-PrimaryTextColorLight dark:text-PrimaryTextColor">
       <div className="flex flex-col justify-center items-center w-full gap-2">
@@ -79,5 +74,10 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
       </div>
     </div>
   );
+
+  function handleBackButton() {
+    myScanner?.clear();
+    setQRview(false);
+  }
 };
 export default QRscanner;
