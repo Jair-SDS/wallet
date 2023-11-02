@@ -38,7 +38,6 @@ export const useHPL = (open: boolean) => {
   const [subInfoType, setSubInfoType] = useState<SubaccountInfo>(SubaccountInfoEnum.Enum.VIRTUALS);
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [editedFt, setEditedFt] = useState<HPLAsset | undefined>();
-  const [zeroBalance, setZeroBalance] = useState(false);
   const [searchKeyHPL, setSearchKeyHPL] = useState("");
   const [expiration, setExpiration] = useState(true);
   const [newVt, setNewVt] = useState<HPLVirtualSubAcc>({
@@ -60,6 +59,12 @@ export const useHPL = (open: boolean) => {
     ft: "-1",
     virtuals: [],
   });
+
+  let enableZeroBalance = false;
+  if (localStorage.getItem("enableZeroBalance") !== null) {
+    enableZeroBalance = JSON.parse(localStorage.getItem("enableZeroBalance") ?? "");
+  }
+  const [zeroBalance, setZeroBalance] = useState(enableZeroBalance);
 
   const setSelSub = (sub: HPLSubAccount | undefined) => {
     dispatch(setHPLSelectedSub(sub));
