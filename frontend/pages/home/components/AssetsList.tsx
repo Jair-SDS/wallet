@@ -77,7 +77,11 @@ const AssetsList = () => {
             </div>
           </div>
         )}
-        <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light">
+        <div
+          className={`w-full ${
+            protocol === ProtocolTypeEnum.Enum.HPL ? "max-h-[calc(100vh-15rem)]" : "max-h-[calc(100vh-13rem)]"
+          } scroll-y-light`}
+        >
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <Accordion.Root
               className=""

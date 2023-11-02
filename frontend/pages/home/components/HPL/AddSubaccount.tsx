@@ -202,7 +202,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     setLoading(true);
     if (selAsset && newHplSub.name.trim() !== "")
       try {
-        const res = (await ingressActor.openAccounts(BigInt(selAsset.id), { ft: BigInt(1) })) as any;
+        const res = (await ingressActor.openAccounts(BigInt(1), { ft: BigInt(selAsset.id) })) as any;
 
         const auxSubs = [...hplSubsData, { id: res.ok.firs.toString(), name: newHplSub.name.trim() }];
         localStorage.setItem(

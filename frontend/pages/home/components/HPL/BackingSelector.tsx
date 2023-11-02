@@ -167,7 +167,8 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
       setSelBacking({ id: sub.sub_account_id, name: sub.name });
       setModalOpen(true);
     } else {
-      setNewVt({ ...newVt, backing: selBacking.id });
+      setSelBacking({ id: sub.sub_account_id, name: sub.name });
+      setNewVt({ ...newVt, backing: sub.sub_account_id });
       setSelAssetOpen(false);
     }
   }
