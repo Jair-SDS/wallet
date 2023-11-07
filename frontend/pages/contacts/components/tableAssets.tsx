@@ -32,6 +32,7 @@ interface TableAssetsProps {
   setSubaccEditedErr(value: SubAccountContactErr): void;
   changeSubIdx(value: string): void;
   setDeleteModal(value: boolean): void;
+  setDeleteHpl(value: boolean): void;
   selSubaccIdx: string;
   subaccEdited: SubAccountContact;
   subaccEditedErr: SubAccountContactErr;
@@ -52,6 +53,7 @@ const TableAssets = ({
   setSubaccEditedErr,
   changeSubIdx,
   setDeleteModal,
+  setDeleteHpl,
   selSubaccIdx,
   subaccEdited,
   subaccEditedErr,
@@ -157,6 +159,7 @@ const TableAssets = ({
                       setSelSubaccIdx={setSelSubaccIdx}
                       setSelContactPrin={setSelContactPrin}
                       setDeleteModal={setDeleteModal}
+                      setDeleteHpl={setDeleteHpl}
                       setDeleteType={setDeleteType}
                       setSubaccEditedErr={setSubaccEditedErr}
                       setDeleteObject={setDeleteObject}
@@ -213,6 +216,7 @@ const TableAssets = ({
       totalAssets: 0,
       TotalSub: asst.subaccounts.length,
     });
+    setDeleteHpl(false);
     setDeleteModal(true);
     setDeleteType(DeleteContactTypeEnum.Enum.ASSET);
   }

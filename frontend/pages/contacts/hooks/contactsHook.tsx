@@ -11,6 +11,8 @@ import {
   removeContact,
   removeContactAsset,
   removeContactSubacc,
+  removeHplContact,
+  removeHplContactRemote,
 } from "@redux/contacts/ContactsReducer";
 import {
   AssetContact,
@@ -45,6 +47,9 @@ export const useContacts = () => {
   ) => dispatch(editContactSubacc(principal, tokenSymbol, subIndex, newName, newIndex));
   const addCntctSubacc = (principal: string, tokenSymbol: string, newName: string, newIndex: string) =>
     dispatch(addContactSubacc(principal, tokenSymbol, newName, newIndex));
+
+  const removeHplCntct = (principal: string) => dispatch(removeHplContact(principal));
+  const removeHplCntctRemote = (principal: string, index: string) => dispatch(removeHplContactRemote(principal, index));
   // filter
   const [assetOpen, setAssetOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -68,6 +73,7 @@ export const useContacts = () => {
 
   // contact list
   const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteHpl, setDeleteHpl] = useState(false);
   const [deleteType, setDeleteType] = useState<DeleteContactTypeEnum>(DeleteContactTypeEnum.Enum.ASSET);
   const [selCntcPrinAddAsst, setSelCntcPrinAddAsst] = useState("");
   const [selContactPrin, setSelContactPrin] = useState("");
@@ -285,6 +291,10 @@ export const useContacts = () => {
     setAddSub,
     newContactShowErr,
     setNewContactShowErr,
+    deleteHpl,
+    setDeleteHpl,
+    removeHplCntct,
+    removeHplCntctRemote,
     isValidSubacc,
     isAvailableAddContact,
   };

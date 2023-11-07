@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
+import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/hpl-client";
 
 const TokenSubAccount = z.object({
   numb: z.string(),
@@ -51,3 +52,21 @@ const AuthNetwork = z.object({
 });
 
 export type AuthNetwork = z.infer<typeof AuthNetwork>;
+
+//
+export type TxArgs = [
+  from: TransferAccountReference,
+  to: TransferAccountReference,
+  asset: bigint,
+  amount: number | bigint | "max",
+  memo?: Array<Uint8Array | number[]>,
+];
+
+export type TxHistoryEntry = {
+  txArgs: TxArgs;
+  lastSeenStatus: SimpleTransferStatusKey | "pickAggregator" | "submitting" | null;
+  aggregatorPrincipal: string | null;
+  txId?: [bigint, bigint];
+  submitRequestId?: string;
+  errorMessage?: string;
+};

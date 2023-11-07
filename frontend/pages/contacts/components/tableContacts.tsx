@@ -16,6 +16,7 @@ interface TableContactsProps {
   setSubaccEditedErr(value: SubAccountContactErr): void;
   changeSubIdx(value: string): void;
   setDeleteModal(value: boolean): void;
+  setDeleteHpl(value: boolean): void;
   subaccEdited: SubAccountContact;
   subaccEditedErr: SubAccountContactErr;
   searchKey: string;
@@ -30,6 +31,7 @@ const TableContacts = ({
   setSubaccEditedErr,
   changeSubIdx,
   setDeleteModal,
+  setDeleteHpl,
   subaccEdited,
   subaccEditedErr,
   searchKey,
@@ -116,6 +118,7 @@ const TableContacts = ({
                     setSubaccEditedErr={setSubaccEditedErr}
                     changeSubIdx={changeSubIdx}
                     setDeleteModal={setDeleteModal}
+                    setDeleteHpl={setDeleteHpl}
                     selSubaccIdx={selSubaccIdx}
                     subaccEdited={subaccEdited}
                     subaccEditedErr={subaccEditedErr}
@@ -224,6 +227,7 @@ const TableContacts = ({
       totalAssets: cntc.assets.length,
       TotalSub: ttlSub,
     });
+    setDeleteHpl(false);
     setDeleteModal(true);
   }
   function onChevIconClic(cntc: Contact) {

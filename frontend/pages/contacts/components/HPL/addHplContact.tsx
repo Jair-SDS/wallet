@@ -147,6 +147,8 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                 <p>{"Principal"}</p>
                 <CustomInput
                   sizeInput={"medium"}
+                  textStyle={edit ? "disable" : "primary"}
+                  disabled={edit ? true : false}
                   sufix={
                     edit ? (
                       <></>
@@ -216,15 +218,15 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                     {chainRemotes.map((rmt, k) => {
                       const ft = getFtFromSub(rmt.ftIndex);
                       const checked = checkIds.includes(rmt.index);
-                      const expired = dayjs(rmt.expired).isBefore(dayjs());
+                      const expired = rmt.expired === 0 ? false : dayjs(rmt.expired).isBefore(dayjs());
                       const bg = rmt.status === "deleted" ? "bg-[#B0736F]" : expired ? "bg-[#7C7C7C]" : "";
                       return (
                         <tr key={k} className={`${checked ? "bg-SelectRowColor/20" : ""}`}>
                           <td className="p-2 text-center">
                             <div className="relative flex flex-row justify-center items-center w-full">
-                              <div className={`absolute left-0 w-2 h-[90%] rounded-full ${bg}`}></div>
+                              <div className={`absolute left-0 w-2 h-full rounded-full ${bg}`}></div>
+                              <p>{rmt.index}</p>
                             </div>
-                            <p>{rmt.index}</p>
                           </td>
                           <td>
                             <CustomInput
@@ -279,7 +281,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
             <div className="flex flex-row justify-end items-center w-full gap-3">
               <p className="text-TextErrorColor">{t(newContactErr)}</p>
               <CustomButton className="min-w-[5rem]" onClick={onAddContact}>
-                <p>{t("add.contact")}</p>
+                <p>{t(edit ? "save" : "add.contact")}</p>
               </CustomButton>
             </div>
           </div>
@@ -408,7 +410,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
       if (newContact.principal.trim() === "") {
         validContact = false;
         err = { ...err, msg: "check.add.contact.prin.empty.err", prin: true };
-      } else if (!checkPrincipalValid(newContact.principal) || !checkUsedPrincipal(newContact.principal)) {
+      } else if (!checkPrincipalValid(newContact.principal) || (!checkUsedPrincipal(newContact.principal) && !edit)) {
         validContact = false;
         err = { ...err, msg: "check.add.contact.prin.err", prin: true };
       } else if (checkIds.length === 0) {

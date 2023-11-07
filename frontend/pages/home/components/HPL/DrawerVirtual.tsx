@@ -181,7 +181,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
             backingAccount: [BigInt(newVt.backing)],
             state: [{ ft_set: BigInt(newVt.amount) }],
-            expiration: [BigInt(newVt.expiration)],
+            expiration: [BigInt(newVt.expiration * 1000000)],
           });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
         } catch (e) {
@@ -194,10 +194,11 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             Principal.fromText(newVt.accesBy),
             { ft: BigInt(newVt.amount) },
             BigInt(newVt.backing),
-            BigInt(newVt.expiration),
+            BigInt(newVt.expiration * 1000000),
           )) as any;
+          console.log(res);
           saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name }, selectVt!, false);
-        } catch {
+        } catch (e) {
           setErrMsg(t("err.back"));
         }
       }

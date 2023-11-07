@@ -37,6 +37,7 @@ interface TableSubAccountsProps {
   setSelSubaccIdx(value: string): void;
   setSelContactPrin(value: string): void;
   setDeleteModal(value: boolean): void;
+  setDeleteHpl(value: boolean): void;
   setDeleteType(value: DeleteContactTypeEnum): void;
   setSubaccEditedErr(value: SubAccountContactErr): void;
   setDeleteObject(value: NewContactSubAccount): void;
@@ -56,6 +57,7 @@ const TableSubAccounts = ({
   setSelSubaccIdx,
   setSelContactPrin,
   setDeleteModal,
+  setDeleteHpl,
   setDeleteType,
   setSubaccEditedErr,
   setDeleteObject,
@@ -380,6 +382,7 @@ const TableSubAccounts = ({
       totalAssets: 0,
       TotalSub: 0,
     });
+    setDeleteHpl(false);
     setDeleteModal(true);
   }
 

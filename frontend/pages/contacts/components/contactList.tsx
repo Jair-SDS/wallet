@@ -29,6 +29,8 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
     setDeleteObject,
     subaccEditedErr,
     setSubaccEditedErr,
+    deleteHpl,
+    setDeleteHpl,
   } = useContacts();
 
   return (
@@ -43,18 +45,29 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
             setSubaccEditedErr={setSubaccEditedErr}
             changeSubIdx={changeSubIdx}
             setDeleteModal={setDeleteModal}
+            setDeleteHpl={setDeleteHpl}
             subaccEdited={subaccEdited}
             subaccEditedErr={subaccEditedErr}
             searchKey={searchKey}
             assetFilter={assetFilter}
           ></TableContacts>
         ) : (
-          <TableHplContacts setAddOpen={setAddOpen} setEdit={setEdit} />
+          <TableHplContacts
+            setAddOpen={setAddOpen}
+            setEdit={setEdit}
+            setDeleteType={setDeleteType}
+            setDeleteHpl={setDeleteHpl}
+            setDeleteModal={setDeleteModal}
+            setDeleteObject={setDeleteObject}
+            searchKey={searchKey}
+            assetFilter={assetFilter}
+          />
         )}
       </div>
       <RemoveModal
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
+        deleteHpl={deleteHpl}
         deleteType={deleteType}
         getDeleteMsg={getDeleteMsg}
         deleteObject={deleteObject}
@@ -92,7 +105,9 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
 
     switch (deleteType) {
       case DeleteContactTypeEnum.Enum.CONTACT:
-        msg1 = t("delete.contact.contact.msg", { name: deleteObject.name });
+        msg1 = deleteHpl
+          ? t("delete.contact.contact.hpl.msg")
+          : t("delete.contact.contact.msg", { name: deleteObject.name });
         msg2 = deleteObject.name;
         break;
       case DeleteContactTypeEnum.Enum.ASSET:
@@ -100,7 +115,9 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
         msg2 = deleteObject.symbol;
         break;
       case DeleteContactTypeEnum.Enum.SUB:
-        msg1 = t("delete.contact.sub.msg", { name: deleteObject.subaccName });
+        msg1 = deleteHpl
+          ? t("delete.contact.remote.hpl.msg")
+          : t("delete.contact.sub.msg", { name: deleteObject.subaccName });
         msg2 = deleteObject.subaccName;
         break;
       default:

@@ -56,6 +56,12 @@ const input = cva("button", {
         "placeholder:text-SecondaryTextColorLight/30",
         "dark:placeholder:text-SecondaryTextColor/30",
       ],
+      disable: [
+        "text-SecondaryTextColorLight/30",
+        "dark:text-SecondaryTextColor/30",
+        "placeholder:text-SecondaryTextColorLight/30",
+        "dark:placeholder:text-SecondaryTextColor/30",
+      ],
     },
   },
   defaultVariants: {

@@ -287,6 +287,48 @@ const contactsSlice = createSlice({
         };
       },
     },
+    removeHplContact: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          principal: string;
+        }>,
+      ) {
+        const auxContacts = state.hplContacts.filter((cnts) => cnts.principal !== action.payload.principal);
+
+        state.hplContacts = auxContacts;
+        setLocalHplContacts(auxContacts, state.storageCode);
+      },
+      prepare(principal: string) {
+        return {
+          payload: { principal },
+        };
+      },
+    },
+    removeHplContactRemote: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          principal: string;
+          index: string;
+        }>,
+      ) {
+        const auxContacts = state.hplContacts.map((cnts) => {
+          if (cnts.principal !== action.payload.principal) return cnts;
+          else {
+            return { ...cnts, assets: cnts.remotes.filter((asst) => asst.index !== action.payload.index) };
+          }
+        });
+
+        state.hplContacts = auxContacts;
+        setLocalHplContacts(auxContacts, state.storageCode);
+      },
+      prepare(principal: string, index: string) {
+        return {
+          payload: { principal, index },
+        };
+      },
+    },
     setHplContacts(state, action: PayloadAction<HplContact[]>) {
       state.hplContacts = action.payload;
       setLocalHplContacts(action.payload, state.storageCode);
@@ -331,6 +373,8 @@ export const {
   removeContactAsset,
   removeContactSubacc,
   setHplContacts,
+  removeHplContact,
+  removeHplContactRemote,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

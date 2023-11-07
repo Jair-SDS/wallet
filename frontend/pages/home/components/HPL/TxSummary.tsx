@@ -9,7 +9,8 @@ import { useTranslation } from "react-i18next";
 import { CustomInput } from "@components/Input";
 import { CustomButton } from "@components/Button";
 import LoadingLoader from "@components/Loader";
-import { HPLClient, TransferAccountReference } from "@research-ag/hpl-client";
+import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
+import { catchError, lastValueFrom, map, of } from "rxjs";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -161,7 +162,26 @@ const TxSummary = ({
       const aggregator = await hplClient.pickAggregator();
       const amountToSend = BigInt(amnt);
       if (aggregator) {
-        await hplClient.prepareSimpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
+        const { commit } = await hplClient.prepareSimpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
+
+        console.log("commit", commit);
+        const txId = await commit();
+        console.log("txId", txId);
+        // poll tx
+        await lastValueFrom(
+          hplClient.pollTx(aggregator, txId).pipe(
+            map((x) => {
+              console.log(JSON.stringify(x.statusPayload, bigIntReplacer));
+              console.log(x.status);
+            }),
+            catchError((e: any) => {
+              handleError(e, (log: string) => {
+                console.log(log);
+              });
+              return of(null);
+            }),
+          ),
+        );
         await reloadHPLBallance();
         onClose();
       }
@@ -170,6 +190,11 @@ const TxSummary = ({
     }
 
     setLoading(false);
+  }
+
+  function handleError(e: any, logCallback: (log: string) => void) {
+    const errorMessage = e.errorKey !== undefined ? `Error: ${e.toString()}` : "Error: " + e.message;
+    logCallback(errorMessage);
   }
 };
 
