@@ -3,33 +3,50 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 import ChevronRightIcon from "@assets/svg/files/chevron-right-icon.svg";
 import ChevronRightDarkIcon from "@assets/svg/files/chevron-right-dark-icon.svg";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
-import { Fragment } from "react";
+import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useContacts } from "../hooks/contactsHook";
 import { CustomInput } from "@components/Input";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { ThemeHook } from "@pages/hooks/themeHook";
-import { IconTypeEnum, ThemesEnum } from "@/const";
+import { IconTypeEnum, ProtocolTypeEnum, ThemesEnum } from "@/const";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import Modal from "@components/Modal";
 import AddContact from "./addContact";
-import clsx from "clsx";
-import { Asset } from "@redux/models/AccountModels";
+import { clsx } from "clsx";
+import { Asset, HPLAsset, HplContact } from "@redux/models/AccountModels";
+import { useHPL } from "@pages/hooks/hplHook";
+import AddEditHplContact from "./HPL/addHplContact";
 
 interface ContactFiltersProps {
   searchKey: string;
   assetFilter: string[];
   setSearchKey(value: string): void;
   setAssetFilter(value: string[]): void;
+  edit: HplContact | undefined;
+  setEdit(value: HplContact | undefined): void;
+  setAddOpen(value: boolean): void;
+  addOpen: boolean;
 }
 
-const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }: ContactFiltersProps) => {
+const ContactFilters = ({
+  searchKey,
+  assetFilter,
+  setSearchKey,
+  setAssetFilter,
+  edit,
+  setEdit,
+  setAddOpen,
+  addOpen,
+}: ContactFiltersProps) => {
   const { t } = useTranslation();
   const { theme } = ThemeHook();
-  const { assetOpen, setAssetOpen, setAddOpen, addOpen } = useContacts();
-  const { assets, getAssetIcon } = GeneralHook();
+  const { assetOpen, setAssetOpen } = useContacts();
+  const { assets, getAssetIcon, hplFTs, protocol } = GeneralHook();
+  const { getAssetLogo, getFtFromSub } = useHPL(false);
+  const [assetSearch, setAssetSearch] = useState("");
 
   return (
     <Fragment>
@@ -41,19 +58,33 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
           }}
         >
           <DropdownMenu.Trigger asChild>
-            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[10rem] h-[2.5rem] bg-SecondaryColorLight dark:bg-SecondaryColor">
+            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-SecondaryColorLight dark:bg-SecondaryColor">
               <div className="flex flex-row justify-between items-center w-full">
                 {assetFilter.length === 0 || assetFilter.length === assets.length ? (
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("all")}</p>
                 ) : assetFilter.length === 1 ? (
-                  <div className="flex flex-start justify-start items-center gap-2">
-                    {getAssetIcon(
-                      IconTypeEnum.Enum.FILTER,
-                      assetFilter[0],
-                      assets.find((ast) => ast.tokenSymbol === assetFilter[0])?.logo,
-                    )}
-                    <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{assetFilter[0]}</p>
-                  </div>
+                  protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+                    <div className="flex flex-start justify-start items-center gap-2">
+                      {getAssetIcon(
+                        IconTypeEnum.Enum.FILTER,
+                        assetFilter[0],
+                        assets.find((ast) => ast.tokenSymbol === assetFilter[0])?.logo,
+                      )}
+                      <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{assetFilter[0]}</p>
+                    </div>
+                  ) : (
+                    <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
+                      <img src={getAssetLogo(assetFilter[0])} className="w-8 h-8" alt="info-icon" />
+                      <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
+                        <p className=" text-PrimaryTextColor">{assetFilter[0]}</p>
+                      </div>
+                      <p>{`${getFtFromSub(assetFilter[0]).name !== "" ? getFtFromSub(assetFilter[0]).name : ""}${
+                        getFtFromSub(assetFilter[0]).name !== "" && getFtFromSub(assetFilter[0]).symbol !== ""
+                          ? " / "
+                          : ""
+                      }${getFtFromSub(assetFilter[0]).symbol !== "" ? getFtFromSub(assetFilter[0]).symbol : ""}`}</p>
+                    </div>
+                  )
                 ) : (
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{`${assetFilter.length} ${t(
                     "selections",
@@ -69,10 +100,23 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className="text-md bg-PrimaryColorLight w-[10rem] rounded-lg dark:bg-SecondaryColor scroll-y-light z-[999] max-h-80 text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor/20"
+              className="text-md bg-PrimaryColorLight w-[14rem] rounded-lg dark:bg-SecondaryColor scroll-y-light z-[999] max-h-80 text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor/20"
               sideOffset={2}
               align="end"
             >
+              {protocol === ProtocolTypeEnum.Enum.HPL && (
+                <div className="flex w-full px-3 py-2">
+                  <CustomInput
+                    prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
+                    sizeInput={"small"}
+                    intent={"secondary"}
+                    placeholder=""
+                    compOutClass=""
+                    value={assetSearch}
+                    onChange={onSearchChange}
+                  />
+                </div>
+              )}
               <button
                 onClick={handleSelectAll}
                 className="flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor"
@@ -80,30 +124,70 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
                 <p>{t("selected.all")}</p>
                 <CustomCheck
                   className="border-BorderColorLight dark:border-BorderColor"
-                  checked={assetFilter.length === assets.length}
+                  checked={
+                    (assetFilter.length === assets.length && protocol === ProtocolTypeEnum.Enum.ICRC1) ||
+                    (assetFilter.length === hplFTs.length && protocol === ProtocolTypeEnum.Enum.HPL)
+                  }
                 />
               </button>
-              {assets.map((asset, k) => {
-                return (
-                  <button
-                    key={k}
-                    className={assetStyle(k, assets)}
-                    onClick={() => {
-                      handleSelectAsset(asset);
-                    }}
-                  >
-                    <div className="flex flex-start justify-start items-center gap-2">
-                      {getAssetIcon(IconTypeEnum.Enum.FILTER, asset.tokenSymbol, asset.logo)}
-                      <p>{asset.symbol}</p>
-                    </div>
+              {protocol === ProtocolTypeEnum.Enum.ICRC1 &&
+                assets.map((asset, k) => {
+                  return (
+                    <button
+                      key={k}
+                      className={assetStyle(k, assets)}
+                      onClick={() => {
+                        handleSelectAsset(asset);
+                      }}
+                    >
+                      <div className="flex flex-start justify-start items-center gap-2">
+                        {getAssetIcon(IconTypeEnum.Enum.FILTER, asset.tokenSymbol, asset.logo)}
+                        <p>{asset.symbol}</p>
+                      </div>
 
-                    <CustomCheck
-                      className="border-BorderColorLight dark:border-BorderColor"
-                      checked={assetFilter.includes(asset.tokenSymbol)}
-                    />
-                  </button>
-                );
-              })}
+                      <CustomCheck
+                        className="border-BorderColorLight dark:border-BorderColor"
+                        checked={assetFilter.includes(asset.tokenSymbol)}
+                      />
+                    </button>
+                  );
+                })}
+              {protocol === ProtocolTypeEnum.Enum.HPL &&
+                hplFTs
+                  .filter((ft) => {
+                    const key = assetSearch.toLowerCase();
+                    return (
+                      ft.name.toLowerCase().includes(key) ||
+                      ft.symbol.toLowerCase().includes(key) ||
+                      ft.id.toString().includes(key)
+                    );
+                  })
+                  .map((ft, k) => {
+                    return (
+                      <button
+                        key={k}
+                        className="p-1 flex flex-row justify-between items-center px-3 w-full text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                        onClick={() => {
+                          handleSelectFt(ft);
+                        }}
+                      >
+                        <div className="flex flex-row justify-start items-center gap-2">
+                          <img src={getAssetLogo(ft.id)} className="w-6 h-6" alt="info-icon" />
+                          <div className="flex justify-center items-center  px-1 bg-slate-500 rounded-md">
+                            <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
+                          </div>
+                          <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " - " : ""}${
+                            ft.symbol !== "" ? ft.symbol : ""
+                          }`}</p>
+                        </div>
+
+                        <CustomCheck
+                          className="border-BorderColorLight dark:border-BorderColor"
+                          checked={assetFilter.includes(ft.id)}
+                        />
+                      </button>
+                    );
+                  })}
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
@@ -112,7 +196,7 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
           prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
           intent={"secondary"}
           sizeInput={"medium"}
-          placeholder={t("search.contact")}
+          placeholder={t(protocol === ProtocolTypeEnum.Enum.HPL ? "search" : "search.contact")}
           value={searchKey}
           onChange={(e) => {
             setSearchKey(e.target.value);
@@ -121,6 +205,7 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
         <CustomButton
           size={"icon"}
           onClick={() => {
+            setEdit(undefined);
             setAddOpen(true);
           }}
         >
@@ -133,17 +218,32 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
         padding="py-5 px-8"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
       >
-        <AddContact setAddOpen={setAddOpen} />
+        {protocol === ProtocolTypeEnum.Enum.HPL ? (
+          <AddEditHplContact setAddOpen={setAddOpen} edit={edit} />
+        ) : (
+          <AddContact setAddOpen={setAddOpen} />
+        )}
       </Modal>
     </Fragment>
   );
 
   function handleSelectAll() {
-    if (assetFilter.length === assets.length) setAssetFilter([]);
+    let symbols: string[] = [];
+    if (
+      (assetFilter.length === assets.length && protocol === ProtocolTypeEnum.Enum.ICRC1) ||
+      (assetFilter.length === hplFTs.length && protocol === ProtocolTypeEnum.Enum.HPL)
+    )
+      setAssetFilter([]);
     else {
-      const symbols = assets.map((ast) => {
-        return ast.tokenSymbol;
-      });
+      if (protocol === ProtocolTypeEnum.Enum.ICRC1) {
+        symbols = assets.map((ast) => {
+          return ast.tokenSymbol;
+        });
+      } else {
+        symbols = hplFTs.map((ft) => {
+          return ft.id;
+        });
+      }
       setAssetFilter(symbols);
     }
   }
@@ -153,6 +253,17 @@ const ContactFilters = ({ searchKey, assetFilter, setSearchKey, setAssetFilter }
       const auxSymbols = assetFilter.filter((ast) => ast !== asset.tokenSymbol);
       setAssetFilter(auxSymbols);
     } else setAssetFilter([...assetFilter, asset.tokenSymbol]);
+  }
+
+  function handleSelectFt(ft: HPLAsset) {
+    if (assetFilter.includes(ft.id)) {
+      const auxSymbols = assetFilter.filter((ast) => ast !== ft.id);
+      setAssetFilter(auxSymbols);
+    } else setAssetFilter([...assetFilter, ft.id]);
+  }
+
+  function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
+    setAssetSearch(e.target.value);
   }
 };
 

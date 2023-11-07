@@ -18,7 +18,9 @@ export const GeneralHook = () => {
 
   const {
     ICPSubaccounts,
+    protocol,
     assets,
+    hplFTs,
     accounts,
     transactions,
     selectedAsset,
@@ -108,6 +110,8 @@ export const GeneralHook = () => {
     userAgent,
     ICPSubaccounts,
     assets,
+    hplFTs,
+    protocol,
     accounts,
     transactions,
     selectedAsset,

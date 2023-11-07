@@ -60,6 +60,7 @@
   "succes.caps": "ÉXITO",
   "subacc": "SubCnt",
   "sub-acc": "Sub-cuenta",
+  "remote.accounts": "Cuentas Remotas",
   "err.qr.img": "No se pudo detectar un QR válido para la carga de la imagen.",
   "hex.check": "Agregar índice manualmente",
   "add.subacc": "Agregar Subcuenta",

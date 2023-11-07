@@ -21,13 +21,14 @@ import {
   SubAccountContactErr,
 } from "@redux/models/ContactsModels";
 import bigInt from "big-integer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useContacts = () => {
   const dispatch = useAppDispatch();
 
   // reducer
-  const { contacts } = useAppSelector((state) => state.contacts);
+  const { contacts, hplContacts } = useAppSelector((state) => state.contacts);
+  const { protocol } = useAppSelector((state) => state.asset);
   const updateContact = (editedContact: Contact, pastPrincipal: string) =>
     dispatch(editContact(editedContact, pastPrincipal));
   const addAsset = (asset: AssetContact[], pastPrincipal: string) => dispatch(addAssetToContact(asset, pastPrincipal));
@@ -215,8 +216,14 @@ export const useContacts = () => {
     return isAvailable;
   }
 
+  useEffect(() => {
+    setAssetFilter([]);
+  }, [protocol]);
+
   return {
+    protocol,
     contacts,
+    hplContacts,
     assetOpen,
     setAssetOpen,
     searchKey,

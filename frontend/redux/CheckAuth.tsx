@@ -23,7 +23,7 @@ import {
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
-import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
+import { clearDataContacts, setContacts, setHplContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/service.did.d";
 import { idlFactory as IngressIDLFactory } from "@candid/candid.did";
@@ -103,6 +103,12 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   if (hplVTsData != null) {
     const hplVTsDataJson = JSON.parse(hplVTsData);
     store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
+  }
+  // HPL CONTACTS
+  const hplContactsData = localStorage.getItem("hpl-contacts-" + authIdentity.getPrincipal().toString());
+  if (hplContactsData != null) {
+    const hplContactsDataJson = JSON.parse(hplContactsData);
+    store.dispatch(setHplContacts(hplContactsDataJson.contacts));
   }
 
   store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));

@@ -14,13 +14,14 @@ import {
   HPLVirtualSubAcc,
   HPLAsset,
   HPLData,
+  HplRemote,
 } from "./redux/models/AccountModels";
 import { IcrcTokenMetadataResponse, IcrcAccount, encodeIcrcAccount } from "@dfinity/ledger";
 import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, TransactionType } from "./const";
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
+import { AccountState, AccountType, AssetId, RemoteId, SubId, Time, VirId } from "@candid/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -463,4 +464,26 @@ export const formatHPLSubaccounts = (
     });
   });
   return { auxSubaccounts, auxFT };
+};
+
+export const formatHplRemotes = (
+  info: Array<[RemoteId, AccountType]>,
+  state: Array<[RemoteId, [AccountState, Time]]>,
+) => {
+  const auxRemotes: HplRemote[] = [];
+  info.map((rmtInfo) => {
+    const rmtState = state.find((rmtState) => rmtInfo[0][1] === rmtState[0][1]);
+    if (rmtState) {
+      auxRemotes.push({
+        name: "",
+        index: rmtInfo[0][1].toString(),
+        status: "",
+        expired: Number(rmtState[1][1]),
+        amount: rmtState[1][0].ft.toString(),
+        ftIndex: rmtInfo[1].ft.toString(),
+      });
+    }
+  });
+
+  return auxRemotes;
 };

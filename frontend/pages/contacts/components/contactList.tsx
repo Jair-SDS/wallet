@@ -2,18 +2,23 @@ import { Fragment } from "react";
 import { useContacts } from "../hooks/contactsHook";
 import { useTranslation } from "react-i18next";
 import { checkHexString } from "@/utils";
-import { DeleteContactTypeEnum } from "@/const";
+import { DeleteContactTypeEnum, ProtocolTypeEnum } from "@/const";
 import RemoveModal from "./removeModal";
 import TableContacts from "./tableContacts";
+import TableHplContacts from "./HPL/tableHplContacts";
+import { HplContact } from "@redux/models/AccountModels";
 
 interface ContactListProps {
   searchKey: string;
   assetFilter: string[];
+  setAddOpen(value: boolean): void;
+  setEdit(value: HplContact | undefined): void;
 }
 
-const ContactList = ({ searchKey, assetFilter }: ContactListProps) => {
+const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactListProps) => {
   const { t } = useTranslation();
   const {
+    protocol,
     subaccEdited,
     setSubaccEdited,
     deleteModal,
@@ -29,19 +34,23 @@ const ContactList = ({ searchKey, assetFilter }: ContactListProps) => {
   return (
     <Fragment>
       <div className="flex flex-col w-full h-full mt-3 scroll-y-light max-h-[calc(100vh-12rem)]">
-        <TableContacts
-          changeName={changeName}
-          setDeleteType={setDeleteType}
-          setDeleteObject={setDeleteObject}
-          setSubaccEdited={setSubaccEdited}
-          setSubaccEditedErr={setSubaccEditedErr}
-          changeSubIdx={changeSubIdx}
-          setDeleteModal={setDeleteModal}
-          subaccEdited={subaccEdited}
-          subaccEditedErr={subaccEditedErr}
-          searchKey={searchKey}
-          assetFilter={assetFilter}
-        ></TableContacts>
+        {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+          <TableContacts
+            changeName={changeName}
+            setDeleteType={setDeleteType}
+            setDeleteObject={setDeleteObject}
+            setSubaccEdited={setSubaccEdited}
+            setSubaccEditedErr={setSubaccEditedErr}
+            changeSubIdx={changeSubIdx}
+            setDeleteModal={setDeleteModal}
+            subaccEdited={subaccEdited}
+            subaccEditedErr={subaccEditedErr}
+            searchKey={searchKey}
+            assetFilter={assetFilter}
+          ></TableContacts>
+        ) : (
+          <TableHplContacts setAddOpen={setAddOpen} setEdit={setEdit} />
+        )}
       </div>
       <RemoveModal
         deleteModal={deleteModal}

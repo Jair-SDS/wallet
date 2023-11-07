@@ -330,6 +330,7 @@ export const {
   removeContact,
   removeContactAsset,
   removeContactSubacc,
+  setHplContacts,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

@@ -6,9 +6,19 @@ interface QRscannerProps {
   qrView: boolean;
   onSuccess(value: string): void;
   setQRview(value: boolean): void;
+  mb?: string;
+  backButton?: boolean;
+  outsideBack?: boolean;
 }
 
-const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
+const QRscanner = ({
+  qrView,
+  onSuccess,
+  setQRview,
+  mb = "mb-16",
+  backButton = true,
+  outsideBack = false,
+}: QRscannerProps) => {
   const { t } = useTranslation();
   const [myScanner, setScanner] = useState<Html5QrcodeScanner>();
   const [myScannerErr, setScannerErr] = useState("");
@@ -37,11 +47,14 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
       setScanner(scanner);
     } else {
       if (myScanner) {
-        myScanner.pause();
         myScanner.clear();
       }
     }
   }, [qrView]);
+
+  useEffect(() => {
+    outsideBack && handleBackButton();
+  }, [outsideBack]);
 
   return (
     <div className="flex flex-col justify-between items-start w-full h-full text-PrimaryTextColorLight dark:text-PrimaryTextColor">
@@ -65,11 +78,13 @@ const QRscanner = ({ qrView, onSuccess, setQRview }: QRscannerProps) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-row justify-end items-center mb-16">
-        <CustomButton intent="deny" className="mr-3 min-w-[5rem]" onClick={handleBackButton}>
-          <p>{t("back")}</p>
-        </CustomButton>
-      </div>
+      {backButton && (
+        <div className={`w-full flex flex-row justify-end items-center ${mb}`}>
+          <CustomButton intent="deny" className="mr-3 min-w-[5rem]" onClick={handleBackButton}>
+            <p>{t("back")}</p>
+          </CustomButton>
+        </div>
+      )}
     </div>
   );
   function handleBackButton() {

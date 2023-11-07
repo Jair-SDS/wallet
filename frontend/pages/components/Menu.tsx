@@ -12,7 +12,7 @@ const Menu = () => {
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
   const { assets, subaccounts, protocol } = AssetHook();
-  const { contacts } = useContacts();
+  const { contacts, hplContacts } = useContacts();
 
   const menuList = [
     {
@@ -26,7 +26,10 @@ const Menu = () => {
     {
       name: "Contacts",
       path: RoutingPathEnum.Enum.CONTACTS,
-      label: `${assets?.length !== 1 ? t("contacts") : t("contact")} (${contacts?.length})`,
+      label:
+        protocol === ProtocolTypeEnum.Enum.ICRC1
+          ? `${assets?.length !== 1 ? t("contacts") : t("contact")} (${contacts?.length})`
+          : `${hplContacts?.length !== 1 ? t("contacts") : t("contact")} (${hplContacts?.length})`,
     },
   ];
 
