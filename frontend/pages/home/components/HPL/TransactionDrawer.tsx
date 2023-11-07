@@ -18,13 +18,12 @@ import { toNumberFromUint8Array } from "@/utils";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;
-  setHplTx(value: boolean): void;
   drawerOption: DrawerOption;
   drawerOpen: boolean;
   locat: string;
 }
 
-const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, locat }: TransactionDrawerProps) => {
+const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: TransactionDrawerProps) => {
   const { t } = useTranslation();
   const {
     hplClient,
@@ -50,6 +49,7 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
   const [rmtAmountTo, setRmtAmountTo] = useState("0");
   const [ftId, setFtId] = useState("0");
   const [decimals, setDecimals] = useState(0);
+
   return (
     <div className="flex flex-col justify-start items-between bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
       <div className="flex flex-row justify-between items-center w-full mb-3">
@@ -59,6 +59,7 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
           onClick={onClose}
         />
       </div>
+
       {!summary ? (
         qrView ? (
           <div className="flex flex-col justify-start items-center w-full">
@@ -127,7 +128,6 @@ const TransactionDrawer = ({ setDrawerOpen, setHplTx, drawerOption, drawerOpen, 
 
   function onClose() {
     setDrawerOpen(false);
-    setHplTx(false);
     setQRview("");
     setAmount("0");
     setManualFrom(false);
