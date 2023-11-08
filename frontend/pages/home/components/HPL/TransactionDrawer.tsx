@@ -133,6 +133,7 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
     setManualFrom(false);
     setManualTo(false);
     setLoadingNext(false);
+    setSummary(false);
   }
 
   async function onNext() {

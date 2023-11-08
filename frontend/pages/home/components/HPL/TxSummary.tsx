@@ -98,9 +98,9 @@ const TxSummary = ({
           }
         />
       </div>
-      <div className="w-full flex flex-col justify-between items-center mt-12 gap-4">
+      <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
         <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
-        <div className="flex flex-row justify-end items-center w-full gap-2">
+        <div className="flex flex-row justify-end items-center gap-2">
           <CustomButton className="min-w-[5rem]" onClick={onBack} size={"small"}>
             <p>{t("back")}</p>
           </CustomButton>
