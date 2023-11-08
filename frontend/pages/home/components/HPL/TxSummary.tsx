@@ -115,23 +115,21 @@ const TxSummary = ({
     const amnt = e.target.value;
     if (validateAmount(amnt, decimals) || amnt === "") {
       setAmount(amnt);
+      setErrMsg("");
     }
   }
   function validateAmount(amnt: string, dec: number): boolean {
     // Regular expression to match a valid number with at most 'dec' decimals
     const regex = new RegExp(`^[0-9]+([.,][0-9]{0,${dec}})?$`);
-
     // Check if amount is a valid number
     if (!regex.test(amnt)) {
       return false;
     }
-
     // Additional check for decimal places
     const decimalPart = amnt.split(/[.,]/)[1];
     if (decimalPart && decimalPart.length > dec) {
       return false;
     }
-
     return true;
   }
   function onBack() {
@@ -162,17 +160,20 @@ const TxSummary = ({
       const aggregator = await hplClient.pickAggregator();
       const amountToSend = BigInt(amnt);
       if (aggregator) {
-        const { commit } = await hplClient.prepareSimpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
-
-        console.log("commit", commit);
-        const txId = await commit();
-        console.log("txId", txId);
+        const res = await hplClient.simpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
+        let validTx = false;
         // poll tx
         await lastValueFrom(
-          hplClient.pollTx(aggregator, txId).pipe(
+          hplClient.pollTx(aggregator, res).pipe(
             map((x) => {
-              console.log(JSON.stringify(x.statusPayload, bigIntReplacer));
-              console.log(x.status);
+              if (x.status === "processed") {
+                if (x.statusPayload[0].failure) {
+                  setErrMsg(getTxErrMsg(JSON.stringify(x.statusPayload, bigIntReplacer)));
+                } else if (x.statusPayload[0].success) {
+                  setErrMsg("");
+                  validTx = true;
+                }
+              }
             }),
             catchError((e: any) => {
               handleError(e, (log: string) => {
@@ -182,8 +183,11 @@ const TxSummary = ({
             }),
           ),
         );
-        await reloadHPLBallance();
-        onClose();
+        if (validTx) {
+          await reloadHPLBallance();
+          onClose();
+          onBack();
+        }
       }
     } catch (e) {
       console.log("txErr: ", e);
@@ -195,6 +199,12 @@ const TxSummary = ({
   function handleError(e: any, logCallback: (log: string) => void) {
     const errorMessage = e.errorKey !== undefined ? `Error: ${e.toString()}` : "Error: " + e.message;
     logCallback(errorMessage);
+  }
+
+  function getTxErrMsg(msg: string) {
+    let err = "";
+    if (msg.includes("InsufficientFunds")) err = "insufficient.funds";
+    return err;
   }
 };
 

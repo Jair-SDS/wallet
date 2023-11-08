@@ -141,8 +141,8 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
     const toFtId = await getAssetId(to);
     if (!validation(from)) setErrMsg("err.from");
     else if (!validation(to)) setErrMsg("err.to");
-    else if (fromFtId === "non") setErrMsg("remote.no.yours.from");
-    else if (toFtId === "non") setErrMsg("remote.no.yours.to");
+    else if (fromFtId === "non") setErrMsg(t("remote.no.yours.from", { from: getNametoShowinErr(to, "to") }));
+    else if (toFtId === "non") setErrMsg(t("remote.no.yours.to", { to: getNametoShowinErr(from, "from") }));
     else if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsg("not.match.asset.id");
     else if (!errMsg) {
       setFtId(fromFtId ? fromFtId : toFtId);
@@ -249,6 +249,12 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
     } catch {
       return { principal: "", id: "", err: true };
     }
+  }
+
+  function getNametoShowinErr(data: HplTxUser, userType: string) {
+    if (data.subaccount) return data.subaccount.name ? data.subaccount.name : t(userType);
+    else if (data.remote) return data.remote.name;
+    else return t(userType);
   }
 };
 
