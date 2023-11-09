@@ -64,9 +64,7 @@ const AssetsList = () => {
                 className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
                   zeroBalance ? "bg-[#26A17B]" : "bg-[#7E7D91]"
                 }`}
-                onClick={() => {
-                  setZeroBalance(!zeroBalance);
-                }}
+                onClick={handleFilterNonZeroBalances}
               >
                 <div
                   className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${
@@ -155,6 +153,12 @@ const AssetsList = () => {
       </div>
     </Fragment>
   );
+
+  function handleFilterNonZeroBalances() {
+    const value = !zeroBalance;
+    localStorage.setItem("enableZeroBalance", JSON.stringify(value));
+    setZeroBalance(value);
+  }
 
   function setSearch(e: ChangeEvent<HTMLInputElement>) {
     if (protocol === ProtocolTypeEnum.Enum.HPL) {
