@@ -142,7 +142,7 @@ const SelectTransfer = ({
                   ) : (
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
-                        <img src={getAssetLogo(select.subaccount.ft)} className="w-8 h-8" alt="info-icon" />
+                        <img src={getAssetLogo(select.subaccount.ft)} className="w-6 h-6" alt="info-icon" />
                         <div className="flex flex-col justify-start items-start gap-1">
                           <div className="flex flex-row justify-start items-center gap-2">
                             <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">

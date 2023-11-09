@@ -89,7 +89,7 @@ const SelectTxRemote = ({
                           0,
                         )}`}
                       >
-                        <p className="text-PrimaryTextColor">{getInitialFromName(select.remote.name, 2)}</p>
+                        <p className="text-PrimaryTextColor">{getInitialFromName(select.remote.name, 1)}</p>
                       </div>
                       <div className="flex flex-col justify-start items-start w-full">
                         <p>{select.remote.name}</p>
@@ -144,12 +144,12 @@ const SelectTxRemote = ({
                               0,
                             )}`}
                           >
-                            <p className="text-PrimaryTextColor">{getInitialFromName(rmt.name, 2)}</p>
+                            <p className="text-PrimaryTextColor">{getInitialFromName(rmt.name, 1)}</p>
                           </div>
                           <div className="flex flex-col justify-start items-start w-full">
                             <p>{rmt.name}</p>
                             <div className="flex flex-row justify-start items-center gap-3">
-                              <img src={getAssetLogo(rmt.ftIndex)} className="w-8 h-8" alt="info-icon" />
+                              <img src={getAssetLogo(rmt.ftIndex)} className="w-6 h-6" alt="info-icon" />
                               <p className="opacity-60">{`${rmt.amount} ${getFtFromSub(rmt.ftIndex).symbol}`}</p>
                             </div>
                           </div>
