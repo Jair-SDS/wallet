@@ -40,11 +40,7 @@ export const handleAuthenticated = async (opt: AuthNetwork) => {
       identityProvider:
         opt?.type === AuthNetworkTypeEnum.Values.NFID && opt?.type !== undefined && opt?.type !== null
           ? opt?.network + AUTH_PATH
-<<<<<<< HEAD
-          : "https://identity.ic0.app",
-=======
           : "https://identity.ic0.app/#authorize",
->>>>>>> 92279fa (fix: :bug: Change Host Agent for NFID login)
       onSuccess: () => {
         handleLoginApp(authClient.getIdentity());
         resolve();
