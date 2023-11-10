@@ -5,6 +5,7 @@ import {
   clearDataAuth,
   setAuthLoading,
   setAuthenticated,
+  setDebugMode,
   setRoutingPath,
   setUnauthenticated,
   setUserAgent,
@@ -27,6 +28,7 @@ import { clearDataContacts, setContacts, setHplContacts, setStorageCode } from "
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/service.did.d";
 import { idlFactory as IngressIDLFactory } from "@candid/candid.did";
+import { Ed25519KeyIdentity } from "@dfinity/identity";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -43,15 +45,33 @@ export const handleAuthenticated = async (opt: AuthNetwork) => {
           : "https://identity.ic0.app/#authorize",
       onSuccess: () => {
         handleLoginApp(authClient.getIdentity());
+        store.dispatch(setDebugMode(false));
         resolve();
       },
       onError: (e) => {
         console.error("onError", e);
         store.dispatch(setUnauthenticated());
+        store.dispatch(setDebugMode(false));
         reject();
       },
     });
   });
+};
+
+export const handleSeedAuthenticated = (seed: string) => {
+  const seedToIdentity: (seed: string) => Identity | null = (seed) => {
+    const seedBuf = new Uint8Array(new ArrayBuffer(32));
+    if (seed.length && seed.length > 0 && seed.length <= 32) {
+      seedBuf.set(new TextEncoder().encode(seed));
+      return Ed25519KeyIdentity.generate(seedBuf);
+    }
+    return null;
+  };
+  const newIdentity = seedToIdentity(seed);
+  if (newIdentity) {
+    store.dispatch(setDebugMode(true));
+    handleLoginApp(newIdentity);
+  }
 };
 
 export const handleLoginApp = async (authIdentity: Identity) => {
