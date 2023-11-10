@@ -38,6 +38,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
     setValidToken,
     errToken,
     setErrToken,
+    errIndex,
+    setErrIndex,
     modal,
     showModal,
     addStatus,
@@ -55,6 +57,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
 
   useEffect(() => {
     setErrToken("");
+    setErrIndex("");
     setValidToken(false);
   }, [assetOpen]);
 
@@ -74,6 +77,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
             setManual={setManual}
             errToken={errToken}
             setErrToken={setErrToken}
+            errIndex={errIndex}
+            setErrIndex={setErrIndex}
             validToken={validToken}
             setValidToken={setValidToken}
             newToken={newToken}

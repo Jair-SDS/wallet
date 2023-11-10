@@ -15,7 +15,7 @@ export const UseTransaction = () => {
 
   const getSelectedSubaccountICRCTx = async () => {
     const selectedToken = tokens.find((tk: Token) => tk.symbol === selectedAsset?.symbol);
-    if (selectedToken) {
+    if (selectedToken && selectedToken?.index !== "") {
       getAllTransactionsICRC1(
         selectedToken?.index || "",
         hexToUint8Array(selectedAccount?.sub_account_id || "0x0"),

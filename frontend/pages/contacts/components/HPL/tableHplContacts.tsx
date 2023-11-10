@@ -46,7 +46,7 @@ const TableHplContacts = ({
   return (
     <table className="w-full  text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
       <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 sticky top-0 z-[1]">
-        <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">
+        <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor ">
           <th className="p-2 text-left w-[30%] bg-PrimaryColorLight dark:bg-PrimaryColor ">
             <p>{t("name")}</p>
           </th>
@@ -68,7 +68,12 @@ const TableHplContacts = ({
           const open = contactOpen === cntc.principal;
           return (
             <>
-              <tr key={k} className={`${selected || open ? "bg-SelectRowColor/20" : ""}`}>
+              <tr
+                key={k}
+                className={`border-b border-BorderColorTwoLight dark:border-BorderColorTwo ${
+                  selected || open ? "bg-SelectRowColor/20" : ""
+                }`}
+              >
                 <td className="h-14 ">
                   <div className="relative flex flex-row justify-start items-center w-full gap-2 px-4 h-full">
                     {(selected || open) && <div className="absolute left-0 w-1 h-full bg-SelectRowColor"></div>}

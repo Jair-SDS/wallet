@@ -2,7 +2,7 @@
 import { ReactComponent as InfoIcon } from "@assets/svg/files/info-icon.svg";
 //
 import { GeneralHook } from "../../hooks/generalHook";
-import { IcrcLedgerCanister } from "@dfinity/ledger";
+import { IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
 import { getMetadataInfo } from "@/utils";
 import { CustomInput } from "@components/Input";
 import { CustomCopy } from "@components/CopyTooltip";
@@ -16,12 +16,16 @@ import { AccountDefaultEnum, IconTypeEnum } from "@/const";
 import { Asset } from "@redux/models/AccountModels";
 import { IdentityHook } from "@pages/hooks/identityHook";
 import { ChangeEvent } from "react";
+import { AccountHook } from "@pages/hooks/accountHook";
+import { Principal } from "@dfinity/principal";
 
 interface AddAssetManualProps {
   manual: boolean;
   setManual(value: boolean): void;
   errToken: string;
   setErrToken(value: string): void;
+  errIndex: string;
+  setErrIndex(value: string): void;
   validToken: boolean;
   setValidToken(value: boolean): void;
   newToken: Token;
@@ -38,6 +42,8 @@ const AddAssetManual = ({
   setManual,
   errToken,
   setErrToken,
+  errIndex,
+  setErrIndex,
   validToken,
   setValidToken,
   newToken,
@@ -51,6 +57,7 @@ const AddAssetManual = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  const { authClient } = AccountHook();
   const { getAssetIcon, checkAssetAdded } = GeneralHook();
   const { userAgent } = IdentityHook();
 
@@ -75,6 +82,7 @@ const AddAssetManual = ({
           sizeInput={"medium"}
           sufix={<CustomCopy size={"small"} copyText={newToken.address} side="left" align="center" />}
           intent={"secondary"}
+          border={errToken !== "" ? "error" : "primary"}
           disabled={asset ? true : false}
           inputClass={asset ? "opacity-40" : ""}
           placeholder="Ledger Principal"
@@ -90,12 +98,14 @@ const AddAssetManual = ({
         <CustomInput
           sizeInput={"medium"}
           intent={"secondary"}
+          border={errIndex !== "" ? "error" : "primary"}
           sufix={<CustomCopy size={"small"} copyText={newToken.index || ""} side="left" align="center" />}
           placeholder="Index Principal"
           compOutClass=""
           value={newToken.index}
           onChange={onChangeIndex}
         />
+        {errIndex !== "" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
       </div>
       <div className="flex flex-col items-start w-full mb-3">
         <p className="opacity-60">{t("token.symbol")}</p>
@@ -170,6 +180,7 @@ const AddAssetManual = ({
   }
 
   function onChangeIndex(e: ChangeEvent<HTMLInputElement>) {
+    setErrIndex("");
     setNewToken((prev: any) => {
       return { ...prev, index: e.target.value };
     });
@@ -206,13 +217,16 @@ const AddAssetManual = ({
       id_number: 999,
     });
     setErrToken("");
+    setErrIndex("");
     setValidToken(false);
   }
 
   async function onTest() {
+    let validData = false;
     if (checkAssetAdded(newToken.address)) {
       setErrToken(t("adding.asset.already.imported"));
       setValidToken(false);
+      validData = false;
     } else {
       try {
         const { metadata } = IcrcLedgerCanister.create({
@@ -229,11 +243,25 @@ const AddAssetManual = ({
           return { ...prev, decimal: decimals.toFixed(0), symbol: symbol, name: name, logo: logo };
         });
         setValidToken(true);
+        validData = true;
       } catch (e) {
-        setErrToken(`${(e as Error).message} ${t("add.asset.import.error")}`);
+        setErrToken(t("add.asset.import.error"));
         setValidToken(false);
+        validData = false;
       }
     }
+    if (newToken.index && newToken.index !== "")
+      try {
+        const { getTransactions } = IcrcIndexCanister.create({
+          canisterId: newToken.index as any,
+        });
+        await getTransactions({ max_results: BigInt(1), account: { owner: Principal.fromText(authClient) } });
+      } catch {
+        validData = false;
+        setErrIndex(t("add.index.import.error"));
+      }
+
+    return validData;
   }
 
   async function onSave() {
@@ -251,7 +279,7 @@ const AddAssetManual = ({
       // Edit tokens list and assets list
       dispatch(editToken(newToken, asset.tokenSymbol));
       setAssetOpen(false);
-    } else addAssetToData();
+    } else if (await onTest()) addAssetToData();
   }
 };
 

@@ -126,7 +126,7 @@ export const useContacts = () => {
       : true;
   };
 
-  function isValidSubacc(from: string, validContact: boolean, contAst?: AssetContact) {
+  function isValidSubacc(from: string, validContact: boolean, contAst?: AssetContact, onclose?: () => void) {
     const auxNewSub: SubAccountContact[] = [];
     const errName: number[] = [];
     const errId: number[] = [];
@@ -182,7 +182,7 @@ export const useContacts = () => {
         );
       } else {
         dispatch(addContact(auxContact));
-        setAddOpen(false);
+        onclose && onclose();
       }
       setNewContactSubNameErr([]);
       setNewContactSubIdErr([]);

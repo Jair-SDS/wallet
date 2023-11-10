@@ -35,7 +35,7 @@ export const WorkerHook = () => {
         });
       } else {
         const selectedToken = tokens.find((tk: Token) => tk.symbol === elementA?.symbol);
-        if (selectedToken) {
+        if (selectedToken && selectedToken?.index !== "") {
           elementA.subAccounts.map(async (elementS: SubAccount) => {
             let transactionsICRC1 = await getAllTransactionsICRC1(
               selectedToken?.index || "",

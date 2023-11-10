@@ -181,7 +181,9 @@ const AddContact = ({ setAddOpen }: AddContactProps) => {
     setNewContactErr(err.msg);
     setNewContactNameErr(err.name);
     setNewContactPrinErr(err.prin);
-    isValidSubacc("add", validContact);
+    isValidSubacc("add", validContact, undefined, () => {
+      setAddOpen(false);
+    });
   }
 };
 

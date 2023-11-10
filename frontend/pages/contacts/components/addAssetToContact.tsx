@@ -18,6 +18,7 @@ interface AddAssetToContactProps {
     from: string,
     validContact: boolean,
     contAst?: AssetContact,
+    onclose?: () => void,
   ): { validSubaccounts: boolean; auxNewSub: SubAccountContact[]; errName: number[]; errId: number[] };
   isAvailableAddContact(): boolean;
   newSubAccounts: SubAccountContact[];
