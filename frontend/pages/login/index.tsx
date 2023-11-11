@@ -117,6 +117,7 @@ const Login = () => {
       handleAuthenticated(opt);
     } else if (opt.type === AuthNetworkTypeEnum.Enum.NONE) {
       setSeedOpen((prev) => !prev);
+      setSeed("");
     }
   }
 
