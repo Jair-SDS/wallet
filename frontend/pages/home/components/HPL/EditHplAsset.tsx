@@ -54,7 +54,6 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             onChange={onSymbolChange}
           />
         </div>
-
         <div className="flex flex-row justify-between items-center w-full gap-2">
           <p className="text-TextErrorColor text-sm">{addSubErr != "" ? addSubErr : ""}</p>
           <CustomButton className="min-w-[5rem]" onClick={onAdd}>

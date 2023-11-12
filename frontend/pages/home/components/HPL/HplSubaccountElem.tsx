@@ -62,10 +62,10 @@ const HplSubaccountElem = ({
         <div className="flex flex-row justify-start w-full h-full text-md px-4">
           <div className="flex flex-row justify-start items-center gap-3 w-full">
             <img src={getAssetLogo(sub.ft)} className="w-8 h-8" alt="info-icon" />
-            <div className="flex flex-col justify-start items-start text-md w-full">
+            <div className="flex flex-col justify-start items-start text-md w-full gap-1">
               <div className="flex flex-row justify-start items-center w-full gap-2">
-                <div className="flex justify-center items-center px-2 bg-slate-500 rounded-md">
-                  <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
+                <div className="flex justify-center items-center px-1 bg-slate-500 rounded">
+                  <p className="text-PrimaryTextColor text-md leading-4">{sub.sub_account_id}</p>
                 </div>
                 {editNameId === sub.sub_account_id ? (
                   <div className="flex flex-row justify-start items-center w-full gap-2">
@@ -117,11 +117,11 @@ const HplSubaccountElem = ({
                     className={`${
                       sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
                     } text-left w-full break-words`}
-                  >{`${
-                    getFtFromSub(sub.ft).name === ""
-                      ? `[ ${getFtFromSub(sub.ft).id} ]`
-                      : getFirstNChars(getFtFromSub(sub.ft).name, 18)
-                  }`}</p>
+                  >
+                    {getFtFromSub(sub.ft).name === ""
+                      ? getFtFromSub(sub.ft)?.symbol || `[ ${getFtFromSub(sub.ft).id} ]`
+                      : getFirstNChars(getFtFromSub(sub.ft).name, 18)}
+                  </p>
                   <div className="p-0" onClick={setEditFt}>
                     <img src={InfoIcon} className="ml-1" alt="info-icon" />
                   </div>
