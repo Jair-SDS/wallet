@@ -10,7 +10,7 @@ import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/Input";
 import { AccountHook } from "@pages/hooks/accountHook";
-import { getDecimalAmount, getFirstNChars, toFullDecimal } from "@/utils";
+import { getDecimalAmount, getFirstNChars } from "@/utils";
 import { ThemeHook } from "@pages/hooks/themeHook";
 import { ThemesEnum } from "@/const";
 
