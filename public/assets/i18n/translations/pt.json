@@ -61,6 +61,7 @@
   "remote.no.yours.from": "{{from}} não tenho acesso a esta Conta Remota",
   "remote.no.yours.to": "{{to}} não tenho acesso a esta Conta Remota",
   "not.same.subaccount": "As contas não podem ser iguais",
+  "delete.asset.msg": "Tem certeza que deseja excluir o Ativo",
   "succes.caps": "SUCESSO",
   "subacc": "SubCon",
   "sub-acc": "Sub-conta",

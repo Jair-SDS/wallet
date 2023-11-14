@@ -61,6 +61,7 @@
   "remote.no.yours.from": "{{from}} has not access to the Remote Account",
   "remote.no.yours.to": "{{to}} has not access to the Remote Account",
   "not.same.subaccount": "Accounts can't be the same",
+  "delete.asset.msg": "Are you sure yuo want to delete the Asset",
   "succes.caps": "SUCCESS",
   "subacc": "SubAc",
   "sub-acc": "Sub-account",

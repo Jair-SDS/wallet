@@ -61,6 +61,7 @@
   "remote.no.yours.from": "{{from}} non ho accesso a questo Account Remoto",
   "remote.no.yours.to": "{{to}} non ho accesso a questo Account Remoto",
   "not.same.subaccount": "Gli account non possono essere uguali",
+  "delete.asset.msg": "Sei sicuro di voler eliminare la Risorsa",
   "succes.caps": "SUCCESSO",
   "subacc": "AcSec",
   "sub-acc": "Sub-account",

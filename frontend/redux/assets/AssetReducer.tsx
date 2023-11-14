@@ -96,6 +96,10 @@ const assetSlice = createSlice({
     addToken(state, action: PayloadAction<Token>) {
       state.tokens.push(action.payload);
     },
+    removeToken(state, action: PayloadAction<string>) {
+      state.tokens = state.tokens.filter((tkn) => tkn.symbol !== action.payload);
+      state.assets = state.assets.filter((asst) => asst.tokenSymbol !== action.payload);
+    },
     editToken: {
       reducer(
         state,
@@ -355,6 +359,7 @@ export const {
   setLoading,
   setTokens,
   addToken,
+  removeToken,
   editToken,
   setTokenMarket,
   setSubAccountName,

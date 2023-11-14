@@ -2,6 +2,7 @@ import { ProtocolType, ProtocolTypeEnum, defaultTokens } from "@/const";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import {
+  removeToken,
   setAcordeonAssetIdx,
   setLoading,
   setProtocol,
@@ -27,6 +28,9 @@ export const AssetHook = () => {
     ingressActor,
   } = useAppSelector((state) => state.asset);
   const { userAgent } = useAppSelector((state) => state.auth);
+  const deleteAsset = (symb: string) => {
+    dispatch(removeToken(symb));
+  };
 
   const [searchKey, setSearchKey] = useState("");
   const setAcordeonIdx = (assetIdx: string) => dispatch(setAcordeonAssetIdx(assetIdx));
@@ -103,6 +107,7 @@ export const AssetHook = () => {
     hexChecked,
     setHexChecked,
     getTotalAmountInCurrency,
+    deleteAsset,
     // HPL
     subaccounts,
   };

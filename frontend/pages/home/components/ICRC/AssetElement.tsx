@@ -2,6 +2,7 @@
 import ChevronRightIcon from "@assets/svg/files/chevron-right-icon.svg";
 import ChevronRightDarkIcon from "@assets/svg/files/chevron-right-dark-icon.svg";
 import InfoIcon from "@assets/svg/files/info-icon.svg";
+import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 //
 import { SubAccount, Asset } from "@redux/models/AccountModels";
 import AccountElement from "./AccountElement";
@@ -16,6 +17,7 @@ import { Token } from "@redux/models/TokenModels";
 import bigInt from "big-integer";
 import { AccountHook } from "@pages/hooks/accountHook";
 import DialogAddAsset from "./DialogAddAsset";
+import DeleteAssetModal from "./deleteAssetModal";
 
 interface AssetElementProps {
   asset: Asset;
@@ -34,6 +36,7 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
   const { editNameId, setEditNameId, name, setName, newSub, setNewSub, hexChecked, setHexChecked, tokensMarket } =
     AssetHook();
   const [usedIdxs, setUsedIdxs] = useState<string[]>([]);
+  const [openDelete, setOpenDelete] = useState(false);
   const [newErr, setNewErr] = useState<{ name: boolean; idx: boolean }>({ name: false, idx: false });
 
   return (
@@ -77,6 +80,14 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
                           </div>
                         )}
                       </div>
+                    )}
+                    {getFullTokenAmount().token === 0 && (
+                      <TrashIcon
+                        onClick={() => {
+                          onDelete();
+                        }}
+                        className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer ml-2"
+                      />
                     )}
                   </div>
                 </div>
@@ -143,6 +154,7 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
         idx={idx}
         authClient={authClient}
       ></DialogAddAsset>
+      <DeleteAssetModal open={openDelete} setOpen={setOpenDelete} name={asset.name} symbol={asset.tokenSymbol} />
     </Fragment>
   );
 
@@ -209,6 +221,10 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
       if (saId.compare(newId) !== 1) lowestMissing = saId.add(bigInt(1));
     }
     return lowestMissing;
+  }
+
+  function onDelete() {
+    setOpenDelete(true);
   }
 };
 
