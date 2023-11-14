@@ -28,8 +28,10 @@ export const TokenHook = (asset: Asset | undefined) => {
     subAccounts: [{ numb: "0x0", name: AccountDefaultEnum.Values.Default }],
     index: "",
     id_number: 999,
+    logo: "",
   });
   const [validToken, setValidToken] = useState(false);
+  const [validIndex, setValidIndex] = useState(false);
   const [addAssetOpen, setAddAssetOpen] = useState<boolean>(false);
   const [modal, showModal] = useState(false);
   const [addStatus, setAddStatus] = useState<AddingAssets>(AddingAssetsEnum.Enum.none);
@@ -64,6 +66,8 @@ export const TokenHook = (asset: Asset | undefined) => {
     setAddAssetOpen,
     validToken,
     setValidToken,
+    validIndex,
+    setValidIndex,
     errToken,
     setErrToken,
     errIndex,

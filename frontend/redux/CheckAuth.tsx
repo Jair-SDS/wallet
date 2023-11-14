@@ -84,6 +84,22 @@ export const handleLoginApp = async (authIdentity: Identity) => {
 
   const myPrincipal = await myAgent.getPrincipal();
 
+  // HPL ACTOR
+  const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
+    agent: myAgent,
+    canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
+  });
+  store.dispatch(setIngressActor(ingressActor));
+  const client = new HPLClient("rqx66-eyaaa-aaaap-aaona-cai", "ic");
+  await client.setIdentity(authIdentity as any);
+
+  store.dispatch(setHPLClient(client));
+  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
+  store.dispatch(setUserAgent(myAgent));
+  store.dispatch(setUserPrincipal(myPrincipal));
+  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
+
   // ICRC-1 TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
@@ -126,20 +142,7 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     store.dispatch(setHplContacts(hplContactsDataJson.contacts));
   }
 
-  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
-  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
-  store.dispatch(setUserAgent(myAgent));
-  store.dispatch(setUserPrincipal(myPrincipal));
-  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
   // HPL TOKENS
-  const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
-    agent: myAgent,
-    canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
-  });
-  store.dispatch(setIngressActor(ingressActor));
-  const client = new HPLClient("rqx66-eyaaa-aaaap-aaona-cai", "ic");
-  await client.setIdentity(authIdentity as any);
-  store.dispatch(setHPLClient(client));
   await updateHPLBalances(ingressActor);
 };
 

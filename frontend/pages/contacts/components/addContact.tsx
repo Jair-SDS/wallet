@@ -11,6 +11,7 @@ import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { Contact } from "@redux/models/ContactsModels";
 import { AssetToAdd } from "@redux/models/AccountModels";
 import AddAssetToContact from "./addAssetToContact";
+import { Principal } from "@dfinity/principal";
 
 interface AddContactProps {
   setAddOpen(value: boolean): void;
@@ -126,7 +127,14 @@ const AddContact = ({ setAddOpen }: AddContactProps) => {
       return { ...prev, principal: value };
     });
     setNewContactErr("");
-    setNewContactPrinErr(false);
+    if (value.trim() !== "")
+      try {
+        Principal.fromText(value);
+        setNewContactPrinErr(false);
+      } catch {
+        setNewContactPrinErr(true);
+      }
+    else setNewContactPrinErr(false);
   }
 
   function assetToAddEmpty(data: AssetToAdd[]) {

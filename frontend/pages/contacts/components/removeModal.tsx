@@ -92,6 +92,8 @@ const RemoveModal = ({
           removeHplCntct(deleteObject.principal);
           break;
         case DeleteContactTypeEnum.Enum.SUB:
+          console.log(deleteObject.principal, deleteObject.subaccIdx);
+
           removeHplCntctRemote(deleteObject.principal, deleteObject.subaccIdx);
           break;
       }

@@ -36,6 +36,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
     setNewToken,
     validToken,
     setValidToken,
+    validIndex,
+    setValidIndex,
     errToken,
     setErrToken,
     errIndex,
@@ -59,6 +61,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
     setErrToken("");
     setErrIndex("");
     setValidToken(false);
+    setValidIndex(false);
   }, [assetOpen]);
 
   return (
@@ -81,6 +84,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
             setErrIndex={setErrIndex}
             validToken={validToken}
             setValidToken={setValidToken}
+            validIndex={validIndex}
+            setValidIndex={setValidIndex}
             newToken={newToken}
             setNewToken={setNewToken}
             asset={asset}

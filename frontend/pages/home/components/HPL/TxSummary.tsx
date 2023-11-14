@@ -11,6 +11,7 @@ import { CustomButton } from "@components/Button";
 import LoadingLoader from "@components/Loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
+import { getHoleAmount, validateAmount } from "@/utils";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -57,7 +58,7 @@ const TxSummary = ({
   const [loading, setLoading] = useState(false);
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColor/70 dark:text-PrimaryTextColor/70 rounded">
+      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
         <p className="font-semibold mb-2 ">{t("from")}</p>
         <TxAccountInfo
           txUser={from}
@@ -70,7 +71,7 @@ const TxSummary = ({
       <div className="flex flex-row justify-center items-center w-full mt-3">
         <DownBlueArrow />
       </div>
-      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColor/70 dark:text-PrimaryTextColor/70 rounded mt-3">
+      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
         <p className="font-semibold mb-2">{t("to")}</p>
         <TxAccountInfo
           txUser={to}
@@ -118,20 +119,7 @@ const TxSummary = ({
       setErrMsg("");
     }
   }
-  function validateAmount(amnt: string, dec: number): boolean {
-    // Regular expression to match a valid number with at most 'dec' decimals
-    const regex = new RegExp(`^[0-9]+([.,][0-9]{0,${dec}})?$`);
-    // Check if amount is a valid number
-    if (!regex.test(amnt)) {
-      return false;
-    }
-    // Additional check for decimal places
-    const decimalPart = amnt.split(/[.,]/)[1];
-    if (decimalPart && decimalPart.length > dec) {
-      return false;
-    }
-    return true;
-  }
+
   function onBack() {
     setErrMsg("");
     setFtId("0");
@@ -140,10 +128,7 @@ const TxSummary = ({
   }
   async function onSend() {
     setLoading(true);
-    let amnt = amount;
-    if (amount.at(-1) === ".") amnt = amnt.slice(0, -1);
-    else if (amount === "") amnt = "0";
-
+    const amnt = getHoleAmount(amount, getFtFromSub(ftId).decimal);
     let txFrom: TransferAccountReference;
     if (from.subaccount)
       txFrom = {

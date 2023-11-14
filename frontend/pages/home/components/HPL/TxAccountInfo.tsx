@@ -1,5 +1,5 @@
 // svgs
-import { shortAddress } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
 //
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
@@ -30,7 +30,9 @@ const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: 
                 {txUser.subaccount.name}
               </p>
             </div>
-            <p className="opacity-70">{`${txUser.subaccount.amount} ${getFtFromSub(ftId).symbol}`}</p>
+            <p className="opacity-70">{`${getDecimalAmount(txUser.subaccount.amount, getFtFromSub(ftId).decimal)} ${
+              getFtFromSub(ftId).symbol
+            }`}</p>
           </div>
         </div>
       ) : (
@@ -49,7 +51,9 @@ const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: 
               <GreenCheck />
             </div>
           )}
-          <p className="text-RemoteAmount/70">{`${rmtAmount} ${getFtFromSub(ftId).symbol}`}</p>
+          <p className="text-RemoteAmount font-semibold">{`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)} ${
+            getFtFromSub(ftId).symbol
+          }`}</p>
         </div>
       )}
     </Fragment>

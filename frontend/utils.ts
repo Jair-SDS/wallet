@@ -61,9 +61,9 @@ export const hexToNumber = (hexFormat: string) => {
 };
 
 export const checkHexString = (e: string) => {
-  let newValue = e.trim();
-  if (e.trim().slice(0, 2).toLowerCase() === "0x") newValue = newValue.substring(2);
-  return (newValue === "" || /^[a-fA-F0-9]+$/.test(newValue)) && newValue.length < 65;
+  let hexValue = e.trim();
+  if (e.trim().slice(0, 2).toLowerCase() === "0x") hexValue = hexValue.substring(2);
+  return (hexValue === "" || /^[a-fA-F0-9]+$/.test(hexValue)) && hexValue.length < 65;
 };
 
 export const getICRC1Acc = ({ owner, subaccount }: IcrcAccount): string => {
@@ -114,6 +114,42 @@ export function toFullDecimal(numb: number | string, decimal: number | string) {
     }
   }
   return x.toString();
+}
+
+export function getDecimalAmount(numb: number | string, decimal: number | string) {
+  if (Number(numb) === 0) return "0";
+  let x = Number(numb) / Math.pow(10, Number(decimal));
+  if (Math.abs(x) < 0.000001) {
+    const e = parseInt(x.toString().split("e-")[1]);
+    if (e) {
+      (x *= Math.pow(10, e - 1)), decimal;
+      return "0." + new Array(e).join("0") + roundToDecimalN(x, decimal).toString().substring(2);
+    }
+  }
+  return x.toString();
+}
+
+export function validateAmount(amnt: string, dec: number): boolean {
+  // Regular expression to match a valid number with at most 'dec' decimals
+  const regex = new RegExp(`^[0-9]+([.,][0-9]{0,${dec}})?$`);
+  // Check if amount is a valid number
+  if (!regex.test(amnt)) {
+    return false;
+  }
+  // Additional check for decimal places
+  const decimalPart = amnt.split(/[.,]/)[1];
+  if (decimalPart && decimalPart.length > dec) {
+    return false;
+  }
+  return true;
+}
+
+export function getHoleAmount(amount: string, decimal: string | number) {
+  let amnt = amount;
+  if (amount.at(-1) === ".") amnt = amnt.slice(0, -1);
+  else if (amount === "") amnt = "0";
+
+  return Math.round(Number(amnt) * Math.pow(10, Number(decimal)));
 }
 
 export const getUSDfromToken = (

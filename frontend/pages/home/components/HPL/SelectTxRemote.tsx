@@ -7,7 +7,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { getContactColor, getInitialFromName } from "@/utils";
+import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
 import { useTranslation } from "react-i18next";
 
 interface SelectTxRemoteProps {
@@ -95,9 +95,10 @@ const SelectTxRemote = ({
                         <p>{select.remote.name}</p>
                         <div className="flex flex-row justify-start items-center gap-3">
                           <img src={getAssetLogo(select.remote.ftIndex)} className="w-8 h-8" alt="info-icon" />
-                          <p className="opacity-60">{`${select.remote.amount} ${
-                            getFtFromSub(select.remote.ftIndex).symbol
-                          }`}</p>
+                          <p className="opacity-60">{`${getDecimalAmount(
+                            select.remote.amount,
+                            getFtFromSub(select.remote.ftIndex).decimal,
+                          )} ${getFtFromSub(select.remote.ftIndex).symbol}`}</p>
                         </div>
                       </div>
                     </div>
@@ -130,6 +131,7 @@ const SelectTxRemote = ({
                 />
                 <div className="flex flex-col justify-start items-start w-full scroll-y-light max-h-[calc(100vh-30rem)]">
                   {getRemotesToSelect().map(({ remote: rmt, principal: prin }, k) => {
+                    const ft = getFtFromSub(rmt.ftIndex);
                     return (
                       <button
                         key={k}
@@ -150,7 +152,7 @@ const SelectTxRemote = ({
                             <p>{rmt.name}</p>
                             <div className="flex flex-row justify-start items-center gap-3">
                               <img src={getAssetLogo(rmt.ftIndex)} className="w-6 h-6" alt="info-icon" />
-                              <p className="opacity-60">{`${rmt.amount} ${getFtFromSub(rmt.ftIndex).symbol}`}</p>
+                              <p className="opacity-60">{`${getDecimalAmount(rmt.amount, ft.decimal)} ${ft.symbol}`}</p>
                             </div>
                           </div>
                         </div>

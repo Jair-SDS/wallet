@@ -5,7 +5,7 @@ import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { shortAddress } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -88,9 +88,10 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 >
                   {vt.name}
                 </td>
-                <td className={`${rowStyle(vt.expiration)}`}>{`${vt.amount} ${
-                  selectSub ? getFtFromSub(selectSub.ft).symbol : ""
-                }`}</td>
+                <td className={`${rowStyle(vt.expiration)}`}>{`${getDecimalAmount(
+                  vt.amount,
+                  getFtFromSub(selectSub?.ft || "0").decimal,
+                )} ${selectSub ? getFtFromSub(selectSub.ft).symbol : ""}`}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{shortAddress(vt.accesBy, 6, 4)}</td>
                 <td className="py-2">

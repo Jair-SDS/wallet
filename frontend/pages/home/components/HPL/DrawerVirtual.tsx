@@ -14,7 +14,7 @@ import { ThemeHook } from "@pages/hooks/themeHook";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { CustomCopy } from "@components/CopyTooltip";
-import { shortAddress } from "@/utils";
+import { getHoleAmount, shortAddress } from "@/utils";
 import dayjs from "dayjs";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
@@ -48,6 +48,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     onBalanceChange,
     onChangeExpirationCheck,
     onDateChange,
+    accesErr,
   } = useHPL(false);
 
   const [loading, setLoading] = useState(false);
@@ -123,12 +124,15 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               onChange={onDateChange}
               className={`${theme === "light" ? "date-picker-light" : "date-picker"}`}
               timezone="system"
+              format="MM/DD/YY hh:mm:ss a"
               viewRenderers={{
                 hours: renderTimeViewClock,
                 minutes: renderTimeViewClock,
-                seconds: null,
+                seconds: renderTimeViewClock,
               }}
+              timeSteps={{ minutes: 1, seconds: 5 }}
               disablePast
+              views={["day", "hours", "minutes", "seconds"]}
             />
           </LocalizationProvider>
           <button className="p-0 flex flex-row gap-2" onClick={onChangeExpirationCheck}>
@@ -146,6 +150,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             compOutClass=""
             value={newVt.accesBy}
             onChange={onAccesChange}
+            border={accesErr ? "error" : undefined}
           />
         </div>
       ) : (
@@ -174,13 +179,14 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   async function onSave() {
     setLoading(true);
     const { err, errMsg } = verifyVirtualData(newVt);
+    const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal);
     if (!err) {
       setErrMsg("");
       if (selectVt) {
         try {
           await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
             backingAccount: [BigInt(newVt.backing)],
-            state: [{ ft_set: BigInt(newVt.amount) }],
+            state: [{ ft_set: BigInt(amnt) }],
             expiration: [BigInt(newVt.expiration * 1000000)],
           });
           saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
@@ -192,7 +198,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           const res = (await ingressActor.openVirtualAccount(
             { ft: BigInt(getFtFromVt(newVt.backing).id) },
             Principal.fromText(newVt.accesBy),
-            { ft: BigInt(newVt.amount) },
+            { ft: BigInt(amnt) },
             BigInt(newVt.backing),
             BigInt(newVt.expiration * 1000000),
           )) as any;

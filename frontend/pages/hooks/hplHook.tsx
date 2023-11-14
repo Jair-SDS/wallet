@@ -1,6 +1,8 @@
 // svgs
 import { SubaccountInfo, SubaccountInfoEnum } from "@/const";
+import { validateAmount } from "@/utils";
 import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
+import { Principal } from "@dfinity/principal";
 //
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
@@ -40,6 +42,7 @@ export const useHPL = (open: boolean) => {
   const [editedFt, setEditedFt] = useState<HPLAsset | undefined>();
   const [searchKeyHPL, setSearchKeyHPL] = useState("");
   const [expiration, setExpiration] = useState(true);
+  const [accesErr, setAccesErr] = useState(false);
   const [newVt, setNewVt] = useState<HPLVirtualSubAcc>({
     virt_sub_acc_id: "",
     name: "",
@@ -187,7 +190,8 @@ export const useHPL = (open: boolean) => {
     });
   }
   function onBalanceChange(e: ChangeEvent<HTMLInputElement>) {
-    if (Number(e.target.value) >= 0)
+    const amnt = e.target.value;
+    if (validateAmount(amnt, getFtFromSub(selectSub?.ft || "0").decimal) || amnt === "")
       setNewVt((prev) => {
         return { ...prev, amount: e.target.value.trim() };
       });
@@ -207,6 +211,14 @@ export const useHPL = (open: boolean) => {
     setNewVt((prev) => {
       return { ...prev, accesBy: e.target.value.trim() };
     });
+    if (e.target.value.trim() !== "")
+      try {
+        Principal.fromText(e.target.value.trim());
+        setAccesErr(false);
+      } catch {
+        setAccesErr(true);
+      }
+    else setAccesErr(false);
   }
 
   return {
@@ -263,6 +275,8 @@ export const useHPL = (open: boolean) => {
     onDateChange,
     onChangeExpirationCheck,
     onAccesChange,
+    accesErr,
+    setAccesErr,
     reloadHPLBallance,
   };
 };

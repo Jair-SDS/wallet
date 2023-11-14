@@ -61,34 +61,31 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
           })
         ).remoteAccounts;
         setNewContact(edit);
-        if (remotesInfo.length === 0 || remoteState.length === 0) setNewContactErr("no.remotes.found");
-        else {
-          const auxRemotes: HplRemote[] = [];
-          const actorRemotes = formatHplRemotes(remotesInfo, remoteState);
-          console.log("actorRemotes", actorRemotes);
-          console.log("editRemotes", edit.remotes);
+        const auxRemotes: HplRemote[] = [];
+        const actorRemotes = formatHplRemotes(remotesInfo, remoteState);
+        console.log("actorRemotes", actorRemotes);
+        console.log("editRemotes", edit.remotes);
 
-          const actorIds: string[] = [];
-          actorRemotes.map((actorRemote) => {
-            actorIds.push(actorRemote.index);
-            const founded = edit.remotes.find((editRemote) => actorRemote.index === editRemote.index);
-            founded &&
-              setCheckIds((prev) => {
-                return [...prev, founded.index];
-              });
-            auxRemotes.push(founded ? { ...actorRemote, name: founded.name } : actorRemote);
-          });
-          auxRemotes.map((editRemote) => {
-            if (!actorIds.includes(editRemote.index)) {
-              auxRemotes.push({ ...editRemote, status: "deleted" });
-            }
-          });
-          setChainremotes(
-            auxRemotes.sort((a, b) => {
-              return Number(a.index) - Number(b.index);
-            }),
-          );
-        }
+        const actorIds: string[] = [];
+        actorRemotes.map((actorRemote) => {
+          actorIds.push(actorRemote.index);
+          const founded = edit.remotes.find((editRemote) => actorRemote.index === editRemote.index);
+          founded &&
+            setCheckIds((prev) => {
+              return [...prev, founded.index];
+            });
+          auxRemotes.push(founded ? { ...actorRemote, name: founded.name } : actorRemote);
+        });
+        edit.remotes.map((editRemote) => {
+          if (!actorIds.includes(editRemote.index)) {
+            auxRemotes.push({ ...editRemote, status: "deleted" });
+          }
+        });
+        setChainremotes(
+          auxRemotes.sort((a, b) => {
+            return Number(a.index) - Number(b.index);
+          }),
+        );
       }
     };
     fetchRemotes();
@@ -185,24 +182,24 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                 <SearchIcon className="w-4 h-4 !stroke-PrimaryTextColor" />
               </CustomButton>
             </div>
-            <div className="flex flex-row justify-start items-start w-full h-72 scroll-y-light rounded-sm bg-ThirdColorLight dark:bg-ThirdColor gap-3">
+            <div className="flex flex-row justify-start items-start w-full h-72 scroll-y-light rounded-sm bg-SecondaryColorLight dark:bg-ThirdColor gap-3">
               {chainRemotes.length > 0 ? (
                 <table className="w-full text-md">
-                  <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 sticky top-0 z-[1]">
+                  <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo dark:text-PrimaryTextColor/70 text-PrimaryTextColorLight/70 sticky top-0 z-[1]">
                     <tr>
-                      <th className="p-2 text-center w-[11%] bg-ThirdColorLight dark:bg-ThirdColor">
+                      <th className="p-2 text-center w-[11%] bg-SecondaryColorLight dark:bg-ThirdColor">
                         <p>{"ID"}</p>
                       </th>
-                      <th className="p-2 text-left w-[35%] bg-ThirdColorLight dark:bg-ThirdColor">
+                      <th className="p-2 text-left w-[35%] bg-SecondaryColorLight dark:bg-ThirdColor">
                         <p>{t("name")}</p>
                       </th>
-                      <th className="p-2 text-center w-[17%] bg-ThirdColorLight dark:bg-ThirdColor">
+                      <th className="p-2 text-center w-[17%] bg-SecondaryColorLight dark:bg-ThirdColor">
                         <p>{t("asset")} ID</p>
                       </th>
-                      <th className="p-2 text-left w-[30%] bg-ThirdColorLight dark:bg-ThirdColor">
+                      <th className="p-2 text-left w-[30%] bg-SecondaryColorLight dark:bg-ThirdColor">
                         <p>{t("asset.name")}</p>
                       </th>
-                      <th className="p-2 text-center w-[7%] bg-ThirdColorLight dark:bg-ThirdColor">
+                      <th className="p-2 text-center w-[7%] bg-SecondaryColorLight dark:bg-ThirdColor">
                         <div className="flex flex-row justify-center items-center">
                           <button className="flex flex-row justify-center items-center p-0" onClick={onAllCheck}>
                             <CustomCheck
@@ -303,10 +300,17 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
       return { ...prev, principal: value };
     });
     setNewContactErr("");
-    setNewContactPrinErr(false);
     setCheckIds([]);
     setNameErrs([]);
     setChainremotes([]);
+    if (value.trim() !== "")
+      try {
+        Principal.fromText(value);
+        setNewContactPrinErr(false);
+      } catch {
+        setNewContactPrinErr(true);
+      }
+    else setNewContactPrinErr(false);
   }
 
   async function onSuccessQR(value: string) {
@@ -413,9 +417,6 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
       } else if (!checkPrincipalValid(newContact.principal) || (!checkUsedPrincipal(newContact.principal) && !edit)) {
         validContact = false;
         err = { ...err, msg: "check.add.contact.prin.err", prin: true };
-      } else if (checkIds.length === 0) {
-        validContact = false;
-        err = { ...err, msg: "check.add.contact.no.remotes.err" };
       }
     }
 

@@ -79,6 +79,7 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
                 subaccounts={subaccounts}
                 txType={HplTransactionsTypeEnum.Enum.from}
                 setQRview={setQRview}
+                otherAsset={to.subaccount?.ft}
               />
               <SelectTransfer
                 getAssetLogo={getAssetLogo}
@@ -91,6 +92,7 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
                 subaccounts={subaccounts}
                 txType={HplTransactionsTypeEnum.Enum.to}
                 setQRview={setQRview}
+                otherAsset={from.subaccount?.ft}
               />
             </div>
             <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">

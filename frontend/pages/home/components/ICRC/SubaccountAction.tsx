@@ -25,8 +25,8 @@ const ICRCSubaccountAction: FC<ICRCSubaccountActionProps> = ({ onActionClick }) 
             <p className="font-semibold text-[1.15rem] text-right">{`${toFullDecimal(
               selectedAccount?.amount || "0",
               selectedAccount?.decimal || "8",
-            )} ${selectedAsset?.symbol}`}</p>
-            <p className="font-semibold text-md">{`$${selectedAccount?.currency_amount}`}</p>
+            )} ${selectedAsset?.symbol || ""}`}</p>
+            <p className="font-semibold text-md">{`$${selectedAccount?.currency_amount || ""}`}</p>
           </div>
         </div>
       </div>

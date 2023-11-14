@@ -15,9 +15,10 @@ import { Token } from "@redux/models/TokenModels";
 import { AccountDefaultEnum, IconTypeEnum } from "@/const";
 import { Asset } from "@redux/models/AccountModels";
 import { IdentityHook } from "@pages/hooks/identityHook";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { Principal } from "@dfinity/principal";
+import LoadingLoader from "@components/Loader";
 
 interface AddAssetManualProps {
   manual: boolean;
@@ -28,6 +29,8 @@ interface AddAssetManualProps {
   setErrIndex(value: string): void;
   validToken: boolean;
   setValidToken(value: boolean): void;
+  validIndex: boolean;
+  setValidIndex(value: boolean): void;
   newToken: Token;
   setNewToken(value: any): void;
   asset: Asset | undefined;
@@ -46,6 +49,8 @@ const AddAssetManual = ({
   setErrIndex,
   validToken,
   setValidToken,
+  validIndex,
+  setValidIndex,
   newToken,
   setNewToken,
   asset,
@@ -60,6 +65,7 @@ const AddAssetManual = ({
   const { authClient } = AccountHook();
   const { getAssetIcon, checkAssetAdded } = GeneralHook();
   const { userAgent } = IdentityHook();
+  const [testLoading, setTestLoading] = useState(false);
 
   return (
     <div className="flex flex-col justify-start items-start w-full">
@@ -69,18 +75,23 @@ const AddAssetManual = ({
           <p className="text-lg font-bold mt-2">{`${asset.tokenName} - ${asset.tokenSymbol}`}</p>
         </div>
       ) : (
-        <div className="flex flex-row justify-start items-start w-full p-2 rounded-lg border border-SelectRowColor bg-SelectRowColor/10">
-          <InfoIcon className="h-5 w-5 fill-SelectRowColor mr-2 mt-1" />
-          <p className="w-full text-justify opacity-60">
-            {t("asset.add.warning.1")} <span className=" text-SelectRowColor">{t("asset.add.warning.2")}</span>
-          </p>
+        <div className="flex flex-col justify-start items-center w-full gap-2">
+          <div className="flex flex-row justify-start items-start w-full p-2 rounded-lg border border-SelectRowColor bg-SelectRowColor/10">
+            <InfoIcon className="h-5 w-5 fill-SelectRowColor mr-2 mt-1" />
+            <p className="w-full text-justify opacity-60">
+              {t("asset.add.warning.1")} <span className=" text-SelectRowColor">{t("asset.add.warning.2")}</span>
+            </p>
+          </div>
+          {newToken.logo &&
+            newToken.logo !== "" &&
+            getAssetIcon(IconTypeEnum.Enum.ASSET, newToken.symbol, newToken.logo)}
         </div>
       )}
       <div className="flex flex-col items-start w-full mt-3 mb-3">
         <p className="opacity-60">{t("token.contract.address")}</p>
         <CustomInput
           sizeInput={"medium"}
-          sufix={<CustomCopy size={"small"} copyText={newToken.address} side="left" align="center" />}
+          sufix={asset ? <CustomCopy size={"small"} copyText={newToken.address} side="left" align="center" /> : <></>}
           intent={"secondary"}
           border={errToken !== "" ? "error" : "primary"}
           disabled={asset ? true : false}
@@ -90,7 +101,7 @@ const AddAssetManual = ({
           value={newToken.address}
           onChange={onLedgerChange}
         />
-        {errToken !== "" && <p className="text-LockColor text-left text-sm">{errToken}</p>}
+        {errToken !== "" && errToken !== "non" && <p className="text-LockColor text-left text-sm">{errToken}</p>}
         {validToken && <p className="text-BorderSuccessColor text-left text-sm">{t("token.validation.msg")}</p>}
       </div>
       <div className="flex flex-col items-start w-full mb-3">
@@ -99,13 +110,16 @@ const AddAssetManual = ({
           sizeInput={"medium"}
           intent={"secondary"}
           border={errIndex !== "" ? "error" : "primary"}
-          sufix={<CustomCopy size={"small"} copyText={newToken.index || ""} side="left" align="center" />}
+          sufix={
+            asset ? <CustomCopy size={"small"} copyText={newToken.index || ""} side="left" align="center" /> : <></>
+          }
           placeholder="Index Principal"
           compOutClass=""
           value={newToken.index}
           onChange={onChangeIndex}
         />
-        {errIndex !== "" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
+        {errIndex !== "" && errIndex !== "non" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
+        {validIndex && <p className="text-BorderSuccessColor text-left text-sm">{t("index.validation.msg")}</p>}
       </div>
       <div className="flex flex-col items-start w-full mb-3">
         <p className="opacity-60">{t("token.symbol")}</p>
@@ -156,7 +170,7 @@ const AddAssetManual = ({
               onClick={onTest}
               disabled={newToken.address.length <= 5}
             >
-              {t("test")}
+              {testLoading ? <LoadingLoader className="mt-1" /> : t("test")}
             </CustomButton>
           )}
           <CustomButton
@@ -172,18 +186,33 @@ const AddAssetManual = ({
   );
 
   function onLedgerChange(e: ChangeEvent<HTMLInputElement>) {
-    setErrToken("");
     setNewToken((prev: any) => {
       return { ...prev, address: e.target.value.trim() };
     });
     setValidToken(false);
+    if (e.target.value.trim() !== "")
+      try {
+        Principal.fromText(e.target.value.trim());
+        setErrToken("");
+      } catch {
+        setErrToken("non");
+      }
+    else setErrToken("");
   }
 
   function onChangeIndex(e: ChangeEvent<HTMLInputElement>) {
-    setErrIndex("");
     setNewToken((prev: any) => {
       return { ...prev, index: e.target.value };
     });
+    setValidIndex(false);
+    if (e.target.value.trim() !== "")
+      try {
+        Principal.fromText(e.target.value.trim());
+        setErrIndex("");
+      } catch {
+        setErrIndex("non");
+      }
+    else setErrIndex("");
   }
 
   function onChangeSymbol(e: ChangeEvent<HTMLInputElement>) {
@@ -219,9 +248,11 @@ const AddAssetManual = ({
     setErrToken("");
     setErrIndex("");
     setValidToken(false);
+    setValidIndex(false);
   }
 
   async function onTest() {
+    setTestLoading(true);
     let validData = false;
     if (checkAssetAdded(newToken.address)) {
       setErrToken(t("adding.asset.already.imported"));
@@ -238,7 +269,9 @@ const AddAssetManual = ({
           certified: false,
         });
 
+        console.log(myMetadata);
         const { symbol, decimals, name, logo } = getMetadataInfo(myMetadata);
+
         setNewToken((prev: any) => {
           return { ...prev, decimal: decimals.toFixed(0), symbol: symbol, name: name, logo: logo };
         });
@@ -256,11 +289,15 @@ const AddAssetManual = ({
           canisterId: newToken.index as any,
         });
         await getTransactions({ max_results: BigInt(1), account: { owner: Principal.fromText(authClient) } });
+        setValidIndex(true);
       } catch {
         validData = false;
         setErrIndex(t("add.index.import.error"));
+        setValidIndex(false);
       }
+    else setValidIndex(false);
 
+    setTestLoading(false);
     return validData;
   }
 

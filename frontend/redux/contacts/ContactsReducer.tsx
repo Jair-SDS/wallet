@@ -316,7 +316,7 @@ const contactsSlice = createSlice({
         const auxContacts = state.hplContacts.map((cnts) => {
           if (cnts.principal !== action.payload.principal) return cnts;
           else {
-            return { ...cnts, assets: cnts.remotes.filter((asst) => asst.index !== action.payload.index) };
+            return { ...cnts, remotes: cnts.remotes.filter((asst) => asst.index !== action.payload.index) };
           }
         });
 

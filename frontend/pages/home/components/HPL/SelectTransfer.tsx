@@ -13,6 +13,7 @@ import { ChangeEvent, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
+import { getDecimalAmount } from "@/utils";
 
 interface SelectTransferProps {
   select: HplTxUser;
@@ -20,6 +21,7 @@ interface SelectTransferProps {
   subaccounts: HPLSubAccount[];
   hplContacts: HplContact[];
   txType: HplTransactionsType;
+  otherAsset?: string;
   manual: boolean;
   setManual(value: boolean): void;
   setQRview(value: string): void;
@@ -34,6 +36,7 @@ const SelectTransfer = ({
   hplContacts,
   txType,
   manual,
+  otherAsset,
   setManual,
   setQRview,
   getAssetLogo,
@@ -86,7 +89,7 @@ const SelectTransfer = ({
       {select.type === HplTransactionsEnum.Enum.VIRTUAL && (
         <div className="flex flex-row justify-between items-center w-full">
           <div className="flex flex-row justify-start items-center gap-2">
-            <p>{t("manual")}</p>
+            <p className="opacity-70">{t("contatc.book")}</p>
             <div
               className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
                 manual ? "bg-[#26A17B]" : "bg-[#7E7D91]"
@@ -97,6 +100,7 @@ const SelectTransfer = ({
                 className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${manual ? "ml-5" : "ml-1"}`}
               ></div>
             </div>
+            <p className="opacity-70">{t("new")}</p>
           </div>
           {manual && (
             <img
@@ -150,9 +154,10 @@ const SelectTransfer = ({
                             </div>
                             <p className="text-left">{select.subaccount.name}</p>
                           </div>
-                          <p className="opacity-70">{`${select.subaccount.amount} ${
-                            getFtFromSub(select.subaccount.ft).symbol
-                          }`}</p>
+                          <p className="opacity-70">{`${getDecimalAmount(
+                            select.subaccount.amount,
+                            getFtFromSub(select.subaccount.ft).decimal,
+                          )} ${getFtFromSub(select.subaccount.ft).symbol}`}</p>
                         </div>
                       </div>
                       <img
@@ -186,9 +191,13 @@ const SelectTransfer = ({
                     {subaccounts
                       .filter((sub) => {
                         const key = searchKey.toLowerCase();
-                        return sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key);
+                        return (
+                          (sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key)) &&
+                          (!otherAsset || otherAsset === sub.ft)
+                        );
                       })
                       .map((sub, k) => {
+                        const ft = getFtFromSub(sub.ft);
                         return (
                           <button
                             key={k}
@@ -205,7 +214,7 @@ const SelectTransfer = ({
                                 </div>
                                 <p className="text-left">{sub.name}</p>
                               </div>
-                              <p className="opacity-70">{`${sub.amount} ${getFtFromSub(sub.ft).symbol}`}</p>
+                              <p className="opacity-70">{`${getDecimalAmount(sub.amount, ft.decimal)} ${ft.symbol}`}</p>
                             </div>
                           </button>
                         );

@@ -10,7 +10,7 @@ import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/Input";
 import { AccountHook } from "@pages/hooks/accountHook";
-import { getFirstNChars, toFullDecimal } from "@/utils";
+import { getDecimalAmount, getFirstNChars, toFullDecimal } from "@/utils";
 import { ThemeHook } from "@pages/hooks/themeHook";
 import { ThemesEnum } from "@/const";
 
@@ -128,7 +128,7 @@ const HplSubaccountElem = ({
                 </div>
                 <p
                   className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}
-                >{`${toFullDecimal(sub.amount, getFtFromSub(sub.ft).decimal)} ${getFtFromSub(sub.ft).symbol}`}</p>
+                >{`${getDecimalAmount(sub.amount, getFtFromSub(sub.ft).decimal)} ${getFtFromSub(sub.ft).symbol}`}</p>
               </div>
             </div>
           </div>
