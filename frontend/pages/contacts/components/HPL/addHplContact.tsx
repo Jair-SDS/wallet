@@ -47,47 +47,6 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
   const [nameErrs, setNameErrs] = useState<number[]>([]);
 
   useEffect(() => {
-    const fetchRemotes = async () => {
-      if (edit) {
-        const remotesInfo = await ingressActor.remoteAccountInfo({
-          idRange: [Principal.fromText(edit.principal), BigInt(0), []],
-        });
-        const remoteState = (
-          await ingressActor.state({
-            ftSupplies: [],
-            virtualAccounts: [],
-            accounts: [],
-            remoteAccounts: [{ idRange: [Principal.fromText(edit.principal), BigInt(0), []] }],
-          })
-        ).remoteAccounts;
-        setNewContact(edit);
-        const auxRemotes: HplRemote[] = [];
-        const actorRemotes = formatHplRemotes(remotesInfo, remoteState);
-        console.log("actorRemotes", actorRemotes);
-        console.log("editRemotes", edit.remotes);
-
-        const actorIds: string[] = [];
-        actorRemotes.map((actorRemote) => {
-          actorIds.push(actorRemote.index);
-          const founded = edit.remotes.find((editRemote) => actorRemote.index === editRemote.index);
-          founded &&
-            setCheckIds((prev) => {
-              return [...prev, founded.index];
-            });
-          auxRemotes.push(founded ? { ...actorRemote, name: founded.name } : actorRemote);
-        });
-        edit.remotes.map((editRemote) => {
-          if (!actorIds.includes(editRemote.index)) {
-            auxRemotes.push({ ...editRemote, status: "deleted" });
-          }
-        });
-        setChainremotes(
-          auxRemotes.sort((a, b) => {
-            return Number(a.index) - Number(b.index);
-          }),
-        );
-      }
-    };
     fetchRemotes();
   }, [edit]);
 
@@ -331,41 +290,45 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
   }
 
   async function searchRemotes(principal: string, fromQr: boolean) {
-    if (!fromQr) {
-      if (principal.trim() === "") {
-        setNewContactErr("check.add.contact.prin.empty.err");
-        setNewContactPrinErr(true);
-        return;
-      } else if (!checkPrincipalValid(principal)) {
-        console.log("a?");
+    if (edit) {
+      await fetchRemotes();
+    } else {
+      if (!fromQr) {
+        if (principal.trim() === "") {
+          setNewContactErr("check.add.contact.prin.empty.err");
+          setNewContactPrinErr(true);
+          return;
+        } else if (!checkPrincipalValid(principal)) {
+          console.log("a?");
 
-        setNewContactErr("check.add.contact.prin.err");
-        setNewContactPrinErr(true);
-        return;
-      } else if (!checkUsedPrincipal(principal)) {
-        setNewContactErr("used.contact.prin.err");
-        setNewContactPrinErr(true);
-        return;
+          setNewContactErr("check.add.contact.prin.err");
+          setNewContactPrinErr(true);
+          return;
+        } else if (!checkUsedPrincipal(principal)) {
+          setNewContactErr("used.contact.prin.err");
+          setNewContactPrinErr(true);
+          return;
+        }
       }
-    }
-    try {
-      const remotesInfo = await ingressActor.remoteAccountInfo({
-        idRange: [Principal.fromText(principal), BigInt(0), []],
-      });
-      const remoteState = (
-        await ingressActor.state({
-          ftSupplies: [],
-          virtualAccounts: [],
-          accounts: [],
-          remoteAccounts: [{ idRange: [Principal.fromText(principal), BigInt(0), []] }],
-        })
-      ).remoteAccounts;
-      if (remotesInfo.length === 0 || remoteState.length === 0) setNewContactErr("no.remotes.found");
-      else {
-        setChainremotes(formatHplRemotes(remotesInfo, remoteState));
+      try {
+        const remotesInfo = await ingressActor.remoteAccountInfo({
+          idRange: [Principal.fromText(principal), BigInt(0), []],
+        });
+        const remoteState = (
+          await ingressActor.state({
+            ftSupplies: [],
+            virtualAccounts: [],
+            accounts: [],
+            remoteAccounts: [{ idRange: [Principal.fromText(principal), BigInt(0), []] }],
+          })
+        ).remoteAccounts;
+        if (remotesInfo.length === 0 || remoteState.length === 0) setNewContactErr("no.remotes.found");
+        else {
+          setChainremotes(formatHplRemotes(remotesInfo, remoteState));
+        }
+      } catch (e) {
+        setNewContactErr("no.remotes.found");
       }
-    } catch (e) {
-      setNewContactErr("no.remotes.found");
     }
   }
 
@@ -397,6 +360,47 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
       );
     } else {
       setCheckIds([...checkIds, index]);
+    }
+  }
+  async function fetchRemotes() {
+    if (edit) {
+      const remotesInfo = await ingressActor.remoteAccountInfo({
+        idRange: [Principal.fromText(edit.principal), BigInt(0), []],
+      });
+      const remoteState = (
+        await ingressActor.state({
+          ftSupplies: [],
+          virtualAccounts: [],
+          accounts: [],
+          remoteAccounts: [{ idRange: [Principal.fromText(edit.principal), BigInt(0), []] }],
+        })
+      ).remoteAccounts;
+      setNewContact(edit);
+      const auxRemotes: HplRemote[] = [];
+      const actorRemotes = formatHplRemotes(remotesInfo, remoteState);
+      console.log("actorRemotes", actorRemotes);
+      console.log("editRemotes", edit.remotes);
+
+      const actorIds: string[] = [];
+      actorRemotes.map((actorRemote) => {
+        actorIds.push(actorRemote.index);
+        const founded = edit.remotes.find((editRemote) => actorRemote.index === editRemote.index);
+        founded &&
+          setCheckIds((prev) => {
+            return [...prev, founded.index];
+          });
+        auxRemotes.push(founded ? { ...actorRemote, name: founded.name } : actorRemote);
+      });
+      edit.remotes.map((editRemote) => {
+        if (!actorIds.includes(editRemote.index)) {
+          auxRemotes.push({ ...editRemote, status: "deleted" });
+        }
+      });
+      setChainremotes(
+        auxRemotes.sort((a, b) => {
+          return Number(a.index) - Number(b.index);
+        }),
+      );
     }
   }
 
