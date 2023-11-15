@@ -97,7 +97,7 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
                 {subaccounts
                   .filter((sub) => {
                     const key = searchKey.toLowerCase();
-                    const editedValid = selectSub ? selectSub.ft === sub.ft : true;
+                    const editedValid = !edit ? true : selectSub ? selectSub.ft === sub.ft : true;
                     return (
                       (sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key)) &&
                       editedValid

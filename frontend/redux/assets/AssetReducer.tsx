@@ -97,8 +97,24 @@ const assetSlice = createSlice({
       state.tokens.push(action.payload);
     },
     removeToken(state, action: PayloadAction<string>) {
-      state.tokens = state.tokens.filter((tkn) => tkn.symbol !== action.payload);
-      state.assets = state.assets.filter((asst) => asst.tokenSymbol !== action.payload);
+      let count = 0;
+      const auxTkns: Token[] = [];
+      state.tokens.map((tkn) => {
+        count++;
+        if (tkn.symbol !== action.payload) {
+          auxTkns.push({ ...tkn, id_number: count - 1 });
+        }
+      });
+      state.tokens = auxTkns;
+      count = 0;
+      const auxAssets: Asset[] = [];
+      state.assets.map((asst) => {
+        count++;
+        if (asst.tokenSymbol !== action.payload) {
+          auxAssets.push({ ...asst, sort_index: count - 1 });
+        }
+      });
+      state.assets = auxAssets;
     },
     editToken: {
       reducer(

@@ -20,6 +20,7 @@ import {
   setHPLSubAccounts,
   setHPLAssets,
   setHPLSelectedSub,
+  setLoading,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -35,6 +36,7 @@ export const updateAllBalances = async (
   tokens: Token[],
   basicSearch?: boolean,
 ) => {
+  store.dispatch(setLoading(true));
   let tokenMarkets: TokenMarketInfo[] = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
   tokenMarkets = tokenMarkets.filter((x) => !x.unreleased);
   store.dispatch(setTokenMarket(tokenMarkets));
@@ -245,6 +247,8 @@ export const updateAllBalances = async (
 
     store.dispatch(setICPSubaccounts(sub));
   }
+
+  store.dispatch(setLoading(false));
   return {
     assets,
     tokens: newTokens.sort((a, b) => {

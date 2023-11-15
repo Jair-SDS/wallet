@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DrawerSend from "./ICRC/DrawerSend";
 import DrawerWrap from "./ICRC/DrawerWrap";
 import DrawerAction from "./ICRC/DrawerAction";
@@ -16,6 +16,7 @@ import TransactionDrawer from "./HPL/TransactionDrawer";
 import VirtualTable from "./HPL/VirtualTable";
 import DrawerReceive from "./ICRC/DrawerReceive";
 import HPLDrawerReceive from "./HPL/HPLDrawerReceive";
+import { useHPL } from "@pages/hooks/hplHook";
 
 const icrc1DrawerOptions = [
   { name: "send", type: DrawerOptionEnum.Enum.SEND },
@@ -26,11 +27,16 @@ const hplDrawerOptions = [{ name: "receive", type: DrawerOptionEnum.Enum.HPL_QR,
 
 const DetailList = () => {
   const { protocol } = AssetHook();
+  const { selectSub } = useHPL(false);
   const { drawerOption, setDrawerOption, drawerOpen, setDrawerOpen } = DrawerHook();
   const { selectedTransaction } = UseTransaction();
 
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
   const enableReceiveAction = selectedVirtualAccount !== null;
+
+  useEffect(() => {
+    setSelectedVirtualAccount(null);
+  }, [selectSub]);
 
   return (
     <>
