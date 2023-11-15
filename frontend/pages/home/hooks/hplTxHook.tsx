@@ -12,25 +12,15 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     vIdx: "",
     subaccount: undefined,
   };
-  const [from, setFrom] = useState<HplTxUser>({
-    type: HplTransactionsEnum.Enum.SUBACCOUNT,
-    principal: "",
-    vIdx: "",
-    subaccount: undefined,
-  });
-  const [to, setTo] = useState<HplTxUser>({
-    type: HplTransactionsEnum.Enum.SUBACCOUNT,
-    principal: "",
-    vIdx: "",
-    subaccount: undefined,
-  });
+  const [from, setFrom] = useState<HplTxUser>({ ...defaultUser });
+  const [to, setTo] = useState<HplTxUser>({ ...defaultUser });
   const [errMsg, setErrMsg] = useState("");
   const [amount, setAmount] = useState("0");
 
   useEffect(() => {
     if (drawerOpen)
       if (drawerOpt === DrawerOptionEnum.Enum.SEND) {
-        setTo(defaultUser);
+        setTo({ ...defaultUser, type: HplTransactionsEnum.Enum.VIRTUAL });
         setFrom({
           type: locat !== "remote" ? HplTransactionsEnum.Enum.SUBACCOUNT : HplTransactionsEnum.Enum.VIRTUAL,
           principal: locat !== "remote" ? "" : "selectedRemote.principal",
@@ -38,7 +28,7 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
           subaccount: locat === "detail" ? selectSub : undefined,
         });
       } else {
-        setFrom(defaultUser);
+        setFrom({ ...defaultUser, type: HplTransactionsEnum.Enum.VIRTUAL });
         setTo({
           type: locat !== "remote" ? HplTransactionsEnum.Enum.SUBACCOUNT : HplTransactionsEnum.Enum.VIRTUAL,
           principal: locat !== "remote" ? "" : "selectedRemote.principal",
