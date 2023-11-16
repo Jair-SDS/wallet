@@ -205,8 +205,6 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
         const res: { ok: { first: bigint } } = (await ingressActor.openAccounts(BigInt(1), {
           ft: BigInt(selAsset.id),
         })) as any;
-        console.log(res);
-
         const auxSubs = [...hplSubsData, { id: res.ok.first.toString(), name: newHplSub.name.trim() }];
         localStorage.setItem(
           "hplSUB-" + authClient,
@@ -218,8 +216,6 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
         reloadHPLBallance();
         onClose();
       } catch (e) {
-        console.log(e);
-
         setAddSubErr("server.error");
       }
     else setAddSubErr("check.mandatory.fields");

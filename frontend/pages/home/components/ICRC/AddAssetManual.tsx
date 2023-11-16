@@ -269,7 +269,6 @@ const AddAssetManual = ({
           certified: false,
         });
 
-        console.log(myMetadata);
         const { symbol, decimals, name, logo } = getMetadataInfo(myMetadata);
 
         setNewToken((prev: any) => {

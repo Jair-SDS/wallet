@@ -14,7 +14,7 @@ import { IconTypeEnum, ProtocolTypeEnum, ThemesEnum } from "@/const";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import Modal from "@components/Modal";
-import AddContact from "./addContact";
+import AddContact from "./ICRC/addContact";
 import { clsx } from "clsx";
 import { Asset, HPLAsset, HplContact } from "@redux/models/AccountModels";
 import { useHPL } from "@pages/hooks/hplHook";

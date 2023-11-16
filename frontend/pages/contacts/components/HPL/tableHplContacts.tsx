@@ -10,7 +10,7 @@ import { getContactColor, getInitialFromName, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/CopyTooltip";
 import { CustomInput } from "@components/Input";
 import { HplContact } from "@redux/models/AccountModels";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 import TableRemotes from "./tableRemotes";
@@ -67,9 +67,8 @@ const TableHplContacts = ({
           const selected = cntc.principal === selContact?.principal;
           const open = contactOpen === cntc.principal;
           return (
-            <>
+            <Fragment key={k}>
               <tr
-                key={k}
                 className={`border-b border-BorderColorTwoLight dark:border-BorderColorTwo ${
                   selected || open ? "bg-SelectRowColor/20" : ""
                 }`}
@@ -183,7 +182,7 @@ const TableHplContacts = ({
                   </td>
                 </tr>
               )}
-            </>
+            </Fragment>
           );
         })}
       </tbody>

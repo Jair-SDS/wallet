@@ -4,7 +4,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomInput } from "@components/Input";
-import { useContacts } from "../hooks/contactsHook";
+import { useContacts } from "../../hooks/contactsHook";
 import { CustomButton } from "@components/Button";
 import ContactAssetPop from "./contactAssetPop";
 import { GeneralHook } from "@pages/home/hooks/generalHook";

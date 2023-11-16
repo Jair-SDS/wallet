@@ -5,7 +5,7 @@ import TableAssets from "./tableAssets";
 import { Fragment } from "react";
 import { DeleteContactTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
-import { useContacts } from "../hooks/contactsHook";
+import { useContacts } from "../../hooks/contactsHook";
 import ContactRow from "./contactRow";
 
 interface TableContactsProps {

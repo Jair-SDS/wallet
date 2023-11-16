@@ -202,7 +202,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             BigInt(newVt.backing),
             BigInt(newVt.expiration * 1000000),
           )) as any;
-          console.log(res);
           saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name }, selectVt!, false);
         } catch (e) {
           setErrMsg(t("err.back"));

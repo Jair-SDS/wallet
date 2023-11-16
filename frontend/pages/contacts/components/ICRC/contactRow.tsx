@@ -14,7 +14,7 @@ import { CustomCopy } from "@components/CopyTooltip";
 import ContactAssetPop from "./contactAssetPop";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { AssetToAdd } from "@redux/models/AccountModels";
-import { useContacts } from "../hooks/contactsHook";
+import { useContacts } from "../../hooks/contactsHook";
 import { useTranslation } from "react-i18next";
 
 interface ContactRowProps {
