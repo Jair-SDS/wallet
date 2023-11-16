@@ -93,30 +93,6 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   const client = new HPLClient("rqx66-eyaaa-aaaap-aaona-cai", "ic");
   await client.setIdentity(authIdentity as any);
 
-  store.dispatch(setHPLClient(client));
-  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
-  store.dispatch(setUserAgent(myAgent));
-  store.dispatch(setUserPrincipal(myPrincipal));
-  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
-  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
-
-  // ICRC-1 TOKENS
-  const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
-  if (userData) {
-    const userDataJson = JSON.parse(userData);
-    store.dispatch(setTokens(userDataJson.tokens));
-    await updateAllBalances(true, myAgent, userDataJson.tokens);
-  } else {
-    const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true);
-    store.dispatch(setTokens(tokens));
-  }
-  // ICRC-1 CONTACTS
-  const contactsData = localStorage.getItem("contacts-" + authIdentity.getPrincipal().toString());
-  if (contactsData) {
-    const contactsDataJson = JSON.parse(contactsData);
-    store.dispatch(setContacts(contactsDataJson.contacts));
-  }
-
   // HPL FT
   const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
   if (hplFTsData != null) {
@@ -144,6 +120,31 @@ export const handleLoginApp = async (authIdentity: Identity) => {
 
   // HPL TOKENS
   await updateHPLBalances(ingressActor);
+
+  // AUTH
+  store.dispatch(setHPLClient(client));
+  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
+  store.dispatch(setUserAgent(myAgent));
+  store.dispatch(setUserPrincipal(myPrincipal));
+  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
+
+  // ICRC-1 TOKENS
+  const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
+  if (userData) {
+    const userDataJson = JSON.parse(userData);
+    store.dispatch(setTokens(userDataJson.tokens));
+    await updateAllBalances(true, myAgent, userDataJson.tokens);
+  } else {
+    const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true);
+    store.dispatch(setTokens(tokens));
+  }
+  // ICRC-1 CONTACTS
+  const contactsData = localStorage.getItem("contacts-" + authIdentity.getPrincipal().toString());
+  if (contactsData) {
+    const contactsDataJson = JSON.parse(contactsData);
+    store.dispatch(setContacts(contactsDataJson.contacts));
+  }
 };
 
 export const logout = async () => {

@@ -93,7 +93,18 @@ const DialogAddAsset = ({
             onKeyDown={onKeyDown}
           />
         )}
-        <div className="flex flex-row justify-end items-center w-full">
+        <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex flex-col">
+            <p className="text-sm text-TextErrorColor">
+              {newErr.idx
+                ? newSub?.sub_account_id.trim() === ""
+                  ? t("empty.index.err")
+                  : t("already.used.index")
+                : ""}
+            </p>
+            <p className="text-sm text-TextErrorColor">{newErr.name ? t("empty.name.err") : ""}</p>
+          </div>
+
           <CustomButton size={"small"} className="min-w-[5rem]" onClick={onEnter}>
             <p>{t("add")}</p>
           </CustomButton>

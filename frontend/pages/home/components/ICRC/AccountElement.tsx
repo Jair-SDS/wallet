@@ -85,6 +85,9 @@ const AccountElement = ({
                 compOutClass="!w-1/2"
                 autoFocus
                 onChange={onNameChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") onSave();
+                }}
               />
               <div
                 className="flex justify-center items-center ml-2 p-1 bg-RadioCheckColor rounded cursor-pointer"

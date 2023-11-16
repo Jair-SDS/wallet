@@ -58,7 +58,7 @@ const ContactFilters = ({
           }}
         >
           <DropdownMenu.Trigger asChild>
-            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-SecondaryColorLight dark:bg-SecondaryColor">
+            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-SecondaryColorLight dark:bg-SecondaryColor cursor-pointer">
               <div className="flex flex-row justify-between items-center w-full">
                 {assetFilter.length === 0 || assetFilter.length === assets.length ? (
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("all")}</p>

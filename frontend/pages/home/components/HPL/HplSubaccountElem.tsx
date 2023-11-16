@@ -80,6 +80,9 @@ const HplSubaccountElem = ({
                       compOutClass="!w-full"
                       autoFocus
                       onChange={onNameChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onSave();
+                      }}
                     />
                     <div
                       className="flex justify-center items-center w-7 h-6 bg-RadioCheckColor rounded cursor-pointer"
