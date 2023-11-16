@@ -113,7 +113,7 @@ export function toFullDecimal(numb: number | string, decimal: number | string) {
       return "0." + new Array(e).join("0") + roundToDecimalN(x, decimal).toString().substring(2);
     }
   }
-  return x.toString();
+  return x.toLocaleString("en-US");
 }
 
 export function getDecimalAmount(numb: number | string, decimal: number | string) {
@@ -126,7 +126,7 @@ export function getDecimalAmount(numb: number | string, decimal: number | string
       return "0." + new Array(e).join("0") + roundToDecimalN(x, decimal).toString().substring(2);
     }
   }
-  return x.toString();
+  return x.toLocaleString("en-US");
 }
 
 export function validateAmount(amnt: string, dec: number): boolean {

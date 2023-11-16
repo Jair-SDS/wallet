@@ -1,16 +1,7 @@
-// svgs
-import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
-import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
-import { ReactComponent as ChevIcon } from "@assets/svg/files/chev-icon.svg";
-import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";
-import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
-//
 import { useTranslation } from "react-i18next";
 import { encodeIcrcAccount } from "@dfinity/ledger";
-import { getInitialFromName, hexToNumber, hexToUint8Array, removeLeadingZeros, shortAddress } from "@/utils";
+import { hexToNumber, hexToUint8Array, removeLeadingZeros } from "@/utils";
 import { Principal } from "@dfinity/principal";
-import { CustomCopy } from "@components/CopyTooltip";
-import { CustomInput } from "@components/Input";
 import {
   AssetContact,
   Contact,
