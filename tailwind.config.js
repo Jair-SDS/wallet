@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 const colors = require('tailwindcss/colors')
 
-module.exports =  {
+module.exports = {
   darkMode: "class",
   content: ["./index.html", "./frontend/**/*.{js,ts,jsx,tsx}"],
   variants: {
@@ -31,7 +31,7 @@ module.exports =  {
       "7xl": "5rem",
     },
     screens: {
-      "defaults":"1475px",
+      "defaults": "1475px",
     },
     colors: {
       PrimaryColor: "#1b183f",
@@ -50,8 +50,8 @@ module.exports =  {
       ThemeColorBackLight: "#e3e3e3",
       ThemeColorSelector: "#19173a",
       ThemeColorSelectorLight: "#ffffff",
-      HoverColorLight:"#bfbfbf",
-      HoverColor:"#332F60",
+      HoverColorLight: "#bfbfbf",
+      HoverColor: "#332F60",
       BorderColor: "#68658b",
       BorderColorLight: "#bfbfbf",
       BorderColorTwo: "#2B2759",
@@ -79,6 +79,7 @@ module.exports =  {
       TextSendColor: "#F5797D",
       TextReceiveColor: "#3BC9A9",
       SelectRowColor: "#33B2EF",
+      SelectRowColorLight: "#33B2EF3D",
       AddSubaccount: "#0D4864",
       ReceiverColor: "#8A9CB7",
       FromBoxColor: "#1C1940",

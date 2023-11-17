@@ -100,11 +100,11 @@ export const CustomInput: FC<InputProps> = ({
   ...props
 }) => {
   return (
-    <div className={`realtive roun flex flex-row justify-start items-center w-full gap-1 ${compOutClass}`}>
+    <div className={`relative round flex flex-row justify-start items-center w-full gap-1 ${compOutClass}`}>
       {prefix && prefixPosition === "out" && prefix}
       <div
         lang="en-US"
-        className={`realtive flex flex-row justify-start items-center w-full px-1 cursor-text ${compInClass} ${inputComp(
+        className={`relative flex flex-row justify-start items-center w-full px-1 cursor-text ${compInClass} ${inputComp(
           { intent, border, sizeComp, className },
         )}`}
       >

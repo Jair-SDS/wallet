@@ -68,7 +68,9 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           />
         </div>
         <div className="flex flex-col justify-between items-center w-full mb-3">
-          <p className="w-full text-left opacity-60">{t("asset")}</p>
+          <p className="w-full text-left opacity-60">
+            {t("asset")} <span className="text-RadioCheckColor">*</span>
+          </p>
           <DropdownMenu.Root
             open={selAssetOpen}
             onOpenChange={(e: boolean) => {
@@ -98,14 +100,16 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                     </div>
                   ) : (
                     <div className="flex flex-row justify-between items-center w-full">
-                      <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
+                      <div className=" flex flex-row justify-start items-center w-full gap-2 text-sm">
                         <img src={getAssetLogo(selAsset.id)} className="w-8 h-8" alt="info-icon" />
                         <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                           <p className=" text-PrimaryTextColor">{selAsset.id.toString()}</p>
                         </div>
-                        <p>{`${selAsset.name !== "" ? selAsset.name : ""}${
-                          selAsset.name !== "" && selAsset.symbol !== "" ? " / " : ""
-                        }${selAsset.symbol !== "" ? selAsset.symbol : ""}`}</p>
+                        <p>
+                          {`${selAsset.name !== "" ? selAsset.name : ""}${
+                            selAsset.name !== "" && selAsset.symbol !== "" ? " / " : ""
+                          }${selAsset.symbol !== "" ? selAsset.symbol : ""}`}
+                        </p>
                       </div>
                       <img
                         src={ChevIcon}
@@ -124,11 +128,12 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                 sideOffset={5}
                 align="end"
               >
-                <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
+                <div className="flex flex-col justify-start items-start w-full  gap-2">
                   <CustomInput
-                    prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
+                    prefix={<img src={SearchIcon} className="h-[15px] w-[15px]" alt="search-icon" />}
                     sizeInput={"small"}
                     intent={"secondary"}
+                    className="m-1"
                     placeholder=""
                     compOutClass=""
                     value={selAssetSearch}
@@ -148,7 +153,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                         return (
                           <button
                             key={k}
-                            className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                            className="flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-SelectRowColorLight"
                             onClick={() => {
                               onSelectAsset(ft);
                             }}
@@ -157,9 +162,11 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
                             <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                               <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
                             </div>
-                            <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " - " : ""}${
-                              ft.symbol !== "" ? ft.symbol : ""
-                            }`}</p>
+                            <p>
+                              {`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " / " : ""}${
+                                ft.symbol !== "" ? ft.symbol : ""
+                              }`}
+                            </p>
                           </button>
                         );
                       })}
