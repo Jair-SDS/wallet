@@ -41,7 +41,7 @@ const AssetsList = () => {
     <Fragment>
       <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
         <Menu />
-        <div className="flex flex-row justify-start items-center w-full mb-2 pl-4 gap-3 pr-5">
+        <div className="grid grid-cols-[1fr_auto] justify-start items-center w-full mb-2 pl-4 gap-3 pr-5">
           <input
             className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
             type="text"
@@ -50,7 +50,7 @@ const AssetsList = () => {
             onChange={setSearch}
           />
           <div
-            className="flex flex-row justify-center items-center w-8 h-8 bg-SelectRowColor rounded-md cursor-pointer"
+            className="grid  justify-center items-center w-8 h-8 bg-SelectRowColor rounded-md cursor-pointer"
             onClick={onAddAsset}
           >
             <img src={PlusIcon} alt="plus-icon" />

@@ -117,8 +117,20 @@ export const useHPL = (open: boolean) => {
       sub.virtuals.map((vt) => {
         if (vt.name.toLowerCase().includes(searchKeyHPL.toLowerCase())) includeInSub = true;
       });
+
+      // search by currency name
+      const subAccountCurrencyName = getFtFromSub(sub.ft)?.name ?? null;
+      if (subAccountCurrencyName && partialMatch(subAccountCurrencyName, searchKeyHPL)) includeInSub = true;
+      // search by currency symbol
+      const subAccountCurrencySymbol = getFtFromSub(sub.ft)?.symbol ?? null;
+      if (subAccountCurrencySymbol && partialMatch(subAccountCurrencySymbol, searchKeyHPL)) includeInSub = true;
+      // search by sub account id
+      if (partialMatch(sub.sub_account_id, searchKeyHPL)) includeInSub = true;
+
       let zero = true;
+
       if (zeroBalance && BigInt(sub.amount) === BigInt(0)) zero = false;
+
       if ((sub.name.toLowerCase().includes(searchKeyHPL.toLowerCase()) || includeInSub || searchKeyHPL === "") && zero)
         return true;
     });
@@ -207,6 +219,17 @@ export const useHPL = (open: boolean) => {
     setNewVt((prev) => {
       return { ...prev, accesBy: e.target.value.trim() };
     });
+  }
+
+  function partialMatch(str: string, partial: string) {
+    // Escape special characters in the partial string
+    const escapedPartial = partial.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // Create a case-insensitive regular expression
+    const regex = new RegExp(escapedPartial, "ig");
+
+    // Test if the string matches the partial string
+    return regex.test(str);
   }
 
   return {
