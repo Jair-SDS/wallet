@@ -222,6 +222,14 @@ export const useHPL = (open: boolean) => {
     });
     setExpiration(!expiration);
   }
+  function onTimePickerClic() {
+    if (expiration) {
+      setNewVt((prev) => {
+        return { ...prev, expiration: dayjs().valueOf() };
+      });
+      setExpiration(false);
+    }
+  }
   function onAccesChange(e: ChangeEvent<HTMLInputElement>) {
     setNewVt((prev) => {
       return { ...prev, accesBy: e.target.value.trim() };
@@ -323,6 +331,7 @@ export const useHPL = (open: boolean) => {
     onBalanceChange,
     onDateChange,
     onChangeExpirationCheck,
+    onTimePickerClic,
     onAccesChange,
     accesErr,
     setAccesErr,

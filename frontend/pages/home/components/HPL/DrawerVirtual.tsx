@@ -48,6 +48,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     onAccesChange,
     onBalanceChange,
     onChangeExpirationCheck,
+    onTimePickerClic,
     onDateChange,
     accesErr,
   } = useHPL(false);
@@ -119,22 +120,27 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         <p className="opacity-60">{t("expiration")}</p>
         <div className="flex flex-row justify-start items-center w-full gap-4">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              disabled={newVt.expiration === 0}
-              value={newVt.expiration === 0 ? null : dayjs(newVt.expiration)}
-              onChange={onDateChange}
-              className={`${theme === "light" ? "date-picker-light" : "date-picker"}`}
-              timezone="system"
-              format="MM/DD/YY hh:mm:ss a"
-              viewRenderers={{
-                hours: renderTimeViewClock,
-                minutes: renderTimeViewClock,
-                seconds: renderTimeViewClock,
-              }}
-              timeSteps={{ minutes: 1, seconds: 5 }}
-              disablePast
-              views={["day", "hours", "minutes", "seconds"]}
-            />
+            <div className="relative">
+              <DateTimePicker
+                disabled={newVt.expiration === 0}
+                value={newVt.expiration === 0 ? null : dayjs(newVt.expiration)}
+                onChange={onDateChange}
+                className={`!cursor-pointer ${theme === "light" ? "date-picker-light" : "date-picker"}`}
+                timezone="system"
+                format="MM/DD/YY hh:mm:ss a"
+                viewRenderers={{
+                  hours: renderTimeViewClock,
+                  minutes: renderTimeViewClock,
+                  seconds: renderTimeViewClock,
+                }}
+                timeSteps={{ minutes: 1, seconds: 5 }}
+                disablePast
+                views={["day", "hours", "minutes", "seconds"]}
+              />
+              {expiration && (
+                <div className="absolute w-[12.5rem] h-[2rem] top-0 left-0" onClick={onTimePickerClic}></div>
+              )}
+            </div>
           </LocalizationProvider>
           <button className="p-0 flex flex-row gap-2" onClick={onChangeExpirationCheck}>
             <CustomCheck className="border-BorderColorLight dark:border-BorderColor" checked={expiration} />
