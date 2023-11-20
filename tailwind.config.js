@@ -93,6 +93,8 @@ module.exports = {
       ContactColor2: "#61A0BE",
       ContactColor3: "#5F8E88",
       RemoteAmount: "#7BD3FF",
+      HoverColorLight2:"#e0f3fc",
+      HoverColorLight3:"#E2E2E2",
 
 
       black: colors.black,

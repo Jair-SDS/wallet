@@ -70,7 +70,7 @@ const SelectTxRemote = ({
                 "pr-0",
               )}
             >
-              <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-SecondaryColorLight dark:bg-SecondaryColor">
+              <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-PrimaryColorLight dark:bg-SecondaryColor">
                 {!select.remote ? (
                   <div className="flex flex-row justify-between items-center w-full">
                     <p className="opacity-60">{t("select.remote")}</p>

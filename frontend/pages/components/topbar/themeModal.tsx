@@ -32,7 +32,11 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
       </div>
       <p className="font-light mb-2">{t("theme.modal.msg")}</p>
       <button
-        className={clsx(themeBox, "bg-ThemeColorSelectorLight", "border-BorderColor")}
+        className={clsx(
+          themeBox,
+          "bg-ThemeColorSelectorLight",
+          theme === ThemesEnum.enum.light ? "border-SelectRowColor" : "border-BorderColor",
+        )}
         onClick={() => {
           handleChange(ThemesEnum.enum.light);
         }}
@@ -68,7 +72,11 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
         </div>
       </button>
       <button
-        className={clsx(themeBox, "bg-ThemeColorSelector", "border-BorderColor")}
+        className={clsx(
+          themeBox,
+          "bg-ThemeColorSelector",
+          theme === ThemesEnum.enum.dark ? "border-SelectRowColor" : "border-BorderColor",
+        )}
         onClick={() => {
           handleChange(ThemesEnum.enum.dark);
         }}

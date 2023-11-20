@@ -40,6 +40,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     getFtFromVt,
     hplVTsData,
     editVtData,
+    changeVtName,
     reloadHPLBallance,
     expiration,
     setExpiration,
@@ -183,16 +184,26 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     if (!err) {
       setErrMsg("");
       if (selectVt) {
-        try {
-          await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
-            backingAccount: [BigInt(newVt.backing)],
-            state: [{ ft_set: BigInt(amnt) }],
-            expiration: [BigInt(newVt.expiration * 1000000)],
-          });
-          saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
-        } catch (e) {
-          setErrMsg(t("err.back"));
-        }
+        let changeOnlyName = false;
+        if (
+          selectVt.amount === newVt.amount &&
+          selectVt.backing === newVt.backing &&
+          selectVt.expiration === newVt.expiration &&
+          selectVt.name !== newVt.name
+        )
+          changeOnlyName = true;
+        if (!changeOnlyName)
+          try {
+            await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
+              backingAccount: [BigInt(newVt.backing)],
+              state: [{ ft_set: BigInt(amnt) }],
+              expiration: [BigInt(newVt.expiration * 1000000)],
+            });
+            saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
+          } catch (e) {
+            setErrMsg(t("err.back"));
+          }
+        else saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true, true);
       } else {
         try {
           const res = (await ingressActor.openVirtualAccount(
@@ -226,7 +237,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     return res;
   }
 
-  function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean) {
+  function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean, local?: boolean) {
     let auxVts: HPLVirtualData[] = [];
     if (edit) {
       let exist = false;
@@ -247,7 +258,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       }),
     );
     editVtData(auxVts);
-    reloadHPLBallance();
+    if (local && edit) changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
+    else reloadHPLBallance();
     onClose();
   }
 };

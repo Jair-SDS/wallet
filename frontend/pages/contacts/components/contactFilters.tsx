@@ -58,7 +58,7 @@ const ContactFilters = ({
           }}
         >
           <DropdownMenu.Trigger asChild>
-            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-SecondaryColorLight dark:bg-SecondaryColor cursor-pointer">
+            <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-PrimaryColorLight dark:bg-SecondaryColor cursor-pointer">
               <div className="flex flex-row justify-between items-center w-full">
                 {assetFilter.length === 0 || assetFilter.length === assets.length ? (
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("all")}</p>
@@ -119,7 +119,7 @@ const ContactFilters = ({
               )}
               <button
                 onClick={handleSelectAll}
-                className="flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor"
+                className="flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight2 hover:dark:bg-HoverColor"
               >
                 <p>{t("selected.all")}</p>
                 <CustomCheck
@@ -166,7 +166,7 @@ const ContactFilters = ({
                     return (
                       <button
                         key={k}
-                        className="p-1 flex flex-row justify-between items-center px-3 w-full text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                        className="p-1 flex flex-row justify-between items-center px-3 w-full text-sm hover:bg-HoverColorLight2 dark:hover:bg-HoverColor"
                         onClick={() => {
                           handleSelectFt(ft);
                         }}
@@ -272,7 +272,7 @@ export default ContactFilters;
 // Tailwind CSS
 const assetStyle = (k: number, assets: Asset[]) =>
   clsx({
-    ["flex flex-row justify-between items-center px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor"]:
+    ["flex flex-row justify-between items-center px-3 py-2 w-full hover:bg-HoverColorLight2 hover:dark:bg-HoverColor"]:
       true,
     ["rounded-b-lg"]: k === assets.length - 1,
   });

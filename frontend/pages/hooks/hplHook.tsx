@@ -11,6 +11,7 @@ import {
   editHPLSub,
   setHPLSelectedSub,
   setHPLSelectedVt,
+  setHPLSubAccounts,
   setHPLSubsData,
   setHPLVTsData,
   setLoading,
@@ -76,7 +77,9 @@ export const useHPL = (open: boolean) => {
   const setSelVt = (vt: HPLVirtualSubAcc | undefined) => {
     dispatch(setHPLSelectedVt(vt));
   };
-
+  const setHplSubs = (subs: HPLSubAccount[]) => {
+    dispatch(setHPLSubAccounts(subs));
+  };
   const editSelAsset = (ft: HPLAsset, ftData: HPLAssetData[]) => {
     dispatch(editHPLAsset(ft, ftData));
   };
@@ -243,6 +246,28 @@ export const useHPL = (open: boolean) => {
     // Test if the string matches the partial string
     return regex.test(str);
   }
+  function changeVtName(subId: string, vtId: string, name: string) {
+    const auxSubs = subaccounts.map((sub) => {
+      if (sub.sub_account_id === subId) {
+        const auxVts = sub.virtuals.map((vt) => {
+          if (vt.virt_sub_acc_id === vtId) {
+            return { ...vt, name: name };
+          } else return vt;
+        });
+        return { ...sub, virtuals: auxVts };
+      } else return sub;
+    });
+    setHplSubs(auxSubs);
+
+    if (selectSub) {
+      const auxVts = selectSub.virtuals.map((vt) => {
+        if (vt.virt_sub_acc_id === vtId) {
+          return { ...vt, name: name };
+        } else return vt;
+      });
+      setSelSub({ ...selectSub, virtuals: auxVts });
+    }
+  }
 
   return {
     protocol,
@@ -265,6 +290,7 @@ export const useHPL = (open: boolean) => {
     editedFt,
     setSelVt,
     setEditedFt,
+    setHplSubs,
     editSelAsset,
     editSelSub,
     editSubData,
@@ -300,6 +326,7 @@ export const useHPL = (open: boolean) => {
     onAccesChange,
     accesErr,
     setAccesErr,
+    changeVtName,
     reloadHPLBallance,
   };
 };

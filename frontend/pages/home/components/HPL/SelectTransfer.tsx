@@ -49,7 +49,7 @@ const SelectTransfer = ({
     <div className="flex flex-col justify-start items-start w-full py-8 border-b border-BorderColorLight/50 dark:border-BorderColor/30 gap-3">
       <div className="flex flex-row justify-between items-center w-full">
         <p className="opacity-50">{t(txType === HplTransactionsTypeEnum.Enum.from ? "from" : "to")}</p>
-        <div className="flex flex-row justify-start items-center bg-ThemeColorBackLight dark:bg-ThemeColorBack gap-3 px-6 rounded text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+        <div className="flex flex-row justify-start items-center bg-SecondaryColorLight dark:bg-ThemeColorBack gap-3 px-6 rounded text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
           <p>{t("select")}</p>
           <RadioGroup.Root
             value={select.type}
@@ -132,7 +132,7 @@ const SelectTransfer = ({
                   "pr-0",
                 )}
               >
-                <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-SecondaryColorLight dark:bg-SecondaryColor">
+                <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorTwoLight dark:border-BorderColorTwo rounded-md bg-PrimaryColorLight dark:bg-SecondaryColor">
                   {!select.subaccount ? (
                     <div className="flex flex-row justify-between items-center w-full">
                       <p className="opacity-60">{t("select.account")}</p>

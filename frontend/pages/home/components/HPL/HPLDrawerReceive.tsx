@@ -27,7 +27,7 @@ const HPLDrawerReceive: FC<HPLDrawerReceive> = ({ virtualAccount }) => {
             value={qrCodeValue}
           />
         </div>
-        <div className="flex flex-row justify-center items-center p-2 border border-BorderColorLight dark:border-BorderColor bg-SecondaryColorLight dark:bg-SecondaryColor rounded">
+        <div className="flex flex-row justify-center items-center p-2 border border-BorderColorLight dark:border-BorderColor bg-PrimaryColorLight dark:bg-SecondaryColor rounded">
           <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-2 break-all">{qrCodeValue}</p>
           <CustomCopy
             background="default"

@@ -78,7 +78,7 @@ const AddContact = ({ setAddOpen }: AddContactProps) => {
             />
           </div>
         </div>
-        <div className="flex flex-row justify-center items-center w-full h-72 rounded-sm bg-ThirdColorLight dark:bg-ThirdColor gap-3">
+        <div className="flex flex-row justify-center items-center w-full h-72 rounded-sm bg-HoverColorLight3 dark:bg-ThirdColor gap-3">
           {newContact.assets.length === 0 ? (
             <ContactAssetPop
               assets={assets}

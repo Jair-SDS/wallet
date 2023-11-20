@@ -6,7 +6,7 @@ const inputComp = cva("button", {
     intent: {
       inherit: ["bg-inherit"],
       primary: ["bg-PrimaryColorLight", "dark:bg-PrimaryColor"],
-      secondary: ["bg-SecondaryColorLight", "dark:bg-SecondaryColor"],
+      secondary: ["bg-PrimaryColorLight", "dark:bg-SecondaryColor"],
     },
     border: {
       none: ["border-0"],
