@@ -62,7 +62,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
     setErrIndex("");
     setValidToken(false);
     setValidIndex(false);
-  }, [assetOpen]);
+  }, [assetOpen, manual]);
 
   return (
     <Fragment>
