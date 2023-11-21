@@ -117,7 +117,7 @@ const ContactFilters = ({
                   />
                 </div>
               )}
-              <button
+              <div
                 onClick={handleSelectAll}
                 className="flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight2 hover:dark:bg-HoverColor"
               >
@@ -129,11 +129,11 @@ const ContactFilters = ({
                     (assetFilter.length === hplFTs.length && protocol === ProtocolTypeEnum.Enum.HPL)
                   }
                 />
-              </button>
+              </div>
               {protocol === ProtocolTypeEnum.Enum.ICRC1 &&
                 assets.map((asset, k) => {
                   return (
-                    <button
+                    <div
                       key={k}
                       className={assetStyle(k, assets)}
                       onClick={() => {
@@ -149,7 +149,7 @@ const ContactFilters = ({
                         className="border-BorderColorLight dark:border-BorderColor"
                         checked={assetFilter.includes(asset.tokenSymbol)}
                       />
-                    </button>
+                    </div>
                   );
                 })}
               {protocol === ProtocolTypeEnum.Enum.HPL &&
@@ -164,7 +164,7 @@ const ContactFilters = ({
                   })
                   .map((ft, k) => {
                     return (
-                      <button
+                      <div
                         key={k}
                         className="p-1 flex flex-row justify-between items-center px-3 w-full text-sm hover:bg-HoverColorLight2 dark:hover:bg-HoverColor"
                         onClick={() => {
@@ -185,7 +185,7 @@ const ContactFilters = ({
                           className="border-BorderColorLight dark:border-BorderColor"
                           checked={assetFilter.includes(ft.id)}
                         />
-                      </button>
+                      </div>
                     );
                   })}
             </DropdownMenu.Content>

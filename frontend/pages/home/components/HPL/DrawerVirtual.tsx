@@ -131,7 +131,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
                 viewRenderers={{
                   hours: renderTimeViewClock,
                   minutes: renderTimeViewClock,
-                  seconds: renderTimeViewClock,
                 }}
                 timeSteps={{ minutes: 1, seconds: 5 }}
                 disablePast

@@ -74,6 +74,7 @@ const AddAssetToContact = ({
               onAdd={(data) => {
                 assetToAdd(data);
               }}
+              btnClass="p-1"
             />
           )}
         </div>

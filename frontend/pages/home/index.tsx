@@ -37,7 +37,7 @@ const Home = () => {
               }}
               size={"small"}
             >
-              <p>{t("agree")}</p>
+              <p className="text-center">{t("agree")}</p>
             </CustomButton>
           </div>
         </div>

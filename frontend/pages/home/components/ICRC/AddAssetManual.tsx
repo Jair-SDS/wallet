@@ -98,7 +98,7 @@ const AddAssetManual = ({
           inputClass={asset ? "opacity-40" : ""}
           placeholder="Ledger Principal"
           compOutClass=""
-          value={newToken.address}
+          value={newToken.address || ""}
           onChange={onLedgerChange}
         />
         {errToken !== "" && errToken !== "non" && <p className="text-LockColor text-left text-sm">{errToken}</p>}
@@ -115,7 +115,7 @@ const AddAssetManual = ({
           }
           placeholder="Index Principal"
           compOutClass=""
-          value={newToken.index}
+          value={newToken.index || ""}
           onChange={onChangeIndex}
         />
         {errIndex !== "" && errIndex !== "non" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
@@ -128,7 +128,7 @@ const AddAssetManual = ({
           intent={"secondary"}
           placeholder="-"
           compOutClass=""
-          value={newToken.symbol}
+          value={newToken.symbol || ""}
           onChange={onChangeSymbol}
         />
       </div>
@@ -139,7 +139,7 @@ const AddAssetManual = ({
           intent={"secondary"}
           placeholder="-"
           compOutClass=""
-          value={newToken.name}
+          value={newToken.name || ""}
           onChange={onChangeName}
         />
       </div>
@@ -153,7 +153,7 @@ const AddAssetManual = ({
           disabled={asset ? true : false}
           compOutClass=""
           type="number"
-          value={newToken.decimal}
+          value={newToken.decimal || ""}
           onChange={onChangeDecimal}
         />
       </div>

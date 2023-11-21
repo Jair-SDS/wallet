@@ -217,15 +217,17 @@ export const useHPL = (open: boolean) => {
     });
   }
   function onChangeExpirationCheck() {
+    const today = dayjs().add(1, "m").format("MM/DD/YY hh:mm a");
     setNewVt((prev) => {
-      return { ...prev, expiration: expiration ? dayjs().valueOf() : 0 };
+      return { ...prev, expiration: expiration ? dayjs(today).valueOf() : 0 };
     });
     setExpiration(!expiration);
   }
   function onTimePickerClic() {
     if (expiration) {
+      const today = dayjs().add(1, "m").format("MM/DD/YY hh:mm a");
       setNewVt((prev) => {
-        return { ...prev, expiration: dayjs().valueOf() };
+        return { ...prev, expiration: dayjs(today).valueOf() };
       });
       setExpiration(false);
     }

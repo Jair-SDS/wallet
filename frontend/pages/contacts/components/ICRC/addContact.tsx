@@ -86,6 +86,7 @@ const AddContact = ({ setAddOpen }: AddContactProps) => {
               onAdd={(data) => {
                 assetToAddEmpty(data);
               }}
+              btnClass="p-2"
             />
           ) : (
             <AddAssetToContact

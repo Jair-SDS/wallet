@@ -31,8 +31,9 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
         />
       </div>
       <p className="font-light mb-2">{t("theme.modal.msg")}</p>
-      <button
+      <div
         className={clsx(
+          "cursor-pointer",
           themeBox,
           "bg-ThemeColorSelectorLight",
           theme === ThemesEnum.enum.light ? "border-SelectRowColor" : "border-BorderColor",
@@ -70,9 +71,10 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
             </div>
           </RadioGroup.Root>
         </div>
-      </button>
-      <button
+      </div>
+      <div
         className={clsx(
+          "cursor-pointer",
           themeBox,
           "bg-ThemeColorSelector",
           theme === ThemesEnum.enum.dark ? "border-SelectRowColor" : "border-BorderColor",
@@ -112,7 +114,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
             </div>
           </RadioGroup.Root>
         </div>
-      </button>
+      </div>
     </Fragment>
   );
 

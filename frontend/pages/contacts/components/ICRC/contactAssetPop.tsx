@@ -45,12 +45,13 @@ const ContactAssetPop = ({
       <div className={`${compClass}`}>
         <DropdownMenu.Root open={openDrop && assets.length > 0} onOpenChange={setOpenDrop}>
           <DropdownMenu.Trigger className="!p-0">
-            <CustomButton
-              className={`${assets.length === 0 ? "bg-GrayColor cursor-default" : ""} ${btnClass}`}
-              size={"icon"}
+            <div
+              className={`${
+                assets.length === 0 ? "bg-GrayColor cursor-default" : "bg-AccpetButtonColor text-white"
+              } flex justify-center items-center rounded ${btnClass}`}
             >
               <img src={PlusIcon} alt="plus-icon" />
-            </CustomButton>
+            </div>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content
@@ -60,7 +61,7 @@ const ContactAssetPop = ({
             >
               <div className="flex flex-col justify-start items-start bg-SecondaryColorLight dark:bg-SecondaryColor rounded-lg w-40 border border-BorderColorLight/20 dark:border-BorderColor/20 shadow max-h-64 z-[2000]">
                 <div className="flex flex-col w-full scroll-y-light">
-                  <button
+                  <div
                     className={
                       "flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor"
                     }
@@ -71,10 +72,10 @@ const ContactAssetPop = ({
                       className="border-BorderColorLight dark:border-BorderColor"
                       checked={assetsToAdd.length === assets.length}
                     />
-                  </button>
+                  </div>
                   {assets.map((asset, k) => {
                     return (
-                      <button
+                      <div
                         key={k}
                         className={`flex flex-row justify-between items-center px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor ${
                           symbolToAdd.includes(asset.tokenSymbol) && assetsToAdd.length !== assets.length
@@ -94,7 +95,7 @@ const ContactAssetPop = ({
                           className="border-BorderColorLight dark:border-BorderColor"
                           checked={symbolToAdd.includes(asset.tokenSymbol)}
                         />
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
