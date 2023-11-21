@@ -32,7 +32,7 @@ const TabNetwork = ({ children }: TabNetworkProps) => {
         }`}
       >
         <div
-          className={`relative flex justify-center items-center w-full button-network-tab ${
+          className={`relative flex justify-center items-center w-full button-network-tab focus-visible:outline-none ${
             ntw === protocol ? "before:bg-PrimaryColorLight dark:before:bg-PrimaryColor" : ""
           }`}
         >
