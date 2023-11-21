@@ -4,7 +4,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { useHPLTx } from "@pages/home/hooks/hplTxHook";
 import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@/const";
 import { decodeIcrcAccount } from "@dfinity/ledger";
-import { Fragment, useState } from "react";
+import { FC, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SelectTransfer from "./SelectTransfer";
 import { CustomButton } from "@components/Button";
@@ -23,7 +23,7 @@ interface TransactionDrawerProps {
   locat: string;
 }
 
-const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: TransactionDrawerProps) => {
+const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOption, drawerOpen, locat }) => {
   const { t } = useTranslation();
   const {
     hplClient,
@@ -39,6 +39,7 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
     setAmount,
     hplContacts,
   } = useHPLTx(drawerOpen, drawerOption, locat);
+
   const { getAssetLogo, getFtFromSub, reloadHPLBallance } = useHPL(false);
   const [summary, setSummary] = useState(false);
   const [loadingNext, setLoadingNext] = useState(false);
@@ -59,51 +60,13 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
           onClick={onClose}
         />
       </div>
+      {getContent()}
+    </div>
+  );
 
-      {!summary ? (
-        qrView ? (
-          <div className="flex flex-col justify-start items-center w-full">
-            <QRscanner qrView={qrView !== ""} onSuccess={onQRSuccess} setQRview={setQRviewClose} />
-          </div>
-        ) : (
-          <Fragment>
-            <div className="flex flex-col justify-start items-center w-full">
-              <SelectTransfer
-                getAssetLogo={getAssetLogo}
-                getFtFromSub={getFtFromSub}
-                select={from}
-                manual={manualFrom}
-                setManual={setManualFrom}
-                hplContacts={hplContacts}
-                setSelect={setFrom}
-                subaccounts={subaccounts}
-                txType={HplTransactionsTypeEnum.Enum.from}
-                setQRview={setQRview}
-                otherAsset={to.subaccount?.ft}
-              />
-              <SelectTransfer
-                getAssetLogo={getAssetLogo}
-                getFtFromSub={getFtFromSub}
-                select={to}
-                manual={manualTo}
-                setManual={setManualTo}
-                hplContacts={hplContacts}
-                setSelect={setTo}
-                subaccounts={subaccounts}
-                txType={HplTransactionsTypeEnum.Enum.to}
-                setQRview={setQRview}
-                otherAsset={from.subaccount?.ft}
-              />
-            </div>
-            <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
-              <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
-              <CustomButton className="min-w-[5rem]" onClick={onNext} size={"small"}>
-                {loadingNext ? <LoadingLoader className="mt-1" /> : <p>{t("next")}</p>}
-              </CustomButton>
-            </div>
-          </Fragment>
-        )
-      ) : (
+  function getContent() {
+    if (summary) {
+      return (
         <TxSummary
           from={from}
           to={to}
@@ -124,9 +87,56 @@ const TransactionDrawer = ({ setDrawerOpen, drawerOption, drawerOpen, locat }: T
           onClose={onClose}
           reloadHPLBallance={reloadHPLBallance}
         />
-      )}
-    </div>
-  );
+      );
+    }
+
+    if (qrView) {
+      return (
+        <div className="flex flex-col justify-start items-center w-full">
+          <QRscanner qrView={qrView !== ""} onSuccess={onQRSuccess} setQRview={setQRviewClose} />
+        </div>
+      );
+    }
+
+    return (
+      <Fragment>
+        <div className="flex flex-col justify-start items-center w-full">
+          <SelectTransfer
+            getAssetLogo={getAssetLogo}
+            getFtFromSub={getFtFromSub}
+            select={from}
+            manual={manualFrom}
+            setManual={setManualFrom}
+            hplContacts={hplContacts}
+            setSelect={setFrom}
+            subaccounts={subaccounts}
+            txType={HplTransactionsTypeEnum.Enum.from}
+            setQRview={setQRview}
+            otherAsset={to.subaccount?.ft}
+          />
+          <SelectTransfer
+            getAssetLogo={getAssetLogo}
+            getFtFromSub={getFtFromSub}
+            select={to}
+            manual={manualTo}
+            setManual={setManualTo}
+            hplContacts={hplContacts}
+            setSelect={setTo}
+            subaccounts={subaccounts}
+            txType={HplTransactionsTypeEnum.Enum.to}
+            setQRview={setQRview}
+            otherAsset={from.subaccount?.ft}
+          />
+        </div>
+        <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
+          <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
+          <CustomButton className="min-w-[5rem]" onClick={onNext} size={"small"}>
+            {loadingNext ? <LoadingLoader className="mt-1" /> : <p>{t("next")}</p>}
+          </CustomButton>
+        </div>
+      </Fragment>
+    );
+  }
 
   function onClose() {
     setDrawerOpen(false);

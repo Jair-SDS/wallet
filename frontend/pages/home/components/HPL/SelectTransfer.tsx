@@ -9,7 +9,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import { HPLAsset, HPLSubAccount, HplContact, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
@@ -29,22 +29,23 @@ interface SelectTransferProps {
   getFtFromSub(id: string): HPLAsset;
 }
 
-const SelectTransfer = ({
+const SelectTransfer: FC<SelectTransferProps> = ({
   select,
-  setSelect,
   subaccounts,
   hplContacts,
   txType,
   manual,
   otherAsset,
+  setSelect,
   setManual,
   setQRview,
   getAssetLogo,
   getFtFromSub,
-}: SelectTransferProps) => {
+}) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+
   return (
     <div className="flex flex-col justify-start items-start w-full py-8 border-b border-BorderColorLight/50 dark:border-BorderColor/30 gap-3">
       <div className="flex flex-row justify-between items-center w-full">
@@ -52,36 +53,29 @@ const SelectTransfer = ({
         <div className="flex flex-row justify-start items-center bg-SecondaryColorLight dark:bg-ThemeColorBack gap-3 px-6 rounded text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
           <p>{t("select")}</p>
           <RadioGroup.Root
+            className="flex"
             value={select.type}
             onValueChange={(e) => {
               handleChangeType(e as HplTransactions);
             }}
           >
-            <div className="flex flex-row items-center w-full px-3 py-1 gap-2">
-              <RadioGroup.Item
-                className={`w-4 h-4 rounded-full border-2  outline-none p-0 ${
-                  select.type === HplTransactionsEnum.Enum.SUBACCOUNT
-                    ? "border-RadioCheckColor"
-                    : "border-RadioNoCheckColorLight"
-                }`}
+            <div className="flex flex-row items-center w-full px-3 py-1 gap-2 ">
+              <RadioGroupItem
+                active={select.type === HplTransactionsEnum.Enum.SUBACCOUNT}
                 value={HplTransactionsEnum.Enum.SUBACCOUNT}
-                id="r-light"
-              >
-                <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
-              </RadioGroup.Item>
-              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ">{t("own")}</p>
-              <RadioGroup.Item
-                className={`w-4 h-4 rounded-full border-2 ml-2  outline-none p-0 ${
-                  select.type === HplTransactionsEnum.Enum.VIRTUAL
-                    ? "border-RadioCheckColor"
-                    : "border-RadioNoCheckColorLight"
-                }`}
+                id="own"
+              />
+              <label className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50" htmlFor="own">
+                {t("own")}
+              </label>
+              <RadioGroupItem
+                active={select.type === HplTransactionsEnum.Enum.VIRTUAL}
                 value={HplTransactionsEnum.Enum.VIRTUAL}
-                id="r-light"
-              >
-                <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-full after:bg-RadioCheckColor" />
-              </RadioGroup.Item>
-              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50">{t("remote")}</p>
+                id="remote"
+              />
+              <label className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50" htmlFor="remote">
+                {t("remote")}
+              </label>
             </div>
           </RadioGroup.Root>
         </div>
@@ -244,6 +238,7 @@ const SelectTransfer = ({
       </div>
     </div>
   );
+
   function handleChangeType(value: HplTransactions) {
     setSelect({
       ...select,
@@ -251,12 +246,15 @@ const SelectTransfer = ({
       subaccount: value === HplTransactionsEnum.Enum.SUBACCOUNT ? select.subaccount : undefined,
     });
   }
+
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchKey(e.target.value);
   }
+
   function onClear() {
     setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
   }
+
   function onSelectSub(sub: HPLSubAccount) {
     setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined });
     setSubsOpen(false);
@@ -265,6 +263,26 @@ const SelectTransfer = ({
     setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
     setManual(!manual);
   }
+};
+
+interface RadioGroupItemProps {
+  active: boolean;
+  value: HplTransactions;
+  id: string;
+}
+
+const RadioGroupItem: FC<RadioGroupItemProps> = ({ active, value, id }) => {
+  return (
+    <RadioGroup.Item
+      className={`w-4 h-4 rounded-full p-0 border-2 ${
+        active ? "border-RadioCheckColor" : "border-RadioNoCheckColorLight"
+      }`}
+      value={value}
+      id={id}
+    >
+      <RadioGroup.Indicator className="flex justify-center items-center w-full h-full relative after:content-[''] after:block after:w-[9px] after:h-[9px] after:rounded-[50%] after:bg-RadioCheckColor" />
+    </RadioGroup.Item>
+  );
 };
 
 export default SelectTransfer;
