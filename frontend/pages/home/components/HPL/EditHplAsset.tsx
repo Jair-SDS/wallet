@@ -32,7 +32,11 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
         </div>
         <div className="flex flex-col items-center justify-center w-full my-3 gap-1">
           <img src={getAssetLogo(editedFt.id)} className="w-8 h-8" alt="info-icon" />
-          <p className="font-semibold">{`${editedFt?.token_name} - ${editedFt?.token_symbol}`}</p>
+          <p className="font-semibold">{`${
+            (editedFt?.token_name + " - " + editedFt?.token_symbol).trim() === "-"
+              ? ""
+              : editedFt?.token_name + " - " + editedFt?.token_symbol
+          }`}</p>
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
           <p className="opacity-60">{t("asset.name")}</p>

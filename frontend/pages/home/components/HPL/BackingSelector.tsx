@@ -30,7 +30,9 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
 
   return (
     <div className="flex flex-col justify-between items-center w-full mb-3">
-      <p className="w-full text-left opacity-60">{t("backing.account")}</p>
+      <p className="w-full text-left opacity-60">
+        {t("backing.account")} <span className="text-RadioCheckColor">*</span>
+      </p>
       <DropdownMenu.Root
         open={selAssetOpen}
         onOpenChange={(e: boolean) => {

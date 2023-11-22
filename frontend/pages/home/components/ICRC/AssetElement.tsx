@@ -81,14 +81,6 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
                         )}
                       </div>
                     )}
-                    {getFullTokenAmount().token === 0 && (
-                      <TrashIcon
-                        onClick={() => {
-                          onDelete();
-                        }}
-                        className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer ml-2"
-                      />
-                    )}
                   </div>
                 </div>
               </div>
@@ -99,15 +91,25 @@ const AssetElement = ({ asset, idx, acordeonIdx, setAssetInfo, setAssetOpen, tok
                 >{`≈ $${getFullTokenAmount().currency.toFixed(2)}`}</p>
               </div>
             </div>
-            {asset?.subAccounts && (
-              <img
-                src={theme === ThemesEnum.enum.dark ? ChevronRightIcon : ChevronRightDarkIcon}
-                className={`${
-                  acordeonIdx === `asset-${idx}` ? "-rotate-90 transition-transform" : "rotate-0 transition-transform"
-                } ml-3`}
-                alt="chevron-icon"
-              />
-            )}
+            <div className="flex flex-col justify-between items-center h-8 ml-3 ">
+              {asset?.subAccounts && (
+                <img
+                  src={theme === ThemesEnum.enum.dark ? ChevronRightIcon : ChevronRightDarkIcon}
+                  className={`${
+                    acordeonIdx === `asset-${idx}` ? "-rotate-90 transition-transform" : "rotate-0 transition-transform"
+                  } `}
+                  alt="chevron-icon"
+                />
+              )}
+              {getFullTokenAmount().token === 0 && (
+                <TrashIcon
+                  onClick={() => {
+                    onDelete();
+                  }}
+                  className="w-3 h-3 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer "
+                />
+              )}
+            </div>
           </Accordion.Trigger>
         </div>
         {(asset?.subAccounts || newSub) && (

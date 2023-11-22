@@ -125,7 +125,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
                 disabled={newVt.expiration === 0}
                 value={newVt.expiration === 0 ? null : dayjs(newVt.expiration)}
                 onChange={onDateChange}
-                className={`!cursor-pointer ${theme === "light" ? "date-picker-light" : "date-picker"}`}
+                className={`!cursor-pointer !w-full ${theme === "light" ? "date-picker-light" : "date-picker"}`}
                 timezone="system"
                 format="MM/DD/YY hh:mm:ss a"
                 viewRenderers={{
@@ -149,7 +149,9 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       </div>
       {!selectVt ? (
         <div className="flex flex-col items-start justify-start w-full mt-3 mb-3">
-          <p className="opacity-60">{t("acces.principal")}</p>
+          <p className="opacity-60">
+            {t("access.by")} <span className="text-RadioCheckColor">*</span>
+          </p>
           <CustomInput
             sizeInput={"small"}
             intent={"secondary"}

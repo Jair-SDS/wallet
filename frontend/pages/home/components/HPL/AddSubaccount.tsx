@@ -57,7 +57,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           />
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
-          <p className="opacity-60">{t("name")}</p>
+          <p className="opacity-60">{t("account.name")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}

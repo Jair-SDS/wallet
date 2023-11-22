@@ -130,7 +130,7 @@ const AccountElement = ({
                 setDeleteModal(true);
               }}
             >
-              <TrashIcon className=" fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
+              <TrashIcon className="w-3 h-3 mt-5 mr-1 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
             </div>
           )}
         </div>
