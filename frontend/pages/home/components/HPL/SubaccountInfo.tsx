@@ -42,12 +42,14 @@ const SubaccountInfo = ({ children, onAddVirtualAccount }: SubaccountInfoProps) 
             <p>{t("transactions")}</p>
           </CustomButton>
         </div>
-        <div className="flex flex-row justify-start items-center gap-5">
-          <p className="text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("add.virtual")}</p>
-          <CustomButton className="!p-1 !rounded" size={"icon"} onClick={onAddVirtualAccount}>
-            <img src={PlusIcon} alt="plus-icon" className="w-4 h-4" />
-          </CustomButton>
-        </div>
+        {subInfoType === SubaccountInfoEnum.Enum.VIRTUALS && (
+          <div className="flex flex-row justify-start items-center gap-5">
+            <p className="text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("add.virtual")}</p>
+            <CustomButton className="!p-1 !rounded" size={"icon"} onClick={onAddVirtualAccount}>
+              <img src={PlusIcon} alt="plus-icon" className="w-4 h-4" />
+            </CustomButton>
+          </div>
+        )}
       </div>
 
       <div className="flex w-full">{subInfoType === SubaccountInfoEnum.Enum.VIRTUALS ? children : null}</div>
