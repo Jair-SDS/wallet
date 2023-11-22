@@ -53,7 +53,9 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
           <p className="text-md">{t("pull")}</p>
         </div>
         <div
-          className={`flex flex-col justify-center items-center w-1/3 gap-1 ${enableReceiveAction ? "" : "opacity-70"}`}
+          className={`flex flex-col justify-center items-center w-1/3 gap-1 ${
+            enableReceiveAction ? "" : "opacity-[35%]"
+          }`}
         >
           <div
             className={`flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md ${

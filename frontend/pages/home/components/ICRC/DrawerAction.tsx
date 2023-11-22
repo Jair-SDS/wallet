@@ -37,7 +37,7 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
                 className={getButtonClassNames(dOpt)}
                 onClick={() => handleDrawerOptionClick(dOpt)}
               >
-                <p>{t(dOpt.name)}</p>
+                <p className="font-semibold">{t(dOpt.name)}</p>
               </CustomButton>
             );
           })}

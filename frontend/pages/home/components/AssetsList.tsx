@@ -57,7 +57,7 @@ const AssetsList = () => {
           </div>
         </div>
         {protocol === ProtocolTypeEnum.Enum.HPL && (
-          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
+          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3 mt-2 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
             <div className="flex flex-row justify-start items-center gap-2">
               <p className="text-md">{t("non.zero.balance")}</p>
               <div
@@ -77,7 +77,7 @@ const AssetsList = () => {
         )}
         <div
           className={`w-full ${
-            protocol === ProtocolTypeEnum.Enum.HPL ? "max-h-[calc(100vh-15rem)]" : "max-h-[calc(100vh-13rem)]"
+            protocol === ProtocolTypeEnum.Enum.HPL ? "max-h-[calc(100vh-16rem)]" : "max-h-[calc(100vh-13rem)]"
           } scroll-y-light`}
         >
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (

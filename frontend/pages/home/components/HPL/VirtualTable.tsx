@@ -4,6 +4,7 @@ import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
+import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
 import { getDecimalAmount, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
@@ -34,8 +35,17 @@ const VirtualTable: FC<VirtualTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
-  const { ingressActor, selectSub, sortVt, getFtFromSub, setSelVt, selectVt, hplVTsData, reloadHPLBallance } =
-    useHPL(false);
+  const {
+    ingressActor,
+    selectSub,
+    sortVt,
+    setSortVt,
+    getFtFromSub,
+    setSelVt,
+    selectVt,
+    hplVTsData,
+    reloadHPLBallance,
+  } = useHPL(false);
 
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -53,7 +63,15 @@ const VirtualTable: FC<VirtualTableProps> = ({
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           <tr>
             <th className="p-2 w-[10%]font-normal">
-              <p>{"ID"}</p>
+              <div
+                onClick={() => {
+                  onSort("ID");
+                }}
+                className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
+              >
+                <p>{"ID"}</p>
+                <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
+              </div>
             </th>
             <th className="p-2 text-left w-[30%] font-normal">
               <p>{`${t("name")} (${selectSub?.virtuals.length || 0})`}</p>
@@ -62,7 +80,15 @@ const VirtualTable: FC<VirtualTableProps> = ({
               <p>{t("balance")}</p>
             </th>
             <th className="p-2 w-[13%] font-normal">
-              <p>{t("expiration")}</p>
+              <div
+                onClick={() => {
+                  onSort("EXPIRATION");
+                }}
+                className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
+              >
+                <p>{t("expiration")}</p>
+                <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
+              </div>
             </th>
             <th className="p-2 w-[20%] font-normal">
               <p>{t("access.by")}</p>
@@ -80,7 +106,9 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 key={k}
                 onClick={handleVirtualAccountClick(vt.virt_sub_acc_id)}
               >
-                <td className={`${rowStyle(vt.expiration)}`}>{vt.virt_sub_acc_id}</td>
+                <td className={`${rowStyle(vt.expiration)}`}>
+                  <p className="ml-[-0.4rem]">{vt.virt_sub_acc_id}</p>
+                </td>
                 <td
                   className={`${rowStyle(
                     vt.expiration,
@@ -196,13 +224,15 @@ const VirtualTable: FC<VirtualTableProps> = ({
 
   function getVirtualsSorted() {
     if (selectSub) {
-      switch (sortVt) {
+      switch (sortVt.value) {
         case 0:
           return selectSub.virtuals;
         case 1:
-          return selectSub.virtuals.sort((a, b) => a.expiration - b.expiration);
+          return [...selectSub.virtuals].sort((a, b) =>
+            sortVt.col === "ID" ? Number(b.virt_sub_acc_id) - Number(a.virt_sub_acc_id) : a.expiration - b.expiration,
+          );
         case -1:
-          return selectSub.virtuals.sort((a, b) => b.expiration - a.expiration);
+          return [...selectSub.virtuals].sort((a, b) => b.expiration - a.expiration);
         default:
           return selectSub.virtuals;
       }
@@ -213,6 +243,25 @@ const VirtualTable: FC<VirtualTableProps> = ({
     else {
       return dayjs(exp).format("MM/DD/YYYY hh:mm");
     }
+  }
+  function onSort(sType: string) {
+    if (sortVt.col !== sType) setSortVt({ value: sType === "ID" ? 0 : 1, col: sType });
+    else
+      switch (sortVt.value) {
+        case 0:
+          setSortVt({ value: 1, col: sortVt.col });
+          break;
+        case 1:
+          if (sType === "ID") setSortVt({ value: 0, col: sortVt.col });
+          else setSortVt({ value: -1, col: sortVt.col });
+          break;
+        case -1:
+          setSortVt({ value: 0, col: sortVt.col });
+          break;
+        default:
+          setSortVt({ value: 0, col: sortVt.col });
+          break;
+      }
   }
   function onOpenMoreChange(k: number, e: boolean) {
     setOpenMore(e ? k : -1);

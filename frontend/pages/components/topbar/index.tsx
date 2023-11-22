@@ -68,7 +68,7 @@ const TopBarComponent = () => {
         </div>
         <div className="flex flex-row justify-start items-center pr-9 gap-9">
           <div className="flex flex-row justify-start items-center gap-2 text-md">
-            <WalletIcon className="fill-SvgColor dark:fill-SvgColor max-w-[1.5rem] h-auto"></WalletIcon>
+            <WalletIcon className="fill-SvgColor dark:fill-SecondaryColorLight max-w-[1.5rem] h-auto"></WalletIcon>
             <p className="opacity-70">Total Balance:</p>
             <p className="font-medium">{`$${getTotalAmountInCurrency().toFixed(2)}`}</p>
             <p className="opacity-70">USD</p>

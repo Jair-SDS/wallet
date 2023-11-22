@@ -83,7 +83,7 @@ const SelectTxRemote = ({
                   </div>
                 ) : (
                   <div className="flex flex-row justify-between items-center w-full">
-                    <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
+                    <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-md">
                       <div
                         className={`flex justify-center items-center !min-w-[2rem] w-8 h-8 rounded-md ${getContactColor(
                           0,
@@ -93,8 +93,8 @@ const SelectTxRemote = ({
                       </div>
                       <div className="flex flex-col justify-start items-start w-full">
                         <p>{select.remote.name}</p>
-                        <div className="flex flex-row justify-start items-center gap-3">
-                          <img src={getAssetLogo(select.remote.ftIndex)} className="w-8 h-8" alt="info-icon" />
+                        <div className="flex flex-row justify-start items-center gap-2">
+                          <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
                           <p className="opacity-60">{`${getDecimalAmount(
                             select.remote.amount,
                             getFtFromSub(select.remote.ftIndex).decimal,
@@ -135,12 +135,12 @@ const SelectTxRemote = ({
                     return (
                       <button
                         key={k}
-                        className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
+                        className="p-1 flex flex-row justify-start items-center w-full gap-4 text-md hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
                         onClick={() => {
                           onSelectRemote(rmt, prin);
                         }}
                       >
-                        <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
+                        <div className="p-1 flex flex-row justify-start items-center w-full gap-4">
                           <div
                             className={`flex justify-center items-center !min-w-[2rem] w-8 h-8 rounded-md ${getContactColor(
                               0,
@@ -150,8 +150,8 @@ const SelectTxRemote = ({
                           </div>
                           <div className="flex flex-col justify-start items-start w-full">
                             <p>{rmt.name}</p>
-                            <div className="flex flex-row justify-start items-center gap-3">
-                              <img src={getAssetLogo(rmt.ftIndex)} className="w-6 h-6" alt="info-icon" />
+                            <div className="flex flex-row justify-start items-center gap-2">
+                              <img src={getAssetLogo(rmt.ftIndex)} className="w-4 h-4" alt="info-icon" />
                               <p className="opacity-60">{`${getDecimalAmount(rmt.amount, ft.decimal)} ${ft.symbol}`}</p>
                             </div>
                           </div>

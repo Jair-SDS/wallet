@@ -139,9 +139,9 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                     </div>
                   ) : (
                     <div className="flex flex-row justify-between items-center w-full">
-                      <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm">
-                        <img src={getAssetLogo(select.subaccount.ft)} className="w-6 h-6" alt="info-icon" />
-                        <div className="flex flex-col justify-start items-start gap-1">
+                      <div className="p-1 flex flex-row justify-start items-center w-full gap-4 text-md">
+                        <img src={getAssetLogo(select.subaccount.ft)} className="w-7 h-7" alt="info-icon" />
+                        <div className="flex flex-col justify-start items-start gap-1 ">
                           <div className="flex flex-row justify-start items-center gap-2">
                             <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">
                               <p className=" text-PrimaryTextColor">{select.subaccount.sub_account_id}</p>
@@ -195,7 +195,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                         return (
                           <button
                             key={k}
-                            className="p-1 flex flex-row justify-start items-center w-full gap-4 text-sm hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
+                            className="p-1 flex flex-row justify-start items-center w-full gap-4 text-md hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
                             onClick={() => {
                               onSelectSub(sub);
                             }}
@@ -274,9 +274,7 @@ interface RadioGroupItemProps {
 const RadioGroupItem: FC<RadioGroupItemProps> = ({ active, value, id }) => {
   return (
     <RadioGroup.Item
-      className={`w-4 h-4 rounded-full p-0 border-2 ${
-        active ? "border-RadioCheckColor" : "border-RadioNoCheckColorLight"
-      }`}
+      className={`w-4 h-4 rounded-full p-0 border-2 ${active ? "border-RadioCheckColor" : "border-ThirdColorLight/80"}`}
       value={value}
       id={id}
     >

@@ -106,9 +106,9 @@ const HplSubaccountElem = ({
                   <div className="flex flex-row justify-start items-center gap-1">
                     <p className="font-semibold">{sub.virtuals.length}</p>
                     {theme === ThemesEnum.enum.dark ? (
-                      <VirtualIcon className="mb-[0.15rem]" />
+                      <VirtualIcon className="w-6 h-5 mb-[0.15rem]" />
                     ) : (
-                      <VirtualIconLight className="mb-[0.15rem]" />
+                      <VirtualIconLight className="w-6 h-5 mb-[0.15rem]" />
                     )}
                   </div>
                 )}

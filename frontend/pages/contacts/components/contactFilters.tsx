@@ -60,7 +60,9 @@ const ContactFilters = ({
           <DropdownMenu.Trigger asChild>
             <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-PrimaryColorLight dark:bg-SecondaryColor cursor-pointer">
               <div className="flex flex-row justify-between items-center w-full">
-                {assetFilter.length === 0 || assetFilter.length === assets.length ? (
+                {assetFilter.length === 0 ||
+                (protocol === ProtocolTypeEnum.Enum.ICRC1 && assetFilter.length === assets.length) ||
+                (protocol === ProtocolTypeEnum.Enum.HPL && assetFilter.length === hplFTs.length) ? (
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("all")}</p>
                 ) : assetFilter.length === 1 ? (
                   protocol === ProtocolTypeEnum.Enum.ICRC1 ? (

@@ -15,7 +15,7 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
   const [from, setFrom] = useState<HplTxUser>({ ...defaultUser });
   const [to, setTo] = useState<HplTxUser>({ ...defaultUser });
   const [errMsg, setErrMsg] = useState("");
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState("");
 
   useEffect(() => {
     if (drawerOpen)

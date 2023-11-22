@@ -36,12 +36,12 @@ const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: 
           </div>
         </div>
       ) : (
-        <div className="flex flex-col justify-start items-start w-full gap-3">
+        <div className="flex flex-col justify-start items-start w-full gap-0.5">
           <div className="flex flex-row justify-between items-center w-full opacity-70">
             <p>Principal</p>
             <p className="text-right">{shortAddress(txUser.principal, 12, 10)}</p>
           </div>
-          <div className="flex flex-row justify-between items-center w-full border-b border-b-BorderColor/70 pb-3">
+          <div className="flex flex-row justify-between items-center w-full border-b border-b-BorderColor/70 pb-3 mb-3">
             <p className="opacity-70">{t("virtual")}</p>
             <p>{txUser.vIdx}</p>
           </div>
@@ -51,7 +51,7 @@ const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: 
               <GreenCheck />
             </div>
           )}
-          <p className="text-RemoteAmount font-semibold">{`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)} ${
+          <p className="text-RemoteAmount">{`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)} ${
             getFtFromSub(ftId).symbol
           }`}</p>
         </div>

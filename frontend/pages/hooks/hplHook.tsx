@@ -37,7 +37,7 @@ export const useHPL = (open: boolean) => {
   const [editNameId, setEditNameId] = useState("");
   const [editSubName, setEditSubName] = useState("");
   const [addSubErr, setAddSubErr] = useState("");
-  const [sortVt, setSortVt] = useState(0);
+  const [sortVt, setSortVt] = useState({ value: 0, col: "" });
   const [subInfoType, setSubInfoType] = useState<SubaccountInfo>(SubaccountInfoEnum.Enum.VIRTUALS);
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [editedFt, setEditedFt] = useState<HPLAsset | undefined>();
