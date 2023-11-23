@@ -141,7 +141,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   function onClose() {
     setDrawerOpen(false);
     setQRview("");
-    setAmount("0");
+    setAmount("");
     setManualFrom(false);
     setManualTo(false);
     setLoadingNext(false);
@@ -149,6 +149,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   }
 
   async function onNext() {
+    setAmount("");
     setLoadingNext(true);
     const fromFtId = await getAssetId(from);
     const toFtId = await getAssetId(to);

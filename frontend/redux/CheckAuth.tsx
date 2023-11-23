@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Actor, HttpAgent, Identity } from "@dfinity/agent";
-import store from "./Store";
+import store, { useAppSelector } from "./Store";
 import {
   clearDataAuth,
   setAuthLoading,
   setAuthenticated,
   setDebugMode,
+  setHplLedgerPrincipal,
   setRoutingPath,
   setUnauthenticated,
   setUserAgent,
@@ -85,13 +86,21 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   const myPrincipal = await myAgent.getPrincipal();
 
   // HPL ACTOR
+  const hplLedPrin =
+    localStorage.getItem("hpl-led-pric-" + authIdentity.getPrincipal().toString()) || "rqx66-eyaaa-aaaap-aaona-cai";
+  if (hplLedPrin !== "rqx66-eyaaa-aaaap-aaona-cai") {
+    localStorage.setItem("hpl-led-pric-" + authIdentity.getPrincipal().toString(), hplLedPrin);
+  }
+  store.dispatch(setHplLedgerPrincipal(hplLedPrin));
+
   const ingressActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
     agent: myAgent,
-    canisterId: "rqx66-eyaaa-aaaap-aaona-cai",
+    canisterId: hplLedPrin,
   });
   store.dispatch(setIngressActor(ingressActor));
-  const client = new HPLClient("rqx66-eyaaa-aaaap-aaona-cai", "ic");
+  const client = new HPLClient(hplLedPrin, "ic");
   await client.setIdentity(authIdentity as any);
+  store.dispatch(setHPLClient(client));
 
   // HPL FT
   const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
@@ -122,7 +131,6 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   await updateHPLBalances(ingressActor);
 
   // AUTH
-  store.dispatch(setHPLClient(client));
   store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
   store.dispatch(setUserAgent(myAgent));
   store.dispatch(setUserPrincipal(myPrincipal));

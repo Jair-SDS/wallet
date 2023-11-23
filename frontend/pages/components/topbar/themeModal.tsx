@@ -11,7 +11,7 @@ import { ThemeHook } from "@pages/hooks/themeHook";
 import { ThemesEnum } from "@/const";
 
 interface ThemeModalProps {
-  setOpen(value: boolean): void;
+  setOpen(value: string): void;
 }
 
 const ThemeModal = ({ setOpen }: ThemeModalProps) => {
@@ -26,7 +26,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
         <CloseIcon
           className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={() => {
-            setOpen(false);
+            setOpen("");
           }}
         />
       </div>

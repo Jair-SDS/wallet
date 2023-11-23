@@ -5,7 +5,7 @@ import { setTheme } from "@/redux/auth/AuthReducer";
 export const ThemeHook = () => {
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.auth);
-  const [themeOpen, setThemeOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState("");
 
   const changeTheme = (value: string) => dispatch(setTheme(value));
 

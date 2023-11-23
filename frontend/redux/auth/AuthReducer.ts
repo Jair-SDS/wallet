@@ -16,7 +16,8 @@ interface AuthState {
   theme: string;
   blur: boolean;
   disclaimer: boolean;
-
+  hplLedger: string;
+  hplDictionary: string;
   userAgent: HttpAgent;
   userPrincipal: Principal;
 }
@@ -32,6 +33,8 @@ const initialState: AuthState = {
   authClient: "",
   assetList: [],
   disclaimer: true,
+  hplLedger: "rqx66-eyaaa-aaaap-aaona-cai",
+  hplDictionary: "",
   userAgent: defaultValue,
   userPrincipal: defaultValue,
 };
@@ -85,6 +88,12 @@ const authSlice = createSlice({
     setDisclaimer(state, action) {
       state.disclaimer = action.payload;
     },
+    setHplLedgerPrincipal(state, action) {
+      state.hplLedger = action.payload;
+    },
+    setHplLedgerDictionary(state, action) {
+      state.hplDictionary = action.payload;
+    },
     setUserAgent(state, action) {
       state.userAgent = action.payload;
     },
@@ -111,6 +120,8 @@ export const {
   setTheme,
   setBlur,
   setDisclaimer,
+  setHplLedgerPrincipal,
+  setHplLedgerDictionary,
   setUserAgent,
   setUserPrincipal,
 } = authSlice.actions;

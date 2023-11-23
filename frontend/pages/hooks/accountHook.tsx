@@ -3,9 +3,9 @@ import { setAuthenticated } from "@redux/auth/AuthReducer";
 
 export const AccountHook = () => {
   const dispatch = useAppDispatch();
-  const { authClient, userAgent } = useAppSelector((state) => state.auth);
+  const { authClient, userAgent, hplDictionary, hplLedger } = useAppSelector((state) => state.auth);
   const setAuthClient = (authClient: string) => {
     dispatch(setAuthenticated(true, false, authClient.toLowerCase()));
   };
-  return { authClient, setAuthClient, userAgent };
+  return { authClient, setAuthClient, userAgent, hplLedger, hplDictionary };
 };

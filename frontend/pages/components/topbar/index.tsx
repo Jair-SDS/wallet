@@ -27,6 +27,7 @@ import { useAppDispatch } from "@redux/Store";
 import { setLoading } from "@redux/assets/AssetReducer";
 import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import HplSettingsModal from "./hplSettings";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
@@ -118,10 +119,18 @@ const TopBarComponent = () => {
                 <DropdownMenu.Item
                   className={clsx(gearPopItem, "!justify-between")}
                   onSelect={() => {
-                    setThemeOpen(true);
+                    setThemeOpen("THEMES");
                   }}
                 >
                   <p>{t("themes")}</p>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={clsx(gearPopItem, "!justify-between")}
+                  onSelect={() => {
+                    setThemeOpen("SETTINGS");
+                  }}
+                >
+                  <p>{t("hpl.settings")}</p>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
@@ -136,8 +145,8 @@ const TopBarComponent = () => {
           </DropdownMenu.Root>
         </div>
       </div>
-      <Modal open={themeOpen} top="top-[35%]">
-        <ThemeModal setOpen={setThemeOpen} />
+      <Modal open={themeOpen !== ""} top="top-[35%]">
+        {themeOpen === "THEMES" ? <ThemeModal setOpen={setThemeOpen} /> : <HplSettingsModal setOpen={setThemeOpen} />}
       </Modal>
     </Fragment>
   );
