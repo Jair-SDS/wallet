@@ -26,8 +26,8 @@ import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
 import { clearDataContacts, setContacts, setHplContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
-import { _SERVICE as IngressActor } from "@candid/service.did.d";
-import { idlFactory as IngressIDLFactory } from "@candid/candid.did";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${

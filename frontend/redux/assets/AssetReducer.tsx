@@ -18,7 +18,7 @@ import { hexToNumber } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { HPLClient } from "@research-ag/hpl-client";
 import { ActorSubclass } from "@dfinity/agent";
-import { _SERVICE as IngressActor } from "@candid/service.did.d";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 const defaultValue = {} as any;
 interface AssetState {

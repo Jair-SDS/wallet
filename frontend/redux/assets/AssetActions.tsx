@@ -28,7 +28,7 @@ import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
-import { _SERVICE as IngressActor } from "@candid/service.did.d";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 export const updateAllBalances = async (
   loading: boolean,
@@ -116,12 +116,14 @@ export const updateAllBalances = async (
                 subaccount: new Uint8Array(hexToUint8Array(sa.numb)),
                 certified: false,
               });
+              console.log(tkn.symbol, sa.numb, myBalance, (Number(myBalance) / power).toString());
+
               idsPushed.push(sa.numb);
               subAccList.push({
                 name: sa.name,
                 sub_account_id: sa.numb,
                 address: myPrincipal.toString(),
-                amount: (Number(myBalance.toString()) / power).toString(),
+                amount: (Number(myBalance) / power).toString(),
                 currency_amount: assetMarket ? getUSDfromToken(myBalance.toString(), assetMarket.price, decimals) : "0",
                 transaction_fee: (Number(myTransactionFee.toString()) / power).toString(),
                 decimal: decimals,

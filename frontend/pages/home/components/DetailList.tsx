@@ -53,20 +53,20 @@ const DetailList = () => {
           )}
         </div>
 
-        <div className="w-full max-h-[calc(100vh-11.25rem)] scroll-y-light">
-          {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-            <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
-          ) : (
-            <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
+        {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+          <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
+        ) : (
+          <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
+            <div className="w-full max-h-[calc(100vh-14rem)] scroll-y-light">
               <VirtualTable
                 setSelectedVirtualAccount={setSelectedVirtualAccount}
                 selectedVirtualAccount={selectedVirtualAccount}
                 setDrawerOpen={setDrawerOpen}
                 setDrawerOption={setDrawerOption}
               />
-            </SubaccountInfo>
-          )}
-        </div>
+            </div>
+          </SubaccountInfo>
+        )}
       </div>
       <div
         id="right-drower"

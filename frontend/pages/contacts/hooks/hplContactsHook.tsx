@@ -6,7 +6,7 @@ import { setHplContacts } from "@redux/contacts/ContactsReducer";
 import { HplContact, HplRemote } from "@redux/models/AccountModels";
 import { ContactErr } from "@redux/models/ContactsModels";
 import { useState } from "react";
-import { _SERVICE as IngressActor } from "@candid/service.did.d";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { formatHplRemotes } from "@/utils";
 
 export const useHplContacts = () => {

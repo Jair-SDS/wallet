@@ -21,7 +21,7 @@ import { OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum, Transactio
 import { Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { AccountState, AccountType, AssetId, RemoteId, SubId, Time, VirId } from "@candid/service.did";
+import { AccountState, AccountType, AssetId, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -105,28 +105,14 @@ export const roundToDecimalN = (numb: number | string, decimal: number | string)
 
 export function toFullDecimal(numb: number | string, decimal: number | string) {
   if (Number(numb) === 0) return "0";
-  let x = Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
-  if (Math.abs(x) < 0.000001) {
-    const e = parseInt(x.toString().split("e-")[1]);
-    if (e) {
-      (x *= Math.pow(10, e - 1)), decimal;
-      return "0." + new Array(e).join("0") + roundToDecimalN(x, decimal).toString().substring(2);
-    }
-  }
-  return x.toLocaleString("en-US");
+  const x = Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
+  return x.toLocaleString("en-US", { maximumFractionDigits: 20 });
 }
 
 export function getDecimalAmount(numb: number | string, decimal: number | string) {
   if (Number(numb) === 0) return "0";
-  let x = Number(numb) / Math.pow(10, Number(decimal));
-  if (Math.abs(x) < 0.000001) {
-    const e = parseInt(x.toString().split("e-")[1]);
-    if (e) {
-      (x *= Math.pow(10, e - 1)), decimal;
-      return "0." + new Array(e).join("0") + roundToDecimalN(x, decimal).toString().substring(2);
-    }
-  }
-  return x.toLocaleString("en-US");
+  const x = Number(numb) / Math.pow(10, Number(decimal));
+  return x.toLocaleString("en-US", { maximumFractionDigits: 20 });
 }
 
 export function validateAmount(amnt: string, dec: number): boolean {
