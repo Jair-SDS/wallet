@@ -37,9 +37,14 @@ export const updateAllBalances = async (
   basicSearch?: boolean,
 ) => {
   store.dispatch(setLoading(true));
-  let tokenMarkets: TokenMarketInfo[] = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
-  tokenMarkets = tokenMarkets.filter((x) => !x.unreleased);
-  store.dispatch(setTokenMarket(tokenMarkets));
+  let tokenMarkets: TokenMarketInfo[] = [];
+  try {
+    tokenMarkets = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
+    tokenMarkets = tokenMarkets.filter((x) => !x.unreleased);
+    store.dispatch(setTokenMarket(tokenMarkets));
+  } catch (e) {
+    console.log(e);
+  }
 
   const myPrincipal = await myAgent.getPrincipal();
   const newTokens: Token[] = [];
