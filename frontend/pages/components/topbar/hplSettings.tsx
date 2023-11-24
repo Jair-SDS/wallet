@@ -1,5 +1,6 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
+//
 import { CustomButton } from "@components/Button";
 import { CustomInput } from "@components/Input";
 import LoadingLoader from "@components/Loader";
@@ -7,14 +8,17 @@ import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
-//
+import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
+import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
 import { useAppDispatch } from "@redux/Store";
-import { setHPLClient, setIngressActor } from "@redux/assets/AssetReducer";
+import { setHPLAssets, setHPLClient, setIngressActor } from "@redux/assets/AssetReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
+import { useHPL } from "@pages/hooks/hplHook";
+import { getUpdatedFts } from "@/utils";
 
 interface HplSettingsModalProps {
   setOpen(value: string): void;
@@ -24,6 +28,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { hplDictionary, hplLedger, userAgent } = AccountHook();
+  const { hplFTs } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [ledger, setLeder] = useState({ principal: hplLedger, err: false });
@@ -51,6 +56,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           compOutClass=""
           value={ledger.principal}
           onChange={onLedgerChange}
+          autoFocus
         />
         <p className="opacity-60 mt-4">{t("dictionary.principal")}</p>
         <CustomInput
@@ -105,6 +111,24 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           return { ...prev, err: true };
         });
         setErrMsg("hpl.ledger.principal.err");
+        setLoading(false);
+        return;
+      }
+      try {
+        const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+          agent: userAgent,
+          canisterId: dictionary.principal,
+        });
+        const dictFTs = await dictActor.getDump();
+        const auxFts = getUpdatedFts(dictFTs, hplFTs);
+        dispatch(setHPLAssets(auxFts));
+      } catch (e) {
+        setDictionary((prev) => {
+          return { ...prev, err: true };
+        });
+        setErrMsg("hpl.dictionary.principal.err");
+        setLoading(false);
+        return;
       }
     }
     setLoading(false);

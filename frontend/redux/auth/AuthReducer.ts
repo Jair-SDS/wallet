@@ -91,7 +91,7 @@ const authSlice = createSlice({
     setHplLedgerPrincipal(state, action) {
       state.hplLedger = action.payload;
     },
-    setHplLedgerDictionary(state, action) {
+    setHplDictionaryPrincipal(state, action) {
       state.hplDictionary = action.payload;
     },
     setUserAgent(state, action) {
@@ -121,7 +121,7 @@ export const {
   setBlur,
   setDisclaimer,
   setHplLedgerPrincipal,
-  setHplLedgerDictionary,
+  setHplDictionaryPrincipal,
   setUserAgent,
   setUserPrincipal,
 } = authSlice.actions;

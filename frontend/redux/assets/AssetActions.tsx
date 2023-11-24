@@ -31,6 +31,7 @@ import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 export const updateAllBalances = async (
+  from: string,
   loading: boolean,
   myAgent: HttpAgent,
   tokens: Token[],
@@ -49,7 +50,7 @@ export const updateAllBalances = async (
   const myPrincipal = await myAgent.getPrincipal();
   const newTokens: Token[] = [];
   const assets: Asset[] = [];
-
+  console.log({ from: from, tokens: tokens, pricipal: myPrincipal.toText() });
   await Promise.all(
     tokens.map(async (tkn) => {
       try {
@@ -116,8 +117,6 @@ export const updateAllBalances = async (
                 subaccount: new Uint8Array(hexToUint8Array(sa.numb)),
                 certified: false,
               });
-              console.log(tkn.symbol, sa.numb, myBalance, (Number(myBalance) / power).toString());
-
               idsPushed.push(sa.numb);
               subAccList.push({
                 name: sa.name,
@@ -328,6 +327,7 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
   }
 
   try {
+    const ftDict = store.getState().asset.dictionaryHplFTs;
     const ftData = store.getState().asset.hplFTsData;
     const subData = store.getState().asset.hplSubsData;
     const vtData = store.getState().asset.hplVTsData;
@@ -337,6 +337,7 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
       ftInfo,
       vtInfo,
       { ft: ftData, sub: subData, vt: vtData },
+      ftDict,
       state,
     );
 

@@ -3,10 +3,10 @@ const timerCode = () => {
     self.postMessage("TRANSACTIONS");
     setInterval(() => {
       self.postMessage("TRANSACTIONS");
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000);
     setInterval(() => {
       self.postMessage("ASSETS");
-    }, 5 * 60 * 1000);
+    }, 10 * 60 * 1000);
   };
 };
 

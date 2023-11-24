@@ -29,8 +29,18 @@ import { ChangeEvent, useEffect, useState } from "react";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
-  const { protocol, subaccounts, hplFTs, selectSub, selectVt, hplFTsData, hplSubsData, hplVTsData, ingressActor } =
-    useAppSelector((state) => state.asset);
+  const {
+    protocol,
+    subaccounts,
+    hplFTs,
+    selectSub,
+    selectVt,
+    dictionaryHplFTs,
+    hplFTsData,
+    hplSubsData,
+    hplVTsData,
+    ingressActor,
+  } = useAppSelector((state) => state.asset);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
@@ -308,6 +318,7 @@ export const useHPL = (open: boolean) => {
     getFtFromSub,
     getSubFromVt,
     getFtFromVt,
+    dictionaryHplFTs,
     hplFTsData,
     hplSubsData,
     hplVTsData,

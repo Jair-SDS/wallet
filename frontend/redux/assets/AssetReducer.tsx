@@ -19,6 +19,7 @@ import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { HPLClient } from "@research-ag/hpl-client";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { FungibleToken } from "@candid/Dictionary/dictService.did";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -43,6 +44,7 @@ interface AssetState {
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
+  dictionaryHplFTs: FungibleToken[];
   hplSubsData: HPLSubData[];
   hplVTsData: HPLVirtualData[];
   selectSub: HPLSubAccount | undefined;
@@ -71,6 +73,7 @@ const initialState: AssetState = {
   subaccounts: [],
   hplFTs: [],
   hplFTsData: [],
+  dictionaryHplFTs: [],
   hplSubsData: [],
   hplVTsData: [],
   selectSub: undefined,
@@ -286,6 +289,9 @@ const assetSlice = createSlice({
     setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
       state.hplFTs = action.payload;
     },
+    setHPLDictionary(state, action: PayloadAction<FungibleToken[]>) {
+      state.dictionaryHplFTs = action.payload;
+    },
     setHPLAssetsData(state, action: PayloadAction<HPLAssetData[]>) {
       state.hplFTsData = action.payload;
     },
@@ -362,6 +368,7 @@ const assetSlice = createSlice({
       state.subaccounts = [];
       state.hplFTs = [];
       state.hplFTsData = [];
+      state.dictionaryHplFTs = [];
       state.hplSubsData = [];
       state.hplVTsData = [];
     },
@@ -395,6 +402,7 @@ export const {
   setIngressActor,
   setHPLSubAccounts,
   setHPLAssets,
+  setHPLDictionary,
   setHPLAssetsData,
   setHPLSubsData,
   setHPLVTsData,

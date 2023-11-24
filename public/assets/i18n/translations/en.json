@@ -61,7 +61,7 @@
   "remote.no.yours.from": "{{from}} has not access to the Remote Account",
   "remote.no.yours.to": "{{to}} has not access to the Remote Account",
   "not.same.subaccount": "Accounts can't be the same",
-  "delete.asset.msg": "Are you sure yuo want to delete the Asset",
+  "delete.asset.msg": "Are you sure you want to delete the Asset",
   "empty.index.err": "Index can't be empty",
   "empty.name.err": "Name can't be empty",
   "already.used.index": "Index already used",

@@ -205,7 +205,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
         });
       }
     } else {
-      setErrMsg("no.valid.qr.code");
+      setErrMsg("err.qr.img");
     }
     setQRview("");
   }
@@ -257,7 +257,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
       const princ = decodeIcrcAccount(code);
       return {
         principal: princ.owner.toString(),
-        id: toNumberFromUint8Array(princ.subaccount!).toString(),
+        id: princ.subaccount ? toNumberFromUint8Array(princ.subaccount!).toString() : "0",
         err: false,
       };
     } catch {

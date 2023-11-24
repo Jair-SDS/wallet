@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Actor, HttpAgent, Identity } from "@dfinity/agent";
-import store, { useAppSelector } from "./Store";
+import store from "./Store";
 import {
   clearDataAuth,
   setAuthLoading,
   setAuthenticated,
   setDebugMode,
+  setHplDictionaryPrincipal,
   setHplLedgerPrincipal,
   setRoutingPath,
   setUnauthenticated,
@@ -18,6 +19,7 @@ import {
   clearDataAsset,
   setHPLAssetsData,
   setHPLClient,
+  setHPLDictionary,
   setHPLSubsData,
   setHPLVTsData,
   setIngressActor,
@@ -29,7 +31,10 @@ import { clearDataContacts, setContacts, setHplContacts, setStorageCode } from "
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
+import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
+import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
+import { HPLAssetData } from "./models/AccountModels";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -105,9 +110,26 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   // HPL FT
   const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
   if (hplFTsData != null) {
-    const hplFTsDataJson = JSON.parse(hplFTsData);
-    store.dispatch(setHPLAssetsData(hplFTsDataJson.ft));
+    const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
+    store.dispatch(setHPLAssetsData(hplFTsDataJson));
   }
+
+  // HPL DICTIONARY
+  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+  store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
+  if (hplDictPrin) {
+    try {
+      const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+        agent: myAgent,
+        canisterId: hplLedPrin,
+      });
+      const dictFTs = await dictActor.getDump();
+      store.dispatch(setHPLDictionary(dictFTs));
+    } catch {
+      localStorage.removeItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+    }
+  }
+
   // HPL SUBACCOUNTS
   const hplSubsData = localStorage.getItem("hplSUB-" + authIdentity.getPrincipal().toString());
   if (hplSubsData != null) {
@@ -142,9 +164,9 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   if (userData) {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
-    await updateAllBalances(true, myAgent, userDataJson.tokens);
+    await updateAllBalances("handleLoginApp-userData", true, myAgent, userDataJson.tokens);
   } else {
-    const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true);
+    const { tokens } = await updateAllBalances("handleLoginApp", true, myAgent, defaultTokens, true);
     store.dispatch(setTokens(tokens));
   }
   // ICRC-1 CONTACTS

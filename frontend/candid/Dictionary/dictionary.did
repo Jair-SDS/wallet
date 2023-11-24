@@ -1,0 +1,43 @@
+type Time = int;
+type Symbol = text;
+type Name = text;
+type Logo = text;
+type AssetId = nat;
+
+type FungibleToken = record {
+  assetId : AssetId;
+  creation_time : Time;
+  logo : Logo;
+  modification_time : Time;
+  name : Name;
+  symbolKey : Symbol;
+  displaySymbol : Symbol;
+};
+
+type Directory = service {
+  //------------ Owner protected Functions ------------//
+  // To add an owner (only owners can do it)
+  addOwner : (principal) -> (bool);
+  // To remove an owner (only owners can do it)
+  removeOwner : (principal) -> (bool);
+  // To correct an asssetId from the last 24 hours (only owners can do it)
+  correctAssetId : (Symbol, AssetId) -> (bool);
+  // To correct a symbol from the last 24 hours (only owners can do it)
+  correctSymbol : (AssetId, Symbol) -> (bool);
+  // Register a new token in the directory (only owners can do it)
+  register : (FungibleToken) -> (bool);
+  // Update a token in the directory by AssetId (only owners can do it)
+  updateTokenByAssetId : (AssetId, text, text) -> (bool);
+  // Update a token in the directory by Symbol (only owners can do it)
+  updateTokenBySymbol : (Symbol, text, text) -> (bool);
+
+  //------------ Public Functions ------------//
+  // Get Token by AssetId
+  getByAssetId : (AssetId) -> (opt FungibleToken) query;
+  // Get Token by Symbol
+  getBySymbol : (Symbol) -> (opt FungibleToken) query;
+  // Get all Tokens
+  getDump : () -> (vec FungibleToken) query;
+};
+
+service : (principal) -> Directory;
