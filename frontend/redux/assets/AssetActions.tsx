@@ -50,7 +50,6 @@ export const updateAllBalances = async (
   const myPrincipal = await myAgent.getPrincipal();
   const newTokens: Token[] = [];
   const assets: Asset[] = [];
-  console.log({ from: from, tokens: tokens, pricipal: myPrincipal.toText() });
   await Promise.all(
     tokens.map(async (tkn) => {
       try {

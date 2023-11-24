@@ -87,8 +87,6 @@ export const WorkerHook = () => {
       if (event.data === WorkerTaskEnum.Values.TRANSACTIONS) {
         getTransactionsWorker();
       } else if (event.data === WorkerTaskEnum.Values.ASSETS) {
-        console.log("event", event);
-
         getAssetsWorker();
       }
     }

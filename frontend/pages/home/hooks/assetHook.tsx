@@ -48,6 +48,11 @@ export const AssetHook = () => {
     updateHPLBalances(ingressActor);
   };
 
+  const reloadOnlyICRCBallance = (tkns?: Token[]) => {
+    dispatch(setLoading(true));
+    updateAllBalances("reloadBallance", true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+  };
+
   const getTotalAmountInCurrency = () => {
     let amount = 0;
     assets.map((tk) => {
@@ -85,6 +90,7 @@ export const AssetHook = () => {
     protocol,
     setProtocolType,
     reloadBallance,
+    reloadOnlyICRCBallance,
     searchKey,
     setSearchKey,
     // ICRC1

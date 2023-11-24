@@ -14,6 +14,7 @@ import { useAppDispatch } from "@redux/Store";
 import { addSubAccount } from "@redux/assets/AssetReducer";
 import bigInt from "big-integer";
 import { ChangeEvent } from "react";
+import { AssetHook } from "@pages/home/hooks/assetHook";
 
 interface DialogAddAssetProps {
   newErr: any;
@@ -46,6 +47,7 @@ const DialogAddAsset = ({
   const dispatch = useAppDispatch();
 
   const { asciiHex } = GeneralHook();
+  const { reloadOnlyICRCBallance } = AssetHook();
 
   return (
     <Modal
@@ -91,6 +93,7 @@ const DialogAddAsset = ({
             onChange={onChangeIdx}
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
+            sufix={<p className="text-sm opacity-70">(Hex)</p>}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
@@ -212,6 +215,7 @@ const DialogAddAsset = ({
             sub_account_id: `0x${subClean}`.toLowerCase(),
           }),
         );
+        reloadOnlyICRCBallance();
         setNewSub(undefined);
         setHexChecked(false);
       } else {
