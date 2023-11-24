@@ -561,5 +561,3 @@ export const numToUint32Array = (num: number) => {
 
   return arr;
 };
-
-export const matchDictionaryFts = (dictFts: FungibleToken[], fts: HPLAssetData[]) => {};
