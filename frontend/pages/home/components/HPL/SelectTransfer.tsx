@@ -226,6 +226,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             getAssetLogo={getAssetLogo}
             getFtFromSub={getFtFromSub}
             hplContacts={hplContacts}
+            otherAsset={otherAsset}
           />
         )}
         {(select.subaccount || select.remote) && (

@@ -70,7 +70,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
         />
       </div>
       <div className="flex flex-row justify-between items-center mt-4 gap-2 w-full">
-        <p className="text-sm text-TextErrorColor">{errMsg}</p>
+        <p className="text-sm text-TextErrorColor">{t(errMsg)}</p>
         <CustomButton className="min-w-[5rem]" onClick={onSave} size={"small"}>
           {loading ? <LoadingLoader className="mt-1" /> : <p>{t("save")}</p>}
         </CustomButton>
@@ -84,6 +84,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
     } catch {
       setLeder({ principal: e.target.value.trim(), err: true });
     }
+    setErrMsg("");
   }
   function onDictionaryChange(e: ChangeEvent<HTMLInputElement>) {
     try {
@@ -92,6 +93,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
     } catch {
       setDictionary({ principal: e.target.value.trim(), err: e.target.value === "" ? false : true });
     }
+    setErrMsg("");
   }
   async function onSave() {
     if (!ledger.err && !dictionary.err) {
