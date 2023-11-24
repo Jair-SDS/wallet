@@ -31,7 +31,6 @@ import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 export const updateAllBalances = async (
-  from: string,
   loading: boolean,
   myAgent: HttpAgent,
   tokens: Token[],

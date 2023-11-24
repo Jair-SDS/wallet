@@ -66,9 +66,9 @@ export const WorkerHook = () => {
     if (userData) {
       const userDataJson = JSON.parse(userData);
       store.dispatch(setTokens(userDataJson.tokens));
-      await updateAllBalances("worker-userData", true, userAgent, userDataJson.tokens);
+      await updateAllBalances(true, userAgent, userDataJson.tokens);
     } else {
-      const { tokens } = await updateAllBalances("worker", true, userAgent, defaultTokens, true);
+      const { tokens } = await updateAllBalances(true, userAgent, defaultTokens, true);
       store.dispatch(setTokens(tokens));
     }
     // HPL

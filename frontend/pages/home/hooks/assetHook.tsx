@@ -44,13 +44,13 @@ export const AssetHook = () => {
 
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances("reloadBallance", true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor);
   };
 
   const reloadOnlyICRCBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances("reloadBallance", true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
   };
 
   const getTotalAmountInCurrency = () => {

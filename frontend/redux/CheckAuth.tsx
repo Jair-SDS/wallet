@@ -164,9 +164,9 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   if (userData) {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
-    await updateAllBalances("handleLoginApp-userData", true, myAgent, userDataJson.tokens);
+    await updateAllBalances(true, myAgent, userDataJson.tokens);
   } else {
-    const { tokens } = await updateAllBalances("handleLoginApp", true, myAgent, defaultTokens, true);
+    const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true);
     store.dispatch(setTokens(tokens));
   }
   // ICRC-1 CONTACTS
