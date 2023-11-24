@@ -22,6 +22,7 @@ interface SelectTransferProps {
   hplContacts: HplContact[];
   txType: HplTransactionsType;
   otherAsset?: string;
+  otherId?: string;
   manual: boolean;
   setManual(value: boolean): void;
   setQRview(value: string): void;
@@ -36,6 +37,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   txType,
   manual,
   otherAsset,
+  otherId,
   setSelect,
   setManual,
   setQRview,
@@ -187,7 +189,8 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                         const key = searchKey.toLowerCase();
                         return (
                           (sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key)) &&
-                          (!otherAsset || otherAsset === sub.ft)
+                          (!otherAsset || otherAsset === sub.ft) &&
+                          (!otherId || otherId !== sub.sub_account_id)
                         );
                       })
                       .map((sub, k) => {
