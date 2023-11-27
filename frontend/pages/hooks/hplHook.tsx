@@ -41,6 +41,7 @@ export const useHPL = (open: boolean) => {
     hplVTsData,
     ingressActor,
   } = useAppSelector((state) => state.asset);
+  const { hplContacts } = useAppSelector((state) => state.contacts);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
@@ -335,6 +336,7 @@ export const useHPL = (open: boolean) => {
     setNewVt,
     zeroBalance,
     setZeroBalance,
+    hplContacts,
     searchKeyHPL,
     setSearchKeyHPL,
     subsList,

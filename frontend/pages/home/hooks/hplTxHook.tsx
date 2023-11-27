@@ -16,6 +16,7 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
   const [to, setTo] = useState<HplTxUser>({ ...defaultUser });
   const [errMsg, setErrMsg] = useState("");
   const [amount, setAmount] = useState("");
+  const [amountReceiver, setAmountReceiver] = useState("");
 
   useEffect(() => {
     if (drawerOpen)
@@ -60,5 +61,7 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     setErrMsg,
     amount,
     setAmount,
+    amountReceiver,
+    setAmountReceiver,
   };
 };

@@ -1,10 +1,12 @@
 // svgs
-import { getDecimalAmount, shortAddress } from "@/utils";
 import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
+import { ReactComponent as ExchangeIcon } from "@assets/svg/files/arrows-exchange-v.svg";
 //
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
-import { Fragment } from "react";
+import { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { getDecimalAmount, shortAddress } from "@/utils";
+import { CustomInput } from "@components/Input";
 
 interface TxAccountInfoProps {
   txUser: HplTxUser;
@@ -12,12 +14,26 @@ interface TxAccountInfoProps {
   getFtFromSub(sub: string): HPLAsset;
   ftId: string;
   rmtAmount: string;
+  amnt: string;
+  onAmountChange(e: ChangeEvent<HTMLInputElement>): void;
+  ft: string;
+  sent?: boolean;
 }
 
-const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: TxAccountInfoProps) => {
+const TxAccountInfo = ({
+  txUser,
+  getAssetLogo,
+  ftId,
+  getFtFromSub,
+  rmtAmount,
+  amnt,
+  onAmountChange,
+  ft,
+  sent,
+}: TxAccountInfoProps) => {
   const { t } = useTranslation();
   return (
-    <Fragment>
+    <div className="flex flex-col justify-start items-start w-full">
       {txUser.subaccount ? (
         <div className="flex flex-row justify-start items-center w-full gap-5">
           <img src={getAssetLogo(ftId)} className="w-8 h-8" alt="info-icon" />
@@ -51,12 +67,32 @@ const TxAccountInfo = ({ txUser, getAssetLogo, ftId, getFtFromSub, rmtAmount }: 
               <GreenCheck />
             </div>
           )}
-          <p className="text-RemoteAmount">{`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)} ${
-            getFtFromSub(ftId).symbol
-          }`}</p>
+          <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">{`${getDecimalAmount(
+            rmtAmount,
+            getFtFromSub(ftId).decimal,
+          )} ${getFtFromSub(ftId).symbol}`}</p>
         </div>
       )}
-    </Fragment>
+      <div className="flex flex-row justify-end items-center w-full my-2 gap-2 border-t border-t-BorderColor/70 pt-2">
+        <p className="text-sm">{t(sent ? "sent.amount" : "receive.amount")}</p>
+        <CustomInput
+          compOutClass="!w-1/2"
+          inputClass="text-right"
+          intent={"secondary"}
+          value={amnt}
+          onChange={onAmountChange}
+          sizeInput="small"
+          border={"secondary"}
+          autoFocus={sent}
+          sufix={
+            <div className="flex flex-row justify-start items-center">
+              <p className="opacity-60">{getFtFromSub(ft || "0").symbol}</p>
+              <ExchangeIcon />
+            </div>
+          }
+        />
+      </div>
+    </div>
   );
 };
 

@@ -95,8 +95,8 @@ module.exports = {
       RemoteAmount: "#7BD3FF",
       HoverColorLight2:"#e0f3fc",
       HoverColorLight3:"#E2E2E2",
-
-
+      AmountRemote:"#258CBF",
+      
       black: colors.black,
       white: colors.white,
       slate: colors.slate,

@@ -37,6 +37,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setErrMsg,
     amount,
     setAmount,
+    amountReceiver,
+    setAmountReceiver,
     hplContacts,
   } = useHPLTx(drawerOpen, drawerOption, locat);
 
@@ -78,6 +80,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           amount={amount}
           decimals={decimals}
           setAmount={setAmount}
+          setAmountReceiver={setAmountReceiver}
+          amountReceiver={amountReceiver}
           errMsg={errMsg}
           setErrMsg={setErrMsg}
           setFtId={setFtId}
@@ -144,6 +148,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setDrawerOpen(false);
     setQRview("");
     setAmount("");
+    setAmountReceiver("");
     setManualFrom(false);
     setManualTo(false);
     setLoadingNext(false);
@@ -152,6 +157,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
 
   async function onNext() {
     setAmount("");
+    setAmountReceiver("");
     setLoadingNext(true);
     const fromFtId = await getAssetId(from);
     const toFtId = await getAssetId(to);

@@ -44,7 +44,9 @@ const TabNetwork = ({ children }: TabNetworkProps) => {
           >
             <p
               className={`${
-                ntw === protocol ? "text-SelectRowColor" : " text-PrimaryTextColorLight dark:text-PrimaryTextColor"
+                ntw === protocol
+                  ? "text-SelectRowColor font-semibold"
+                  : " text-PrimaryTextColorLight dark:text-PrimaryTextColor"
               }`}
             >
               {ntw}

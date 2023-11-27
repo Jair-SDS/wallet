@@ -1,12 +1,10 @@
 // svgs
 import { ReactComponent as DownBlueArrow } from "@assets/svg/files/down-blue-arrow.svg";
-import { ReactComponent as ExchangeIcon } from "@assets/svg/files/arrows-exchange-v.svg";
 //
 import { ChangeEvent, Fragment, useState } from "react";
 import TxAccountInfo from "./TxAccountInfo";
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
-import { CustomInput } from "@components/Input";
 import { CustomButton } from "@components/Button";
 import LoadingLoader from "@components/Loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
@@ -24,6 +22,8 @@ interface TxSummaryProps {
   amount: string;
   decimals: number;
   setAmount(val: string): void;
+  amountReceiver: string;
+  setAmountReceiver(val: string): void;
   errMsg: string;
   setErrMsg(val: string): void;
   setFtId(val: string): void;
@@ -45,6 +45,8 @@ const TxSummary = ({
   amount,
   decimals,
   setAmount,
+  amountReceiver,
+  setAmountReceiver,
   errMsg,
   setErrMsg,
   setFtId,
@@ -56,9 +58,11 @@ const TxSummary = ({
 }: TxSummaryProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [fee, setFee] = useState("0");
+  const feeConstant = 50000;
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
+      <div className="flex flex-col justify-start items-start w-full px-4 pt-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
         <p className="font-semibold mb-2 ">{t("from")}</p>
         <TxAccountInfo
           txUser={from}
@@ -66,12 +70,47 @@ const TxSummary = ({
           getFtFromSub={getFtFromSub}
           ftId={ftId}
           rmtAmount={rmtAmountFrom}
+          amnt={amount}
+          onAmountChange={onAmountChange}
+          ft={from.subaccount?.ft || "0"}
+          sent={true}
         />
       </div>
-      <div className="flex flex-row justify-center items-center w-full mt-3">
+      {/* <div className="flex flex-row justify-start items-center w-full my-2 gap-2">
+        <p className="text-sm">{t("sent.amount")}</p>
+        <CustomInput
+          compOutClass="!w-1/2"
+          inputClass="text-right"
+          intent={"secondary"}
+          value={amount}
+          onChange={onAmountChange}
+          sizeInput="small"
+          border={"secondary"}
+          autoFocus
+          sufix={
+            <div className="flex flex-row justify-start items-center">
+              <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
+              <ExchangeIcon />
+            </div>
+          }
+        />
+      </div> */}
+      <div className="flex justify-center items-center w-full">
         <DownBlueArrow />
       </div>
-      <div className="flex flex-col justify-start items-start w-full p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
+      <div className="flex flex-col justify-center items-center w-full my-2 p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
+        <div className="flex flex-row justify-between items-center w-full ">
+          <p>{t("fee")}</p>
+          <p className="flex flex-row gap-2">
+            {`${fee} `}
+            <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
+          </p>
+        </div>
+      </div>
+      <div className="flex justify-center items-center w-full">
+        <DownBlueArrow />
+      </div>
+      <div className="flex flex-col justify-start items-start w-full px-4 pt-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
         <p className="font-semibold mb-2">{t("to")}</p>
         <TxAccountInfo
           txUser={to}
@@ -79,16 +118,19 @@ const TxSummary = ({
           getFtFromSub={getFtFromSub}
           ftId={ftId}
           rmtAmount={rmtAmountTo}
+          amnt={amountReceiver}
+          onAmountChange={onAmountReceiverChange}
+          ft={from.subaccount?.ft || "0"}
         />
       </div>
-      <div className="flex flex-col justify-start items-start w-full mt-6 gap-2">
-        <p>{t("amount")}</p>
+      {/* <div className="flex flex-row justify-start items-center w-full mt-2 gap-2">
+        <p className="text-sm">{t("receive.amount")}</p>
         <CustomInput
-          compOutClass="!w-2/3"
+          compOutClass="!w-1/2"
+          inputClass="text-right"
           intent={"secondary"}
-          placeholder={t("amount")}
-          value={amount}
-          onChange={onAmountChange}
+          value={amountReceiver}
+          onChange={onAmountReceiverChange}
           sizeInput="small"
           border={"secondary"}
           sufix={
@@ -98,7 +140,7 @@ const TxSummary = ({
             </div>
           }
         />
-      </div>
+      </div> */}
       <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
         <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
         <div className="flex flex-row justify-end items-center gap-2">
@@ -116,6 +158,30 @@ const TxSummary = ({
     const amnt = e.target.value;
     if (validateAmount(amnt, decimals) || amnt === "") {
       setAmount(amnt);
+      if (amnt.trim() === "") {
+        setFee("");
+        setAmountReceiver("");
+      } else {
+        const newFee = Math.ceil(Number(amnt) / feeConstant);
+        setFee(newFee.toLocaleString("en-US", { maximumFractionDigits: 20 }));
+        setAmountReceiver((Number(amnt) - newFee).toString());
+      }
+      setErrMsg("");
+    }
+  }
+
+  function onAmountReceiverChange(e: ChangeEvent<HTMLInputElement>) {
+    const amnt = e.target.value;
+    if (validateAmount(amnt, decimals) || amnt === "") {
+      setAmountReceiver(amnt);
+      if (amnt.trim() === "") {
+        setFee("");
+        setAmount("");
+      } else {
+        const newFee = Math.ceil(Number(amnt) / feeConstant);
+        setFee(newFee.toLocaleString("en-US", { maximumFractionDigits: 20 }));
+        setAmount((newFee + Number(amnt)).toString());
+      }
       setErrMsg("");
     }
   }

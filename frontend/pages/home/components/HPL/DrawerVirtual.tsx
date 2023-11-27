@@ -20,6 +20,7 @@ import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import LoadingLoader from "@components/Loader";
 import BackingSelector from "./BackingSelector";
+import AccesBySelector from "./AccesBySelector";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -51,6 +52,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     onTimePickerClic,
     onDateChange,
     accesErr,
+    setAccesErr,
   } = useHPL(false);
 
   const [loading, setLoading] = useState(false);
@@ -152,13 +154,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           <p className="opacity-60">
             {t("access.by")} <span className="text-RadioCheckColor">*</span>
           </p>
-          <CustomInput
-            sizeInput={"small"}
-            intent={"secondary"}
-            compOutClass=""
-            value={newVt.accesBy}
-            onChange={onAccesChange}
-            border={accesErr ? "error" : undefined}
+          <AccesBySelector
+            newVt={newVt}
+            setNewVt={setNewVt}
+            onAccesChange={onAccesChange}
+            accesErr={accesErr}
+            setAccesErr={setAccesErr}
           />
         </div>
       ) : (

@@ -44,6 +44,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
     setSelVt,
     selectVt,
     hplVTsData,
+    hplContacts,
     reloadHPLBallance,
   } = useHPL(false);
 
@@ -121,7 +122,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                   getFtFromSub(selectSub?.ft || "0").decimal,
                 )} ${selectSub ? getFtFromSub(selectSub.ft).symbol : ""}`}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
-                <td className={`${rowStyle(vt.expiration)}`}>{shortAddress(vt.accesBy, 6, 4)}</td>
+                <td className={`${rowStyle(vt.expiration)}`}>{getAccesByContactName(vt.accesBy)}</td>
                 <td className="py-2">
                   <div className="relative flex justify-center items-center h-full">
                     <DropdownMenu.Root
@@ -220,6 +221,11 @@ const VirtualTable: FC<VirtualTableProps> = ({
       return [defaultClassNames, selectedClassNames].join(" ");
     }
     return defaultClassNames;
+  }
+
+  function getAccesByContactName(principal: string) {
+    const contact = hplContacts.find((cntc) => cntc.principal === principal);
+    return contact ? contact.name : shortAddress(principal, 6, 4);
   }
 
   function getVirtualsSorted() {
