@@ -57,7 +57,7 @@ const DetailList = () => {
           <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
         ) : (
           <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
-            <div className="w-full max-h-[calc(100vh-14rem)] scroll-y-light">
+            <div className="w-full max-h-[calc(100vh-18rem)] scroll-y-light">
               <VirtualTable
                 setSelectedVirtualAccount={setSelectedVirtualAccount}
                 selectedVirtualAccount={selectedVirtualAccount}

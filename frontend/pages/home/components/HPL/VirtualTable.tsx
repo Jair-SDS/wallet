@@ -225,14 +225,26 @@ const VirtualTable: FC<VirtualTableProps> = ({
   function getVirtualsSorted() {
     if (selectSub) {
       switch (sortVt.value) {
-        case 0:
-          return selectSub.virtuals;
         case 1:
-          return [...selectSub.virtuals].sort((a, b) =>
-            sortVt.col === "ID" ? Number(b.virt_sub_acc_id) - Number(a.virt_sub_acc_id) : a.expiration - b.expiration,
-          );
+          return [...selectSub.virtuals].sort((a, b) => {
+            if (sortVt.col === "ID") {
+              return 1;
+            } else {
+              const aNumber = a.expiration === 0 ? 999999999999999 : a.expiration;
+              const bNumber = b.expiration === 0 ? 999999999999999 : b.expiration;
+              return aNumber - bNumber;
+            }
+          });
         case -1:
-          return [...selectSub.virtuals].sort((a, b) => b.expiration - a.expiration);
+          return [...selectSub.virtuals].sort((a, b) => {
+            if (sortVt.col === "ID") {
+              return Number(b.virt_sub_acc_id) - Number(a.virt_sub_acc_id);
+            } else {
+              const aNumber = a.expiration === 0 ? 999999999999999 : a.expiration;
+              const bNumber = b.expiration === 0 ? 999999999999999 : b.expiration;
+              return bNumber - aNumber;
+            }
+          });
         default:
           return selectSub.virtuals;
       }
@@ -245,23 +257,8 @@ const VirtualTable: FC<VirtualTableProps> = ({
     }
   }
   function onSort(sType: string) {
-    if (sortVt.col !== sType) setSortVt({ value: sType === "ID" ? 0 : 1, col: sType });
-    else
-      switch (sortVt.value) {
-        case 0:
-          setSortVt({ value: 1, col: sortVt.col });
-          break;
-        case 1:
-          if (sType === "ID") setSortVt({ value: 0, col: sortVt.col });
-          else setSortVt({ value: -1, col: sortVt.col });
-          break;
-        case -1:
-          setSortVt({ value: 0, col: sortVt.col });
-          break;
-        default:
-          setSortVt({ value: 0, col: sortVt.col });
-          break;
-      }
+    if (sortVt.col !== sType) setSortVt({ value: 1, col: sType });
+    else setSortVt({ value: sortVt.value === 1 ? -1 : 1, col: sortVt.col });
   }
   function onOpenMoreChange(k: number, e: boolean) {
     setOpenMore(e ? k : -1);
