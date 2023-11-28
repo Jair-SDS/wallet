@@ -18,6 +18,8 @@ interface SelectTxRemoteProps {
   getFtFromSub(id: string): HPLAsset;
   hplContacts: HplContact[];
   otherAsset?: string;
+  otherId?: string;
+  otherPrincipal?: string;
 }
 
 const SelectTxRemote = ({
@@ -28,6 +30,8 @@ const SelectTxRemote = ({
   getFtFromSub,
   hplContacts,
   otherAsset,
+  otherId,
+  otherPrincipal,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -137,7 +141,8 @@ const SelectTxRemote = ({
                       const key = searchKey.toLowerCase();
                       return (
                         (rmt.remote.name.toLowerCase().includes(key) || rmt.remote.ftIndex.includes(key)) &&
-                        (!otherAsset || otherAsset === rmt.remote.ftIndex)
+                        (!otherAsset || otherAsset === rmt.remote.ftIndex) &&
+                        (!otherId || !(otherId === rmt.remote.index && otherPrincipal === rmt.principal))
                       );
                     })
                     .map(({ remote: rmt, principal: prin }, k) => {

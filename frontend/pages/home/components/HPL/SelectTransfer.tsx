@@ -23,6 +23,7 @@ interface SelectTransferProps {
   txType: HplTransactionsType;
   otherAsset?: string;
   otherId?: string;
+  otherPrincipal?: string;
   manual: boolean;
   setManual(value: boolean): void;
   setQRview(value: string): void;
@@ -38,6 +39,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   manual,
   otherAsset,
   otherId,
+  otherPrincipal,
   setSelect,
   setManual,
   setQRview,
@@ -230,6 +232,8 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             getFtFromSub={getFtFromSub}
             hplContacts={hplContacts}
             otherAsset={otherAsset}
+            otherId={otherId}
+            otherPrincipal={otherPrincipal}
           />
         )}
         {(select.subaccount || select.remote) && (

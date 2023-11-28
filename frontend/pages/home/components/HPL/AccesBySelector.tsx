@@ -75,16 +75,12 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
                       return (
                         <div
                           key={k}
-                          className="p-1 flex flex-row justify-start items-center w-full cursor-pointer gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                          className="p-1 flex flex-row justify-start items-center w-full cursor-pointer gap-2 text-sm text-PrimaryTextColorLight dark:text-PrimaryTextColor hover:bg-HoverColorLight/20 dark:hover:bg-HoverColor"
                           onClick={() => {
                             onSelectBacking(cntc);
                           }}
                         >
-                          <p className=" text-PrimaryTextColor">{`${cntc.name} - [${shortAddress(
-                            cntc.principal,
-                            12,
-                            10,
-                          )}]`}</p>
+                          <p className="">{`${cntc.name} - [${shortAddress(cntc.principal, 12, 10)}]`}</p>
                         </div>
                       );
                     })}
