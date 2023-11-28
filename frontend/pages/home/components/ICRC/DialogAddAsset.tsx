@@ -6,7 +6,7 @@ import { CustomInput } from "@components/Input";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
-import { checkHexString, hexToNumber, removeLeadingZeros } from "@/utils";
+import { checkHexString, getSubAccountArray, getUSDfromToken, hexToNumber, removeLeadingZeros } from "@/utils";
 import { SubAccount } from "@redux/models/AccountModels";
 import { GeneralHook } from "../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
@@ -14,6 +14,7 @@ import { useAppDispatch } from "@redux/Store";
 import { addSubAccount } from "@redux/assets/AssetReducer";
 import bigInt from "big-integer";
 import { ChangeEvent } from "react";
+import { IcrcLedgerCanister } from "@dfinity/ledger";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 
 interface DialogAddAssetProps {
@@ -46,8 +47,8 @@ const DialogAddAsset = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { asciiHex } = GeneralHook();
-  const { reloadOnlyICRCBallance } = AssetHook();
+  const { asciiHex, userAgent, userPrincipal, changeSelectedAccount } = GeneralHook();
+  const { tokensMarket } = AssetHook();
 
   return (
     <Modal
@@ -177,7 +178,7 @@ const DialogAddAsset = ({
     );
   }
 
-  function onEnter() {
+  async function onEnter() {
     if (newSub) {
       const subClean = removeLeadingZeros(
         newSub.sub_account_id.slice(0, 2).toLowerCase() === "0x"
@@ -192,8 +193,14 @@ const DialogAddAsset = ({
         errIdx = true;
       }
       if (!errName && !errIdx) {
+        let tknAddress = "";
+        let decimal = 8;
+        let assetMrkt = 0;
         const auxTokens = tokens.map((tkn, k) => {
           if (k === Number(idx)) {
+            tknAddress = tkn.address;
+            decimal = Number(tkn.decimal);
+            assetMrkt = tokensMarket.find((tm) => tm.symbol === tkn.symbol)?.price || 0;
             return {
               ...tkn,
               subAccounts: [
@@ -208,16 +215,27 @@ const DialogAddAsset = ({
             };
           } else return tkn;
         });
+        const { balance } = IcrcLedgerCanister.create({
+          agent: userAgent,
+          canisterId: tknAddress as any,
+        });
+        const power = Math.pow(10, decimal);
+        const myBalance = await balance({
+          owner: userPrincipal,
+          subaccount: new Uint8Array(getSubAccountArray(Number(subClean))),
+          certified: false,
+        });
         saveLocalStorage(auxTokens);
-        dispatch(
-          addSubAccount(idx, {
-            ...newSub,
-            sub_account_id: `0x${subClean}`.toLowerCase(),
-          }),
-        );
-        reloadOnlyICRCBallance();
+        const savedSub = {
+          ...newSub,
+          sub_account_id: `0x${subClean}`.toLowerCase(),
+          amount: (Number(myBalance.toString()) / power).toString(),
+          currency_amount: assetMrkt ? getUSDfromToken(myBalance.toString(), assetMrkt, decimal) : "0",
+        };
+        dispatch(addSubAccount(idx, savedSub));
         setNewSub(undefined);
         setHexChecked(false);
+        changeSelectedAccount(savedSub);
       } else {
         setNewErr({ name: errName, idx: errIdx });
       }
