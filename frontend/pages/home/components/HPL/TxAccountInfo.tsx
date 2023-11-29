@@ -16,7 +16,6 @@ interface TxAccountInfoProps {
   rmtAmount: string;
   amnt: string;
   onAmountChange(e: ChangeEvent<HTMLInputElement>): void;
-  ft: string;
   sent?: boolean;
 }
 
@@ -28,15 +27,46 @@ const TxAccountInfo = ({
   rmtAmount,
   amnt,
   onAmountChange,
-  ft,
   sent,
 }: TxAccountInfoProps) => {
   const { t } = useTranslation();
+
+  const amountField = () => {
+    return (
+      <div className={`flex ${sent ? "flex-col my-2" : "flex-col-reverse mb-4"} justify-end items-start w-full gap-1`}>
+        {txUser.subaccount ? (
+          <p className="opacity-70 ml-2 font-thin">{`${getDecimalAmount(
+            txUser.subaccount.amount,
+            getFtFromSub(ftId).decimal,
+          )} ${getFtFromSub(ftId).symbol}`}</p>
+        ) : (
+          <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote mt-2 ml-2 font-thin">{`${getDecimalAmount(
+            rmtAmount,
+            getFtFromSub(ftId).decimal,
+          )} ${getFtFromSub(ftId).symbol}`}</p>
+        )}
+        <CustomInput
+          intent={"secondary"}
+          value={amnt}
+          onChange={onAmountChange}
+          sizeInput="medium"
+          border={"secondary"}
+          autoFocus={sent}
+          sufix={
+            <div className="flex flex-row justify-start items-center gap-2  pr-6">
+              <img src={getAssetLogo(ftId)} className="w-6 h-6" alt="info-icon" />
+              <p className="opacity-60">{getFtFromSub(ftId || "0").symbol}</p>
+            </div>
+          }
+        />
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col justify-start items-start w-full">
+    <div className={`flex ${sent ? "flex-col" : "flex-col-reverse"} justify-start items-start w-full`}>
       {txUser.subaccount ? (
         <div className="flex flex-row justify-start items-center w-full gap-5">
-          <img src={getAssetLogo(ftId)} className="w-8 h-8" alt="info-icon" />
           <div className="flex flex-col justify-start items-start gap-1">
             <div className="flex flex-row justify-start items-center gap-2">
               <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">
@@ -46,9 +76,6 @@ const TxAccountInfo = ({
                 {txUser.subaccount.name}
               </p>
             </div>
-            <p className="opacity-70">{`${getDecimalAmount(txUser.subaccount.amount, getFtFromSub(ftId).decimal)} ${
-              getFtFromSub(ftId).symbol
-            }`}</p>
           </div>
         </div>
       ) : (
@@ -57,41 +84,19 @@ const TxAccountInfo = ({
             <p>Principal</p>
             <p className="text-right">{shortAddress(txUser.principal, 12, 10)}</p>
           </div>
-          <div className="flex flex-row justify-between items-center w-full border-b border-b-BorderColor/70 pb-3 mb-3">
+          <div className="flex flex-row justify-between items-center w-full pb-3 ">
             <p className="opacity-70">{t("virtual")}</p>
             <p>{txUser.vIdx}</p>
           </div>
           {txUser.remote && (
-            <div className="flex flex-row justify-between items-center w-full">
+            <div className="flex flex-row justify-between items-center w-full pt-3 border-t border-t-BorderColor/70">
               <p>{txUser.remote.name}</p>
               <GreenCheck />
             </div>
           )}
-          <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">{`${getDecimalAmount(
-            rmtAmount,
-            getFtFromSub(ftId).decimal,
-          )} ${getFtFromSub(ftId).symbol}`}</p>
         </div>
       )}
-      <div className="flex flex-row justify-end items-center w-full my-2 gap-2 border-t border-t-BorderColor/70 pt-2">
-        <p className="text-sm">{t(sent ? "sent.amount" : "receive.amount")}</p>
-        <CustomInput
-          compOutClass="!w-1/2"
-          inputClass="text-right"
-          intent={"secondary"}
-          value={amnt}
-          onChange={onAmountChange}
-          sizeInput="small"
-          border={"secondary"}
-          autoFocus={sent}
-          sufix={
-            <div className="flex flex-row justify-start items-center">
-              <p className="opacity-60">{getFtFromSub(ft || "0").symbol}</p>
-              <ExchangeIcon />
-            </div>
-          }
-        />
-      </div>
+      {amountField()}
     </div>
   );
 };

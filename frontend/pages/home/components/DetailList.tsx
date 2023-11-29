@@ -70,7 +70,7 @@ const DetailList = () => {
       </div>
       <div
         id="right-drower"
-        className={`h-[calc(100%-4.5rem)] fixed z-[999] top-4.5rem w-[28rem] overflow-x-hidden transition-{right} duration-500 ${
+        className={`h-full fixed z-[999] top-0 w-[28rem] overflow-x-hidden transition-{right} duration-500 ${
           drawerOpen ? "!right-0" : "right-[-30rem]"
         }`}
       >

@@ -135,7 +135,7 @@ const AssetsList = () => {
       </div>
       <div
         id="asset-drower"
-        className={`h-[calc(100%-4.5rem)] fixed top-4.5rem w-[28rem] z-[1000] overflow-x-hidden transition-{right} duration-500 ${
+        className={`h-full fixed top-0 w-[28rem] z-[1000] overflow-x-hidden transition-{right} duration-500 ${
           assetOpen ? "!right-0" : "right-[-30rem]"
         }`}
       >

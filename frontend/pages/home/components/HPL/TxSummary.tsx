@@ -62,7 +62,7 @@ const TxSummary = ({
   const feeConstant = 50000;
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-start w-full px-4 pt-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
+      <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
         <p className="font-semibold mb-2 ">{t("from")}</p>
         <TxAccountInfo
           txUser={from}
@@ -72,26 +72,22 @@ const TxSummary = ({
           rmtAmount={rmtAmountFrom}
           amnt={amount}
           onAmountChange={onAmountChange}
-          ft={from.subaccount?.ft || "0"}
           sent={true}
         />
       </div>
       <div className="flex justify-center items-center w-full">
         <DownBlueArrow />
       </div>
-      <div className="flex flex-col justify-center items-center w-full my-2 p-4 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
-        <div className="flex flex-row justify-between items-center w-full ">
-          <p>{t("fee")}</p>
+      <div className="flex flex-col justify-center items-center w-full my-2 px-4 py-1 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
+        <div className="flex flex-row justify-start items-center w-full gap-4">
+          <p>{t("fee")}:</p>
           <p className="flex flex-row gap-2">
             {`${fee} `}
             <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
           </p>
         </div>
       </div>
-      <div className="flex justify-center items-center w-full">
-        <DownBlueArrow />
-      </div>
-      <div className="flex flex-col justify-start items-start w-full px-4 pt-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
+      <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
         <p className="font-semibold mb-2">{t("to")}</p>
         <TxAccountInfo
           txUser={to}
@@ -101,7 +97,6 @@ const TxSummary = ({
           rmtAmount={rmtAmountTo}
           amnt={amountReceiver}
           onAmountChange={onAmountReceiverChange}
-          ft={from.subaccount?.ft || "0"}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
