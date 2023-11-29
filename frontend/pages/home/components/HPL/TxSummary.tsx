@@ -76,25 +76,6 @@ const TxSummary = ({
           sent={true}
         />
       </div>
-      {/* <div className="flex flex-row justify-start items-center w-full my-2 gap-2">
-        <p className="text-sm">{t("sent.amount")}</p>
-        <CustomInput
-          compOutClass="!w-1/2"
-          inputClass="text-right"
-          intent={"secondary"}
-          value={amount}
-          onChange={onAmountChange}
-          sizeInput="small"
-          border={"secondary"}
-          autoFocus
-          sufix={
-            <div className="flex flex-row justify-start items-center">
-              <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
-              <ExchangeIcon />
-            </div>
-          }
-        />
-      </div> */}
       <div className="flex justify-center items-center w-full">
         <DownBlueArrow />
       </div>
@@ -123,24 +104,6 @@ const TxSummary = ({
           ft={from.subaccount?.ft || "0"}
         />
       </div>
-      {/* <div className="flex flex-row justify-start items-center w-full mt-2 gap-2">
-        <p className="text-sm">{t("receive.amount")}</p>
-        <CustomInput
-          compOutClass="!w-1/2"
-          inputClass="text-right"
-          intent={"secondary"}
-          value={amountReceiver}
-          onChange={onAmountReceiverChange}
-          sizeInput="small"
-          border={"secondary"}
-          sufix={
-            <div className="flex flex-row justify-start items-center">
-              <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
-              <ExchangeIcon />
-            </div>
-          }
-        />
-      </div> */}
       <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
         <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
         <div className="flex flex-row justify-end items-center gap-2">

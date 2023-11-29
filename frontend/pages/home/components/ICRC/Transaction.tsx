@@ -57,7 +57,7 @@ const DrawerTransaction = ({ setDrawerOpen }: DrawerTransactionProps) => {
           />
         </div>
         {/* FROM SECTION */}
-        <div className="flex flex-col justify-center items-center gap-4 w-[calc(100%-3rem)] mx-6 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor">
+        <div className="flex flex-col justify-center items-center gap-3 w-[calc(100%-3rem)] mx-6 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor">
           <div className="flex flex-row justify-between items-center w-full">
             <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor font-medium">{t("from")}</p>
           </div>
@@ -113,7 +113,7 @@ const DrawerTransaction = ({ setDrawerOpen }: DrawerTransactionProps) => {
           )}
           <div className="flex flex-row justify-between items-center w-full font-normal">
             <p>{t("transaction.amount")}</p>
-            <p className="">{`${toFullDecimal(
+            <p className="font-semibold">{`${toFullDecimal(
               Number(selectedTransaction?.amount) / Math.pow(10, selectedAccount?.decimal || 8) +
                 Number(selectedAccount?.transaction_fee),
               selectedAccount?.decimal || 8,
@@ -123,7 +123,7 @@ const DrawerTransaction = ({ setDrawerOpen }: DrawerTransactionProps) => {
         {/* ARROW SECTION */}
         <DownBlueArrow className="my-3"></DownBlueArrow>
         {/* TO SECTION */}
-        <div className="flex flex-col justify-center items-center gap-4 w-[calc(100%-3rem)] mx-6 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor rounded-md">
+        <div className="flex flex-col justify-center items-center gap-3 w-[calc(100%-3rem)] mx-6 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor rounded-md">
           <div className="flex flex-row justify-between items-center w-full">
             <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor font-medium">{t("to")}</p>
           </div>
@@ -179,15 +179,18 @@ const DrawerTransaction = ({ setDrawerOpen }: DrawerTransactionProps) => {
           )}
           <div className="flex flex-row justify-between items-center w-full font-normal">
             <p>{t("transaction.amount")}</p>
-            <p className="">{`${toFullDecimal(
+            <p className="font-semibold">{`${toFullDecimal(
               Number(selectedTransaction?.amount) / Math.pow(10, selectedAccount?.decimal || 8),
               selectedAccount?.decimal || 8,
             )} ${assetSymbol}`}</p>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center gap-4 w-[calc(100%-3rem)] mx-6 mt-5 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor rounded-md">
+        <div className="flex flex-col justify-center items-center gap-3 w-[calc(100%-3rem)] mx-6 mt-5 p-4 bg-FromBoxColorLight dark:bg-FromBoxColor rounded-md">
           <div className="flex flex-row justify-between items-center w-full font-normal">
             <p className="font-bold">{t("fee")}</p>
+          </div>
+          <div className="flex flex-row justify-between items-center w-full font-normal">
+            <p>{t("transaction.amount")}</p>
             <p className="font-bold">{`${toFullDecimal(
               Number(selectedAccount?.transaction_fee),
               selectedAccount?.decimal || 8,

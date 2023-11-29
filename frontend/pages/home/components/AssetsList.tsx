@@ -48,6 +48,8 @@ const AssetsList = () => {
             placeholder={t("search")}
             value={protocol === ProtocolTypeEnum.Enum.HPL ? searchKeyHPL : searchKey}
             onChange={setSearch}
+            spellCheck={false}
+            autoComplete="false"
           />
           <div
             className="grid  justify-center items-center w-8 h-8 bg-SelectRowColor rounded-md cursor-pointer"
@@ -95,7 +97,12 @@ const AssetsList = () => {
                   if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
                 });
 
-                if (asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "")
+                if (
+                  asset.name.toLowerCase().includes(searchKey.toLowerCase()) ||
+                  asset.symbol.toLowerCase().includes(searchKey.toLowerCase()) ||
+                  includeInSub ||
+                  searchKey.trim() === ""
+                )
                   return (
                     <AssetElement
                       key={idx}

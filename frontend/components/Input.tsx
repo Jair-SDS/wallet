@@ -111,6 +111,7 @@ export const CustomInput: FC<InputProps> = ({
         {prefix && prefixPosition === "in" && prefix}
         <input
           spellCheck={false}
+          autoComplete="false"
           className={`w-full bg-inherit outline-none mx-1 py-2 ${inputClass} ${input({
             sizeInput,
             textStyle,
