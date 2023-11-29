@@ -1,6 +1,5 @@
 // svgs
 import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
-import { ReactComponent as ExchangeIcon } from "@assets/svg/files/arrows-exchange-v.svg";
 //
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
 import { ChangeEvent } from "react";
