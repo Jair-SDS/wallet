@@ -4,11 +4,11 @@ import { ReactComponent as UsaFlagIcon } from "@/assets/svg/files/usa.svg";
 import { ReactComponent as SpainFlagIcon } from "@/assets/svg/files/españa.svg";
 import { ReactComponent as ItalyFlagIcon } from "@/assets/svg/files/italia.svg";
 import { ReactComponent as BrazilFlagIcon } from "@/assets/svg/files/brazil.svg";
-import { ReactComponent as ICRC1Logo } from "@/assets/svg/files/logo_ICRC-1.svg";
-import { ReactComponent as ICRC1LogoDark } from "@/assets/svg/files/logo_ICRC-1-dark.svg";
 import { ReactComponent as SunIcon } from "@/assets/svg/files/sun-icon.svg";
 import { ReactComponent as WalletIcon } from "@/assets/svg/files/wallet-icon.svg";
 import { ReactComponent as RefreshIcon } from "@/assets/svg/files/refresh-ccw.svg";
+import { ReactComponent as HplLogo } from "@/assets/svg/files/hpl-logo.svg";
+import { ReactComponent as HpllogoLight } from "@/assets/svg/files/hpl-wallet-light.svg";
 //
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -52,9 +52,9 @@ const TopBarComponent = () => {
       <div className="flex flex-row justify-between min-h-[4.5rem] w-full bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor ">
         <div className="flex flex-row justify-start items-center pl-9 gap-24 text-md">
           {theme === ThemesEnum.enum.dark ? (
-            <ICRC1LogoDark className="max-w-[7rem] h-auto" />
+            <HplLogo className="max-w-[7rem] h-auto" />
           ) : (
-            <ICRC1Logo className="max-w-[7rem] h-auto" />
+            <HpllogoLight className="max-w-[7rem] h-auto" />
           )}
           <div className="flex flex-row justify-start items-center gap-3">
             <p className="opacity-50">{shortAddress(authClient, 12, 10)}</p>

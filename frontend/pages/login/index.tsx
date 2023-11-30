@@ -1,6 +1,6 @@
 // svgs
-import HplWalletIcon from "@/assets/svg/files/logo_ICRC-1-dark.svg";
-import HplWalletLightIcon from "@/assets/svg/files/logo_ICRC-1.svg";
+import HplWalletIcon from "@/assets/svg/files/hpl-wallet.svg";
+import HplWalletLightIcon from "@/assets/svg/files/hpl-wallet-light.svg";
 import { ReactComponent as LoginLogoIcon } from "@/assets/svg/files/login-logo.svg";
 import { ReactComponent as ChevIcon } from "@/assets/svg/files/chev-icon.svg";
 import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";

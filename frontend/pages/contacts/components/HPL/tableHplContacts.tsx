@@ -41,7 +41,7 @@ const TableHplContacts = ({
   const { hplContacts, saveHplContacts } = useHplContacts();
   const { t } = useTranslation();
   const [selContact, setSelContact] = useState<HplContact>();
-  const [contactOpen, setContactOpen] = useState("");
+  const [contactOpen, setContactOpen] = useState<string[]>([]);
 
   return (
     <table className="w-full  text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
@@ -65,17 +65,17 @@ const TableHplContacts = ({
       <tbody>
         {getContactsToShow().map((cntc, k) => {
           const selected = cntc.principal === selContact?.principal;
-          const open = contactOpen === cntc.principal;
+          const open = contactOpen.includes(cntc.principal);
           return (
             <Fragment key={k}>
               <tr
                 className={`border-b border-BorderColorTwoLight dark:border-BorderColorTwo ${
-                  selected || open ? "bg-SelectRowColor/20" : ""
+                  selected ? "bg-SelectRowColor/20" : ""
                 }`}
               >
                 <td className="h-14 ">
                   <div className="relative flex flex-row justify-start items-center w-full gap-2 px-4 h-full">
-                    {(selected || open) && <div className="absolute left-0 w-1 h-full bg-SelectRowColor"></div>}
+                    {selected && <div className="absolute left-0 w-1 h-full bg-SelectRowColor"></div>}
                     {selected ? (
                       <CustomInput
                         intent={"primary"}
@@ -249,8 +249,11 @@ const TableHplContacts = ({
     });
   }
   function onChevIconClic(cntc: HplContact) {
-    if (cntc.principal === selContact?.principal || contactOpen === cntc.principal) setContactOpen("");
-    else setContactOpen(cntc.principal);
+    if (contactOpen.includes(cntc.principal)) {
+      setContactOpen(contactOpen.filter((cnt) => cnt !== cntc.principal));
+    } else {
+      setContactOpen([...contactOpen, cntc.principal]);
+    }
   }
 };
 

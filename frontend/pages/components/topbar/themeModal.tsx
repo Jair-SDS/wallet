@@ -1,6 +1,6 @@
 // svgs
-import { ReactComponent as HplDark } from "@assets/svg/files/logo_ICRC-1-dark.svg";
-import { ReactComponent as HplLight } from "@assets/svg/files/logo_ICRC-1.svg";
+import { ReactComponent as HplDark } from "@assets/svg/files/hpl-wallet.svg";
+import { ReactComponent as HplLight } from "@assets/svg/files/hpl-wallet-light.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { Fragment } from "react";
