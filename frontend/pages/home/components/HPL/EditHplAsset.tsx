@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
 import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
 import { AccountHook } from "@pages/hooks/accountHook";
+import { shortAddress } from "@/utils";
+import { CustomCopy } from "@components/CopyTooltip";
 
 interface EditHplAssetProps {
   setAssetOpen(value: boolean): void;
@@ -56,6 +58,27 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             compOutClass=""
             value={editedFt.symbol}
             onChange={onSymbolChange}
+          />
+          <p className="opacity-60 mt-4">{t("asset.controller")}</p>
+          <CustomInput
+            sizeInput={"medium"}
+            intent={"secondary"}
+            placeholder=""
+            inputClass="opacity-60"
+            value={shortAddress(editedFt.controller, 18, 10)}
+            onChange={onSymbolChange}
+            sufix={<CustomCopy className="opacity-70" copyText={editedFt.controller} />}
+            disabled
+          />
+          <p className="opacity-60 mt-4">{t("asset.supply")}</p>
+          <CustomInput
+            sizeInput={"medium"}
+            intent={"secondary"}
+            placeholder=""
+            inputClass="opacity-60"
+            value={`${editedFt.supply}   ${editedFt.symbol}`}
+            onChange={onSymbolChange}
+            disabled
           />
         </div>
         <div className="flex flex-row justify-between items-center w-full gap-2">

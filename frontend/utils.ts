@@ -83,7 +83,9 @@ export const getFirstNChars = (str: string, digits: number) => {
 };
 
 export const shortAddress = (address: string, digitsL: number, digitsR: number, prefix?: string, sufix?: string) => {
-  return `${prefix ? prefix : ""}${address.slice(0, digitsL)} ... ${address.slice(-digitsR)}${sufix ? sufix : ""}`;
+  if (address.length > digitsL + digitsR)
+    return `${prefix ? prefix : ""}${address.slice(0, digitsL)} ... ${address.slice(-digitsR)}${sufix ? sufix : ""}`;
+  else return address;
 };
 
 export const getContactColor = (idx: number) => {
@@ -508,6 +510,8 @@ export const getFtsFormated = (
       decimal: ft ? ft[1].decimals : 0,
       description: ft ? ft[1].description : "",
       logo: ftDict ? ftDict.logo : "",
+      controller: ft ? ft[1].controller.toText() : "",
+      supply: asst[1].toString(),
     });
   });
   return auxFT;

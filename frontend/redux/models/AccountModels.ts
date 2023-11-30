@@ -146,6 +146,8 @@ const HPLAsset = z.object({
   decimal: z.number(),
   description: z.string(),
   logo: z.string(),
+  controller: z.string(),
+  supply: z.string(),
 });
 
 export type HPLAsset = z.infer<typeof HPLAsset>;

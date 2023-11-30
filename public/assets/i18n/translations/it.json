@@ -73,6 +73,8 @@
   "remote.accounts": "Conti Remoti",
   "asset.name": "Nome Risorsa",
   "asset.symbol": "Simbolo della Risorsa",
+  "asset.controller": "Controllore della Risorsa",
+  "asset.supply": "Fornitura della Risorsa",
   "virtuals": "Conti virtuali",
   "accounts": "Conti",
   "transactions": "Transazioni",

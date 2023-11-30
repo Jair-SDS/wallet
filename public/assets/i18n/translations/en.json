@@ -73,6 +73,8 @@
   "remote.accounts": "Remote Accounts",
   "asset.name": "Asset Name",
   "asset.symbol": "Asset Symbol",
+  "asset.controller": "Asset Controller",
+  "asset.supply": "Asset Supply",
   "virtuals": "Virtual Accounts",
   "accounts": "Accounts",
   "transactions": "Transactions",

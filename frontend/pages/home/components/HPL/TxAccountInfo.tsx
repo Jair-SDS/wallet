@@ -15,6 +15,7 @@ interface TxAccountInfoProps {
   rmtAmount: string;
   amnt: string;
   onAmountChange(e: ChangeEvent<HTMLInputElement>): void;
+  onMaxAmount(): void;
   sent?: boolean;
 }
 
@@ -26,6 +27,7 @@ const TxAccountInfo = ({
   rmtAmount,
   amnt,
   onAmountChange,
+  onMaxAmount,
   sent,
 }: TxAccountInfoProps) => {
   const { t } = useTranslation();
@@ -53,6 +55,14 @@ const TxAccountInfo = ({
           autoFocus={sent}
           sufix={
             <div className="flex flex-row justify-start items-center gap-2  pr-6">
+              {sent && (
+                <button
+                  className="flex justify-center items-center p-1 bg-RadioCheckColor rounded cursor-pointer"
+                  onClick={onMaxAmount}
+                >
+                  <p className="text-sm text-PrimaryTextColor">{t("max")}</p>
+                </button>
+              )}
               <img src={getAssetLogo(ftId)} className="w-6 h-6" alt="info-icon" />
               <p className="opacity-60">{getFtFromSub(ftId || "0").symbol}</p>
             </div>

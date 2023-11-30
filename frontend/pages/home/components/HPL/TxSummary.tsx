@@ -73,6 +73,7 @@ const TxSummary = ({
           amnt={amount}
           onAmountChange={onAmountChange}
           sent={true}
+          onMaxAmount={onMaxAmount}
         />
       </div>
       <div className="flex justify-center items-center w-full">
@@ -83,7 +84,7 @@ const TxSummary = ({
           <p>{t("fee")}:</p>
           <p className="flex flex-row gap-2">
             {`${fee} `}
-            <p className="opacity-60">{getFtFromSub(from.subaccount?.ft || "0").symbol}</p>
+            <p className="opacity-60">{getFtFromSub(ftId || "0").symbol}</p>
           </p>
         </div>
       </div>
@@ -97,6 +98,7 @@ const TxSummary = ({
           rmtAmount={rmtAmountTo}
           amnt={amountReceiver}
           onAmountChange={onAmountReceiverChange}
+          onMaxAmount={onMaxAmount}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
@@ -112,7 +114,7 @@ const TxSummary = ({
       </div>
     </Fragment>
   );
-  function onAmountChange(e: ChangeEvent<HTMLInputElement>) {
+  function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {
     const amnt = e.target.value;
     if (validateAmount(amnt, decimals) || amnt === "") {
       setAmount(amnt);
@@ -144,6 +146,16 @@ const TxSummary = ({
       }
       setErrMsg("");
     }
+  }
+
+  function onMaxAmount() {
+    let maxAmount = "0";
+    if (from.subaccount) {
+      maxAmount = from.subaccount.amount;
+    } else {
+      maxAmount = rmtAmountFrom;
+    }
+    onAmountChange({ target: { value: getDecimalAmount(maxAmount, getFtFromSub(ftId).decimal, true) } });
   }
 
   function onBack() {

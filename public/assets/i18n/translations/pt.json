@@ -73,6 +73,8 @@
   "remote.accounts": "Contas Remotas",
   "asset.name": "Nome do Ativo",
   "asset.symbol": "Símbolo do Ativo",
+  "asset.controller": "Controladorr do Ativo",
+  "asset.supply": "Suprimento do Ativo",
   "virtuals": "Contas Virtuais",
   "accounts": "Contas",
   "transactions": "Transações",
