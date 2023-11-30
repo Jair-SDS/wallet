@@ -9,7 +9,7 @@ import { CustomButton } from "@components/Button";
 import LoadingLoader from "@components/Loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
-import { getHoleAmount, validateAmount } from "@/utils";
+import { getDecimalAmount, getHoleAmount, validateAmount } from "@/utils";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -120,9 +120,10 @@ const TxSummary = ({
         setFee("");
         setAmountReceiver("");
       } else {
-        const newFee = Math.ceil(Number(amnt) / feeConstant);
-        setFee(newFee.toLocaleString("en-US", { maximumFractionDigits: 20 }));
-        setAmountReceiver((Number(amnt) - newFee).toString());
+        const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
+        const newFee = Math.ceil(holeAmount / (feeConstant + 1));
+        setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
+        setAmountReceiver(getDecimalAmount(holeAmount - newFee, getFtFromSub(ftId).decimal, true));
       }
       setErrMsg("");
     }
@@ -136,9 +137,10 @@ const TxSummary = ({
         setFee("");
         setAmount("");
       } else {
-        const newFee = Math.ceil(Number(amnt) / feeConstant);
-        setFee(newFee.toLocaleString("en-US", { maximumFractionDigits: 20 }));
-        setAmount((newFee + Number(amnt)).toString());
+        const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
+        const newFee = Math.ceil(holeAmount / feeConstant);
+        setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
+        setAmount(getDecimalAmount(newFee + holeAmount, getFtFromSub(ftId).decimal, true));
       }
       setErrMsg("");
     }

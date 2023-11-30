@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
@@ -42,9 +43,7 @@ export const updateAllBalances = async (
     tokenMarkets = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
     tokenMarkets = tokenMarkets.filter((x) => !x.unreleased);
     store.dispatch(setTokenMarket(tokenMarkets));
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 
   const myPrincipal = await myAgent.getPrincipal();
   const newTokens: Token[] = [];
@@ -398,7 +397,6 @@ export const getAllTransactionsICP = async (subaccount_index: string, loading: b
       return transactionsInfo;
     }
   } catch (error) {
-    console.error("error", error);
     if (!loading) {
       return [];
     }

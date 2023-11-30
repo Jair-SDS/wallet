@@ -31,17 +31,18 @@ const QRscanner = ({
         {
           fps: 10,
         },
-        true,
+        undefined,
       );
       scanner.render(
         (value: string) => {
-          scanner.pause();
           scanner.clear().then(() => {
             onSuccess(value);
             setScannerErr("");
           });
         },
-        () => {
+        (e) => {
+          console.log("err", e);
+
           if (scanner.getState() === 1) setScannerErr(t("err.qr.img"));
           else if (scanner.getState() === 2) setScannerErr("");
         },

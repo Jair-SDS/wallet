@@ -14,7 +14,7 @@ import { ThemeHook } from "@pages/hooks/themeHook";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { CustomCopy } from "@components/CopyTooltip";
-import { getHoleAmount, shortAddress } from "@/utils";
+import { getDecimalAmount, getHoleAmount, shortAddress } from "@/utils";
 import dayjs from "dayjs";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
@@ -64,7 +64,10 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       setErrMsg("");
       setExpiration(true);
       if (selectVt) {
-        setNewVt(selectVt);
+        setNewVt({
+          ...selectVt,
+          amount: getDecimalAmount(selectVt.amount, getFtFromVt(selectVt.backing).decimal),
+        });
         setExpiration(selectVt.expiration === 0);
       } else if (selectSub)
         setNewVt((prev) => {

@@ -111,10 +111,10 @@ export function toFullDecimal(numb: number | string, decimal: number | string) {
   return x.toLocaleString("en-US", { maximumFractionDigits: 20 });
 }
 
-export function getDecimalAmount(numb: number | string, decimal: number | string) {
+export function getDecimalAmount(numb: number | string, decimal: number | string, direct?: boolean) {
   if (Number(numb) === 0) return "0";
   const x = Number(numb) / Math.pow(10, Number(decimal));
-  return x.toLocaleString("en-US", { maximumFractionDigits: 20 });
+  return direct ? x.toString() : x.toLocaleString("en-US", { maximumFractionDigits: 20 });
 }
 
 export function validateAmount(amnt: string, dec: number): boolean {
