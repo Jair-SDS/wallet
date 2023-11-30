@@ -181,6 +181,8 @@ export const useHPL = (open: boolean) => {
         decimal: 0,
         description: "",
         logo: "",
+        controller: "",
+        supply: "",
       }
     );
   };
