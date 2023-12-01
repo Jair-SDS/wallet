@@ -222,7 +222,7 @@ const DialogAddAsset = ({
         const power = Math.pow(10, decimal);
         const myBalance = await balance({
           owner: userPrincipal,
-          subaccount: new Uint8Array(getSubAccountArray(Number(subClean))),
+          subaccount: new Uint8Array(getSubAccountArray(Number(`0x${subClean}`))),
           certified: false,
         });
         saveLocalStorage(auxTokens);
