@@ -166,7 +166,7 @@ const TxSummary = ({
   }
   async function onSend() {
     setLoading(true);
-    const amnt = getHoleAmount(amount, getFtFromSub(ftId).decimal);
+    const amnt = getHoleAmount(amountReceiver, getFtFromSub(ftId).decimal);
     let txFrom: TransferAccountReference;
     if (from.subaccount)
       txFrom = {

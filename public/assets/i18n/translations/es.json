@@ -145,6 +145,8 @@
   "asset.symbol": "Símbolo de Activo",
   "asset.controller": "Controlador de Activo",
   "asset.supply": "Suministro de Activo",
+  "asset.decimal": "Decimal de Asset",
+  "asset.description": "Descripción de Asset",
   "virtuals": "Cuentas Virtuales",
   "accounts": "Cuentas",
   "transactions": "Transacciones",

@@ -92,14 +92,15 @@ const AssetsList = () => {
               onValueChange={onValueChange}
             >
               {assets?.map((asset: Asset, idx: number) => {
+                const mySearchKey = searchKey.toLowerCase().trim();
                 let includeInSub = false;
                 asset.subAccounts.map((sa) => {
-                  if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
+                  if (sa.name.toLowerCase().includes(mySearchKey)) includeInSub = true;
                 });
 
                 if (
-                  asset.name.toLowerCase().includes(searchKey.toLowerCase()) ||
-                  asset.symbol.toLowerCase().includes(searchKey.toLowerCase()) ||
+                  asset.name.toLowerCase().includes(mySearchKey) ||
+                  asset.symbol.toLowerCase().includes(mySearchKey) ||
                   includeInSub ||
                   searchKey.trim() === ""
                 )

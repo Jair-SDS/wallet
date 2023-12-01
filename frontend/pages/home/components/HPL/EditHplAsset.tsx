@@ -33,7 +33,8 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
           />
         </div>
         <div className="flex flex-col items-center justify-center w-full my-3 gap-1">
-          <img src={getAssetLogo(editedFt.id)} className="w-8 h-8" alt="info-icon" />
+          <img src={getAssetLogo(editedFt.id)} className="w-10 h-10" alt="info-icon" />
+          <p className="font-semibold mt-2">{`[ ${editedFt.id} ]`}</p>
           <p className="font-semibold">{`${
             (editedFt?.token_name + " - " + editedFt?.token_symbol).trim() === "-"
               ? ""
@@ -76,7 +77,27 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             intent={"secondary"}
             placeholder=""
             inputClass="opacity-60"
-            value={`${editedFt.supply}   ${editedFt.symbol}`}
+            value={editedFt.supply}
+            onChange={onSymbolChange}
+            disabled
+          />
+          <p className="opacity-60 mt-4">{t("asset.decimal")}</p>
+          <CustomInput
+            sizeInput={"medium"}
+            intent={"secondary"}
+            placeholder=""
+            inputClass="opacity-60"
+            value={editedFt.decimal}
+            onChange={onSymbolChange}
+            disabled
+          />
+          <p className="opacity-60 mt-4">{t("asset.description")}</p>
+          <CustomInput
+            sizeInput={"medium"}
+            intent={"secondary"}
+            placeholder=""
+            inputClass="opacity-60"
+            value={editedFt.description}
             onChange={onSymbolChange}
             disabled
           />

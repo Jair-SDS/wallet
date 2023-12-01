@@ -75,6 +75,8 @@
   "asset.symbol": "Símbolo do Ativo",
   "asset.controller": "Controladorr do Ativo",
   "asset.supply": "Suprimento do Ativo",
+  "asset.decimal": "Decimal do Ativo",
+  "asset.description": "Descrição do Ativo",
   "virtuals": "Contas Virtuais",
   "accounts": "Contas",
   "transactions": "Transações",

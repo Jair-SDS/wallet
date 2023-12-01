@@ -75,6 +75,8 @@
   "asset.symbol": "Simbolo della Risorsa",
   "asset.controller": "Controllore della Risorsa",
   "asset.supply": "Fornitura della Risorsa",
+  "asset.decimal": "Decimale della Risorsa",
+  "asset.description": "Descrizione della Risorsa",
   "virtuals": "Conti virtuali",
   "accounts": "Conti",
   "transactions": "Transazioni",

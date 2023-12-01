@@ -131,25 +131,25 @@ export const useHPL = (open: boolean) => {
   useEffect(() => {
     const auxSubs = subaccounts?.filter((sub: HPLSubAccount) => {
       let includeInSub = false;
+      const mySearch = searchKeyHPL.toLowerCase().trim();
       sub.virtuals.map((vt) => {
-        if (vt.name.toLowerCase().includes(searchKeyHPL.toLowerCase())) includeInSub = true;
+        if (vt.name.toLowerCase().includes(mySearch)) includeInSub = true;
       });
 
       // search by currency name
       const subAccountCurrencyName = getFtFromSub(sub.ft)?.name ?? null;
-      if (subAccountCurrencyName && partialMatch(subAccountCurrencyName, searchKeyHPL)) includeInSub = true;
+      if (subAccountCurrencyName && partialMatch(subAccountCurrencyName, mySearch)) includeInSub = true;
       // search by currency symbol
       const subAccountCurrencySymbol = getFtFromSub(sub.ft)?.symbol ?? null;
-      if (subAccountCurrencySymbol && partialMatch(subAccountCurrencySymbol, searchKeyHPL)) includeInSub = true;
+      if (subAccountCurrencySymbol && partialMatch(subAccountCurrencySymbol, mySearch)) includeInSub = true;
       // search by sub account id
-      if (partialMatch(sub.sub_account_id, searchKeyHPL)) includeInSub = true;
+      if (partialMatch(sub.sub_account_id, mySearch)) includeInSub = true;
 
       let zero = true;
 
       if (zeroBalance && BigInt(sub.amount) === BigInt(0)) zero = false;
 
-      if ((sub.name.toLowerCase().includes(searchKeyHPL.toLowerCase()) || includeInSub || searchKeyHPL === "") && zero)
-        return true;
+      if ((sub.name.toLowerCase().includes(mySearch) || includeInSub || mySearch === "") && zero) return true;
     });
     setSubsList(auxSubs);
     const isSelected = auxSubs.find((sub) => sub.sub_account_id === selectSub?.sub_account_id);

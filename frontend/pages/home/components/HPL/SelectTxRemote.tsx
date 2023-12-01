@@ -9,6 +9,7 @@ import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/Accoun
 import { clsx } from "clsx";
 import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
 import { useTranslation } from "react-i18next";
+import { Principal } from "@dfinity/principal";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -36,6 +37,7 @@ const SelectTxRemote = ({
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
   const [searchKey, setSearchKey] = useState("");
+  const [principalErr, setPrincipalErr] = useState(false);
   return (
     <Fragment>
       {manual ? (
@@ -47,7 +49,7 @@ const SelectTxRemote = ({
             value={select.principal}
             onChange={onChangePrincipal}
             sizeInput="small"
-            border={"secondary"}
+            border={principalErr ? "error" : "secondary"}
           />
           <CustomInput
             compOutClass="!w-1/3"
@@ -185,10 +187,16 @@ const SelectTxRemote = ({
     </Fragment>
   );
   function onChangePrincipal(e: ChangeEvent<HTMLInputElement>) {
-    setSelect({
-      ...select,
-      principal: e.target.value,
-    });
+    try {
+      Principal.fromText(e.target.value);
+      setSelect({
+        ...select,
+        principal: e.target.value,
+      });
+      setPrincipalErr(false);
+    } catch {
+      setPrincipalErr(true);
+    }
   }
   function onChangeIdx(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
