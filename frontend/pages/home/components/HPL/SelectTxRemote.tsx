@@ -187,16 +187,18 @@ const SelectTxRemote = ({
     </Fragment>
   );
   function onChangePrincipal(e: ChangeEvent<HTMLInputElement>) {
-    try {
-      Principal.fromText(e.target.value);
-      setSelect({
-        ...select,
-        principal: e.target.value,
-      });
-      setPrincipalErr(false);
-    } catch {
-      setPrincipalErr(true);
-    }
+    setSelect({
+      ...select,
+      principal: e.target.value,
+    });
+    if (e.target.value.trim() !== "")
+      try {
+        Principal.fromText(e.target.value);
+        setPrincipalErr(false);
+      } catch {
+        setPrincipalErr(true);
+      }
+    else setPrincipalErr(false);
   }
   function onChangeIdx(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;

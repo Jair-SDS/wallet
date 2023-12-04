@@ -13,7 +13,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Contact, SubAccountContact } from "@redux/models/ContactsModels";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface SendOutAccountProps {
   setOpenContactList(value: boolean): void;
@@ -54,6 +54,7 @@ const SendOutAccount = ({
   setQRview,
 }: SendOutAccountProps) => {
   const { t } = useTranslation();
+  const [errAddress, setErrAddress] = useState(false);
 
   return (
     <div className="flex flex-col justify-start items-start w-full">
@@ -125,6 +126,7 @@ const SendOutAccount = ({
         intent={"secondary"}
         placeholder={t("icrc.account")}
         compOutClass="mb-1"
+        border={errAddress ? "error" : undefined}
         value={newAccount}
         onChange={onChangeInput}
         onKeyUp={onKeyUp}
@@ -186,6 +188,14 @@ const SendOutAccount = ({
   function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
     setNewAccount(e.target.value);
     if (newAccountErr !== "") setNewAccountErr("");
+    if (e.target.value.trim() !== "")
+      try {
+        decodeIcrcAccount(e.target.value);
+        setErrAddress(false);
+      } catch {
+        setErrAddress(true);
+      }
+    else setErrAddress(false);
   }
 
   function onKeyUp(e: React.KeyboardEvent<HTMLInputElement>) {
