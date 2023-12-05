@@ -6,7 +6,14 @@ import { CustomInput } from "@components/Input";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
-import { checkHexString, getSubAccountArray, getUSDfromToken, hexToNumber, removeLeadingZeros } from "@/utils";
+import {
+  checkHexString,
+  getSubAccountArray,
+  getUSDfromToken,
+  hexToNumber,
+  hexToUint8Array,
+  removeLeadingZeros,
+} from "@/utils";
 import { SubAccount } from "@redux/models/AccountModels";
 import { GeneralHook } from "../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
@@ -222,7 +229,7 @@ const DialogAddAsset = ({
         const power = Math.pow(10, decimal);
         const myBalance = await balance({
           owner: userPrincipal,
-          subaccount: new Uint8Array(getSubAccountArray(Number(`0x${subClean}`))),
+          subaccount: new Uint8Array(hexToUint8Array(`0x${subClean}`)),
           certified: false,
         });
         saveLocalStorage(auxTokens);
