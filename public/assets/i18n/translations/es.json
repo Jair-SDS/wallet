@@ -197,13 +197,8 @@
   "transaction.transactions": "Transacciones",
   "transaction.amount": "Cantidad",
   "drawer.send.account.error": "La dirección no es válida",
-<<<<<<< HEAD
-  "add.asset.import.error": "Principal no es válido como Ledger",
-  "add.index.import.error": "Principal no es válido como Index",
-=======
   "add.asset.import.error": "La interfaz del libro mayor no reconoce",
   "add.index.import.error": "Interfaz de índice no reconocida",
->>>>>>> icrc1-new-features
   "icrc.acc": "Cuenta ICRC",
   "unknown": "Desconocido",
   "acc.identifier": "Identificador de Cuenta",

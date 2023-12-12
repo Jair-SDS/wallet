@@ -197,13 +197,8 @@
   "transaction.transactions": "Transações",
   "transaction.amount": "Quantia",
   "drawer.send.account.error": "O endereço não é válido",
-<<<<<<< HEAD
-  "add.asset.import.error": "O Principal não é válido como Ledger",
-  "add.index.import.error": "O Principal não é válido como Index",
-=======
   "add.asset.import.error": "Interface do razão não reconhecida",
   "add.index.import.error": "Interface de índice não reconhecida",
->>>>>>> icrc1-new-features
   "icrc.acc": "ICRC Conta",
   "unknown": "Desconhecido",
   "acc.identifier": "Identificador de conta",
