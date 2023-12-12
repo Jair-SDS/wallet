@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
 import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
 import { AccountHook } from "@pages/hooks/accountHook";
-import { shortAddress } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/CopyTooltip";
 
 interface EditHplAssetProps {
@@ -77,7 +77,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             intent={"secondary"}
             placeholder=""
             inputClass="opacity-60"
-            value={editedFt.supply}
+            value={getDecimalAmount(editedFt.supply, editedFt.decimal)}
             onChange={onSymbolChange}
             disabled
           />

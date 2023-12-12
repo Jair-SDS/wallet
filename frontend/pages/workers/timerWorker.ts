@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-globals
 const timerCode = () => {
   self.onmessage = () => {
     self.postMessage("TRANSACTIONS");

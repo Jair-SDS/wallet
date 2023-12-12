@@ -16,9 +16,9 @@ import { AccountDefaultEnum, IconTypeEnum } from "@/const";
 import { Asset } from "@redux/models/AccountModels";
 import { IdentityHook } from "@pages/hooks/identityHook";
 import { ChangeEvent, useState } from "react";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { Principal } from "@dfinity/principal";
 import LoadingLoader from "@components/Loader";
+import { AccountHook } from "@pages/hooks/accountHook";
 
 interface AddAssetManualProps {
   manual: boolean;

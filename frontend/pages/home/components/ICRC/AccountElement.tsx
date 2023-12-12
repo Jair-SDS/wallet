@@ -7,7 +7,7 @@ import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { SubAccount } from "@redux/models/AccountModels";
+import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
 import { ChangeEvent, Fragment, useState } from "react";
 import { GeneralHook } from "../../hooks/generalHook";
@@ -24,8 +24,10 @@ import { CustomButton } from "@components/Button";
 import bigInt from "big-integer";
 
 interface AccountElementProps {
+  asset: Asset;
   subAccount: SubAccount;
   symbol: string;
+  tokenSymbol: string;
   name: string;
   editNameId: string;
   setName(value: string): void;
@@ -38,8 +40,10 @@ interface AccountElementProps {
 }
 
 const AccountElement = ({
+  asset,
   subAccount,
   symbol,
+  tokenSymbol,
   name,
   editNameId,
   setName,
@@ -53,9 +57,11 @@ const AccountElement = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { authClient } = AccountHook();
-  const { selectedAccount, changeSelectedAccount } = GeneralHook();
+  const { selectedAsset, changeSelectedAsset, selectedAccount, changeSelectedAccount } = GeneralHook();
   const chechEqId = () => {
-    return subAccount?.sub_account_id === selectedAccount?.sub_account_id;
+    return (
+      subAccount?.sub_account_id === selectedAccount?.sub_account_id && subAccount?.symbol === selectedAccount?.symbol
+    );
   };
 
   const [deleteModal, setDeleteModal] = useState(false);
@@ -67,6 +73,7 @@ const AccountElement = ({
         aria-haspopup="true"
         className={accElemStyle()}
         onClick={() => {
+          if (!newSub && selectedAsset?.tokenSymbol !== tokenSymbol) changeSelectedAsset(asset);
           if (!newSub && selectedAccount !== subAccount) changeSelectedAccount(subAccount);
           if (editNameId !== subAccount.sub_account_id) setEditNameId("");
         }}
@@ -173,7 +180,7 @@ const AccountElement = ({
   }
 
   function onSave() {
-    if (name !== "") {
+    if (name.trim() !== "") {
       setEditNameId("");
       if (newSub) {
         const auxTokens = tokens.map((tkn, k) => {
@@ -183,7 +190,7 @@ const AccountElement = ({
               subAccounts: [
                 ...tkn.subAccounts,
                 {
-                  name: name,
+                  name: name.trim(),
                   numb: subAccount.sub_account_id,
                 },
               ].sort((a, b) => {
@@ -193,7 +200,7 @@ const AccountElement = ({
           } else return tkn;
         });
         saveLocalStorage(auxTokens);
-        dispatch(addSubAccount(tokenIndex, { ...subAccount, name: name }));
+        dispatch(addSubAccount(tokenIndex, { ...subAccount, name: name.trim() }));
         setNewSub(undefined);
       } else {
         const auxTokens = tokens.map((tkn, k) => {
@@ -201,14 +208,14 @@ const AccountElement = ({
             const auxSubs: TokenSubAccount[] = [];
             tkn.subAccounts.map((sa) => {
               if (sa.numb === subAccount.sub_account_id) {
-                auxSubs.push({ ...sa, name: name });
+                auxSubs.push({ ...sa, name: name.trim() });
               } else auxSubs.push(sa);
             });
             return { ...tkn, subAccounts: auxSubs };
           } else return tkn;
         });
         saveLocalStorage(auxTokens);
-        dispatch(setSubAccountName(tokenIndex, subaccountId, name));
+        dispatch(setSubAccountName(tokenIndex, subaccountId, name.trim()));
       }
     } else {
       setNameError(true);

@@ -33,7 +33,7 @@ export const AssetHook = () => {
   };
 
   const [searchKey, setSearchKey] = useState("");
-  const setAcordeonIdx = (assetIdx: string) => dispatch(setAcordeonAssetIdx(assetIdx));
+  const setAcordeonIdx = (assetIdx: string[]) => dispatch(setAcordeonAssetIdx(assetIdx));
   const setProtocolType = (prot: ProtocolType) => dispatch(setProtocol(prot));
   const [assetInfo, setAssetInfo] = useState<Asset | undefined>();
 
@@ -78,15 +78,22 @@ export const AssetHook = () => {
       });
 
       if (auxAssets.length > 0) {
+        const auxAccordion: string[] = [];
+        auxAssets.map((ast) => {
+          if (acordeonIdx.includes(ast.tokenSymbol)) auxAccordion.push(ast.tokenSymbol);
+        });
+        setAcordeonIdx(auxAccordion);
+
         const isSelected = auxAssets.find((ast) => ast.tokenSymbol === selectedAsset?.tokenSymbol);
         if (selectedAsset && !isSelected) {
-          setAcordeonIdx(`asset-${auxAssets[0].sort_index}`);
           dispatch(setSelectedAsset(auxAssets[0]));
           auxAssets[0].subAccounts.length > 0 && dispatch(setSelectedAccount(auxAssets[0].subAccounts[0]));
         }
+      } else {
+        setAcordeonIdx([]);
       }
     }
-  }, [searchKey, protocol]);
+  }, [searchKey]);
 
   return {
     protocol,

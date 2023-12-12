@@ -151,7 +151,13 @@ const TableSubAccounts = ({
 
     if (edit) {
       if (subacc !== "" && subaccEdited.name.trim() !== "" && (eqHex || checkedIdxValid)) {
-        editCntctSubacc(cntc.principal, asst.tokenSymbol, sa?.subaccount_index || "0", subaccEdited.name, checkedIdx);
+        editCntctSubacc(
+          cntc.principal,
+          asst.tokenSymbol,
+          sa?.subaccount_index || "0",
+          subaccEdited.name.trim(),
+          checkedIdx,
+        );
         setSelSubaccIdx("");
       }
     } else {
@@ -159,7 +165,7 @@ const TableSubAccounts = ({
         addCntctSubacc(
           cntc.principal,
           asst.tokenSymbol,
-          subaccEdited.name,
+          subaccEdited.name.trim(),
           removeLeadingZeros(subacc) === "" ? "0" : removeLeadingZeros(subacc),
         );
         setSelSubaccIdx("");

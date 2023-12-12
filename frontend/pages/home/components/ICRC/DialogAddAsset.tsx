@@ -2,18 +2,10 @@
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import Modal from "@components/Modal";
-import { CustomInput } from "@components/Input";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
-import {
-  checkHexString,
-  getSubAccountArray,
-  getUSDfromToken,
-  hexToNumber,
-  hexToUint8Array,
-  removeLeadingZeros,
-} from "@/utils";
+import { checkHexString, getUSDfromToken, hexToNumber, hexToUint8Array, removeLeadingZeros } from "@/utils";
 import { SubAccount } from "@redux/models/AccountModels";
 import { GeneralHook } from "../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
@@ -23,6 +15,7 @@ import bigInt from "big-integer";
 import { ChangeEvent } from "react";
 import { IcrcLedgerCanister } from "@dfinity/ledger";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import { CustomInput } from "@components/Input";
 
 interface DialogAddAssetProps {
   newErr: any;
@@ -53,9 +46,8 @@ const DialogAddAsset = ({
 }: DialogAddAssetProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
-  const { asciiHex, userAgent, userPrincipal, changeSelectedAccount } = GeneralHook();
   const { tokensMarket } = AssetHook();
+  const { asciiHex, userAgent, userPrincipal, changeSelectedAccount } = GeneralHook();
 
   return (
     <Modal
@@ -229,7 +221,7 @@ const DialogAddAsset = ({
         const power = Math.pow(10, decimal);
         const myBalance = await balance({
           owner: userPrincipal,
-          subaccount: new Uint8Array(hexToUint8Array(`0x${subClean}`)),
+          subaccount: hexToUint8Array(`0x${subClean}`),
           certified: false,
         });
         saveLocalStorage(auxTokens);

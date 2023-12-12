@@ -3,6 +3,7 @@ import IcIcon from "@/assets/img/icp.png";
 import EthereumIcon from "@/assets/svg/files/ethereum-icon.svg";
 import BitcoinIcon from "@/assets/svg/files/bitcoin-icon.svg";
 import ckBtcIcon from "@/assets/svg/files/ckbtc.svg";
+import ckEthIcon from "@/assets/svg/files/ckETH.svg";
 import OpenChatIcon from "@/assets/svg/files/openchat.svg";
 import KinicIcon from "@/assets/svg/files/kinic.svg";
 import HotOrNotIcon from "@/assets/svg/files/hot-or-not.svg";
@@ -78,6 +79,32 @@ export type HplTransactionsType = z.infer<typeof HplTransactionsTypeEnum>;
 export const ICRC1systemAssets: Array<Token> = [
   {
     id_number: 10000,
+    symbol: "ICP",
+    name: "Internet Computer",
+    address: "ryjl3-tyaaa-aaaaa-aaaba-cai",
+    decimal: "8",
+    subAccounts: [{ numb: "0", name: "Default" }],
+  },
+  {
+    id_number: 10001,
+    symbol: "ckBTC",
+    name: "ckBTC",
+    address: "mxzaz-hqaaa-aaaar-qaada-cai",
+    decimal: "8",
+    subAccounts: [{ numb: "0", name: "Default" }],
+    index: "n5wcd-faaaa-aaaar-qaaea-cai",
+  },
+  {
+    id_number: 10002,
+    symbol: "ckETH",
+    name: "ckETH",
+    address: "ss2fx-dyaaa-aaaar-qacoq-cai",
+    decimal: "8",
+    subAccounts: [{ numb: "0", name: "Default" }],
+    index: "s3zol-vqaaa-aaaar-qacpa-cai",
+  },
+  {
+    id_number: 10003,
     address: "2ouva-viaaa-aaaaq-aaamq-cai",
     symbol: "CHAT",
     name: "openChat",
@@ -86,7 +113,7 @@ export const ICRC1systemAssets: Array<Token> = [
     index: "2awyi-oyaaa-aaaaq-aaanq-cai",
   },
   {
-    id_number: 10001,
+    id_number: 10004,
     address: "73mez-iiaaa-aaaaq-aaasq-cai",
     symbol: "KINIC",
     name: "Kinic",
@@ -95,7 +122,7 @@ export const ICRC1systemAssets: Array<Token> = [
     index: "7vojr-tyaaa-aaaaq-aaatq-cai",
   },
   {
-    id_number: 10002,
+    id_number: 10005,
     address: "zfcdd-tqaaa-aaaaq-aaaga-cai",
     symbol: "SNS1",
     name: "Draggins",
@@ -104,7 +131,7 @@ export const ICRC1systemAssets: Array<Token> = [
     index: "zlaol-iaaaa-aaaaq-aaaha-cai",
   },
   {
-    id_number: 10003,
+    id_number: 10006,
     address: "6rdgd-kyaaa-aaaaq-aaavq-cai",
     symbol: "HOT",
     name: "Hot or Not",
@@ -125,6 +152,7 @@ export const symbolIconDict: { [key: string]: string } = {
   ICP: IcIcon,
   ETH: EthereumIcon,
   ckBTC: ckBtcIcon,
+  ckETH: ckEthIcon,
   CHAT: OpenChatIcon,
   KINIC: KinicIcon,
   SNS1: DragginzIcon,

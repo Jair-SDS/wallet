@@ -110,6 +110,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens }: AddA
             errToken={errToken}
             setManual={setManual}
             newAssetList={newAssetList}
+            tokens={tokens}
           ></AddAssetAutomatic>
         )}
       </div>

@@ -22,6 +22,7 @@ import {
   setHPLAssets,
   setHPLSelectedSub,
   setLoading,
+  setAcordeonAssetIdx,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -36,20 +37,43 @@ export const updateAllBalances = async (
   myAgent: HttpAgent,
   tokens: Token[],
   basicSearch?: boolean,
+  fromLogin?: boolean,
 ) => {
-  store.dispatch(setLoading(true));
   let tokenMarkets: TokenMarketInfo[] = [];
   try {
-    tokenMarkets = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
-    tokenMarkets = tokenMarkets.filter((x) => !x.unreleased);
-    store.dispatch(setTokenMarket(tokenMarkets));
-  } catch (e) {}
+    const auxTokenMarkets: TokenMarketInfo[] = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
+    tokenMarkets = auxTokenMarkets.filter((x) => !x.unreleased);
+  } catch {
+    tokenMarkets = [];
+  }
+
+  try {
+    const ethRate = await fetch(import.meta.env.VITE_APP_ETH_MARKET).then((x) => x.json());
+    tokenMarkets = [
+      ...tokenMarkets,
+      {
+        id: 999,
+        name: "Ethereum",
+        symbol: "ckETH",
+        price: ethRate.USD,
+        marketcap: 0,
+        volume24: 0,
+        circulating: 0,
+        total: 0,
+        liquidity: 0,
+        unreleased: 0,
+      },
+    ];
+  } catch {
+    //
+  }
+  store.dispatch(setTokenMarket(tokenMarkets));
 
   const myPrincipal = await myAgent.getPrincipal();
   const newTokens: Token[] = [];
   const assets: Asset[] = [];
   await Promise.all(
-    tokens.map(async (tkn) => {
+    tokens.map(async (tkn, idNum) => {
       try {
         const { balance, metadata, transactionFee } = IcrcLedgerCanister.create({
           agent: myAgent,
@@ -70,9 +94,9 @@ export const updateAllBalances = async (
         const subAccList: SubAccount[] = [];
         const userSubAcc: TokenSubAccount[] = [];
 
-        // Basic Serach look into first 1000 subaccount under the 10 consecutive zeros logic
+        // Basic Serach look into first 1000 subaccount under the 5 consecutive zeros logic
         // It iterates geting amount of each subaccount
-        // If 10 consecutive subaccounts balances are zero, iteration stops
+        // If 5 consecutive subaccounts balances are zero, iteration stops
         if (basicSearch) {
           let zeros = 0;
           for (let i = 0; i < 1000; i++) {
@@ -99,13 +123,13 @@ export const updateAllBalances = async (
               });
             } else zeros++;
 
-            if (zeros === 10) break;
+            if (zeros === 5) break;
           }
         } else {
           // Non Basic Serach first look into storaged subaccounts
-          // Then search into first 1000 subaccount that are not looked yet under the 10 consecutive zeros logic
+          // Then search into first 1000 subaccount that are not looked yet under the 5 consecutive zeros logic
           // It iterates geting amount of each subaccount
-          // If 10 consecutive subaccounts balances are zero, iteration stops
+          // If 5 consecutive subaccounts balances are zero, iteration stops
           const idsPushed: string[] = [];
           await Promise.all(
             tkn.subAccounts.map(async (sa) => {
@@ -159,7 +183,7 @@ export const updateAllBalances = async (
           //       });
           //     } else zeros++;
 
-          //     if (zeros === 10) break;
+          //     if (zeros === 5) break;
           //   }
           // }
         }
@@ -180,7 +204,7 @@ export const updateAllBalances = async (
           subAccounts: subAccList.sort((a, b) => {
             return hexToNumber(a.sub_account_id)?.compare(hexToNumber(b.sub_account_id) || bigInt()) || 0;
           }),
-          sort_index: tkn.id_number,
+          sort_index: idNum,
           decimal: decimals.toFixed(0),
           tokenName: name,
           tokenSymbol: symbol,
@@ -205,7 +229,7 @@ export const updateAllBalances = async (
             },
           ],
           decimal: "8",
-          sort_index: 99999,
+          sort_index: 99999 + idNum,
           tokenName: tkn.name,
           tokenSymbol: tkn.symbol,
         });
@@ -226,6 +250,9 @@ export const updateAllBalances = async (
           }),
         }),
       );
+    }
+    if (fromLogin) {
+      assets.length > 0 && store.dispatch(setAcordeonAssetIdx([assets[0].tokenSymbol]));
     }
   }
 
