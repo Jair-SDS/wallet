@@ -427,10 +427,6 @@ export const getAllTransactionsICP = async (subaccount_index: string, loading: b
       return transactionsInfo;
     }
   } catch (error) {
-<<<<<<< HEAD
-=======
-    // console.error("error", error);
->>>>>>> icrc1-new-features
     if (!loading) {
       return [];
     }
