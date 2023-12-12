@@ -107,10 +107,10 @@ export const roundToDecimalN = (numb: number | string, decimal: number | string)
   return Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
 };
 
-export function toFullDecimal(numb: number | string, decimal: number | string) {
+export function toFullDecimal(numb: number | string, decimal: number | string, maxFraction?: number) {
   if (Number(numb) === 0) return "0";
   const x = Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
-  return x.toLocaleString("en-US", { maximumFractionDigits: 20 });
+  return x.toLocaleString("en-US", { maximumFractionDigits: Number(decimal) });
 }
 
 export function getDecimalAmount(numb: number | string, decimal: number | string, direct?: boolean) {
