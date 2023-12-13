@@ -14,7 +14,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
+import { setAssetFromLocalData, updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
 import {
   clearDataAsset,
   setHPLAssetsData,
@@ -35,6 +35,7 @@ import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did"
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
 import { HPLAssetData } from "./models/AccountModels";
+import { Principal } from "@dfinity/principal";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -153,17 +154,14 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   await updateHPLBalances(ingressActor);
 
   // AUTH
-  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
-  store.dispatch(setUserAgent(myAgent));
-  store.dispatch(setUserPrincipal(myPrincipal));
-  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
-  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
+  dispatchAuths(authIdentity, myAgent, myPrincipal);
 
   // ICRC-1 TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
+    setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
     await updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
   } else {
     const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true, true);
@@ -175,6 +173,14 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     const contactsDataJson = JSON.parse(contactsData);
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
+};
+
+export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {
+  store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
+  store.dispatch(setUserAgent(myAgent));
+  store.dispatch(setUserPrincipal(myPrincipal));
+  store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+  store.dispatch(setAuthenticated(true, false, authIdentity.getPrincipal().toText().toLowerCase()));
 };
 
 export const logout = async () => {

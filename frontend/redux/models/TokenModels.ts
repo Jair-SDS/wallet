@@ -5,6 +5,8 @@ import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/
 const TokenSubAccount = z.object({
   numb: z.string(),
   name: z.string(),
+  amount: z.string(),
+  currency_amount: z.string(),
 });
 
 export type TokenSubAccount = z.infer<typeof TokenSubAccount>;
@@ -14,8 +16,11 @@ const Token = z.object({
   address: z.string(),
   symbol: z.string(),
   name: z.string(),
+  tokenName: z.string(),
+  tokenSymbol: z.string(),
   decimal: z.string(),
   subAccounts: z.array(TokenSubAccount),
+  fee: z.string(),
   index: z.string().optional(),
   logo: z.string().optional(),
 });
