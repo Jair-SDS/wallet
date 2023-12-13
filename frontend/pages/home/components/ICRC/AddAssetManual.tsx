@@ -100,7 +100,6 @@ const AddAssetManual = ({
           compOutClass=""
           value={newToken.address || ""}
           onChange={onLedgerChange}
-          border={errToken ? "error" : undefined}
         />
         {errToken !== "" && errToken !== "non" && <p className="text-LockColor text-left text-sm">{errToken}</p>}
         {validToken && <p className="text-BorderSuccessColor text-left text-sm">{t("token.validation.msg")}</p>}
@@ -118,7 +117,6 @@ const AddAssetManual = ({
           compOutClass=""
           value={newToken.index || ""}
           onChange={onChangeIndex}
-          border={errToken ? "error" : undefined}
         />
         {errIndex !== "" && errIndex !== "non" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
         {validIndex && <p className="text-BorderSuccessColor text-left text-sm">{t("index.validation.msg")}</p>}
