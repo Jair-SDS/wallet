@@ -150,9 +150,6 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     store.dispatch(setHplContacts(hplContactsDataJson.contacts));
   }
 
-  // HPL TOKENS
-  await updateHPLBalances(ingressActor);
-
   // AUTH
   dispatchAuths(authIdentity, myAgent, myPrincipal);
 
@@ -162,7 +159,7 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
     setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
-    await updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
+    updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
   } else {
     const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true, true);
     store.dispatch(setTokens(tokens));
@@ -173,6 +170,9 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     const contactsDataJson = JSON.parse(contactsData);
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
+
+  // HPL TOKENS
+  await updateHPLBalances(ingressActor);
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {
