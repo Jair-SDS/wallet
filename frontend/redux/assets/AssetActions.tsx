@@ -70,8 +70,6 @@ export const updateAllBalances = async (
   store.dispatch(setTokenMarket(tokenMarkets));
 
   const myPrincipal = await myAgent.getPrincipal();
-  const newTokens: Token[] = [];
-  const assets: Asset[] = [];
   const tokensAseets = await Promise.all(
     tokens.map(async (tkn, idNum) => {
       try {
