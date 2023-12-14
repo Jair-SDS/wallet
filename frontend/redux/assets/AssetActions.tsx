@@ -25,12 +25,13 @@ import {
   setAcordeonAssetIdx,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { Asset, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
+import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
-import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { _SERVICE as IngressActor, RemoteId } from "@candid/HPL/service.did";
+import { setHplContacts } from "@redux/contacts/ContactsReducer";
 
 export const updateAllBalances = async (
   loading: boolean,
@@ -339,7 +340,6 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
   } catch (e) {
     console.log("errState-sub", e);
   }
-
   try {
     const ftDict = store.getState().asset.dictionaryHplFTs;
     const ftData = store.getState().asset.hplFTsData;
@@ -370,6 +370,50 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
   }
   return { subs: [], fts: [] };
 };
+
+export const updateHplRemotes = async (actor: ActorSubclass<IngressActor>, contacts?: HplContact[]) => {
+  if (contacts) {
+    try {
+      const remotesToLook: { id: RemoteId }[] = [];
+      contacts.map((cntc) => {
+        const pncpl = Principal.fromText(cntc.principal);
+        cntc.remotes.map((rmt) => {
+          remotesToLook.push({ id: [pncpl, BigInt(rmt.index)] });
+        });
+      });
+      const auxState = await actor.state({
+        ftSupplies: [],
+        virtualAccounts: [],
+        accounts: [],
+        remoteAccounts: [{ cat: remotesToLook }],
+      });
+      const updatedContacts: HplContact[] = [];
+      contacts.map((hplCntc) => {
+        const updatedRemotes: HplRemote[] = [];
+        hplCntc.remotes.map((rmt) => {
+          const rmtFounded = auxState.remoteAccounts.find((auxRmt) => {
+            return hplCntc.principal === auxRmt[0][0].toText() && auxRmt[0][1] === BigInt(rmt.index);
+          });
+          if (rmtFounded) {
+            console.log("rmtFounded:", rmtFounded);
+
+            updatedRemotes.push({
+              ...rmt,
+              amount: rmtFounded[1][0].ft.toString(),
+              expired: Math.trunc(Number(rmtFounded[1][1].toString()) / 1000000),
+            });
+          } else updatedRemotes.push(rmt);
+        });
+        updatedContacts.push({ ...hplCntc, remotes: updatedRemotes });
+      });
+
+      store.dispatch(setHplContacts(updatedContacts));
+    } catch (e) {
+      console.log("errState-rem", e);
+    }
+  }
+};
+
 export const setAssetFromLocalData = (tokens: Token[], myPrincipal: string) => {
   const assets: Asset[] = [];
 

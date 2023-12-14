@@ -14,7 +14,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { setAssetFromLocalData, updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
+import { setAssetFromLocalData, updateAllBalances, updateHPLBalances, updateHplRemotes } from "./assets/AssetActions";
 import {
   clearDataAsset,
   setHPLAssetsData,
@@ -27,7 +27,7 @@ import {
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum, defaultTokens } from "@/const";
-import { clearDataContacts, setContacts, setHplContacts, setStorageCode } from "./contacts/ContactsReducer";
+import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
@@ -108,48 +108,6 @@ export const handleLoginApp = async (authIdentity: Identity) => {
   await client.setIdentity(authIdentity as any);
   store.dispatch(setHPLClient(client));
 
-  // HPL FT
-  const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
-  if (hplFTsData != null) {
-    const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
-    store.dispatch(setHPLAssetsData(hplFTsDataJson));
-  }
-
-  // HPL DICTIONARY
-  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
-  store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
-  if (hplDictPrin) {
-    try {
-      const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
-        agent: myAgent,
-        canisterId: hplLedPrin,
-      });
-      const dictFTs = await dictActor.getDump();
-      store.dispatch(setHPLDictionary(dictFTs));
-    } catch {
-      localStorage.removeItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
-    }
-  }
-
-  // HPL SUBACCOUNTS
-  const hplSubsData = localStorage.getItem("hplSUB-" + authIdentity.getPrincipal().toString());
-  if (hplSubsData != null) {
-    const hplSubsDataJson = JSON.parse(hplSubsData);
-    store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
-  }
-  // HPL VIRTUALS
-  const hplVTsData = localStorage.getItem("hplVT-" + authIdentity.getPrincipal().toString());
-  if (hplVTsData != null) {
-    const hplVTsDataJson = JSON.parse(hplVTsData);
-    store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
-  }
-  // HPL CONTACTS
-  const hplContactsData = localStorage.getItem("hpl-contacts-" + authIdentity.getPrincipal().toString());
-  if (hplContactsData != null) {
-    const hplContactsDataJson = JSON.parse(hplContactsData);
-    store.dispatch(setHplContacts(hplContactsDataJson.contacts));
-  }
-
   // AUTH
   dispatchAuths(authIdentity, myAgent, myPrincipal);
 
@@ -171,8 +129,48 @@ export const handleLoginApp = async (authIdentity: Identity) => {
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
 
+  // HPL FT
+  const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
+  if (hplFTsData != null) {
+    const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
+    store.dispatch(setHPLAssetsData(hplFTsDataJson));
+  }
+  // HPL DICTIONARY
+  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+  store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
+  if (hplDictPrin) {
+    try {
+      const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+        agent: myAgent,
+        canisterId: hplLedPrin,
+      });
+      const dictFTs = await dictActor.getDump();
+      store.dispatch(setHPLDictionary(dictFTs));
+    } catch {
+      localStorage.removeItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+    }
+  }
+  // HPL SUBACCOUNTS
+  const hplSubsData = localStorage.getItem("hplSUB-" + authIdentity.getPrincipal().toString());
+  if (hplSubsData != null) {
+    const hplSubsDataJson = JSON.parse(hplSubsData);
+    store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
+  }
+  // HPL VIRTUALS
+  const hplVTsData = localStorage.getItem("hplVT-" + authIdentity.getPrincipal().toString());
+  if (hplVTsData != null) {
+    const hplVTsDataJson = JSON.parse(hplVTsData);
+    store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
+  }
   // HPL TOKENS
   await updateHPLBalances(ingressActor);
+
+  // HPL CONTACTS
+  const hplContactsData = localStorage.getItem("hpl-contacts-" + authIdentity.getPrincipal().toString());
+  if (hplContactsData != null) {
+    const hplContactsDataJson = JSON.parse(hplContactsData);
+    updateHplRemotes(ingressActor, hplContactsDataJson.contacts);
+  }
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {
