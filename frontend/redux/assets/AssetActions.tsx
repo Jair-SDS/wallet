@@ -167,34 +167,9 @@ export const updateAllBalances = async (
         const saTokens = subAccts.map((saT) => {
           return saT.saToken;
         });
-        // newTokens.push({
-        //   ...tkn,
-        //   logo: logo,
-        //   tokenName: name,
-        //   tokenSymbol: symbol,
-        //   decimal: decimals.toFixed(0),
-        //   subAccounts: saTokens.sort((a, b) => {
-        //     return hexToNumber(a.numb)?.compare(hexToNumber(b.numb) || bigInt()) || 0;
-        //   }),
-        // });
         const saAssets = subAccts.map((saA) => {
           return saA.saAsset;
         });
-        // assets.push({
-        //   symbol: tkn.symbol,
-        //   name: tkn.name,
-        //   address: tkn.address,
-        //   index: tkn.index,
-        //   subAccounts: saAssets.sort((a, b) => {
-        //     return hexToNumber(a.sub_account_id)?.compare(hexToNumber(b.sub_account_id) || bigInt()) || 0;
-        //   }),
-        //   sort_index: idNum,
-        //   decimal: decimals.toFixed(0),
-        //   tokenName: name,
-        //   tokenSymbol: symbol,
-        //   logo: logo,
-        // });
-
         const newToken: Token = {
           ...tkn,
           logo: logo,
@@ -221,28 +196,6 @@ export const updateAllBalances = async (
         };
         return { newToken, newAsset };
       } catch (e) {
-        // assets.push({
-        //   symbol: tkn.symbol,
-        //   name: tkn.name,
-        //   address: tkn.address,
-        //   index: tkn.index,
-        //   subAccounts: [
-        //     {
-        //       name: AccountDefaultEnum.Values.Default,
-        //       sub_account_id: "0x0",
-        //       address: myPrincipal.toString(),
-        //       amount: "0",
-        //       currency_amount: "0",
-        //       transaction_fee: "0",
-        //       decimal: 8,
-        //       symbol: tkn.symbol,
-        //     },
-        //   ],
-        //   decimal: "8",
-        //   sort_index: 99999 + idNum,
-        //   tokenName: tkn.name,
-        //   tokenSymbol: tkn.symbol,
-        // });
         const newAsset: Asset = {
           symbol: tkn.symbol,
           name: tkn.name,
@@ -265,7 +218,6 @@ export const updateAllBalances = async (
           tokenName: tkn.name,
           tokenSymbol: tkn.symbol,
         };
-        // newTokens.push(tkn);
         return { newToken: tkn, newAsset };
       }
     }),
