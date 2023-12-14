@@ -409,6 +409,7 @@ export const updateHplRemotes = async (actor: ActorSubclass<IngressActor>, conta
 
       store.dispatch(setHplContacts(updatedContacts));
     } catch (e) {
+      store.dispatch(setHplContacts(contacts));
       console.log("errState-rem", e);
     }
   }
