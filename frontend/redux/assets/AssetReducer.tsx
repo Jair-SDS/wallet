@@ -373,6 +373,7 @@ const assetSlice = createSlice({
       state.dictionaryHplFTs = [];
       state.hplSubsData = [];
       state.hplVTsData = [];
+      state.acordeonIdx = [];
     },
   },
 });
