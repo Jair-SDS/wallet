@@ -111,19 +111,20 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   await client.setIdentity(authIdentity as any);
   store.dispatch(setHPLClient(client));
 
-  // AUTH
-  dispatchAuths(authIdentity, myAgent, myPrincipal);
-
   // ICRC-1 TOKENS
   const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
   if (userData) {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
     setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
+    // AUTH
+    dispatchAuths(authIdentity, myAgent, myPrincipal);
     updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
   } else {
     const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true, true);
     store.dispatch(setTokens(tokens));
+    // AUTH
+    dispatchAuths(authIdentity, myAgent, myPrincipal);
   }
   // ICRC-1 CONTACTS
   const contactsData = localStorage.getItem("contacts-" + authIdentity.getPrincipal().toString());
