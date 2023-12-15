@@ -206,28 +206,33 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   }
 
   async function onAdd() {
-    setLoading(true);
-    if (selAsset && newHplSub.name.trim() !== "")
-      try {
-        const res: { ok: { first: bigint } } = (await ingressActor.openAccounts(BigInt(1), {
-          ft: BigInt(selAsset.id),
-        })) as any;
-        const auxSubs = [...hplSubsData, { id: res.ok.first.toString(), name: newHplSub.name.trim() }];
-        localStorage.setItem(
-          "hplSUB-" + authClient,
-          JSON.stringify({
-            sub: auxSubs,
-          }),
-        );
-        editSubData(auxSubs);
-        reloadHPLBallance();
-        onClose();
-      } catch (e) {
-        setAddSubErr("server.error");
+    if (!loading) {
+      setLoading(true);
+      if (selAsset && newHplSub.name.trim() !== "") {
+        try {
+          const res: { ok: { first: bigint } } = (await ingressActor.openAccounts(BigInt(1), {
+            ft: BigInt(selAsset.id),
+          })) as any;
+          const auxSubs = [...hplSubsData, { id: res.ok.first.toString(), name: newHplSub.name.trim() }];
+          localStorage.setItem(
+            "hplSUB-" + authClient,
+            JSON.stringify({
+              sub: auxSubs,
+            }),
+          );
+          editSubData(auxSubs);
+          reloadHPLBallance();
+          onClose();
+          setLoading(false);
+        } catch (e) {
+          setAddSubErr("server.error");
+          setLoading(false);
+        }
+      } else {
+        setAddSubErr("check.mandatory.fields");
+        setLoading(false);
       }
-    else setAddSubErr("check.mandatory.fields");
-
-    setLoading(false);
+    }
   }
 };
 
