@@ -24,6 +24,7 @@ interface SelectTransferProps {
   otherAsset?: string;
   otherId?: string;
   otherPrincipal?: string;
+  isRemote: boolean;
   manual: boolean;
   setManual(value: boolean): void;
   setQRview(value: string): void;
@@ -40,6 +41,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   otherAsset,
   otherId,
   otherPrincipal,
+  isRemote,
   setSelect,
   setManual,
   setQRview,
@@ -192,7 +194,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                         return (
                           (sub.name.toLowerCase().includes(key) || sub.sub_account_id.toString().includes(key)) &&
                           (!otherAsset || otherAsset === sub.ft) &&
-                          (!otherId || otherId !== sub.sub_account_id)
+                          (!otherId || otherId !== sub.sub_account_id || isRemote)
                         );
                       })
                       .map((sub, k) => {
