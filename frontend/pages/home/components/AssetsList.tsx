@@ -3,7 +3,7 @@ import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import AssetElement from "./ICRC/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
-import { ChangeEvent, Fragment } from "react";
+import { ChangeEvent, Fragment, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AddAsset from "./ICRC/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
@@ -23,8 +23,18 @@ const AssetsList = () => {
   WorkerHook();
   UseAsset();
   const { assetOpen, setAssetOpen } = DrawerHook();
-  const { protocol, assets, searchKey, setSearchKey, setAcordeonIdx, acordeonIdx, assetInfo, setAssetInfo, tokens } =
-    AssetHook();
+  const {
+    protocol,
+    assets,
+    searchKey,
+    setSearchKey,
+    setAcordeonIdx,
+    acordeonIdx,
+    assetInfo,
+    setAssetInfo,
+    tokens,
+    selectedAsset,
+  } = AssetHook();
   const {
     editedFt,
     setEditedFt,
@@ -36,6 +46,7 @@ const AssetsList = () => {
     searchKeyHPL,
     subsList,
   } = useHPL(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   return (
     <Fragment>
@@ -87,7 +98,7 @@ const AssetsList = () => {
               className=""
               type="multiple"
               defaultValue={[]}
-              value={acordeonIdx}
+              value={addOpen && selectedAsset ? [...acordeonIdx, selectedAsset.tokenSymbol] : acordeonIdx}
               onValueChange={onValueChange}
             >
               {assets?.map((asset: Asset, idx: number) => {
@@ -112,6 +123,7 @@ const AssetsList = () => {
                       setAssetInfo={setAssetInfo}
                       setAssetOpen={setAssetOpen}
                       tokens={tokens}
+                      setAddOpen={setAddOpen}
                     />
                   );
               })}
