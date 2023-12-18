@@ -395,8 +395,6 @@ export const updateHplRemotes = async (actor: ActorSubclass<IngressActor>, conta
             return hplCntc.principal === auxRmt[0][0].toText() && auxRmt[0][1] === BigInt(rmt.index);
           });
           if (rmtFounded) {
-            console.log("rmtFounded:", rmtFounded);
-
             updatedRemotes.push({
               ...rmt,
               amount: rmtFounded[1][0].ft.toString(),
