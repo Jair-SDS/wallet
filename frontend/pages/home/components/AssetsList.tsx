@@ -165,6 +165,7 @@ const AssetsList = () => {
             setAssetInfo={setAssetInfo}
             tokens={tokens}
             assetOpen={assetOpen}
+            assets={assets}
           />
         ) : (
           <AddSubaccount setAssetOpen={setAssetOpen} open={assetOpen} />
