@@ -39,7 +39,6 @@ export const useHPL = (open: boolean) => {
     hplFTsData,
     hplSubsData,
     hplVTsData,
-    nHpl,
     ingressActor,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);

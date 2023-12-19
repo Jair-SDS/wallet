@@ -15,7 +15,7 @@ import timer_script from "@workers/timerWorker";
 import { useEffect } from "react";
 
 export const WorkerHook = () => {
-  const { tokens, assets, txWorker, ingressActor, nHpl } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, ingressActor } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 

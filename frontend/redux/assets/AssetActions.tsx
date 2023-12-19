@@ -26,15 +26,7 @@ import {
   setnHpl,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import {
-  Asset,
-  HplContact,
-  HplRemote,
-  ICPSubAccount,
-  ResQueryState,
-  SubAccount,
-  nHplData,
-} from "@redux/models/AccountModels";
+import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
