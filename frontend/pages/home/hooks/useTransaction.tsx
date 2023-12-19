@@ -26,8 +26,6 @@ export const UseTransaction = () => {
         selectedToken.address,
         selectedAccount?.sub_account_id,
       );
-      console.log("getAllTransactionsICRC1", auxTx);
-
       !founded && addNewTxsToList(auxTx, selectedAsset, selectedAccount);
     }
   };
@@ -38,16 +36,11 @@ export const UseTransaction = () => {
       true,
       selectedAccount?.symbol === AssetSymbolEnum.Enum.OGY,
     );
-
-    console.log("getAllTransactionsICP", auxTx);
     !founded && addNewTxsToList(auxTx, selectedAsset, selectedAccount);
   };
 
   const addNewTxsToList = (txs: Transaction[], asset?: Asset, subacc?: SubAccount) => {
-    console.log("addNewTxsToList");
     if (asset && subacc) {
-      console.log("addTxWorker");
-
       dispatch(
         addTxWorker({
           symbol: asset.symbol,

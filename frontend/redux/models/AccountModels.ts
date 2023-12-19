@@ -114,6 +114,14 @@ const TransactionList = z.object({
 export type TransactionList = z.infer<typeof TransactionList>;
 
 // HPL Models
+const nHplData = z.object({
+  nFtAssets: z.string(),
+  nVirtualAccounts: z.string(),
+  nAccounts: z.string(),
+});
+
+export type nHplData = z.infer<typeof nHplData>;
+
 const HPLVirtualSubAcc = z.object({
   virt_sub_acc_id: z.string(),
   name: z.string(),

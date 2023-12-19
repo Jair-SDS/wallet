@@ -39,6 +39,7 @@ export const useHPL = (open: boolean) => {
     hplFTsData,
     hplSubsData,
     hplVTsData,
+    nHpl,
     ingressActor,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
@@ -161,7 +162,7 @@ export const useHPL = (open: boolean) => {
 
   const reloadHPLBallance = async () => {
     dispatch(setLoading(true));
-    const { subs } = await updateHPLBalances(ingressActor);
+    const { subs } = await updateHPLBalances(ingressActor, hplContacts);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);

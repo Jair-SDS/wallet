@@ -12,6 +12,7 @@ import {
   SubAccount,
   Transaction,
   TransactionList,
+  nHplData,
 } from "@redux/models/AccountModels";
 import bigInt from "big-integer";
 import { hexToNumber } from "@/utils";
@@ -49,6 +50,7 @@ interface AssetState {
   hplVTsData: HPLVirtualData[];
   selectSub: HPLSubAccount | undefined;
   selectVt: HPLVirtualSubAcc | undefined;
+  nHpl: nHplData;
 }
 
 const initialState: AssetState = {
@@ -68,6 +70,7 @@ const initialState: AssetState = {
   txWorker: [],
   txLoad: false,
   // HPL LEDGER
+  nHpl: { nAccounts: "0", nFtAssets: "0", nVirtualAccounts: "0" },
   hplClient: defaultValue,
   ingressActor: defaultValue,
   subaccounts: [],
@@ -275,6 +278,9 @@ const assetSlice = createSlice({
     setAcordeonAssetIdx(state, action: PayloadAction<string[]>) {
       state.acordeonIdx = action.payload;
     },
+    setnHpl(state, action: PayloadAction<nHplData>) {
+      state.nHpl = action.payload;
+    },
     setHPLClient(state, action: PayloadAction<HPLClient>) {
       state.hplClient = action.payload;
     },
@@ -398,6 +404,7 @@ export const {
   setTxLoad,
   setAcordeonAssetIdx,
   // HPL LEDGER
+  setnHpl,
   setHPLClient,
   setIngressActor,
   setHPLSubAccounts,

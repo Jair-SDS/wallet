@@ -14,7 +14,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { setAssetFromLocalData, updateAllBalances, updateHPLBalances, updateHplRemotes } from "./assets/AssetActions";
+import { setAssetFromLocalData, updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
 import {
   clearDataAsset,
   setHPLAssetsData,
@@ -34,7 +34,7 @@ import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
 import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
-import { HPLAssetData } from "./models/AccountModels";
+import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { Principal } from "@dfinity/principal";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
@@ -166,15 +166,18 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
     const hplVTsDataJson = JSON.parse(hplVTsData);
     store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
   }
-  // HPL TOKENS
-  await updateHPLBalances(ingressActor);
-
   // HPL CONTACTS
+  let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
   const hplContactsData = localStorage.getItem("hpl-contacts-" + authIdentity.getPrincipal().toString());
   if (hplContactsData != null) {
-    const hplContactsDataJson = JSON.parse(hplContactsData);
-    updateHplRemotes(ingressActor, hplContactsDataJson.contacts);
+    try {
+      hplContactsDataJson = JSON.parse(hplContactsData);
+    } catch {
+      //
+    }
   }
+  // HPL TOKENS
+  await updateHPLBalances(ingressActor, hplContactsDataJson.contacts);
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {

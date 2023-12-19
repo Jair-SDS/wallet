@@ -1,6 +1,6 @@
 import { ProtocolType, ProtocolTypeEnum, defaultTokens } from "@/const";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { updateAllBalances, updateHPLBalances, updateHplRemotes } from "@redux/assets/AssetActions";
+import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import {
   removeToken,
   setAcordeonAssetIdx,
@@ -46,8 +46,7 @@ export const AssetHook = () => {
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
-    updateHPLBalances(ingressActor);
-    updateHplRemotes(ingressActor, hplContacts);
+    updateHPLBalances(ingressActor, hplContacts);
   };
 
   const reloadOnlyICRCBallance = (tkns?: Token[]) => {

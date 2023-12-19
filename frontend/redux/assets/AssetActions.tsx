@@ -23,9 +23,18 @@ import {
   setHPLSelectedSub,
   setLoading,
   setAcordeonAssetIdx,
+  setnHpl,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
-import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
+import {
+  Asset,
+  HplContact,
+  HplRemote,
+  ICPSubAccount,
+  ResQueryState,
+  SubAccount,
+  nHplData,
+} from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
@@ -278,13 +287,48 @@ export const updateAllBalances = async (
   };
 };
 
-export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
-  let subAccInfo: Array<[SubId, AccountType]> = [];
-  try {
-    subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), []] });
-  } catch (e) {
-    console.log("errAccountInfo", e);
+export const updateHPLBalances = async (
+  actor: ActorSubclass<IngressActor>,
+  contacts: HplContact[],
+  fromWorker?: boolean,
+) => {
+  // Get amounts nAccounts, nVirtualAccounts, nFtAssets
+  const nHpl = store.getState().asset.nHpl;
+  const nInfo = {
+    nAccounts: BigInt(nHpl?.nAccounts || 0),
+    nVirtualAccounts: BigInt(nHpl?.nVirtualAccounts || 0),
+    nFtAssets: BigInt(nHpl?.nFtAssets || 0),
+  };
+  if (!fromWorker) {
+    try {
+      const [nAccounts, nVirtualAccounts, nFtAssets] = await Promise.all([
+        actor.nAccounts(),
+        actor.nVirtualAccounts(),
+        actor.nFtAssets(),
+      ]);
+      store.dispatch(
+        setnHpl({
+          nAccounts: nAccounts.toString(),
+          nVirtualAccounts: nVirtualAccounts.toString(),
+          nFtAssets: nFtAssets.toString(),
+        }),
+      );
+      nInfo.nAccounts = nAccounts;
+      nInfo.nVirtualAccounts = nVirtualAccounts;
+      nInfo.nFtAssets = nFtAssets;
+    } catch (e) {
+      console.log("err-nHpl", e);
+    }
   }
+
+  let subAccInfo: Array<[SubId, AccountType]> = [];
+  if (nInfo.nAccounts > BigInt(0))
+    try {
+      subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), []] });
+    } catch (e) {
+      console.log("errAccountInfo", e);
+    }
+
   let ftInfo: Array<
     [
       AssetId,
@@ -295,51 +339,49 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
       },
     ]
   > = [];
-  try {
-    ftInfo = await actor.ftInfo({ idRange: [BigInt(0), []] });
-  } catch (e) {
-    console.log("errFtInfor", e);
-  }
+
+  if (nInfo.nFtAssets > BigInt(0))
+    try {
+      ftInfo = await actor.ftInfo({ idRange: [BigInt(0), []] });
+    } catch (e) {
+      console.log("errFtInfor", e);
+    }
+
   let vtInfo: Array<[VirId, [AccountType, Principal]]> = [];
-  try {
-    vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), []] });
-  } catch (e) {
-    console.log("errVirtualAccountInfo", e);
-  }
+
+  if (nInfo.nVirtualAccounts > BigInt(0))
+    try {
+      vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), []] });
+    } catch (e) {
+      console.log("errVirtualAccountInfo", e);
+    }
+
+  const remotesToLook: { id: RemoteId }[] = [];
+  contacts.map((cntc) => {
+    const pncpl = Principal.fromText(cntc.principal);
+    cntc.remotes.map((rmt) => {
+      remotesToLook.push({ id: [pncpl, BigInt(rmt.index)] });
+    });
+  });
+
   const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
+
   try {
     const auxState = await actor.state({
-      ftSupplies: [{ idRange: [BigInt(0), []] }],
-      virtualAccounts: [],
-      accounts: [],
-      remoteAccounts: [],
+      ftSupplies: nInfo.nFtAssets > BigInt(0) ? [{ idRange: [BigInt(0), [nInfo.nFtAssets - BigInt(1)]] }] : [],
+      virtualAccounts:
+        nInfo.nVirtualAccounts > BigInt(0) ? [{ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] }] : [],
+      accounts: nInfo.nAccounts > BigInt(0) ? [{ idRange: [BigInt(0), [nInfo.nAccounts - BigInt(1)]] }] : [],
+      remoteAccounts: remotesToLook.length > 0 ? [{ cat: remotesToLook }] : [],
     });
     state.ftSupplies = auxState.ftSupplies;
-  } catch (e) {
-    console.log("errState-ft", e);
-  }
-  try {
-    const auxState = await actor.state({
-      ftSupplies: [],
-      virtualAccounts: [{ idRange: [BigInt(0), []] }],
-      accounts: [],
-      remoteAccounts: [],
-    });
     state.virtualAccounts = auxState.virtualAccounts;
-  } catch (e) {
-    console.log("errState-vt", e);
-  }
-  try {
-    const auxState = await actor.state({
-      ftSupplies: [],
-      virtualAccounts: [],
-      accounts: [{ idRange: [BigInt(0), []] }],
-      remoteAccounts: [],
-    });
     state.accounts = auxState.accounts;
+    state.remoteAccounts = auxState.remoteAccounts as any;
   } catch (e) {
-    console.log("errState-sub", e);
+    console.log("errState", e);
   }
+
   try {
     const ftDict = store.getState().asset.dictionaryHplFTs;
     const ftData = store.getState().asset.hplFTsData;
@@ -363,6 +405,7 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
       const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
       store.dispatch(setHPLSelectedSub(sel));
     }
+    updateHplRemotes(state, contacts);
 
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
@@ -371,22 +414,9 @@ export const updateHPLBalances = async (actor: ActorSubclass<IngressActor>) => {
   return { subs: [], fts: [] };
 };
 
-export const updateHplRemotes = async (actor: ActorSubclass<IngressActor>, contacts?: HplContact[]) => {
+export const updateHplRemotes = async (auxState: ResQueryState, contacts?: HplContact[]) => {
   if (contacts) {
     try {
-      const remotesToLook: { id: RemoteId }[] = [];
-      contacts.map((cntc) => {
-        const pncpl = Principal.fromText(cntc.principal);
-        cntc.remotes.map((rmt) => {
-          remotesToLook.push({ id: [pncpl, BigInt(rmt.index)] });
-        });
-      });
-      const auxState = await actor.state({
-        ftSupplies: [],
-        virtualAccounts: [],
-        accounts: [],
-        remoteAccounts: [{ cat: remotesToLook }],
-      });
       const updatedContacts: HplContact[] = [];
       contacts.map((hplCntc) => {
         const updatedRemotes: HplRemote[] = [];
