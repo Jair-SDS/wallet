@@ -7,7 +7,7 @@ const timerCode = () => {
     }, 10 * 60 * 1000);
     setInterval(() => {
       self.postMessage("ASSETS");
-    }, 1 * 60 * 1000);
+    }, 10 * 60 * 1000);
   };
 };
 
