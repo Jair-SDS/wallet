@@ -37,7 +37,6 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
     setAddSubErr,
     getAssetLogo,
     hplSubsData,
-    editSubData,
     reloadHPLBallance,
   } = useHPL(open);
 
@@ -213,15 +212,14 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           const res: { ok: { first: bigint } } = (await ingressActor.openAccounts(BigInt(1), {
             ft: BigInt(selAsset.id),
           })) as any;
-          const auxSubs = [...hplSubsData, { id: res.ok.first.toString(), name: newHplSub.name.trim() }];
+          const auxSubs = [...hplSubsData, { id: res.ok.first.toString(), name: newHplSub.name.trim(), ftId: "" }];
           localStorage.setItem(
             "hplSUB-" + authClient,
             JSON.stringify({
               sub: auxSubs,
             }),
           );
-          editSubData(auxSubs);
-          reloadHPLBallance();
+          reloadHPLBallance(true);
           onClose();
           setLoading(false);
         } catch (e) {

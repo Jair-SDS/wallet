@@ -42,6 +42,7 @@ export const useHPL = (open: boolean) => {
     ingressActor,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
+  const { authClient } = useAppSelector((state) => state.auth);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
@@ -159,9 +160,9 @@ export const useHPL = (open: boolean) => {
     }
   }, [zeroBalance, searchKeyHPL, subaccounts]);
 
-  const reloadHPLBallance = async () => {
+  const reloadHPLBallance = async (updateInfo?: boolean) => {
     dispatch(setLoading(true));
-    const { subs } = await updateHPLBalances(ingressActor, hplContacts);
+    const { subs } = await updateHPLBalances(ingressActor, hplContacts, authClient, false, updateInfo);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);

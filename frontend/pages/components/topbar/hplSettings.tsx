@@ -27,7 +27,7 @@ interface HplSettingsModalProps {
 const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { hplDictionary, hplLedger, userAgent } = AccountHook();
+  const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
   const { hplFTs, hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -107,7 +107,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
         dispatch(setIngressActor(hplActor));
         const client = new HPLClient(ledger.principal, "ic");
         dispatch(setHPLClient(client));
-        await updateHPLBalances(hplActor, hplContacts);
+        await updateHPLBalances(hplActor, hplContacts, authClient);
       } catch (e) {
         setLeder((prev) => {
           return { ...prev, err: true };

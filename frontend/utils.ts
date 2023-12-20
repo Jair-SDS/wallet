@@ -16,6 +16,8 @@ import {
   HPLData,
   HplRemote,
   HPLAssetData,
+  HPLSubData,
+  HPLVirtualData,
 } from "./redux/models/AccountModels";
 import { IcrcTokenMetadataResponse, IcrcAccount, encodeIcrcAccount } from "@dfinity/ledger";
 import {
@@ -533,33 +535,15 @@ export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
   })?.symbol;
 };
 
-export const formatHPLSubaccounts = (
-  infoSubs: Array<[SubId, AccountType]>,
-  infoFT: Array<
-    [
-      AssetId,
-      {
-        controller: Principal;
-        decimals: number;
-        description: string;
-      },
-    ]
-  >,
-  infoVT: Array<[VirId, [AccountType, Principal]]>,
-  hplData: HPLData,
-  dictFT: FungibleToken[],
-  stateData: ResQueryState,
-) => {
+export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleToken[], stateData: ResQueryState) => {
   const auxSubaccounts: HPLSubAccount[] = [];
 
   stateData.accounts.map((sa) => {
     const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
 
-    const asset = infoSubs.find((sub) => sub[0] === sa[0]);
     const auxVirtuals: HPLVirtualSubAcc[] = [];
     stateData.virtualAccounts.map((va) => {
       const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
-      const vtInfo = infoVT.find((vt) => vt[0].toString() === va[0].toString());
       if (va[1][1] === sa[0]) {
         auxVirtuals.push({
           name: vtData ? vtData.name : "",
@@ -567,7 +551,7 @@ export const formatHPLSubaccounts = (
           amount: va[1][0].ft.toString(),
           currency_amount: "0.00",
           expiration: Math.trunc(Number(va[1][2].toString()) / 1000000),
-          accesBy: vtInfo ? vtInfo[1][1].toString() : "",
+          accesBy: vtData ? vtData.accesBy : "",
           backing: va[1][1].toString(),
         });
       }
@@ -579,17 +563,67 @@ export const formatHPLSubaccounts = (
       amount: sa[1].ft.toString(),
       currency_amount: "0.00",
       transaction_fee: "0",
-      ft: asset ? asset[1].ft.toString() : "0",
+      ft: subData ? subData.ftId : "0",
       virtuals: auxVirtuals,
     });
   });
-  const auxFT: HPLAsset[] = getFtsFormated(stateData.ftSupplies, infoFT, hplData.ft, dictFT);
+  const auxFT: HPLAsset[] = getFtsFormated(stateData.ftSupplies, hplData.ft, dictFT);
   return { auxSubaccounts, auxFT };
 };
 
 export const getFtsFormated = (
   ftSupplies: Array<[AssetId, FtSupply]>,
-  infoFT: Array<
+  ftsData: HPLAssetData[],
+  dictFT: FungibleToken[],
+) => {
+  const auxFT: HPLAsset[] = [];
+  ftSupplies.map((asst) => {
+    const ftData = ftsData.find((ft) => ft.id === asst[0].toString());
+    const ftDict = dictFT.find((ft) => ft.assetId === asst[0]);
+    auxFT.push({
+      id: asst[0].toString(),
+      name: ftDict ? ftDict.name : ftData ? ftData.name : "",
+      token_name: ftDict ? ftDict.name : "",
+      symbol: ftDict ? ftDict.displaySymbol : ftData ? ftData.symbol : "",
+      token_symbol: ftDict ? ftDict.displaySymbol : "",
+      decimal: ftData ? Number(ftData.decimals) : 0,
+      description: ftData ? ftData.description : "",
+      logo: ftDict ? ftDict.logo : "",
+      controller: ftData ? ftData.controller : "",
+      supply: asst[1].toString(),
+    });
+  });
+  return auxFT;
+};
+
+export const formatAccountInfo = (accInfo: Array<[SubId, AccountType]>, accLocal: HPLSubData[]) => {
+  return accInfo.map((acc) => {
+    const found = accLocal.find((accL) => accL.id === acc[0].toString());
+    const accData: HPLSubData = {
+      id: acc[0].toString(),
+      name: found?.id || "",
+      ftId: acc[1].ft.toString(),
+    };
+    return accData;
+  });
+};
+export const formatVirtualAccountInfo = (
+  vtInfo: Array<[VirId, [AccountType, Principal]]>,
+  vtLocal: HPLVirtualData[],
+) => {
+  return vtInfo.map((vt) => {
+    const found = vtLocal.find((vtL) => vtL.id === vt[0].toString());
+    const accData: HPLVirtualData = {
+      id: vt[0].toString(),
+      name: found?.id || "",
+      ftId: vt[1][0].ft.toString(),
+      accesBy: vt[1][1].toText(),
+    };
+    return accData;
+  });
+};
+export const formatFtInfo = (
+  accInfo: Array<
     [
       AssetId,
       {
@@ -599,28 +633,20 @@ export const getFtsFormated = (
       },
     ]
   >,
-  ftsData: HPLAssetData[],
-  dictFT: FungibleToken[],
+  ftLocal: HPLAssetData[],
 ) => {
-  const auxFT: HPLAsset[] = [];
-  ftSupplies.map((asst) => {
-    const ftData = ftsData.find((ft) => ft.id === asst[0].toString());
-    const ftDict = dictFT.find((ft) => ft.assetId === asst[0]);
-    const ft = infoFT.find((ft) => asst[0] === ft[0]);
-    auxFT.push({
-      id: asst[0].toString(),
-      name: ftDict ? ftDict.name : ftData ? ftData.name : "",
-      token_name: ftDict ? ftDict.name : "",
-      symbol: ftDict ? ftDict.displaySymbol : ftData ? ftData.symbol : "",
-      token_symbol: ftDict ? ftDict.displaySymbol : "",
-      decimal: ft ? ft[1].decimals : 0,
-      description: ft ? ft[1].description : "",
-      logo: ftDict ? ftDict.logo : "",
-      controller: ft ? ft[1].controller.toText() : "",
-      supply: asst[1].toString(),
-    });
+  return accInfo.map((ft) => {
+    const found = ftLocal.find((ftL) => ftL.id === ft[0].toString());
+    const accData: HPLAssetData = {
+      id: ft[0].toString(),
+      name: found?.id || "",
+      symbol: found?.symbol || "",
+      controller: ft[1].controller.toText(),
+      decimals: ft[1].decimals.toFixed(0),
+      description: ft[1].description,
+    };
+    return accData;
   });
-  return auxFT;
 };
 
 export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {

@@ -12,6 +12,9 @@ import {
   hexToUint8Array,
   hexToNumber,
   formatHPLSubaccounts,
+  formatFtInfo,
+  formatVirtualAccountInfo,
+  formatAccountInfo,
 } from "@/utils";
 import {
   setAssets,
@@ -24,6 +27,9 @@ import {
   setLoading,
   setAcordeonAssetIdx,
   setnHpl,
+  setHPLVTsData,
+  setHPLAssetsData,
+  setHPLSubsData,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -319,29 +325,40 @@ export const updateAllBalances = async (
 export const updateHPLBalances = async (
   actor: ActorSubclass<IngressActor>,
   contacts: HplContact[],
+  principal: string,
   fromWorker?: boolean,
+  updateInfo?: boolean,
 ) => {
   // Get amounts nAccounts, nVirtualAccounts, nFtAssets
+  let nLocalHpl = {
+    nAccounts: "0",
+    nVirtualAccounts: "0",
+    nFtAssets: "0",
+  };
+  const nLocalHplStr = localStorage.getItem("nhpl-" + principal);
+  if (nLocalHplStr) {
+    nLocalHpl = JSON.parse(nLocalHplStr);
+  }
   const nHpl = store.getState().asset.nHpl;
   const nInfo = {
-    nAccounts: BigInt(nHpl?.nAccounts || 0),
-    nVirtualAccounts: BigInt(nHpl?.nVirtualAccounts || 0),
-    nFtAssets: BigInt(nHpl?.nFtAssets || 0),
+    nAccounts: BigInt(nLocalHpl.nAccounts || nHpl.nAccounts || 0),
+    nVirtualAccounts: BigInt(nLocalHpl.nAccounts || nHpl.nVirtualAccounts || 0),
+    nFtAssets: BigInt(nLocalHpl.nAccounts || nHpl.nFtAssets || 0),
   };
-  if (!fromWorker) {
+  if (!fromWorker || updateInfo) {
     try {
       const [nAccounts, nVirtualAccounts, nFtAssets] = await Promise.all([
         actor.nAccounts(),
         actor.nVirtualAccounts(),
         actor.nFtAssets(),
       ]);
-      store.dispatch(
-        setnHpl({
-          nAccounts: nAccounts.toString(),
-          nVirtualAccounts: nVirtualAccounts.toString(),
-          nFtAssets: nFtAssets.toString(),
-        }),
-      );
+      const nData = {
+        nAccounts: nAccounts.toString(),
+        nVirtualAccounts: nVirtualAccounts.toString(),
+        nFtAssets: nFtAssets.toString(),
+      };
+      localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
+      store.dispatch(setnHpl(nData));
       nInfo.nAccounts = nAccounts;
       nInfo.nVirtualAccounts = nVirtualAccounts;
       nInfo.nFtAssets = nFtAssets;
@@ -350,40 +367,51 @@ export const updateHPLBalances = async (
     }
   }
 
-  let subAccInfo: Array<[SubId, AccountType]> = [];
-  if (nInfo.nAccounts > BigInt(0))
+  let subAccInfo: Array<[SubId, AccountType]> | undefined = undefined;
+  console.log("nInfo.nAccounts", nInfo.nAccounts, BigInt(nLocalHpl.nAccounts));
+
+  if (nInfo.nAccounts > BigInt(nLocalHpl.nAccounts) || updateInfo) {
+    console.log("actor.accountInfo");
     try {
-      subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), []] });
+      subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), [nInfo.nAccounts - BigInt(1)]] });
     } catch (e) {
       console.log("errAccountInfo", e);
     }
+  }
 
-  let ftInfo: Array<
-    [
-      AssetId,
-      {
-        controller: Principal;
-        decimals: number;
-        description: string;
-      },
-    ]
-  > = [];
+  let ftInfo:
+    | Array<
+        [
+          AssetId,
+          {
+            controller: Principal;
+            decimals: number;
+            description: string;
+          },
+        ]
+      >
+    | undefined = undefined;
+  console.log("nInfo.nFtAssets", nInfo.nFtAssets, BigInt(nLocalHpl.nFtAssets));
+  if (nInfo.nFtAssets > BigInt(nLocalHpl.nFtAssets) || updateInfo) {
+    console.log("actor.ftInfo");
 
-  if (nInfo.nFtAssets > BigInt(0))
     try {
-      ftInfo = await actor.ftInfo({ idRange: [BigInt(0), []] });
+      ftInfo = await actor.ftInfo({ idRange: [BigInt(0), [nInfo.nFtAssets - BigInt(1)]] });
     } catch (e) {
       console.log("errFtInfor", e);
     }
+  }
 
-  let vtInfo: Array<[VirId, [AccountType, Principal]]> = [];
-
-  if (nInfo.nVirtualAccounts > BigInt(0))
+  let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
+  console.log("nInfo.nVirtualAccounts", nInfo.nVirtualAccounts, BigInt(nLocalHpl.nVirtualAccounts));
+  if (nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) || updateInfo) {
+    console.log("actor.virtualAccountInfo");
     try {
-      vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), []] });
+      vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] });
     } catch (e) {
       console.log("errVirtualAccountInfo", e);
     }
+  }
 
   const remotesToLook: { id: RemoteId }[] = [];
   contacts.map((cntc) => {
@@ -413,18 +441,41 @@ export const updateHPLBalances = async (
 
   try {
     const ftDict = store.getState().asset.dictionaryHplFTs;
-    const ftData = store.getState().asset.hplFTsData;
-    const subData = store.getState().asset.hplSubsData;
-    const vtData = store.getState().asset.hplVTsData;
+    let ftData = store.getState().asset.hplFTsData;
+    if (ftInfo && ftInfo.length > 0) {
+      ftData = formatFtInfo(ftInfo, ftData);
+      localStorage.setItem(
+        "hplFT-" + principal,
+        JSON.stringify({
+          ft: ftData,
+        }),
+      );
+      store.dispatch(setHPLAssetsData(ftData));
+    }
+    let subData = store.getState().asset.hplSubsData;
+    if (subAccInfo && subAccInfo.length > 0) {
+      subData = formatAccountInfo(subAccInfo, subData);
+      localStorage.setItem(
+        "hplSUB-" + principal,
+        JSON.stringify({
+          sub: subData,
+        }),
+      );
+      store.dispatch(setHPLSubsData(subData));
+    }
+    let vtData = store.getState().asset.hplVTsData;
+    if (vtInfo && vtInfo.length > 0) {
+      vtData = formatVirtualAccountInfo(vtInfo, vtData);
+      localStorage.setItem(
+        "hplVT-" + principal,
+        JSON.stringify({
+          vt: vtData,
+        }),
+      );
+      store.dispatch(setHPLVTsData(vtData));
+    }
 
-    const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
-      subAccInfo,
-      ftInfo,
-      vtInfo,
-      { ft: ftData, sub: subData, vt: vtData },
-      ftDict,
-      state,
-    );
+    const { auxSubaccounts, auxFT } = formatHPLSubaccounts({ ft: ftData, sub: subData, vt: vtData }, ftDict, state);
 
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));

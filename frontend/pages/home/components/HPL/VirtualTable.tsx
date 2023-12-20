@@ -295,7 +295,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
             vt: auxVts,
           }),
         );
-        reloadHPLBallance();
+        reloadHPLBallance(true);
         setDeleteModal(false);
         setSelVt(undefined);
       } catch {

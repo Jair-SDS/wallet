@@ -151,29 +151,21 @@ const HplSubaccountElem = ({
 
   function onSave() {
     const auxSub = hplSubsData.find((sb) => sb.id === sub.sub_account_id);
-    let auxSubData: HPLSubData[] = [];
+    const auxSubData: HPLSubData[] = [];
     if (auxSub) {
       hplSubsData.map((sb) => {
         if (sb.id === sub.sub_account_id) {
-          auxSubData.push({ id: sb.id, name: editSubName.trim() });
+          auxSubData.push({ ...sb, name: editSubName.trim() });
         } else auxSubData.push(sb);
       });
-    } else {
-      auxSubData = [
-        ...hplSubsData,
-        {
-          id: sub.sub_account_id,
-          name: editSubName.trim(),
-        },
-      ];
+      localStorage.setItem(
+        "hplSUB-" + authClient,
+        JSON.stringify({
+          sub: auxSubData,
+        }),
+      );
+      editSelSub({ ...sub, name: editSubName.trim() }, auxSubData);
     }
-    localStorage.setItem(
-      "hplSUB-" + authClient,
-      JSON.stringify({
-        sub: auxSubData,
-      }),
-    );
-    editSelSub({ ...sub, name: editSubName.trim() }, auxSubData);
     onCancel();
   }
 

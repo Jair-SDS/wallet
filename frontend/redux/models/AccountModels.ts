@@ -172,6 +172,9 @@ const HPLAssetData = z.object({
   id: z.string(),
   name: z.string(),
   symbol: z.string(),
+  controller: z.string(),
+  decimals: z.string(),
+  description: z.string(),
 });
 
 export type HPLAssetData = z.infer<typeof HPLAssetData>;
@@ -179,6 +182,7 @@ export type HPLAssetData = z.infer<typeof HPLAssetData>;
 const HPLSubData = z.object({
   id: z.string(),
   name: z.string(),
+  ftId: z.string(),
 });
 
 export type HPLSubData = z.infer<typeof HPLSubData>;
@@ -186,6 +190,8 @@ export type HPLSubData = z.infer<typeof HPLSubData>;
 const HPLVirtualData = z.object({
   id: z.string(),
   name: z.string(),
+  ftId: z.string(),
+  accesBy: z.string(),
 });
 
 export type HPLVirtualData = z.infer<typeof HPLVirtualData>;

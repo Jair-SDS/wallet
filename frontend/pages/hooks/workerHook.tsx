@@ -78,7 +78,7 @@ export const WorkerHook = () => {
       store.dispatch(setTokens(tokens));
     }
     // HPL
-    updateHPLBalances(ingressActor, hplContacts, true);
+    updateHPLBalances(ingressActor, hplContacts, authClient, true);
   };
 
   // TRANSACTION WEB WORKER

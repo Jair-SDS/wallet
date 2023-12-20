@@ -210,11 +210,21 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               state: [{ ft_set: BigInt(amnt) }],
               expiration: [BigInt(newVt.expiration * 1000000)],
             });
-            saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true);
+            saveInLocalstorage(
+              { id: newVt.virt_sub_acc_id, name: newVt.name, ftId: "", accesBy: selectVt.accesBy },
+              selectVt,
+              true,
+            );
           } catch (e) {
             setErrMsg(t("err.back"));
           }
-        else saveInLocalstorage({ id: newVt.virt_sub_acc_id, name: newVt.name }, selectVt, true, true);
+        else
+          saveInLocalstorage(
+            { id: newVt.virt_sub_acc_id, name: newVt.name, ftId: "", accesBy: selectVt.accesBy },
+            selectVt,
+            true,
+            true,
+          );
       } else {
         try {
           const res = (await ingressActor.openVirtualAccount(
@@ -224,7 +234,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             BigInt(newVt.backing),
             BigInt(newVt.expiration * 1000000),
           )) as any;
-          saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name }, selectVt!, false);
+          saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name, ftId: "", accesBy: "" }, selectVt!, false);
         } catch (e) {
           setErrMsg(t("err.back"));
         }
@@ -254,11 +264,11 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       let exist = false;
       hplVTsData.map((vtdData) => {
         if (vtdData.id === selVt.virt_sub_acc_id) {
-          auxVts.push({ id: vtdData.id, name: newVt.name });
+          auxVts.push({ ...vtdData, name: newVt.name });
           exist = true;
         } else return auxVts.push(vtdData);
       });
-      !exist && auxVts.push({ id: vt.id, name: newVt.name });
+      !exist && auxVts.push({ ...vt, name: newVt.name });
     } else {
       auxVts = [...hplVTsData, vt];
     }
@@ -268,9 +278,11 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         vt: auxVts,
       }),
     );
-    editVtData(auxVts);
-    if (local && edit) changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
-    else reloadHPLBallance();
+
+    if (local && edit) {
+      changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
+      editVtData(auxVts);
+    } else reloadHPLBallance(true);
     onClose();
   }
 };

@@ -94,12 +94,12 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   });
 
   const myPrincipal = await myAgent.getPrincipal();
+  const myPrincipalTxt = myPrincipal.toText();
 
   // HPL ACTOR
-  const hplLedPrin =
-    localStorage.getItem("hpl-led-pric-" + authIdentity.getPrincipal().toString()) || "rqx66-eyaaa-aaaap-aaona-cai";
+  const hplLedPrin = localStorage.getItem("hpl-led-pric-" + myPrincipalTxt) || "rqx66-eyaaa-aaaap-aaona-cai";
   if (hplLedPrin !== "rqx66-eyaaa-aaaap-aaona-cai") {
-    localStorage.setItem("hpl-led-pric-" + authIdentity.getPrincipal().toString(), hplLedPrin);
+    localStorage.setItem("hpl-led-pric-" + myPrincipalTxt, hplLedPrin);
   }
   store.dispatch(setHplLedgerPrincipal(hplLedPrin));
 
@@ -113,11 +113,11 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   store.dispatch(setHPLClient(client));
 
   // ICRC-1 TOKENS
-  const userData = localStorage.getItem(authIdentity.getPrincipal().toString());
+  const userData = localStorage.getItem(myPrincipalTxt);
   if (userData) {
     const userDataJson = JSON.parse(userData);
     store.dispatch(setTokens(userDataJson.tokens));
-    setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
+    setAssetFromLocalData(userDataJson.tokens, myPrincipalTxt);
     // AUTH
     dispatchAuths(authIdentity, myAgent, myPrincipal);
     updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
@@ -128,20 +128,20 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
     dispatchAuths(authIdentity, myAgent, myPrincipal);
   }
   // ICRC-1 CONTACTS
-  const contactsData = localStorage.getItem("contacts-" + authIdentity.getPrincipal().toString());
+  const contactsData = localStorage.getItem("contacts-" + myPrincipalTxt);
   if (contactsData) {
     const contactsDataJson = JSON.parse(contactsData);
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
 
   // HPL FT
-  const hplFTsData = localStorage.getItem("hplFT-" + authIdentity.getPrincipal().toString());
+  const hplFTsData = localStorage.getItem("hplFT-" + myPrincipalTxt);
   if (hplFTsData != null) {
     const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
     store.dispatch(setHPLAssetsData(hplFTsDataJson));
   }
   // HPL DICTIONARY
-  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + myPrincipalTxt);
   store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
   if (hplDictPrin) {
     try {
@@ -152,24 +152,24 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
       const dictFTs = await dictActor.getDump();
       store.dispatch(setHPLDictionary(dictFTs));
     } catch {
-      localStorage.removeItem("hpl-dict-pric-" + authIdentity.getPrincipal().toString());
+      localStorage.removeItem("hpl-dict-pric-" + myPrincipalTxt);
     }
   }
   // HPL SUBACCOUNTS
-  const hplSubsData = localStorage.getItem("hplSUB-" + authIdentity.getPrincipal().toString());
+  const hplSubsData = localStorage.getItem("hplSUB-" + myPrincipalTxt);
   if (hplSubsData != null) {
     const hplSubsDataJson = JSON.parse(hplSubsData);
     store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
   }
   // HPL VIRTUALS
-  const hplVTsData = localStorage.getItem("hplVT-" + authIdentity.getPrincipal().toString());
+  const hplVTsData = localStorage.getItem("hplVT-" + myPrincipalTxt);
   if (hplVTsData != null) {
     const hplVTsDataJson = JSON.parse(hplVTsData);
     store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
   }
   // HPL CONTACTS
   let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
-  const hplContactsData = localStorage.getItem("hpl-contacts-" + authIdentity.getPrincipal().toString());
+  const hplContactsData = localStorage.getItem("hpl-contacts-" + myPrincipalTxt);
   if (hplContactsData != null) {
     try {
       hplContactsDataJson = JSON.parse(hplContactsData);
@@ -178,7 +178,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
     }
   }
   // HPL TOKENS
-  await updateHPLBalances(ingressActor, hplContactsDataJson.contacts);
+  const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
+  await updateHPLBalances(ingressActor, hplContactsDataJson.contacts, myPrincipalTxt, false, forceUpdate);
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {

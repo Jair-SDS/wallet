@@ -127,30 +127,23 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
 
   async function onAdd() {
     const auxFt = hplFTsData.find((ft) => ft.id === editedFt.id);
-    let auxFtsdata: HPLAssetData[] = [];
+    const auxFtsdata: HPLAssetData[] = [];
     if (auxFt) {
       hplFTsData.map((ft) => {
         if (ft.id === editedFt.id) {
-          auxFtsdata.push({ id: ft.id, name: editedFt.name.trim(), symbol: editedFt.symbol.trim() });
+          auxFtsdata.push({ ...ft, name: editedFt.name.trim(), symbol: editedFt.symbol.trim() });
         } else auxFtsdata.push(ft);
       });
-    } else {
-      auxFtsdata = [
-        ...hplFTsData,
-        {
-          id: editedFt.id,
-          name: editedFt.name.trim(),
-          symbol: editedFt.symbol.trim(),
-        },
-      ];
     }
-    localStorage.setItem(
-      "hplFT-" + authClient,
-      JSON.stringify({
-        ft: auxFtsdata,
-      }),
-    );
-    editSelAsset(editedFt, auxFtsdata);
+    if (auxFtsdata.length > 0) {
+      localStorage.setItem(
+        "hplFT-" + authClient,
+        JSON.stringify({
+          ft: auxFtsdata,
+        }),
+      );
+      editSelAsset(editedFt, auxFtsdata);
+    }
     onClose();
   }
 };

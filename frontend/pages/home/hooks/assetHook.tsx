@@ -28,7 +28,7 @@ export const AssetHook = () => {
     subaccounts,
     ingressActor,
   } = useAppSelector((state) => state.asset);
-  const { userAgent } = useAppSelector((state) => state.auth);
+  const { userAgent, authClient } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const deleteAsset = (symb: string) => {
     dispatch(removeToken(symb));
@@ -47,7 +47,7 @@ export const AssetHook = () => {
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
-    updateHPLBalances(ingressActor, hplContacts);
+    updateHPLBalances(ingressActor, hplContacts, authClient);
   };
 
   const reloadOnlyICRCBallance = (tkns?: Token[]) => {
