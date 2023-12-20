@@ -1,4 +1,5 @@
-import { ProtocolType, ProtocolTypeEnum, defaultTokens } from "@/const";
+import { ProtocolType, ProtocolTypeEnum } from "@/const";
+import { defaultTokens } from "@/defaultTokens";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import {

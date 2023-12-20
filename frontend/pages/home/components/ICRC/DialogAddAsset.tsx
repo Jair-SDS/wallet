@@ -190,6 +190,7 @@ const DialogAddAsset = ({
     if (!loading) {
       setLoading(true);
       if (newSub) {
+        // Prepare and check idx to add
         const subClean = removeLeadingZeros(
           newSub.sub_account_id.slice(0, 2).toLowerCase() === "0x"
             ? newSub.sub_account_id.substring(2)
@@ -203,7 +204,10 @@ const DialogAddAsset = ({
           errIdx = true;
         }
         if (!errName && !errIdx) {
+          // Not reduce accordion when add asset
           addToAcordeonIdx();
+
+          // Look for balance and add sub Account
           try {
             const tknAddress = selectedAsset?.address || "";
             let decimal = 8;
@@ -238,6 +242,7 @@ const DialogAddAsset = ({
               } else return tkn;
             });
 
+            // Save the new sub Account in localstorage and Redux
             saveLocalStorage(auxTokens);
             const savedSub = {
               ...newSub,
