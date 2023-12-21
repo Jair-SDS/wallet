@@ -98,7 +98,9 @@ const AssetsList = () => {
               className=""
               type="multiple"
               defaultValue={[]}
-              value={addOpen && selectedAsset ? [...acordeonIdx, selectedAsset.tokenSymbol] : acordeonIdx}
+              value={
+                (addOpen || assetOpen) && selectedAsset ? [...acordeonIdx, selectedAsset.tokenSymbol] : acordeonIdx
+              }
               onValueChange={onValueChange}
             >
               {assets?.map((asset: Asset, idx: number) => {
@@ -166,6 +168,7 @@ const AssetsList = () => {
             tokens={tokens}
             assetOpen={assetOpen}
             assets={assets}
+            acordeonIdx={acordeonIdx}
           />
         ) : (
           <AddSubaccount setAssetOpen={setAssetOpen} open={assetOpen} />
