@@ -33,8 +33,10 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setFrom,
     to,
     setTo,
-    errMsg,
-    setErrMsg,
+    errMsgFrom,
+    setErrMsgFrom,
+    errMsgTo,
+    setErrMsgTo,
     amount,
     setAmount,
     amountReceiver,
@@ -82,8 +84,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           setAmount={setAmount}
           setAmountReceiver={setAmountReceiver}
           amountReceiver={amountReceiver}
-          errMsg={errMsg}
-          setErrMsg={setErrMsg}
+          errMsg={errMsgFrom}
+          setErrMsg={setErrMsgFrom}
           setFtId={setFtId}
           setDecimals={setDecimals}
           setSummary={setSummary}
@@ -120,6 +122,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherId={to.subaccount?.sub_account_id || to.remote?.index}
             otherPrincipal={to.remote ? to.principal : undefined}
             isRemote={to.type === HplTransactionsEnum.Enum.VIRTUAL}
+            errMsg={errMsgFrom}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -136,10 +139,10 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherId={from.subaccount?.sub_account_id || from.remote?.index}
             otherPrincipal={from.remote ? from.principal : undefined}
             isRemote={from.type === HplTransactionsEnum.Enum.VIRTUAL}
+            errMsg={errMsgTo}
           />
         </div>
-        <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
-          <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
+        <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
           <CustomButton className="min-w-[5rem]" onClick={onNext} size={"small"}>
             {loadingNext ? <LoadingLoader className="mt-1" /> : <p>{t("next")}</p>}
           </CustomButton>
@@ -165,12 +168,12 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setLoadingNext(true);
     const fromFtId = await getAssetId(from);
     const toFtId = await getAssetId(to);
-    if (!validation(from)) setErrMsg("err.from");
-    else if (!validation(to)) setErrMsg("err.to");
-    else if (fromFtId === "non") setErrMsg(t("remote.no.yours.from", { from: getNametoShowinErr(to, "to") }));
-    else if (toFtId === "non") setErrMsg(t("remote.no.yours.to", { to: getNametoShowinErr(from, "from") }));
-    else if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsg("not.match.asset.id");
-    else if (!errMsg) {
+    if (!validation(from)) setErrMsgFrom("err.from");
+    else if (!validation(to)) setErrMsgTo("err.to");
+    else if (fromFtId === "non") setErrMsgFrom(t("remote.no.yours.from"));
+    else if (toFtId === "non") setErrMsgTo(t("remote.no.yours.to"));
+    else if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsgFrom("not.match.asset.id");
+    else if (!errMsgFrom) {
       setFtId(fromFtId ? fromFtId : toFtId);
       setDecimals(getFtFromSub(fromFtId).decimal);
       if (from.type === HplTransactionsEnum.Enum.VIRTUAL) {
@@ -217,7 +220,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
         });
       }
     } else {
-      setErrMsg("err.qr.img");
+      if (qrView === HplTransactionsTypeEnum.Enum.from) setErrMsgFrom("err.qr.img");
+      else setErrMsgTo("err.qr.img");
     }
     setQRview("");
   }
@@ -275,12 +279,6 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     } catch {
       return { principal: "", id: "", err: true };
     }
-  }
-
-  function getNametoShowinErr(data: HplTxUser, userType: string) {
-    if (data.subaccount) return data.subaccount.name ? data.subaccount.name : t(userType);
-    else if (data.remote) return data.remote.name;
-    else return t(userType);
   }
 };
 

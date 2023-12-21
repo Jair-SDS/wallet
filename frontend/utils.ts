@@ -623,7 +623,7 @@ export const formatVirtualAccountInfo = (
   });
 };
 export const formatFtInfo = (
-  accInfo: Array<
+  ftInfo: Array<
     [
       AssetId,
       {
@@ -635,7 +635,7 @@ export const formatFtInfo = (
   >,
   ftLocal: HPLAssetData[],
 ) => {
-  return accInfo.map((ft) => {
+  return ftInfo.map((ft) => {
     const found = ftLocal.find((ftL) => ftL.id === ft[0].toString());
     const accData: HPLAssetData = {
       id: ft[0].toString(),

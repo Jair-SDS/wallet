@@ -14,7 +14,8 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
   };
   const [from, setFrom] = useState<HplTxUser>({ ...defaultUser });
   const [to, setTo] = useState<HplTxUser>({ ...defaultUser });
-  const [errMsg, setErrMsg] = useState("");
+  const [errMsgFrom, setErrMsgFrom] = useState("");
+  const [errMsgTo, setErrMsgTo] = useState("");
   const [amount, setAmount] = useState("");
   const [amountReceiver, setAmountReceiver] = useState("");
 
@@ -41,10 +42,16 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
 
   useEffect(() => {
     if (from.subaccount && to.subaccount) {
-      if (from.subaccount.ft !== to.subaccount.ft) setErrMsg("not.match.asset.id");
-      else if (from.subaccount.sub_account_id === to.subaccount.sub_account_id) setErrMsg("not.same.subaccount");
-      else setErrMsg("");
-    } else setErrMsg("");
+      if (from.subaccount.ft !== to.subaccount.ft) setErrMsgFrom("not.match.asset.id");
+      else if (from.subaccount.sub_account_id === to.subaccount.sub_account_id) setErrMsgFrom("not.same.subaccount");
+      else {
+        setErrMsgFrom("");
+        setErrMsgTo("");
+      }
+    } else {
+      setErrMsgFrom("");
+      setErrMsgTo("");
+    }
   }, [from, to]);
 
   return {
@@ -57,8 +64,10 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     setFrom,
     to,
     setTo,
-    errMsg,
-    setErrMsg,
+    errMsgFrom,
+    setErrMsgFrom,
+    errMsgTo,
+    setErrMsgTo,
     amount,
     setAmount,
     amountReceiver,

@@ -30,6 +30,7 @@ interface SelectTransferProps {
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
+  errMsg: string;
 }
 
 const SelectTransfer: FC<SelectTransferProps> = ({
@@ -47,6 +48,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   setQRview,
   getAssetLogo,
   getFtFromSub,
+  errMsg,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -238,13 +240,16 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherPrincipal={otherPrincipal}
           />
         )}
-        {(select.subaccount || select.remote) && (
-          <div className="flex flex-row justify-end items-center w-full mt-1">
-            <p className="text-SelectRowColor underline cursor-pointer" onClick={onClear}>
-              {t("clear")}
-            </p>
-          </div>
-        )}
+        <div className="flex flex-row justify-between items-center w-full">
+          <p className="text-sm text-TextErrorColor text-left ">{t(errMsg)}</p>
+          {(select.subaccount || select.remote) && (
+            <div className="flex flex-row justify-end items-center mt-1">
+              <p className="text-SelectRowColor underline cursor-pointer" onClick={onClear}>
+                {t("clear")}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
