@@ -66,6 +66,7 @@ const AddAssetManual = ({
   const { getAssetIcon, checkAssetAdded } = GeneralHook();
   const { userAgent } = IdentityHook();
   const [testLoading, setTestLoading] = useState(false);
+  const [errShortDec, serErrShortDec] = useState(false);
 
   return (
     <div className="flex flex-col justify-start items-start w-full">
@@ -169,6 +170,7 @@ const AddAssetManual = ({
               type="number"
               value={newToken.shortDecimal}
               onChange={onChangeShortDecimal}
+              border={errShortDec ? "error" : undefined}
             />
           </div>
         )}
@@ -257,6 +259,7 @@ const AddAssetManual = ({
       setNewToken((prev: any) => {
         return { ...prev, shortDecimal: value };
       });
+    serErrShortDec(false);
   }
 
   function onBack() {
@@ -321,7 +324,7 @@ const AddAssetManual = ({
         validData = false;
       }
     }
-    if (newToken.index && newToken.index !== "")
+    if (newToken.index && newToken.index !== "" && newToken.shortDecimal !== "")
       try {
         const { getTransactions } = IcrcIndexCanister.create({
           canisterId: newToken.index as any,
@@ -341,6 +344,10 @@ const AddAssetManual = ({
 
   async function onSave() {
     if (asset) {
+      if (newToken.shortDecimal === "") {
+        serErrShortDec(true);
+        return;
+      }
       // Change contacts local and reducer
       dispatch(editAssetName(asset.tokenSymbol, newToken.symbol));
       // List all tokens modifying the one we selected
