@@ -10,6 +10,7 @@ import LoadingLoader from "@components/Loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
 import { getDecimalAmount, getHoleAmount, validateAmount } from "@/utils";
+import { useAppSelector } from "@redux/Store";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -59,7 +60,7 @@ const TxSummary = ({
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [fee, setFee] = useState("0");
-  const feeConstant = 50000;
+  const { feeConstant } = useAppSelector((state) => state.asset);
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">

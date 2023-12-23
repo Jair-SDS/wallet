@@ -51,6 +51,7 @@ interface AssetState {
   selectSub: HPLSubAccount | undefined;
   selectVt: HPLVirtualSubAcc | undefined;
   nHpl: nHplData;
+  feeConstant: number;
 }
 
 const initialState: AssetState = {
@@ -81,6 +82,7 @@ const initialState: AssetState = {
   hplVTsData: [],
   selectSub: undefined,
   selectVt: undefined,
+  feeConstant: 50000,
 };
 
 const assetSlice = createSlice({
@@ -323,6 +325,9 @@ const assetSlice = createSlice({
     setHPLSelectedVt(state, action: PayloadAction<HPLVirtualSubAcc | undefined>) {
       state.selectVt = action.payload;
     },
+    setFeeConstant(state, action: PayloadAction<number>) {
+      state.feeConstant = action.payload;
+    },
     editHPLAsset: {
       reducer(
         state,
@@ -419,6 +424,7 @@ export const {
   setnHpl,
   setHPLClient,
   setIngressActor,
+  setFeeConstant,
   setHPLSubAccounts,
   setHPLAssets,
   setHPLDictionary,

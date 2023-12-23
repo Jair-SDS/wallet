@@ -210,6 +210,8 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(VirId, IDL.Tuple(AccountType, IDL.Principal)))],
         ["query"],
       ),
+      
+    "feeRatio" : IDL.Func([], [IDL.Nat], ["query"]),
   });
   return LedgerIngressAPI;
 };

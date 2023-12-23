@@ -17,6 +17,7 @@ import { AuthClient } from "@dfinity/auth-client";
 import { setAssetFromLocalData, updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
 import {
   clearDataAsset,
+  setFeeConstant,
   setHPLAssetsData,
   setHPLClient,
   setHPLDictionary,
@@ -180,6 +181,12 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   // HPL TOKENS
   const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
   await updateHPLBalances(ingressActor, hplContactsDataJson.contacts, myPrincipalTxt, false, forceUpdate);
+  try {
+    const feeConstant = await ingressActor.feeRatio();
+    store.dispatch(setFeeConstant(Number(feeConstant.toString())));
+  } catch (e) {
+    console.log("feeConstant-err", e);
+  }
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {

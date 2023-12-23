@@ -104,6 +104,7 @@ export interface LedgerIngressAPI {
       }
   >;
   virtualAccountInfo: ActorMethod<[IdSelector], Array<[VirId, [AccountType, Principal]]>>;
+  feeRatio: ActorMethod<[], bigint>;
 }
 export type ProcessingError = { ftTransfer: FtTransferErrors };
 export type RemoteId = [Principal, bigint];
