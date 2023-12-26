@@ -55,6 +55,10 @@ export const AssetHook = () => {
     updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
   };
 
+  const reloadOnlyHPLBallance = () => {
+    updateHPLBalances(ingressActor, hplContacts, authClient);
+  };
+
   const getTotalAmountInCurrency = () => {
     let amount = 0;
     assets.map((tk) => {
@@ -103,6 +107,7 @@ export const AssetHook = () => {
     setProtocolType,
     reloadBallance,
     reloadOnlyICRCBallance,
+    reloadOnlyHPLBallance,
     searchKey,
     setSearchKey,
     // ICRC1

@@ -14,11 +14,13 @@ import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
 import { useAppDispatch } from "@redux/Store";
-import { setHPLAssets, setHPLClient, setIngressActor } from "@redux/assets/AssetReducer";
+import { setHPLAssets, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/assets/AssetReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { useHPL } from "@pages/hooks/hplHook";
-import { getUpdatedFts } from "@/utils";
+import { getUpdatedFts, parseFungibleToken } from "@/utils";
+import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
+import { AssetHook } from "@pages/home/hooks/assetHook";
 
 interface HplSettingsModalProps {
   setOpen(value: string): void;
@@ -28,6 +30,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
+  const { reloadOnlyHPLBallance } = AssetHook();
   const { hplFTs, hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -98,11 +101,12 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   async function onSave() {
     if (!ledger.err && !dictionary.err) {
       setLoading(true);
-      const hplActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
-        agent: userAgent,
-        canisterId: ledger.principal,
-      });
+
       try {
+        const hplActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
+          agent: userAgent,
+          canisterId: ledger.principal,
+        });
         await hplActor.aggregators();
         dispatch(setIngressActor(hplActor));
         const client = new HPLClient(ledger.principal, "ic");
@@ -114,23 +118,39 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
         });
         setErrMsg("hpl.ledger.principal.err");
         setLoading(false);
+        console.log("Ledger-prin-err:", e);
         return;
       }
-      try {
-        const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
-          agent: userAgent,
-          canisterId: dictionary.principal,
-        });
-        const dictFTs = await dictActor.getDump();
-        const auxFts = getUpdatedFts(dictFTs, hplFTs);
+      if (dictionary.principal !== "")
+        try {
+          const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+            agent: userAgent,
+            canisterId: dictionary.principal,
+          });
+          const dictFTs = await dictActor.getDump();
+          localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
+          dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
+          const auxFts = getUpdatedFts(dictFTs, hplFTs);
+          dispatch(setHPLAssets(auxFts));
+          dispatch(setHplDictionaryPrincipal(dictionary.principal));
+          setOpen("");
+        } catch (e) {
+          setDictionary((prev) => {
+            return { ...prev, err: true };
+          });
+          setErrMsg("hpl.dictionary.principal.err");
+          setLoading(false);
+          console.log("Dict-prin-err:", e);
+          return;
+        }
+      else {
+        const auxFts = getUpdatedFts([], hplFTs);
         dispatch(setHPLAssets(auxFts));
-      } catch (e) {
-        setDictionary((prev) => {
-          return { ...prev, err: true };
-        });
-        setErrMsg("hpl.dictionary.principal.err");
-        setLoading(false);
-        return;
+        dispatch(setHplDictionaryPrincipal(dictionary.principal));
+        localStorage.removeItem("hpl-dict-pric-" + authClient);
+        dispatch(setHPLDictionary([]));
+        reloadOnlyHPLBallance();
+        setOpen("");
       }
     }
     setLoading(false);

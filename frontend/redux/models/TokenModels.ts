@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { number, z } from "zod";
 import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
 import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/hpl-client";
 
@@ -49,6 +49,17 @@ const TokenMarketInfo = z.object({
 });
 
 export type TokenMarketInfo = z.infer<typeof TokenMarketInfo>;
+
+const FungibleTokenLocal = z.object({
+  creation_time: z.number(),
+  assetId: z.string(),
+  logo: z.string(),
+  name: z.string(),
+  modification_time: z.number(),
+  displaySymbol: z.string(),
+  symbolKey: z.string(),
+});
+export type FungibleTokenLocal = z.infer<typeof FungibleTokenLocal>;
 
 const AuthNetwork = z.object({
   name: AuthNetworkNameEnum,

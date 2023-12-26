@@ -38,6 +38,7 @@ import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandi
 import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { defaultTokens } from "@/defaultTokens";
+import { parseFungibleToken } from "@/utils";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -143,16 +144,23 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   }
   // HPL DICTIONARY
   const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + myPrincipalTxt);
+  console.log("hplDictPrin:", hplDictPrin);
+
   store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
   if (hplDictPrin) {
+    console.log(hplDictPrin, true);
+
     try {
       const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
         agent: myAgent,
-        canisterId: hplLedPrin,
+        canisterId: hplDictPrin,
       });
       const dictFTs = await dictActor.getDump();
-      store.dispatch(setHPLDictionary(dictFTs));
-    } catch {
+      console.log("dictFTs:", dictFTs);
+      store.dispatch(setHplDictionaryPrincipal(hplLedPrin));
+      store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
+    } catch (e) {
+      console.log("dictFTs-err:", e);
       localStorage.removeItem("hpl-dict-pric-" + myPrincipalTxt);
     }
   }

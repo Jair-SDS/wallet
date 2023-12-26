@@ -32,6 +32,7 @@ import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
 import { FungibleToken } from "@candid/Dictionary/dictService.did";
+import { FungibleTokenLocal } from "@redux/models/TokenModels";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -546,7 +547,23 @@ export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
   })?.symbol;
 };
 
-export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleToken[], stateData: ResQueryState) => {
+export const parseFungibleToken = (tokens: FungibleToken[]) => {
+  const auxTkns: FungibleTokenLocal[] = [];
+  tokens.map((tkn) => {
+    auxTkns.push({
+      creation_time: Number(tkn.creation_time),
+      assetId: tkn.assetId.toString(),
+      logo: tkn.logo.toString(),
+      name: tkn.name.toString(),
+      modification_time: Number(tkn.modification_time),
+      displaySymbol: tkn.displaySymbol.toString(),
+      symbolKey: tkn.symbolKey.toString(),
+    });
+  });
+  return auxTkns;
+};
+
+export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleTokenLocal[], stateData: ResQueryState) => {
   const auxSubaccounts: HPLSubAccount[] = [];
 
   stateData.accounts.map((sa) => {
@@ -585,12 +602,12 @@ export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleToken[], 
 export const getFtsFormated = (
   ftSupplies: Array<[AssetId, FtSupply]>,
   ftsData: HPLAssetData[],
-  dictFT: FungibleToken[],
+  dictFT: FungibleTokenLocal[],
 ) => {
   const auxFT: HPLAsset[] = [];
   ftSupplies.map((asst) => {
     const ftData = ftsData.find((ft) => ft.id === asst[0].toString());
-    const ftDict = dictFT.find((ft) => ft.assetId === asst[0]);
+    const ftDict = dictFT.find((ft) => ft.assetId === asst[0].toString());
     auxFT.push({
       id: asst[0].toString(),
       name: ftDict ? ftDict.name : ftData ? ftData.name : "",

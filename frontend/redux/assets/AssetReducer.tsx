@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Token, TokenMarketInfo } from "@redux/models/TokenModels";
+import { FungibleTokenLocal, Token, TokenMarketInfo } from "@redux/models/TokenModels";
 import {
   Asset,
   HPLAsset,
@@ -45,7 +45,7 @@ interface AssetState {
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
-  dictionaryHplFTs: FungibleToken[];
+  dictionaryHplFTs: FungibleTokenLocal[];
   hplSubsData: HPLSubData[];
   hplVTsData: HPLVirtualData[];
   selectSub: HPLSubAccount | undefined;
@@ -307,7 +307,7 @@ const assetSlice = createSlice({
     setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
       state.hplFTs = action.payload;
     },
-    setHPLDictionary(state, action: PayloadAction<FungibleToken[]>) {
+    setHPLDictionary(state, action: PayloadAction<FungibleTokenLocal[]>) {
       state.dictionaryHplFTs = action.payload;
     },
     setHPLAssetsData(state, action: PayloadAction<HPLAssetData[]>) {
