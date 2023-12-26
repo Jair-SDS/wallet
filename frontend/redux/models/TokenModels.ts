@@ -1,4 +1,4 @@
-import { number, z } from "zod";
+import { z } from "zod";
 import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
 import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/hpl-client";
 

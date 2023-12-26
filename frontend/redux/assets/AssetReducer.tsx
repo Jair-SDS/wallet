@@ -20,7 +20,6 @@ import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { HPLClient } from "@research-ag/hpl-client";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
-import { FungibleToken } from "@candid/Dictionary/dictService.did";
 
 const defaultValue = {} as any;
 interface AssetState {
