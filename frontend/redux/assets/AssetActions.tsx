@@ -348,29 +348,39 @@ export const updateHPLBalances = async (
     nFtAssets: BigInt(nLocalHpl.nFtAssets || nHpl.nFtAssets || 0),
   };
   if (!fromWorker || updateInfo) {
+    const nData = {
+      nAccounts: "0",
+      nVirtualAccounts: "0",
+      nFtAssets: "0",
+    };
     try {
-      const [nAccounts, nVirtualAccounts, nFtAssets] = await Promise.all([
-        actor.nAccounts(),
-        actor.nVirtualAccounts(),
-        actor.nFtAssets(),
-      ]);
-      const nData = {
-        nAccounts: nAccounts.toString(),
-        nVirtualAccounts: nVirtualAccounts.toString(),
-        nFtAssets: nFtAssets.toString(),
-      };
-      localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
-      store.dispatch(setnHpl(nData));
+      const nAccounts = await actor.nAccounts();
+      nData.nAccounts = nAccounts.toString();
       nInfo.nAccounts = nAccounts;
+    } catch (e) {
+      console.log("err-nHpl", e);
+    }
+    try {
+      const nVirtualAccounts = await actor.nVirtualAccounts();
+      nData.nVirtualAccounts = nVirtualAccounts.toString();
       nInfo.nVirtualAccounts = nVirtualAccounts;
+    } catch (e) {
+      console.log("err-nHpl", e);
+    }
+    try {
+      const nFtAssets = await actor.nFtAssets();
+      nData.nFtAssets = nFtAssets.toString();
       nInfo.nFtAssets = nFtAssets;
     } catch (e) {
       console.log("err-nHpl", e);
     }
+
+    localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
+    store.dispatch(setnHpl(nData));
   }
 
   let subAccInfo: Array<[SubId, AccountType]> | undefined = undefined;
-  if (nInfo.nAccounts > BigInt(nLocalHpl.nAccounts) || updateInfo) {
+  if (nInfo.nAccounts > BigInt(nLocalHpl.nAccounts) || (updateInfo && nInfo.nAccounts !== BigInt(0))) {
     try {
       subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), [nInfo.nAccounts - BigInt(1)]] });
     } catch (e) {
@@ -390,7 +400,7 @@ export const updateHPLBalances = async (
         ]
       >
     | undefined = undefined;
-  if (nInfo.nFtAssets > BigInt(nLocalHpl.nFtAssets) || updateInfo) {
+  if (nInfo.nFtAssets > BigInt(nLocalHpl.nFtAssets) || (updateInfo && nInfo.nFtAssets !== BigInt(0))) {
     try {
       ftInfo = await actor.ftInfo({ idRange: [BigInt(0), [nInfo.nFtAssets - BigInt(1)]] });
     } catch (e) {
@@ -399,7 +409,10 @@ export const updateHPLBalances = async (
   }
 
   let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
-  if (nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) || updateInfo) {
+  if (
+    nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) ||
+    (updateInfo && nInfo.nVirtualAccounts !== BigInt(0))
+  ) {
     try {
       vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] });
     } catch (e) {

@@ -350,6 +350,18 @@ const assetSlice = createSlice({
         };
       },
     },
+    addHplSub(state, action: PayloadAction<HPLSubData>) {
+      state.hplSubsData.push(action.payload);
+      state.subaccounts.push({
+        sub_account_id: action.payload.id,
+        name: action.payload.name,
+        amount: "0",
+        currency_amount: "0",
+        transaction_fee: "0",
+        ft: action.payload.ftId,
+        virtuals: [],
+      });
+    },
     editHPLSub: {
       reducer(
         state,
@@ -434,6 +446,7 @@ export const {
   setHPLSelectedVt,
   editHPLAsset,
   editHPLSub,
+  addHplSub,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

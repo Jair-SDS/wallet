@@ -7,6 +7,7 @@ import { Principal } from "@dfinity/principal";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import {
+  addHplSub,
   editHPLAsset,
   editHPLSub,
   setHPLSelectedSub,
@@ -98,6 +99,10 @@ export const useHPL = (open: boolean) => {
 
   const editSelSub = (subEdited: HPLSubAccount, subData: HPLSubData[]) => {
     dispatch(editHPLSub(subEdited, subData));
+  };
+
+  const addSub = (newSub: HPLSubData) => {
+    dispatch(addHplSub(newSub));
   };
 
   const editSubData = (subData: HPLSubData[]) => {
@@ -271,10 +276,13 @@ export const useHPL = (open: boolean) => {
     return regex.test(str);
   }
   function changeVtName(subId: string, vtId: string, name: string) {
+    console.log(subId, vtId, name);
+
     const auxSubs = subaccounts.map((sub) => {
       if (sub.sub_account_id === subId) {
         const auxVts = sub.virtuals.map((vt) => {
           if (vt.virt_sub_acc_id === vtId) {
+            console.log("name:", name);
             return { ...vt, name: name };
           } else return vt;
         });
@@ -317,6 +325,7 @@ export const useHPL = (open: boolean) => {
     setHplSubs,
     editSelAsset,
     editSelSub,
+    addSub,
     editSubData,
     editVtData,
     getFtFromSub,

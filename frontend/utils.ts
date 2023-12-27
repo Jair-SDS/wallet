@@ -182,12 +182,15 @@ export const validateAmount = (amnt: string, dec: number): boolean => {
   return true;
 };
 
-export function getHoleAmount(amount: string, decimal: string | number) {
+export function getHoleAmount(amount: string, decimal: string | number, asBigInt?: boolean) {
   let amnt = amount;
   if (amount.at(-1) === ".") amnt = amnt.slice(0, -1);
   else if (amount === "") amnt = "0";
 
-  return Math.round(Number(amnt) * Math.pow(10, Number(decimal)));
+  const newAmnt = Math.round(Number(amnt) * Math.pow(10, Number(decimal)));
+
+  if (asBigInt) return BigInt(newAmnt);
+  else return newAmnt;
 }
 
 export const getUSDfromToken = (
@@ -629,7 +632,7 @@ export const formatAccountInfo = (accInfo: Array<[SubId, AccountType]>, accLocal
     const found = accLocal.find((accL) => accL.id === acc[0].toString());
     const accData: HPLSubData = {
       id: acc[0].toString(),
-      name: found?.id || "",
+      name: found?.name || "",
       ftId: acc[1].ft.toString(),
     };
     return accData;
@@ -643,7 +646,7 @@ export const formatVirtualAccountInfo = (
     const found = vtLocal.find((vtL) => vtL.id === vt[0].toString());
     const accData: HPLVirtualData = {
       id: vt[0].toString(),
-      name: found?.id || "",
+      name: found?.name || "",
       ftId: vt[1][0].ft.toString(),
       accesBy: vt[1][1].toText(),
     };
@@ -667,7 +670,7 @@ export const formatFtInfo = (
     const found = ftLocal.find((ftL) => ftL.id === ft[0].toString());
     const accData: HPLAssetData = {
       id: ft[0].toString(),
-      name: found?.id || "",
+      name: found?.name || "",
       symbol: found?.symbol || "",
       controller: ft[1].controller.toText(),
       decimals: ft[1].decimals.toFixed(0),
