@@ -34,7 +34,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   const {
     ingressActor,
     selectSub,
-    setSelSub,
     selectVt,
     setSelVt,
     newVt,
