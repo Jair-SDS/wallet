@@ -124,9 +124,9 @@ const TxSummary = ({
         setAmountReceiver("");
       } else {
         const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
-        const newFee = Math.ceil(holeAmount / (feeConstant + 1));
+        const newFee = Math.ceil(Number(holeAmount) / (feeConstant + 1));
         setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
-        setAmountReceiver(getDecimalAmount(holeAmount - newFee, getFtFromSub(ftId).decimal, true));
+        setAmountReceiver(getDecimalAmount(Number(holeAmount) - newFee, getFtFromSub(ftId).decimal, true));
       }
       setErrMsg("");
     }
@@ -141,9 +141,9 @@ const TxSummary = ({
         setAmount("");
       } else {
         const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
-        const newFee = Math.ceil(holeAmount / feeConstant);
+        const newFee = Math.ceil(Number(holeAmount) / feeConstant);
         setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
-        setAmount(getDecimalAmount(newFee + holeAmount, getFtFromSub(ftId).decimal, true));
+        setAmount(getDecimalAmount(newFee + Number(holeAmount), getFtFromSub(ftId).decimal, true));
       }
       setErrMsg("");
     }
