@@ -34,6 +34,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   const {
     ingressActor,
     selectSub,
+    setSelSub,
     selectVt,
     setSelVt,
     newVt,
@@ -41,8 +42,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     getFtFromVt,
     hplVTsData,
     editVtData,
+    addVt,
     changeVtName,
-    reloadHPLBallance,
     expiration,
     setExpiration,
     onNameChange,
@@ -196,11 +197,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       setErrMsg("");
       if (selectVt) {
         let changeOnlyName = false;
-        console.log(BigInt(selectVt.amount), amnt);
-        console.log(selectVt.backing, newVt.backing);
-        console.log(selectVt.expiration, newVt.expiration);
-        console.log(selectVt.name, newVt.name);
-
         if (
           BigInt(selectVt.amount) === amnt &&
           selectVt.backing === newVt.backing &&
@@ -217,7 +213,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             });
 
             saveInLocalstorage(
-              { id: newVt.virt_sub_acc_id, name: newVt.name, ftId: "", accesBy: selectVt.accesBy },
+              {
+                id: newVt.virt_sub_acc_id,
+                name: newVt.name,
+                ftId: getFtFromVt(newVt.backing).id,
+                accesBy: selectVt.accesBy,
+              },
               selectVt,
               true,
             );
@@ -227,7 +228,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           }
         else
           saveInLocalstorage(
-            { id: newVt.virt_sub_acc_id, name: newVt.name, ftId: "", accesBy: selectVt.accesBy },
+            {
+              id: newVt.virt_sub_acc_id,
+              name: newVt.name,
+              ftId: getFtFromVt(newVt.backing).id,
+              accesBy: selectVt.accesBy,
+            },
             selectVt,
             true,
             true,
@@ -241,7 +247,11 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             BigInt(newVt.backing),
             BigInt(newVt.expiration * 1000000),
           )) as any;
-          saveInLocalstorage({ id: res.ok.id.toString(), name: newVt.name, ftId: "", accesBy: "" }, selectVt!, false);
+          saveInLocalstorage(
+            { id: res.ok.id.toString(), name: newVt.name, ftId: getFtFromVt(newVt.backing).id, accesBy: newVt.accesBy },
+            selectVt!,
+            false,
+          );
         } catch (e) {
           setErrMsg(t("err.back"));
         }
@@ -292,8 +302,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
       editVtData(auxVts);
     } else {
-      changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
-      reloadHPLBallance(true);
+      const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
+      addVt(vt, { ...newVt, amount: amnt.toString() });
     }
     onClose();
   }

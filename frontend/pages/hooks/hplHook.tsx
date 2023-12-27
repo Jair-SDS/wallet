@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import {
   addHplSub,
+  addHplVt,
   editHPLAsset,
   editHPLSub,
   setHPLSelectedSub,
@@ -107,6 +108,19 @@ export const useHPL = (open: boolean) => {
 
   const editSubData = (subData: HPLSubData[]) => {
     dispatch(setHPLSubsData(subData));
+  };
+
+  const addVt = (vt: HPLVirtualData, newVt: HPLVirtualSubAcc) => {
+    const hplVt: HPLVirtualSubAcc = {
+      virt_sub_acc_id: vt.id,
+      name: vt.name,
+      amount: newVt.amount,
+      currency_amount: "0",
+      expiration: newVt.expiration,
+      accesBy: vt.accesBy,
+      backing: newVt.backing,
+    };
+    dispatch(addHplVt(hplVt, vt, newVt.backing));
   };
 
   const editVtData = (vtData: HPLVirtualData[]) => {
@@ -276,8 +290,6 @@ export const useHPL = (open: boolean) => {
     return regex.test(str);
   }
   function changeVtName(subId: string, vtId: string, name: string) {
-    console.log(subId, vtId, name);
-
     const auxSubs = subaccounts.map((sub) => {
       if (sub.sub_account_id === subId) {
         const auxVts = sub.virtuals.map((vt) => {
@@ -328,6 +340,7 @@ export const useHPL = (open: boolean) => {
     addSub,
     editSubData,
     editVtData,
+    addVt,
     getFtFromSub,
     getSubFromVt,
     getFtFromVt,

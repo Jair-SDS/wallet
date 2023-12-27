@@ -385,6 +385,33 @@ const assetSlice = createSlice({
         };
       },
     },
+    addHplVt: {
+      reducer(
+        state,
+        action: PayloadAction<{
+          vt: HPLVirtualSubAcc;
+          vtLocal: HPLVirtualData;
+          subId: string;
+        }>,
+      ) {
+        let newSelSub: HPLSubAccount | undefined = undefined;
+        const { vt, vtLocal, subId } = action.payload;
+        const auxSubs = state.subaccounts.map((sub) => {
+          if (sub.sub_account_id === subId) {
+            newSelSub = { ...sub, virtuals: [...sub.virtuals, vt] };
+            return { ...sub, virtuals: [...sub.virtuals, vt] };
+          } else return sub;
+        });
+        state.subaccounts = auxSubs;
+        state.hplVTsData.push(vtLocal);
+        if (newSelSub) state.selectSub = newSelSub;
+      },
+      prepare(vt: HPLVirtualSubAcc, vtLocal: HPLVirtualData, subId: string) {
+        return {
+          payload: { vt, vtLocal, subId },
+        };
+      },
+    },
     clearDataAsset(state) {
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -447,6 +474,7 @@ export const {
   editHPLAsset,
   editHPLSub,
   addHplSub,
+  addHplVt,
 } = assetSlice.actions;
 
 export default assetSlice.reducer;

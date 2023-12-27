@@ -56,7 +56,10 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           />
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
-          <p className="opacity-60">{t("account.name")}</p>
+          <p className="opacity-60">
+            {t("account.name")}
+            <span className="ml-1 text-RadioCheckColor">*</span>
+          </p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -228,7 +231,7 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
           setLoading(false);
         }
       } else {
-        setAddSubErr("check.mandatory.fields");
+        setAddSubErr(t("check.mandatory.fields"));
         setLoading(false);
       }
     }
