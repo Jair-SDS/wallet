@@ -113,7 +113,7 @@ export const principalToAccountIdentifier = (p: string, s?: number[] | number) =
 };
 
 export const roundToDecimalN = (numb: number | string, decimal: number | string) => {
-  return Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal));
+  return Math.round(Math.round(Number(numb) * Math.pow(10, Number(decimal))) / Math.pow(10, Number(decimal)));
 };
 
 export const toFullDecimal = (numb: bigint | string, decimal: number, maxDecimals?: number) => {
