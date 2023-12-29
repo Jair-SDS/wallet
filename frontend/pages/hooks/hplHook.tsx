@@ -289,13 +289,18 @@ export const useHPL = (open: boolean) => {
     // Test if the string matches the partial string
     return regex.test(str);
   }
-  function changeVtName(subId: string, vtId: string, name: string) {
+  function changeVtName(subId: string, newVt: HPLVirtualSubAcc) {
     const auxSubs = subaccounts.map((sub) => {
       if (sub.sub_account_id === subId) {
         const auxVts = sub.virtuals.map((vt) => {
-          if (vt.virt_sub_acc_id === vtId) {
-            console.log("name:", name);
-            return { ...vt, name: name };
+          if (vt.virt_sub_acc_id === newVt.virt_sub_acc_id) {
+            return {
+              ...vt,
+              name: newVt.name,
+              backing: newVt.backing,
+              amount: newVt.amount,
+              expiration: newVt.expiration,
+            };
           } else return vt;
         });
         return { ...sub, virtuals: auxVts };
@@ -304,9 +309,17 @@ export const useHPL = (open: boolean) => {
     setHplSubs(auxSubs);
 
     if (selectSub) {
+      console.log("selectSub:", selectSub);
+
       const auxVts = selectSub.virtuals.map((vt) => {
-        if (vt.virt_sub_acc_id === vtId) {
-          return { ...vt, name: name };
+        if (vt.virt_sub_acc_id === newVt.virt_sub_acc_id) {
+          return {
+            ...vt,
+            name: newVt.name,
+            backing: newVt.backing,
+            amount: newVt.amount,
+            expiration: newVt.expiration,
+          };
         } else return vt;
       });
       setSelSub({ ...selectSub, virtuals: auxVts });

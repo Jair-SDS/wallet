@@ -210,33 +210,20 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               state: [{ ft_set: amnt }],
               expiration: [BigInt(newVt.expiration * 1000000)],
             });
-
-            saveInLocalstorage(
-              {
-                id: newVt.virt_sub_acc_id,
-                name: newVt.name,
-                ftId: getFtFromVt(newVt.backing).id,
-                accesBy: selectVt.accesBy,
-              },
-              selectVt,
-              true,
-            );
           } catch (e) {
             console.log("updateVT-err:", e);
             setErrMsg(t("err.back"));
           }
-        else
-          saveInLocalstorage(
-            {
-              id: newVt.virt_sub_acc_id,
-              name: newVt.name,
-              ftId: getFtFromVt(newVt.backing).id,
-              accesBy: selectVt.accesBy,
-            },
-            selectVt,
-            true,
-            true,
-          );
+        saveInLocalstorage(
+          {
+            id: newVt.virt_sub_acc_id,
+            name: newVt.name,
+            ftId: getFtFromVt(newVt.backing).id,
+            accesBy: selectVt.accesBy,
+          },
+          selectVt,
+          true,
+        );
       } else {
         try {
           const res = (await ingressActor.openVirtualAccount(
@@ -274,7 +261,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     return res;
   }
 
-  function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean, local?: boolean) {
+  function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean) {
     let auxVts: HPLVirtualData[] = [];
 
     if (edit) {
@@ -296,12 +283,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         vt: auxVts,
       }),
     );
-
-    if (local && edit) {
-      changeVtName(selectSub?.sub_account_id || "", newVt.virt_sub_acc_id, newVt.name);
+    const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
+    if (edit) {
+      console.log("edit:", { ...newVt, amount: amnt.toString() });
       editVtData(auxVts);
+      changeVtName(selectSub?.sub_account_id || "", { ...newVt, amount: amnt.toString() });
     } else {
-      const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
       addVt(vt, { ...newVt, amount: amnt.toString() });
     }
     onClose();
