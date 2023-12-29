@@ -1,9 +1,9 @@
 // svgs
-import { shortAddress } from "@/utils";
-import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
+import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 //
 import { CustomInput } from "@components/Input";
+import { shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { HPLVirtualSubAcc, HplContact } from "@redux/models/AccountModels";
@@ -40,10 +40,10 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
         >
           <DropdownMenu.Trigger asChild>
             <img
-              src={ChevIcon}
-              style={{ width: "2rem", height: "2rem" }}
+              src={SendUserIcon}
+              style={{ width: "1.6rem", height: "1.6rem" }}
               alt="chevron-icon"
-              className={`cursor-pointer ${remotesOpen ? "rotate-90" : ""}`}
+              className="cursor-pointer"
             />
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
