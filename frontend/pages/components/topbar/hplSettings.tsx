@@ -14,7 +14,13 @@ import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
 import { useAppDispatch } from "@redux/Store";
-import { setHPLAssets, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/assets/AssetReducer";
+import {
+  setFeeConstant,
+  setHPLAssets,
+  setHPLClient,
+  setHPLDictionary,
+  setIngressActor,
+} from "@redux/assets/AssetReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { useHPL } from "@pages/hooks/hplHook";
@@ -101,57 +107,68 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   async function onSave() {
     if (!ledger.err && !dictionary.err) {
       setLoading(true);
-
-      try {
-        const hplActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
-          agent: userAgent,
-          canisterId: ledger.principal,
-        });
-        await hplActor.aggregators();
-        dispatch(setIngressActor(hplActor));
-        const client = new HPLClient(ledger.principal, "ic");
-        dispatch(setHPLClient(client));
-        await updateHPLBalances(hplActor, hplContacts, authClient);
-      } catch (e) {
-        setLeder((prev) => {
-          return { ...prev, err: true };
-        });
-        setErrMsg("hpl.ledger.principal.err");
-        setLoading(false);
-        console.log("Ledger-prin-err:", e);
-        return;
-      }
-      if (dictionary.principal !== "")
+      if (hplLedger !== ledger.principal)
         try {
-          const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+          const hplActor = Actor.createActor<IngressActor>(IngressIDLFactory, {
             agent: userAgent,
-            canisterId: dictionary.principal,
+            canisterId: ledger.principal,
           });
-          const dictFTs = await dictActor.getDump();
-          localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
-          dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
-          const auxFts = getUpdatedFts(dictFTs, hplFTs);
-          dispatch(setHPLAssets(auxFts));
-          dispatch(setHplDictionaryPrincipal(dictionary.principal));
-          setOpen("");
+          dispatch(setIngressActor(hplActor));
+          const client = new HPLClient(ledger.principal, "ic");
+          dispatch(setHPLClient(client));
+          try {
+            const feeConstant = await hplActor.feeRatio();
+            dispatch(setFeeConstant(Number(feeConstant.toString())));
+          } catch (e) {
+            console.log("feeConstant-err", e);
+          }
+          localStorage.setItem("hpl-led-pric-" + authClient, ledger.principal);
+          await updateHPLBalances(hplActor, hplContacts, authClient, false, false);
         } catch (e) {
-          setDictionary((prev) => {
+          setLeder((prev) => {
             return { ...prev, err: true };
           });
-          setErrMsg("hpl.dictionary.principal.err");
+          setErrMsg("hpl.ledger.principal.err");
           setLoading(false);
-          console.log("Dict-prin-err:", e);
+          console.log("Ledger-prin-err:", e);
           return;
         }
-      else {
-        const auxFts = getUpdatedFts([], hplFTs);
-        dispatch(setHPLAssets(auxFts));
-        dispatch(setHplDictionaryPrincipal(dictionary.principal));
-        localStorage.removeItem("hpl-dict-pric-" + authClient);
-        dispatch(setHPLDictionary([]));
-        reloadOnlyHPLBallance();
-        setOpen("");
-      }
+      else setOpen("");
+
+      if (hplDictionary !== dictionary.principal)
+        if (dictionary.principal !== "")
+          try {
+            const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+              agent: userAgent,
+              canisterId: dictionary.principal,
+            });
+            const dictFTs = await dictActor.getDump();
+            localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
+            dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
+            const auxFts = getUpdatedFts(dictFTs, hplFTs);
+            dispatch(setHPLAssets(auxFts));
+            dispatch(setHplDictionaryPrincipal(dictionary.principal));
+            setOpen("");
+          } catch (e) {
+            setDictionary((prev) => {
+              return { ...prev, err: true };
+            });
+            setErrMsg("hpl.dictionary.principal.err");
+            setLoading(false);
+            console.log("Dict-prin-err:", e);
+            return;
+          }
+        else {
+          const auxFts = getUpdatedFts([], hplFTs);
+          dispatch(setHPLAssets(auxFts));
+          dispatch(setHplDictionaryPrincipal(dictionary.principal));
+          localStorage.removeItem("hpl-dict-pric-" + authClient);
+          dispatch(setHPLDictionary([]));
+          reloadOnlyHPLBallance();
+          setOpen("");
+        }
+      else;
+      setOpen("");
     }
     setLoading(false);
   }

@@ -285,7 +285,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     );
     const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
     if (edit) {
-      console.log("edit:", { ...newVt, amount: amnt.toString() });
       editVtData(auxVts);
       changeVtName(selectSub?.sub_account_id || "", { ...newVt, amount: amnt.toString() });
     } else {

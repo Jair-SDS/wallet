@@ -309,8 +309,6 @@ export const useHPL = (open: boolean) => {
     setHplSubs(auxSubs);
 
     if (selectSub) {
-      console.log("selectSub:", selectSub);
-
       const auxVts = selectSub.virtuals.map((vt) => {
         if (vt.virt_sub_acc_id === newVt.virt_sub_acc_id) {
           return {
