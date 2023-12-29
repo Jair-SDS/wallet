@@ -144,20 +144,15 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   }
   // HPL DICTIONARY
   const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + myPrincipalTxt);
-  console.log("hplDictPrin:", hplDictPrin);
 
   store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
   if (hplDictPrin) {
-    console.log(hplDictPrin, true);
-
     try {
       const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
         agent: myAgent,
         canisterId: hplDictPrin,
       });
       const dictFTs = await dictActor.getDump();
-      console.log("dictFTs:", dictFTs);
-      store.dispatch(setHplDictionaryPrincipal(hplLedPrin));
       store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
     } catch (e) {
       console.log("dictFTs-err:", e);
