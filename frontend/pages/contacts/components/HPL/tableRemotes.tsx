@@ -1,5 +1,6 @@
 // svgs
 import { DeleteContactTypeEnum } from "@/const";
+import { getDisplayNameFromFt, getDisplaySymbolFromFt } from "@/utils";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 //
 import { useHPL } from "@pages/hooks/hplHook";
@@ -80,7 +81,7 @@ const TableRemotes = ({ cntc, setDeleteHpl, setDeleteModal, setDeleteObject, set
               </td>
               <td className="py-2 px-1 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
                 <div className="flex flex-row justify-start items-center gap-2 w-full">
-                  <p>{`${ft.name ? ft.name : "-"} / ${ft.symbol ? ft.symbol : "-"}`}</p>
+                  <p>{`${getDisplayNameFromFt(ft, t)} / ${getDisplaySymbolFromFt(ft)}`}</p>
                 </div>
               </td>
               <td className="py-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">

@@ -7,7 +7,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
+import { getContactColor, getDecimalAmount, getDisplaySymbolFromFt, getInitialFromName } from "@/utils";
 import { useTranslation } from "react-i18next";
 import { Principal } from "@dfinity/principal";
 
@@ -106,7 +106,7 @@ const SelectTxRemote = ({
                           <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">{`${getDecimalAmount(
                             select.remote.amount,
                             getFtFromSub(select.remote.ftIndex).decimal,
-                          )} ${getFtFromSub(select.remote.ftIndex).symbol}`}</p>
+                          )} ${getDisplaySymbolFromFt(getFtFromSub(select.remote.ftIndex))}`}</p>
                         </div>
                       </div>
                     </div>
@@ -169,9 +169,10 @@ const SelectTxRemote = ({
                               <p>{rmt.name}</p>
                               <div className="flex flex-row justify-start items-center gap-2">
                                 <img src={getAssetLogo(rmt.ftIndex)} className="w-4 h-4" alt="info-icon" />
-                                <p className="opacity-60">{`${getDecimalAmount(rmt.amount, ft.decimal)} ${
-                                  ft.symbol
-                                }`}</p>
+                                <p className="opacity-60">{`${getDecimalAmount(
+                                  rmt.amount,
+                                  ft.decimal,
+                                )} ${getDisplaySymbolFromFt(ft)}`}</p>
                               </div>
                             </div>
                           </div>

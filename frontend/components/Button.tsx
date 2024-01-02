@@ -7,6 +7,7 @@ const button = cva("button", {
       accept: ["bg-AccpetButtonColor", "text-white"],
       deny: ["bg-DenyButtonColor", "text-white"],
       success: ["bg-BorderSuccessColor", "text-white"],
+      neutral: ["dark:bg-HoverColor", "dark:text-white", "bg-BorderColorLight", "text-PrimaryTextColorLight"],
       noBG: ["bg-transparent", "text-AccpetButtonColor"],
     },
     size: {

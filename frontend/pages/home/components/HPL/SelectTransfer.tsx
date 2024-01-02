@@ -13,7 +13,7 @@ import { ChangeEvent, FC, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
-import { getDecimalAmount } from "@/utils";
+import { getDecimalAmount, getDisplaySymbolFromFt } from "@/utils";
 
 interface SelectTransferProps {
   select: HplTxUser;
@@ -159,7 +159,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                           <p className="opacity-70">{`${getDecimalAmount(
                             select.subaccount.amount,
                             getFtFromSub(select.subaccount.ft).decimal,
-                          )} ${getFtFromSub(select.subaccount.ft).symbol}`}</p>
+                          )} ${getDisplaySymbolFromFt(getFtFromSub(select.subaccount.ft))}`}</p>
                         </div>
                       </div>
                       <img
@@ -217,7 +217,10 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                                 </div>
                                 <p className="text-left">{sub.name}</p>
                               </div>
-                              <p className="opacity-70">{`${getDecimalAmount(sub.amount, ft.decimal)} ${ft.symbol}`}</p>
+                              <p className="opacity-70">{`${getDecimalAmount(
+                                sub.amount,
+                                ft.decimal,
+                              )} ${getDisplaySymbolFromFt(ft)}`}</p>
                             </div>
                           </button>
                         );

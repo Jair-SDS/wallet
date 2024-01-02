@@ -613,9 +613,9 @@ export const getFtsFormated = (
     const ftDict = dictFT.find((ft) => ft.assetId === asst[0].toString());
     auxFT.push({
       id: asst[0].toString(),
-      name: ftDict ? ftDict.name : ftData ? ftData.name : "",
+      name: ftData ? ftData.name : "",
       token_name: ftDict ? ftDict.name : "",
-      symbol: ftDict ? ftDict.displaySymbol : ftData ? ftData.symbol : "",
+      symbol: ftData ? ftData.symbol : "",
       token_symbol: ftDict ? ftDict.displaySymbol : "",
       decimal: ftData ? Number(ftData.decimals) : 0,
       description: ftData ? ftData.description : "",
@@ -686,9 +686,7 @@ export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {
     const ftDict = dictFT.find((ft) => ft.assetId.toString() === asst.id);
     auxFT.push({
       ...asst,
-      symbol: ftDict ? ftDict.displaySymbol : asst.symbol,
       token_symbol: ftDict ? ftDict.displaySymbol : asst.token_symbol,
-      name: ftDict ? ftDict.name : asst.name,
       token_name: ftDict ? ftDict.name : asst.token_name,
     });
   });
@@ -716,6 +714,13 @@ export const formatHplRemotes = (
   });
 
   return auxRemotes;
+};
+
+export const getDisplaySymbolFromFt = (ft: HPLAsset) => {
+  return ft.symbol === "" ? (ft.token_symbol === "" ? `[ ${ft.id} ]` : ft.token_symbol) : ft.symbol;
+};
+export const getDisplayNameFromFt = (ft: HPLAsset, t?: any) => {
+  return ft.name === "" ? (ft.token_name === "" ? `[ ${t ? t("asset") : "Asset"} ${ft.id} ]` : ft.token_name) : ft.name;
 };
 
 export const numToUint32Array = (num: number) => {

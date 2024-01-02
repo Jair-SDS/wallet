@@ -7,7 +7,7 @@ import { DrawerOption, DrawerOptionEnum } from "@/const";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
-import { toFullDecimal } from "@/utils";
+import { getDisplaySymbolFromFt, toFullDecimal } from "@/utils";
 
 interface HPLSubaccountActionProps {
   onActionClick(value: DrawerOption): void;
@@ -28,7 +28,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
               selectSub.amount,
               getFtFromSub(selectSub.ft).decimal,
               8,
-            )} ${getFtFromSub(selectSub.ft).symbol}`}</p>
+            )} ${getDisplaySymbolFromFt(getFtFromSub(selectSub.ft))}`}</p>
           </div>
         ) : (
           <p className="font-semibold text-lg">-</p>

@@ -102,9 +102,23 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             disabled
           />
         </div>
-        <div className="flex flex-row justify-between items-center w-full gap-2">
-          <p className="text-TextErrorColor text-sm">{addSubErr != "" ? addSubErr : ""}</p>
-          <CustomButton className="min-w-[5rem]" onClick={onAdd}>
+        <p className="text-TextErrorColor text-sm">{addSubErr != "" ? addSubErr : ""}</p>
+        <div className="flex flex-row justify-end items-center w-full gap-2">
+          <CustomButton
+            intent={"neutral"}
+            className="min-w-[5rem]"
+            onClick={() => {
+              onAdd(true);
+            }}
+          >
+            <p>{t("use.dictionary")}</p>
+          </CustomButton>
+          <CustomButton
+            className="min-w-[5rem]"
+            onClick={() => {
+              onAdd();
+            }}
+          >
             <p>{t("save")}</p>
           </CustomButton>
         </div>
@@ -125,13 +139,16 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
     if (e.target.value.length < 9 && e.target.value.length >= 0) setEditedFt({ ...editedFt, symbol: e.target.value });
   }
 
-  async function onAdd() {
+  async function onAdd(useDict?: boolean) {
     const auxFt = hplFTsData.find((ft) => ft.id === editedFt.id);
     const auxFtsdata: HPLAssetData[] = [];
     if (auxFt) {
       hplFTsData.map((ft) => {
         if (ft.id === editedFt.id) {
-          auxFtsdata.push({ ...ft, name: editedFt.name.trim(), symbol: editedFt.symbol.trim() });
+          const auxFt = useDict
+            ? { ...ft, name: "", symbol: "" }
+            : { ...ft, name: editedFt.name.trim(), symbol: editedFt.symbol.trim() };
+          auxFtsdata.push(auxFt);
         } else auxFtsdata.push(ft);
       });
     }
@@ -142,7 +159,11 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
           ft: auxFtsdata,
         }),
       );
-      editSelAsset(editedFt, auxFtsdata);
+
+      editSelAsset(
+        useDict ? { ...editedFt, name: editedFt.token_name, symbol: editedFt.token_symbol } : editedFt,
+        auxFtsdata,
+      );
     }
     onClose();
   }

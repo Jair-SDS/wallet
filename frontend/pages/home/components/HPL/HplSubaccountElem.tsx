@@ -10,7 +10,7 @@ import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/Input";
 import { AccountHook } from "@pages/hooks/accountHook";
-import { getDecimalAmount, getFirstNChars } from "@/utils";
+import { getDecimalAmount, getDisplayNameFromFt, getDisplaySymbolFromFt, getFirstNChars } from "@/utils";
 import { ThemeHook } from "@pages/hooks/themeHook";
 import { ThemesEnum } from "@/const";
 import { useTranslation } from "react-i18next";
@@ -123,9 +123,7 @@ const HplSubaccountElem = ({
                       sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
                     } text-left w-full break-words`}
                   >
-                    {getFtFromSub(sub.ft).name === ""
-                      ? getFtFromSub(sub.ft)?.symbol || `[ ${t("asset")} ${getFtFromSub(sub.ft).id} ]`
-                      : getFirstNChars(getFtFromSub(sub.ft).name, 18)}
+                    {getFirstNChars(getDisplayNameFromFt(getFtFromSub(sub.ft), t), 18)}
                   </p>
                   <div className="p-0" onClick={setEditFt}>
                     <img src={InfoIcon} className="ml-1" alt="info-icon" />
@@ -133,9 +131,9 @@ const HplSubaccountElem = ({
                 </div>
                 <p
                   className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}
-                >{`${getDecimalAmount(sub.amount, getFtFromSub(sub.ft).decimal)} ${
-                  getFtFromSub(sub.ft).symbol ? getFtFromSub(sub.ft).symbol : `[ ${getFtFromSub(sub.ft).id} ]`
-                }`}</p>
+                >{`${getDecimalAmount(sub.amount, getFtFromSub(sub.ft).decimal)} ${getDisplaySymbolFromFt(
+                  getFtFromSub(sub.ft),
+                )}`}</p>
               </div>
             </div>
           </div>
