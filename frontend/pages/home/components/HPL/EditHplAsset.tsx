@@ -84,6 +84,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
           <p className="opacity-60 mt-4">{t("asset.decimal")}</p>
           <CustomInput
             sizeInput={"medium"}
+            compOutClass={"!w-1/2"}
             intent={"secondary"}
             placeholder=""
             inputClass="opacity-60"
@@ -160,10 +161,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
         }),
       );
 
-      editSelAsset(
-        useDict ? { ...editedFt, name: editedFt.token_name, symbol: editedFt.token_symbol } : editedFt,
-        auxFtsdata,
-      );
+      editSelAsset(useDict ? { ...editedFt, name: "", symbol: "" } : editedFt, auxFtsdata);
     }
     onClose();
   }
