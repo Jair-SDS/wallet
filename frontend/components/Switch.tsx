@@ -8,7 +8,7 @@ interface SwitchButtonProps {
 const SwitchButton = ({ textLeft, textRight, enabled, onToggle }: SwitchButtonProps) => {
   return (
     <div className="flex flex-row justify-start items-center gap-2">
-      {textLeft && <p className="opacity-70">{textLeft}</p>}
+      {textLeft && <p className="opacity-70 dark:text-PrimaryTextColor text-PrimaryTextColorLight">{textLeft}</p>}
       <div
         className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
           enabled ? "bg-[#26A17B]" : "bg-[#7E7D91]"
@@ -19,7 +19,7 @@ const SwitchButton = ({ textLeft, textRight, enabled, onToggle }: SwitchButtonPr
           className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${enabled ? "ml-5" : "ml-1"}`}
         ></div>
       </div>
-      {textRight && <p className="opacity-70">{textRight}</p>}
+      {textRight && <p className="opacity-70 dark:text-PrimaryTextColor text-PrimaryTextColorLight">{textRight}</p>}
     </div>
   );
 };

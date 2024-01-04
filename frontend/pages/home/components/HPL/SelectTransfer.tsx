@@ -13,8 +13,9 @@ import { ChangeEvent, FC, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
-import { getDecimalAmount, getDisplaySymbolFromFt } from "@/utils";
+import { getDecimalAmount } from "@/utils";
 import SwitchButton from "@components/Switch";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface SelectTransferProps {
   select: HplTxUser;
@@ -144,10 +145,17 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                             </div>
                             <p className="text-left">{select.subaccount.name}</p>
                           </div>
-                          <p className="opacity-70">{`${getDecimalAmount(
-                            select.subaccount.amount,
-                            getFtFromSub(select.subaccount.ft).decimal,
-                          )} ${getDisplaySymbolFromFt(getFtFromSub(select.subaccount.ft))}`}</p>
+                          <AssetSymbol
+                            ft={getFtFromSub(select.subaccount.ft)}
+                            sufix={
+                              <p className="opacity-70">
+                                {`${getDecimalAmount(
+                                  select.subaccount.amount,
+                                  getFtFromSub(select.subaccount.ft).decimal,
+                                )}`}
+                              </p>
+                            }
+                          />
                         </div>
                       </div>
                       <img
@@ -205,10 +213,11 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                                 </div>
                                 <p className="text-left">{sub.name}</p>
                               </div>
-                              <p className="opacity-70">{`${getDecimalAmount(
-                                sub.amount,
-                                ft.decimal,
-                              )} ${getDisplaySymbolFromFt(ft)}`}</p>
+
+                              <AssetSymbol
+                                ft={ft}
+                                sufix={<p className="opacity-70">{`${getDecimalAmount(sub.amount, ft.decimal)}`}</p>}
+                              />
                             </div>
                           </button>
                         );

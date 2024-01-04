@@ -7,7 +7,8 @@ import { DrawerOption, DrawerOptionEnum } from "@/const";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
-import { getDisplaySymbolFromFt, toFullDecimal } from "@/utils";
+import { toFullDecimal } from "@/utils";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface HPLSubaccountActionProps {
   onActionClick(value: DrawerOption): void;
@@ -24,11 +25,15 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
         {selectSub ? (
           <div className="flex flex-row justify-start items-center gap-3 w-full">
             <img src={getAssetLogo(selectSub.ft)} className="w-8 h-8" alt="info-icon" />
-            <p className="font-semibold text-2x1">{`${toFullDecimal(
-              selectSub.amount,
-              getFtFromSub(selectSub.ft).decimal,
-              8,
-            )} ${getDisplaySymbolFromFt(getFtFromSub(selectSub.ft))}`}</p>
+
+            <AssetSymbol
+              ft={getFtFromSub(selectSub.ft)}
+              sufix={
+                <p className="font-semibold text-2x1">
+                  {`${toFullDecimal(selectSub.amount, getFtFromSub(selectSub.ft).decimal, 8)}`}
+                </p>
+              }
+            />
           </div>
         ) : (
           <p className="font-semibold text-lg">-</p>

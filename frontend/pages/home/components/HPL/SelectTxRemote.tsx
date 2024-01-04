@@ -7,9 +7,10 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { getContactColor, getDecimalAmount, getDisplaySymbolFromFt, getInitialFromName } from "@/utils";
+import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
 import { useTranslation } from "react-i18next";
 import { Principal } from "@dfinity/principal";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -103,10 +104,18 @@ const SelectTxRemote = ({
                         <p>{select.remote.name}</p>
                         <div className="flex flex-row justify-start items-center gap-2">
                           <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
-                          <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">{`${getDecimalAmount(
-                            select.remote.amount,
-                            getFtFromSub(select.remote.ftIndex).decimal,
-                          )} ${getDisplaySymbolFromFt(getFtFromSub(select.remote.ftIndex))}`}</p>
+
+                          <AssetSymbol
+                            ft={getFtFromSub(select.remote.ftIndex)}
+                            sufix={
+                              <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
+                                {`${getDecimalAmount(
+                                  select.remote.amount,
+                                  getFtFromSub(select.remote.ftIndex).decimal,
+                                )}`}{" "}
+                              </p>
+                            }
+                          />
                         </div>
                       </div>
                     </div>
@@ -169,10 +178,11 @@ const SelectTxRemote = ({
                               <p>{rmt.name}</p>
                               <div className="flex flex-row justify-start items-center gap-2">
                                 <img src={getAssetLogo(rmt.ftIndex)} className="w-4 h-4" alt="info-icon" />
-                                <p className="opacity-60">{`${getDecimalAmount(
-                                  rmt.amount,
-                                  ft.decimal,
-                                )} ${getDisplaySymbolFromFt(ft)}`}</p>
+
+                                <AssetSymbol
+                                  ft={ft}
+                                  sufix={<p className="opacity-60">{`${getDecimalAmount(rmt.amount, ft.decimal)}`}</p>}
+                                />
                               </div>
                             </div>
                           </div>

@@ -1,10 +1,11 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import { getDisplayNameFromFt, getDisplaySymbolFromFt, shortAddress } from "@/utils";
+import { getDisplayNameFromFt, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface AssetListTableProps {
   assets: HPLAsset[];
@@ -64,7 +65,7 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <p>{getDisplaySymbolFromFt(ft)}</p>
+                    <AssetSymbol ft={ft} />
                   </div>
                 </td>
                 <td className="p-2">

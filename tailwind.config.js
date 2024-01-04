@@ -96,6 +96,7 @@ module.exports = {
       HoverColorLight2:"#e0f3fc",
       HoverColorLight3:"#E2E2E2",
       AmountRemote:"#258CBF",
+      AssetSymbol:"#805E0C",
       
       black: colors.black,
       white: colors.white,

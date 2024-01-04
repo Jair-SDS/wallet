@@ -4,8 +4,9 @@ import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg"
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
 import { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { getDecimalAmount, getDisplaySymbolFromFt, shortAddress } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomInput } from "@components/Input";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface TxAccountInfoProps {
   txUser: HplTxUser;
@@ -39,12 +40,16 @@ const TxAccountInfo = ({
           <p className="opacity-70 ml-2 font-thin">{`${getDecimalAmount(
             txUser.subaccount.amount,
             getFtFromSub(ftId).decimal,
-          )} ${getDisplaySymbolFromFt(getFtFromSub(ftId))}`}</p>
+          )}`}</p>
         ) : (
-          <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote mt-2 ml-2 font-thin">{`${getDecimalAmount(
-            rmtAmount,
-            getFtFromSub(ftId).decimal,
-          )} ${getDisplaySymbolFromFt(getFtFromSub(ftId))}`}</p>
+          <AssetSymbol
+            ft={getFtFromSub(ftId)}
+            sufix={
+              <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote mt-2 ml-2 font-thin">
+                {`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)}`}
+              </p>
+            }
+          />
         )}
         <CustomInput
           intent={"secondary"}
@@ -64,7 +69,7 @@ const TxAccountInfo = ({
                 </button>
               )}
               <img src={getAssetLogo(ftId)} className="w-6 h-6" alt="info-icon" />
-              <p className="opacity-60">{getDisplaySymbolFromFt(getFtFromSub(ftId || "0"))}</p>
+              <AssetSymbol ft={getFtFromSub(ftId)} outBoxClass="ml-2" textClass="opacity-60" />
             </div>
           }
         />

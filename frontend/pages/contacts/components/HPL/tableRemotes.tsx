@@ -1,7 +1,8 @@
 // svgs
 import { DeleteContactTypeEnum } from "@/const";
-import { getDisplayNameFromFt, getDisplaySymbolFromFt } from "@/utils";
+import { getDisplayNameFromFt } from "@/utils";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
+import AssetSymbol from "@components/AssetSymbol";
 //
 import { useHPL } from "@pages/hooks/hplHook";
 import { HplContact, HplRemote } from "@redux/models/AccountModels";
@@ -81,7 +82,7 @@ const TableRemotes = ({ cntc, setDeleteHpl, setDeleteModal, setDeleteObject, set
               </td>
               <td className="py-2 px-1 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
                 <div className="flex flex-row justify-start items-center gap-2 w-full">
-                  <p>{`${getDisplayNameFromFt(ft, t)} / ${getDisplaySymbolFromFt(ft)}`}</p>
+                  <AssetSymbol ft={ft} sufix={<p>{`${getDisplayNameFromFt(ft, t)} /`}</p>} />
                 </div>
               </td>
               <td className="py-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
