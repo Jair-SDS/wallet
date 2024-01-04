@@ -1,11 +1,12 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import { getDisplayNameFromFt, shortAddress } from "@/utils";
+import { getDecimalAmount, getDisplayNameFromFt, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
+import CustomHoverCard from "@components/HoverCard";
 
 interface AssetListTableProps {
   assets: HPLAsset[];
@@ -21,28 +22,28 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
 
   return (
     <div className="flex flex-col w-full h-full mt-3 scroll-y-light max-h-[calc(100vh-15rem)]">
-      <table className="w-full  text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-        <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 sticky top-0 z-[1]">
-          <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor ">
+      <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
+        <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
+          <tr>
+            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
               <p>{t("logo")}</p>
             </th>
-            <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[24%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 w-[24%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-2 w-[12%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 w-[12%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[25%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 w-[25%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>
-            <th className="p-2 w-[15%] bg-PrimaryColorLight dark:bg-PrimaryColor">
+            <th className="p-2 w-[15%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
             </th>
           </tr>
@@ -53,7 +54,7 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
             return (
               <tr
                 key={k}
-                className={`border-b border-BorderColorTwoLight dark:border-BorderColorTwo ${
+                className={`border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal ${
                   selAsset?.id === ft.id ? "bg-SelectRowColor/20" : ""
                 }`}
               >
@@ -65,7 +66,20 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <AssetSymbol ft={ft} />
+                    {ft.description ? (
+                      <CustomHoverCard
+                        arrowFill="fill-SelectRowColor"
+                        trigger={<AssetSymbol ft={ft} textClass="!text-PrimaryTextColor/70 font-normal" />}
+                      >
+                        <div className="flex flex-col justify-center items-center max-w-xl bg-PrimaryColorLight dark:bg-PrimaryColor border border-SelectRowColor rounded">
+                          <div className="flex justify-center items-center w-full h-full bg-SelectRowColor/20 p-1">
+                            <p className="text-sm">{ft.description}</p>
+                          </div>
+                        </div>
+                      </CustomHoverCard>
+                    ) : (
+                      <AssetSymbol ft={ft} textClass="!text-PrimaryTextColor/70 font-normal" />
+                    )}
                   </div>
                 </td>
                 <td className="p-2">
@@ -87,7 +101,7 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <p>{ft.supply}</p>
+                    <p>{getDecimalAmount(ft.supply, ft.decimal)}</p>
                   </div>
                 </td>
                 <td className="p-2">
