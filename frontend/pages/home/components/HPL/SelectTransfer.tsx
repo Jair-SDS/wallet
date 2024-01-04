@@ -14,6 +14,7 @@ import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
 import { getDecimalAmount, getDisplaySymbolFromFt } from "@/utils";
+import SwitchButton from "@components/Switch";
 
 interface SelectTransferProps {
   select: HplTxUser;
@@ -90,20 +91,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
       </div>
       {select.type === HplTransactionsEnum.Enum.VIRTUAL && (
         <div className="flex flex-row justify-between items-center w-full">
-          <div className="flex flex-row justify-start items-center gap-2">
-            <p className="opacity-70">{t("contatc.book")}</p>
-            <div
-              className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
-                manual ? "bg-[#26A17B]" : "bg-[#7E7D91]"
-              }`}
-              onClick={onManualToggle}
-            >
-              <div
-                className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${manual ? "ml-5" : "ml-1"}`}
-              ></div>
-            </div>
-            <p className="opacity-70">{t("new")}</p>
-          </div>
+          <SwitchButton textLeft={t("contatc.book")} textRight={t("new")} enabled={manual} onToggle={onManualToggle} />
           {manual && (
             <img
               src={QRIcon}

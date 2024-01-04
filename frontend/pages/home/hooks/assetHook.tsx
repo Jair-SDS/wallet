@@ -1,4 +1,4 @@
-import { ProtocolType, ProtocolTypeEnum } from "@/const";
+import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
 import { defaultTokens } from "@/defaultTokens";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
@@ -10,6 +10,7 @@ import {
   setSelectedAccount,
   setSelectedAsset,
 } from "@redux/assets/AssetReducer";
+import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ export const AssetHook = () => {
     acordeonIdx,
     tokensMarket,
     subaccounts,
+    dictionaryHplFTs,
     ingressActor,
   } = useAppSelector((state) => state.asset);
   const { userAgent, authClient } = useAppSelector((state) => state.auth);
@@ -36,7 +38,10 @@ export const AssetHook = () => {
 
   const [searchKey, setSearchKey] = useState("");
   const setAcordeonIdx = (assetIdx: string[]) => dispatch(setAcordeonAssetIdx(assetIdx));
-  const setProtocolType = (prot: ProtocolType) => dispatch(setProtocol(prot));
+  const setProtocolType = (prot: ProtocolType) => {
+    dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+    dispatch(setProtocol(prot));
+  };
   const [assetInfo, setAssetInfo] = useState<Asset | undefined>();
 
   const [editNameId, setEditNameId] = useState("");
@@ -133,5 +138,6 @@ export const AssetHook = () => {
     deleteAsset,
     // HPL
     subaccounts,
+    dictionaryHplFTs,
   };
 };

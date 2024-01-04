@@ -16,7 +16,7 @@ import { Token } from "@redux/models/TokenModels";
 import { ICRC1systemAssets } from "./defaultTokens";
 
 // Enums
-export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN"]);
+export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS"]);
 export type RoutingPath = z.infer<typeof RoutingPathEnum>;
 
 export const ProtocolTypeEnum = z.enum(["ICRC1", "HPL"]);

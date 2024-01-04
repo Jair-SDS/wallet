@@ -17,9 +17,10 @@ import { AccountHook } from "@pages/hooks/accountHook";
 interface AddSubaccountProps {
   setAssetOpen(value: boolean): void;
   open: boolean;
+  extAsset?: HPLAsset;
 }
 
-const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
+const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => {
   const { t } = useTranslation();
   const { authClient } = AccountHook();
   const {
@@ -43,6 +44,9 @@ const AddSubaccount = ({ setAssetOpen, open }: AddSubaccountProps) => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(false);
+    if (extAsset) {
+      setSelAsset(extAsset);
+    }
   }, [open]);
 
   return (

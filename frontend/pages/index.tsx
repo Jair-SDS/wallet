@@ -10,6 +10,7 @@ import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
+const Assets = lazy(() => import("./assets"));
 
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
@@ -66,6 +67,8 @@ const SwitchRoute = () => {
         return Contacts;
       case RoutingPathEnum.Enum.HOME:
         return Home;
+      case RoutingPathEnum.Enum.ASSETS:
+        return Assets;
       default:
         return Home;
     }
