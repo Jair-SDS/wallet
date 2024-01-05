@@ -29,7 +29,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
             <AssetSymbol
               ft={getFtFromSub(selectSub.ft)}
               textClass="font-semibold text-2x1 text-[#ffff]"
-              inBoxClass="text-[#ffff]"
+              inBoxClass="text-[#ffff] !text-lg"
               sufix={
                 <p className="font-semibold text-2x1">
                   {`${toFullDecimal(selectSub.amount, getFtFromSub(selectSub.ft).decimal, 8)}`}

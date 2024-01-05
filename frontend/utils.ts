@@ -716,9 +716,9 @@ export const formatHplRemotes = (
   return auxRemotes;
 };
 
-// export const getDisplaySymbolFromFt = (ft: HPLAsset) => {
-//   return ft.symbol === "" ? (ft.token_symbol === "" ? `[ ${ft.id} ]` : ft.token_symbol) : ft.symbol;
-// };
+export const getDisplaySymbolFromFt = (ft: HPLAsset) => {
+  return ft.symbol === "" ? (ft.token_symbol === "" ? "" : ft.token_symbol) : ft.symbol;
+};
 export const getDisplayNameFromFt = (ft: HPLAsset, t?: any) => {
   return ft.name === "" ? (ft.token_name === "" ? `[ ${t ? t("asset") : "Asset"} ${ft.id} ]` : ft.token_name) : ft.name;
 };

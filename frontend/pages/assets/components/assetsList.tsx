@@ -1,7 +1,7 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import { getDecimalAmount, getDisplayNameFromFt, shortAddress } from "@/utils";
+import { getDecimalAmount, getDisplayNameFromFt } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -31,16 +31,16 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
             <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[24%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
             <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-2 w-[12%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[25%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[25%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>
             <th className="p-2 w-[15%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
@@ -99,14 +99,14 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-center items-center w-full">
-                    <div className="flex flex-row justify-center items-center px-2 rounded bg-BorderColorTwoLight">
+                    <div className="flex flex-row justify-center items-center px-2 rounded bg-AssetSymbol/20 border border-AssetSymbol">
                       <p className=" text-PrimaryTextColor">{ft.id}</p>
                     </div>
                   </div>
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <p>{shortAddress(ft.controller, 5, 4)}</p>
+                    <p className="text-left">{ft.controller}</p>
                   </div>
                 </td>
                 <td className="p-2">
