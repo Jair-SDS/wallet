@@ -147,6 +147,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                           </div>
                           <AssetSymbol
                             ft={getFtFromSub(select.subaccount.ft)}
+                            textClass="opacity-70"
                             sufix={
                               <p className="opacity-70">
                                 {`${getDecimalAmount(
@@ -216,6 +217,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
 
                               <AssetSymbol
                                 ft={ft}
+                                textClass="opacity-70"
                                 sufix={<p className="opacity-70">{`${getDecimalAmount(sub.amount, ft.decimal)}`}</p>}
                               />
                             </div>

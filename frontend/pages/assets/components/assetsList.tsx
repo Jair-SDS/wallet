@@ -69,16 +69,26 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                     {ft.description ? (
                       <CustomHoverCard
                         arrowFill="fill-SelectRowColor"
-                        trigger={<AssetSymbol ft={ft} textClass="!text-PrimaryTextColor/70 font-normal" />}
+                        trigger={
+                          <AssetSymbol
+                            ft={ft}
+                            textClass="text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 font-normal"
+                          />
+                        }
                       >
                         <div className="flex flex-col justify-center items-center max-w-xl bg-PrimaryColorLight dark:bg-PrimaryColor border border-SelectRowColor rounded">
                           <div className="flex justify-center items-center w-full h-full bg-SelectRowColor/20 p-1">
-                            <p className="text-sm">{ft.description}</p>
+                            <p className="text-sm text-PrimaryTextColorLight dark:text-PrimaryTextColor">
+                              {ft.description}
+                            </p>
                           </div>
                         </div>
                       </CustomHoverCard>
                     ) : (
-                      <AssetSymbol ft={ft} textClass="!text-PrimaryTextColor/70 font-normal" />
+                      <AssetSymbol
+                        ft={ft}
+                        textClass="text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70  font-normal"
+                      />
                     )}
                   </div>
                 </td>

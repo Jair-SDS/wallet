@@ -104,9 +104,9 @@ const SelectTxRemote = ({
                         <p>{select.remote.name}</p>
                         <div className="flex flex-row justify-start items-center gap-2">
                           <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
-
                           <AssetSymbol
                             ft={getFtFromSub(select.remote.ftIndex)}
+                            textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
                             sufix={
                               <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
                                 {`${getDecimalAmount(
@@ -181,6 +181,7 @@ const SelectTxRemote = ({
 
                                 <AssetSymbol
                                   ft={ft}
+                                  textClass="opacity-60"
                                   sufix={<p className="opacity-60">{`${getDecimalAmount(rmt.amount, ft.decimal)}`}</p>}
                                 />
                               </div>

@@ -1,3 +1,5 @@
+import { getDisplayNameFromFt } from "@/utils";
+import AssetSymbol from "@components/AssetSymbol";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplRemote } from "@redux/models/AccountModels";
@@ -92,7 +94,7 @@ const AddRemoteList = ({
                     </div>
                   </td>
                   <td className="px-2">
-                    <p>{`${ft.name ? ft.name : "-"} / ${ft.symbol ? ft.symbol : "-"}`}</p>
+                    <AssetSymbol ft={ft} compClass="!gap-1" sufix={<p>{`${getDisplayNameFromFt(ft, t)} /`}</p>} />
                   </td>
                   <td>
                     <div className="flex flex-row justify-center items-center">

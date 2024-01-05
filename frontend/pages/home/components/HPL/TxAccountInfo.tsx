@@ -36,21 +36,26 @@ const TxAccountInfo = ({
   const amountField = () => {
     return (
       <div className={`flex ${sent ? "flex-col my-2" : "flex-col-reverse mb-4"} justify-end items-start w-full gap-1`}>
-        {txUser.subaccount ? (
-          <p className="opacity-70 ml-2 font-thin">{`${getDecimalAmount(
-            txUser.subaccount.amount,
-            getFtFromSub(ftId).decimal,
-          )}`}</p>
-        ) : (
+        {
           <AssetSymbol
             ft={getFtFromSub(ftId)}
+            textClass={`${
+              txUser.subaccount ? "opacity-50" : "dark:text-RemoteAmount text-AmountRemote dark:opacity-60"
+            } font-light`}
             sufix={
-              <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote mt-2 ml-2 font-thin">
-                {`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)}`}
-              </p>
+              txUser.subaccount ? (
+                <p className="opacity-70 ml-2 font-light">{`${getDecimalAmount(
+                  txUser.subaccount.amount,
+                  getFtFromSub(ftId).decimal,
+                )}`}</p>
+              ) : (
+                <p className="dark:opacity-60 dark:text-RemoteAmount text-AmountRemote ml-2 font-light">
+                  {`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)}`}
+                </p>
+              )
             }
           />
-        )}
+        }
         <CustomInput
           intent={"secondary"}
           value={amnt}

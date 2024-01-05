@@ -13,7 +13,7 @@ const CustomHoverCard = ({ trigger, children, arrowFill, side = "top" }: CustomH
     <HoverCard.Root>
       <HoverCard.Trigger>{trigger}</HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side={side} sideOffset={5}>
+        <HoverCard.Content side={side} sideOffset={5} className="!z-[2000]">
           {children}
           {arrowFill && <HoverCard.Arrow className={arrowFill} />}
         </HoverCard.Content>

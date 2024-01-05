@@ -117,10 +117,11 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 >
                   {vt.name}
                 </td>
-                <td className={`${rowStyle(vt.expiration)}`}>{`${getDecimalAmount(
-                  vt.amount,
-                  getFtFromSub(selectSub?.ft || "0").decimal,
-                )} ${selectSub ? getFtFromSub(selectSub.ft).symbol : ""}`}</td>
+                <td className={`${rowStyle(vt.expiration)}`}>
+                  {`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)} ${
+                    selectSub ? getFtFromSub(selectSub.ft).symbol : ""
+                  }`}
+                </td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getAccesByContactName(vt.accesBy)}</td>
                 <td className="py-2">

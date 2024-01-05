@@ -132,6 +132,7 @@ const HplSubaccountElem = ({
                 </div>
                 <AssetSymbol
                   ft={getFtFromSub(sub.ft)}
+                  textClass={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}
                   sufix={
                     <p className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}>
                       {`${getDecimalAmount(sub.amount, getFtFromSub(sub.ft).decimal)}`}{" "}
