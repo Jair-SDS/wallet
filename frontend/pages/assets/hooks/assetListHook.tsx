@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export const useAssetList = () => {
   const { dictionaryHplFTs, hplFTs, subaccounts } = useAppSelector((state) => state.asset);
+  const { hplContacts } = useAppSelector((state) => state.contacts);
 
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [searchKey, setSearchKey] = useState("");
@@ -52,6 +53,11 @@ export const useAssetList = () => {
     setAssetList(auxhplFTs);
   }, [searchKey, allAssets, subaccounts, hplFTs]);
 
+  const getContactName = (principal: string) => {
+    const found = hplContacts.find((cntc) => cntc.principal === principal);
+    return found ? found.name : "";
+  };
+
   return {
     searchKey,
     setSearchKey,
@@ -63,5 +69,6 @@ export const useAssetList = () => {
     setSelAsset,
     editView,
     setEditView,
+    getContactName,
   };
 };

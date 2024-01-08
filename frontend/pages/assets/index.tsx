@@ -19,6 +19,7 @@ const Assets = () => {
     setSelAsset,
     editView,
     setEditView,
+    getContactName,
   } = useAssetList();
   const { assetOpen, setAssetOpen } = DrawerHook();
 
@@ -46,6 +47,7 @@ const Assets = () => {
             selAsset={selAsset}
             setSelAsset={setSelAsset}
             setEditView={setEditView}
+            getContactName={getContactName}
           />
           <div
             id="asset-drower"

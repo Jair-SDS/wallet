@@ -17,6 +17,7 @@ interface AssetListTableProps {
   selAsset?: HPLAsset;
   setSelAsset(value: HPLAsset | undefined): void;
   setEditView(value: boolean): void;
+  getContactName(principal: string): string;
 }
 
 const AssetListTable = ({
@@ -26,6 +27,7 @@ const AssetListTable = ({
   selAsset,
   setSelAsset,
   setEditView,
+  getContactName,
 }: AssetListTableProps) => {
   const { t } = useTranslation();
   const { getAssetLogo } = useHPL(false);
@@ -65,6 +67,7 @@ const AssetListTable = ({
         <tbody>
           {assets.map((ft, k) => {
             const find = subsInAsset.find((sub) => sub.id === ft.id);
+            const contactName = getContactName(ft.controller);
             return (
               <tr
                 key={k}
@@ -81,11 +84,14 @@ const AssetListTable = ({
                   </div>
                 </td>
                 <td className="p-2">
-                  <div className="flex flex-row justify-start items-center w-full gap-2">
-                    <p className="text-left">
-                      {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
-                    </p>
-                    <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
+                  <div className="flex flex-col justify-start items-start w-full gap-2">
+                    {contactName && <p>{contactName}</p>}
+                    <div className="flex flex-row justify-start items-center w-full gap-2">
+                      <p className="text-left">
+                        {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
+                      </p>
+                      <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
+                    </div>
                   </div>
                 </td>{" "}
                 <td className="p-2">
