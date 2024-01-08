@@ -13,6 +13,7 @@ import { HPLAsset } from "@redux/models/AccountModels";
 import { CustomButton } from "@components/Button";
 import LoadingLoader from "@components/Loader";
 import { AccountHook } from "@pages/hooks/accountHook";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface AddSubaccountProps {
   setAssetOpen(value: boolean): void;
@@ -165,14 +166,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                             }}
                           >
                             <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />
-                            <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                              <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
-                            </div>
-                            <p>
-                              {`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " / " : ""}${
-                                ft.symbol !== "" ? ft.symbol : ""
-                              }`}
-                            </p>
+                            <AssetSymbol ft={ft} />
                           </button>
                         );
                       })}
