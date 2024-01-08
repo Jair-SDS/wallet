@@ -1,12 +1,13 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import { getDecimalAmount, getDisplayNameFromFt } from "@/utils";
+import { getDecimalAmount, getDisplayNameFromFt, shortPrincipals } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import CustomHoverCard from "@components/HoverCard";
+import { CustomCopy } from "@components/CopyTooltip";
 
 interface AssetListTableProps {
   assets: HPLAsset[];
@@ -105,8 +106,11 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                   </div>
                 </td>
                 <td className="p-2">
-                  <div className="flex flex-row justify-start items-center w-full">
-                    <p className="text-left">{ft.controller}</p>
+                  <div className="flex flex-row justify-start items-center w-full gap-2">
+                    <p className="text-left">
+                      {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
+                    </p>
+                    <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
                   </div>
                 </td>
                 <td className="p-2">

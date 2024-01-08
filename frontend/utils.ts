@@ -97,6 +97,21 @@ export const shortAddress = (address: string, digitsL: number, digitsR: number, 
   else return address;
 };
 
+export const shortPrincipals = (princ: string, groupsL: number, groupsR: number, prefix?: string, sufix?: string) => {
+  const groups = princ.split("-");
+  if (groups.length > groupsL + groupsR) {
+    let left = "";
+    for (let index = 0; index < groupsL; index++) {
+      left = left + groups[index] + "-";
+    }
+    let right = "-";
+    for (let index = 0; index < groupsR; index++) {
+      right = right + groups[groups.length - 1 - index] + "-";
+    }
+    return `${prefix ? prefix : ""}${left} ... ${right.slice(0, -1)}${sufix ? sufix : ""}`;
+  } else return princ;
+};
+
 export const getContactColor = (idx: number) => {
   if (idx % 3 === 0) return "bg-ContactColor1";
   else if (idx % 3 === 1) return "bg-ContactColor2";
