@@ -16,6 +16,12 @@ const Menu = () => {
 
   const menuList = [
     {
+      name: "HPLAssets",
+      path: RoutingPathEnum.Enum.ASSETS,
+      label: `${dictionaryHplFTs?.length !== 1 ? t("assets") : t("asset")} (${dictionaryHplFTs?.length})`,
+      show: protocol === ProtocolTypeEnum.Enum.HPL,
+    },
+    {
       name: "Assets",
       path: RoutingPathEnum.Enum.HOME,
       label:
@@ -23,12 +29,6 @@ const Menu = () => {
           ? `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`
           : `${subaccounts?.length !== 1 ? t("accounts") : t("account")} (${subaccounts?.length})`,
       show: true,
-    },
-    {
-      name: "HPLAssets",
-      path: RoutingPathEnum.Enum.ASSETS,
-      label: `${dictionaryHplFTs?.length !== 1 ? t("assets") : t("asset")} (${dictionaryHplFTs?.length})`,
-      show: protocol === ProtocolTypeEnum.Enum.HPL,
     },
     {
       name: "Contacts",

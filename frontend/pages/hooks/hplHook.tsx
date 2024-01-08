@@ -42,6 +42,7 @@ export const useHPL = (open: boolean) => {
     hplSubsData,
     hplVTsData,
     ingressActor,
+    nHpl,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient } = useAppSelector((state) => state.auth);
@@ -391,6 +392,7 @@ export const useHPL = (open: boolean) => {
     accesErr,
     setAccesErr,
     changeVtName,
+    nHpl,
     reloadHPLBallance,
   };
 };

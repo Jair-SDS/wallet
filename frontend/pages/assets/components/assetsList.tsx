@@ -1,7 +1,8 @@
 // svgs
-import PlusIcon from "@assets/svg/files/plus-icon.svg";
+import PlusIcon from "@assets/svg/files/plus-icon.svg"; // svgs
+import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 //
-import { getDecimalAmount, getDisplayNameFromFt, shortPrincipals } from "@/utils";
+import { getDisplayNameFromFt, shortPrincipals } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -15,9 +16,17 @@ interface AssetListTableProps {
   setAssetOpen(value: boolean): void;
   selAsset?: HPLAsset;
   setSelAsset(value: HPLAsset | undefined): void;
+  setEditView(value: boolean): void;
 }
 
-const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAsset }: AssetListTableProps) => {
+const AssetListTable = ({
+  assets,
+  subsInAsset,
+  setAssetOpen,
+  selAsset,
+  setSelAsset,
+  setEditView,
+}: AssetListTableProps) => {
   const { t } = useTranslation();
   const { getAssetLogo } = useHPL(false);
 
@@ -26,27 +35,31 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
       <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
           <tr>
+            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{"ID"}</p>
+            </th>
+            <th className="p-2 w-[21%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{t("controller")}</p>
+            </th>
+            <th className="p-2 w-[16%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{t("supply")}</p>
+            </th>
+            <th className="p-2 w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{t("decimals")}</p>
+            </th>
             <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
               <p>{t("logo")}</p>
             </th>
             <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[16%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
-              <p>{"ID"}</p>
-            </th>
-            <th className="p-2 w-[25%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
-              <p>{t("controller")}</p>
-            </th>
-            <th className="p-2 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
-              <p>{t("supply")}</p>
-            </th>
-            <th className="p-2 w-[15%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[12%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
             </th>
+            <th className="p-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
           </tr>
         </thead>
         <tbody>
@@ -62,6 +75,31 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 <td className="p-0 h-14">
                   <div className="relative flex flex-row justify-center items-center w-full">
                     {selAsset?.id === ft.id && <div className="absolute left-0 w-1 h-14 bg-SelectRowColor"></div>}
+                    <div className="flex flex-row justify-center items-center px-2 rounded bg-AssetSymbol/20 border border-AssetSymbol">
+                      <p className=" text-PrimaryTextColorLight dark:text-PrimaryTextColor">{ft.id}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="p-2">
+                  <div className="flex flex-row justify-start items-center w-full gap-2">
+                    <p className="text-left">
+                      {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
+                    </p>
+                    <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
+                  </div>
+                </td>{" "}
+                <td className="p-2">
+                  <div className="flex flex-row justify-start items-center w-full">
+                    <p>{ft.supply}</p>
+                  </div>
+                </td>{" "}
+                <td className="p-2">
+                  <div className="flex flex-row justify-center items-center w-full">
+                    <p>{ft.decimal}</p>
+                  </div>
+                </td>
+                <td className="p-2">
+                  <div className="relative flex flex-row justify-center items-center w-full">
                     <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />
                   </div>
                 </td>
@@ -100,26 +138,6 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-center items-center w-full">
-                    <div className="flex flex-row justify-center items-center px-2 rounded bg-AssetSymbol/20 border border-AssetSymbol">
-                      <p className=" text-PrimaryTextColor">{ft.id}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-2">
-                  <div className="flex flex-row justify-start items-center w-full gap-2">
-                    <p className="text-left">
-                      {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
-                    </p>
-                    <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
-                  </div>
-                </td>
-                <td className="p-2">
-                  <div className="flex flex-row justify-start items-center w-full">
-                    <p>{getDecimalAmount(ft.supply, ft.decimal)}</p>
-                  </div>
-                </td>
-                <td className="p-2">
-                  <div className="flex flex-row justify-center items-center w-full">
                     <div
                       className={"flex flex-row justify-between items-center h-8 rounded bg-black/10 dark:bg-white/10"}
                     >
@@ -137,6 +155,16 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
                     </div>
                   </div>
                 </td>
+                <td className="p-2">
+                  <div className="flex flex-row justify-center items-center w-full">
+                    <PencilIcon
+                      onClick={() => {
+                        onEdit(ft);
+                      }}
+                      className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor opacity-50 cursor-pointer"
+                    />
+                  </div>
+                </td>
               </tr>
             );
           })}
@@ -146,6 +174,12 @@ const AssetListTable = ({ assets, subsInAsset, setAssetOpen, selAsset, setSelAss
   );
 
   function onAddAccount(ft: HPLAsset) {
+    setSelAsset(ft);
+    setAssetOpen(true);
+  }
+
+  function onEdit(ft: HPLAsset) {
+    setEditView(true);
     setSelAsset(ft);
     setAssetOpen(true);
   }

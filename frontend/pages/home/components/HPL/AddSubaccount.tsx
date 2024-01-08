@@ -40,6 +40,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
     getAssetLogo,
     hplSubsData,
     addSub,
+    nHpl,
   } = useHPL(open);
 
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
             onClick={onClose}
           />
         </div>
+        <p className="w-full text-left mt-2">{`${t("adding.account")}: ${nHpl.nAccounts}`}</p>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
           <p className="opacity-60">
             {t("account.name")}

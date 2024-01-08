@@ -5,14 +5,28 @@ import AssetsFilter from "./components/assetsFilter";
 import AssetListTable from "./components/assetsList";
 import AddSubaccount from "@pages/home/components/HPL/AddSubaccount";
 import { DrawerHook } from "@pages/home/hooks/drawerHook";
+import EditHplAsset from "@pages/home/components/HPL/EditHplAsset";
 
 const Assets = () => {
-  const { searchKey, setSearchKey, allAssets, setAllAssets, assetList, subsInAsset, selAsset, setSelAsset } =
-    useAssetList();
+  const {
+    searchKey,
+    setSearchKey,
+    allAssets,
+    setAllAssets,
+    assetList,
+    subsInAsset,
+    selAsset,
+    setSelAsset,
+    editView,
+    setEditView,
+  } = useAssetList();
   const { assetOpen, setAssetOpen } = DrawerHook();
 
   useEffect(() => {
-    !assetOpen && setSelAsset(undefined);
+    if (!assetOpen) {
+      setSelAsset(undefined);
+      setEditView(false);
+    }
   }, [assetOpen]);
   return (
     <Fragment>
@@ -31,6 +45,7 @@ const Assets = () => {
             setAssetOpen={setAssetOpen}
             selAsset={selAsset}
             setSelAsset={setSelAsset}
+            setEditView={setEditView}
           />
           <div
             id="asset-drower"
@@ -38,7 +53,16 @@ const Assets = () => {
               assetOpen ? "!right-0" : "right-[-30rem]"
             }`}
           >
-            <AddSubaccount setAssetOpen={setAssetOpen} open={assetOpen} extAsset={selAsset} />
+            {editView && selAsset ? (
+              <EditHplAsset
+                setAssetOpen={setAssetOpen}
+                open={assetOpen}
+                setEditedFt={setSelAsset}
+                editedFt={selAsset}
+              ></EditHplAsset>
+            ) : (
+              <AddSubaccount setAssetOpen={setAssetOpen} open={assetOpen} extAsset={selAsset} />
+            )}
           </div>
         </div>
       </div>

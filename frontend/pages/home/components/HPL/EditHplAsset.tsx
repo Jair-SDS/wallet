@@ -10,6 +10,7 @@ import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/CopyTooltip";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface EditHplAssetProps {
   setAssetOpen(value: boolean): void;
@@ -34,7 +35,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
         </div>
         <div className="flex flex-col items-center justify-center w-full my-3 gap-1">
           <img src={getAssetLogo(editedFt.id)} className="w-10 h-10" alt="info-icon" />
-          <p className="font-semibold mt-2">{`[ ${editedFt.id} ]`}</p>
+          <AssetSymbol ft={editedFt} showBox />
           <p className="font-semibold">{`${
             (editedFt?.token_name + " - " + editedFt?.token_symbol).trim() === "-"
               ? ""

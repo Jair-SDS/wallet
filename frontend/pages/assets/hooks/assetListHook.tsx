@@ -10,6 +10,7 @@ export const useAssetList = () => {
   const [allAssets, setAllAssets] = useState(false);
   const [assetList, setAssetList] = useState<HPLAsset[]>([]);
   const [subsInAsset, setSubsInAsset] = useState<{ id: string; accounts: number }[]>([]);
+  const [editView, setEditView] = useState(false);
 
   useEffect(() => {
     let auxAssetList: HPLAsset[] = [];
@@ -31,6 +32,8 @@ export const useAssetList = () => {
             ft.name.toLowerCase().includes(auxSearchKey) ||
             ft.symbol.toLowerCase().includes(auxSearchKey) ||
             ft.token_name.toLowerCase().includes(auxSearchKey) ||
+            ft.id.toLowerCase().includes(auxSearchKey) ||
+            ft.controller.toLowerCase().includes(auxSearchKey) ||
             ft.token_symbol.toLowerCase().includes(auxSearchKey)
           );
         })
@@ -47,7 +50,18 @@ export const useAssetList = () => {
 
     setSubsInAsset(auxSubsInAsset);
     setAssetList(auxhplFTs);
-  }, [searchKey, allAssets, subaccounts]);
+  }, [searchKey, allAssets, subaccounts, hplFTs]);
 
-  return { searchKey, setSearchKey, allAssets, setAllAssets, assetList, subsInAsset, selAsset, setSelAsset };
+  return {
+    searchKey,
+    setSearchKey,
+    allAssets,
+    setAllAssets,
+    assetList,
+    subsInAsset,
+    selAsset,
+    setSelAsset,
+    editView,
+    setEditView,
+  };
 };
