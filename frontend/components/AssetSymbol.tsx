@@ -1,4 +1,5 @@
 import { HPLAsset } from "@redux/models/AccountModels";
+import { useEffect, useState } from "react";
 
 interface AssetSymbolProps {
   sufix?: any;
@@ -17,21 +18,40 @@ const AssetSymbol = ({
   inBoxClass = "text-PrimaryTextColorLight dark:text-PrimaryTextColor",
   compClass = "",
 }: AssetSymbolProps) => {
+  const [label, setLabel] = useState(ft.symbol);
+  const [boxView, setBoxView] = useState(ft.symbol === "" && ft.token_symbol === "");
+
+  useEffect(() => {
+    if (ft.symbol === "")
+      if (ft.name === "")
+        if (ft.token_symbol === "") {
+          setLabel(ft.id);
+          setBoxView(true);
+        } else {
+          setLabel(ft.token_symbol);
+          setBoxView(false);
+        }
+      else {
+        setLabel(ft.id);
+        setBoxView(true);
+      }
+    else {
+      setLabel(ft.symbol);
+      setBoxView(false);
+    }
+  }, [ft]);
+
   return (
     <div className={`flex flex-row justify-start items-center gap-2 ${compClass}`}>
       {sufix && sufix}
-      {ft.name === "" ? (
-        ft.token_name === "" ? (
-          <div
-            className={`flex justify-center items-center px-2 border border-AssetSymbol rounded bg-AssetSymbol/20 ${outBoxClass}`}
-          >
-            <p className={`text-sm ${inBoxClass}`}>{ft.id}</p>
-          </div>
-        ) : (
-          <p className={`${textClass}`}>{ft.token_symbol}</p>
-        )
+      {boxView ? (
+        <div
+          className={`flex justify-center items-center px-2 border border-AssetSymbol rounded bg-AssetSymbol/20 ${outBoxClass}`}
+        >
+          <p className={`text-sm ${inBoxClass}`}>{label}</p>
+        </div>
       ) : (
-        <p className={`${textClass}`}>{ft.symbol}</p>
+        <p className={`${textClass}`}>{label}</p>
       )}
     </div>
   );

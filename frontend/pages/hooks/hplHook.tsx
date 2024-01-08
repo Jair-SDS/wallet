@@ -226,7 +226,11 @@ export const useHPL = (open: boolean) => {
   const getAssetLogo = (id: string) => {
     const ft = hplFTs.find((ft) => ft.id === id);
     if (ft) {
-      return ft.logo != "" ? ft.logo : HplDefaultIcon;
+      if (ft.name !== "" || ft.symbol !== "") return HplDefaultIcon;
+      else if (ft.logo === "") return HplDefaultIcon;
+      else {
+        return ft.logo;
+      }
     } else {
       return HplDefaultIcon;
     }

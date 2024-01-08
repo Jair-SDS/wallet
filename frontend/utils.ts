@@ -735,7 +735,24 @@ export const getDisplaySymbolFromFt = (ft: HPLAsset) => {
   return ft.symbol === "" ? (ft.token_symbol === "" ? "" : ft.token_symbol) : ft.symbol;
 };
 export const getDisplayNameFromFt = (ft: HPLAsset, t?: any) => {
-  return ft.name === "" ? (ft.token_name === "" ? `[ ${t ? t("asset") : "Asset"} ${ft.id} ]` : ft.token_name) : ft.name;
+  if (ft.name === "")
+    if (ft.symbol === "")
+      if (ft.token_symbol === "") {
+        return `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
+      } else {
+        return ft.token_name;
+      }
+    else {
+      return `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
+    }
+  else {
+    return ft.name;
+  }
+};
+
+export const getLogoString = (ft: HPLAsset) => {
+  if (ft.name !== "" || ft.symbol !== "") return "";
+  else return ft.logo;
 };
 
 export const numToUint32Array = (num: number) => {
