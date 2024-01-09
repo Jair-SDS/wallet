@@ -6,7 +6,7 @@ import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
-import { getDecimalAmount, getDisplaySymbolFromFt, shortAddress } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
