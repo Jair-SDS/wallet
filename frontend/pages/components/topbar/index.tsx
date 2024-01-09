@@ -23,15 +23,12 @@ import { logout } from "@redux/CheckAuth";
 import Modal from "@components/Modal";
 import ThemeModal from "./themeModal";
 import { ThemesEnum } from "@/const";
-import { useAppDispatch } from "@redux/Store";
-import { setLoading } from "@redux/assets/AssetReducer";
 import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import HplSettingsModal from "./hplSettings";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const { onLanguageChange } = LanguageHook();
 
   const { theme, themeOpen, setThemeOpen } = ThemeHook();
@@ -152,7 +149,6 @@ const TopBarComponent = () => {
   );
 
   function handleReloadButton() {
-    dispatch(setLoading(true));
     reloadBallance();
   }
 
