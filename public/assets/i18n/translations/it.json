@@ -79,7 +79,7 @@
   "asset.controller": "Controllore della Risorsa",
   "asset.supply": "Fornitura della Risorsa",
   "asset.decimal": "Decimali della Risorsa",
-  "asset.description": "Descrizione della Risorsa",
+  "asset.description": "Descrizione",
   "virtuals": "Conti virtuali",
   "accounts": "Conti",
   "transactions": "Transazioni",

@@ -152,11 +152,13 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                     {hplFTs
                       .filter((ft) => {
                         const key = selAssetSearch.toLowerCase();
-                        return (
-                          ft.name.toLowerCase().includes(key) ||
-                          ft.symbol.toLowerCase().includes(key) ||
-                          ft.id.toString().includes(key)
-                        );
+                        return ft.name || ft.symbol
+                          ? ft.name.toLowerCase().includes(key) ||
+                              ft.symbol.toLowerCase().includes(key) ||
+                              ft.id.toString().includes(key)
+                          : ft.token_name.toLowerCase().includes(key) ||
+                              ft.token_symbol.toLowerCase().includes(key) ||
+                              ft.id.toString().includes(key);
                       })
                       .map((ft, k) => {
                         return (

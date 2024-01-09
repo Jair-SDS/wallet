@@ -77,7 +77,7 @@
   "asset.name": "Asset Name",
   "asset.symbol": "Asset Symbol",
   "asset.decimal": "Asset Decimals",
-  "asset.description": "Asset Self-Description",
+  "asset.description": "Self-Description",
   "asset.controller": "Asset Controller",
   "asset.supply": "Asset Supply",
   "virtuals": "Virtual Accounts",

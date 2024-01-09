@@ -40,13 +40,13 @@ const AssetListTable = ({
             <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-2 w-[21%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[22.5%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[16%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[14.5%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>
-            <th className="p-2 w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[6%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("decimals")}</p>
             </th>
             <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
@@ -68,6 +68,8 @@ const AssetListTable = ({
           {assets.map((ft, k) => {
             const find = subsInAsset.find((sub) => sub.id === ft.id);
             const contactName = getContactName(ft.controller);
+            const noLogo = ft.name !== "" || ft.symbol !== "" || ft.logo === "";
+
             return (
               <tr
                 key={k}
@@ -88,25 +90,27 @@ const AssetListTable = ({
                     {contactName && <p>{contactName}</p>}
                     <div className="flex flex-row justify-start items-center w-full gap-2">
                       <p className="text-left">
-                        {ft.controller.split("-").length > 4 ? shortPrincipals(ft.controller, 2, 2) : ft.controller}
+                        {ft.controller.split("-").length > 4
+                          ? shortPrincipals(ft.controller, 2, 2, "", "", 6)
+                          : ft.controller}
                       </p>
                       <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
                     </div>
                   </div>
                 </td>{" "}
                 <td className="p-2">
-                  <div className="flex flex-row justify-start items-center w-full">
+                  <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.supply}</p>
                   </div>
                 </td>{" "}
                 <td className="p-2">
-                  <div className="flex flex-row justify-center items-center w-full">
+                  <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.decimal}</p>
                   </div>
                 </td>
                 <td className="p-2">
                   <div className="relative flex flex-row justify-center items-center w-full">
-                    <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />
+                    {!noLogo && <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />}
                   </div>
                 </td>
                 <td className="p-2">
@@ -139,7 +143,7 @@ const AssetListTable = ({
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <p>{getDisplayNameFromFt(ft)}</p>
+                    <p>{getDisplayNameFromFt(ft, t, true)}</p>
                   </div>
                 </td>
                 <td className="p-2">

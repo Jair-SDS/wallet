@@ -9,6 +9,7 @@ interface AssetSymbolProps {
   inBoxClass?: string;
   compClass?: string;
   showBox?: boolean;
+  emptyFormat?: boolean;
 }
 
 const AssetSymbol = ({
@@ -19,6 +20,7 @@ const AssetSymbol = ({
   inBoxClass = "text-PrimaryTextColorLight dark:text-PrimaryTextColor",
   compClass = "",
   showBox,
+  emptyFormat,
 }: AssetSymbolProps) => {
   const [label, setLabel] = useState(ft.symbol);
   const [boxView, setBoxView] = useState(ft.symbol === "" && ft.token_symbol === "");
@@ -47,11 +49,15 @@ const AssetSymbol = ({
     <div className={`flex flex-row justify-start items-center gap-2 ${compClass}`}>
       {sufix && sufix}
       {boxView || showBox ? (
-        <div
-          className={`flex justify-center items-center px-2 border border-AssetSymbol rounded bg-AssetSymbol/20 ${outBoxClass}`}
-        >
-          <p className={`text-sm ${inBoxClass}`}>{showBox ? ft.id : label}</p>
-        </div>
+        emptyFormat ? (
+          <div
+            className={`flex justify-center items-center px-2 border border-AssetSymbol rounded bg-AssetSymbol/20 ${outBoxClass}`}
+          >
+            <p className={`text-sm ${inBoxClass}`}>{showBox ? ft.id : label}</p>
+          </div>
+        ) : (
+          <p></p>
+        )
       ) : (
         <p className={`${textClass}`}>{label}</p>
       )}

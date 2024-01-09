@@ -79,7 +79,7 @@
   "asset.controller": "Controladorr do Ativo",
   "asset.supply": "Suprimento do Ativo",
   "asset.decimal": "Decimais do Ativo",
-  "asset.description": "Auto-Descrição do Ativo",
+  "asset.description": "Auto-Descrição",
   "virtuals": "Contas Virtuais",
   "accounts": "Contas",
   "transactions": "Transações",

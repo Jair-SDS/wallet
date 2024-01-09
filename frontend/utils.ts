@@ -97,18 +97,25 @@ export const shortAddress = (address: string, digitsL: number, digitsR: number, 
   else return address;
 };
 
-export const shortPrincipals = (princ: string, groupsL: number, groupsR: number, prefix?: string, sufix?: string) => {
+export const shortPrincipals = (
+  princ: string,
+  groupsL: number,
+  groupsR: number,
+  prefix?: string,
+  sufix?: string,
+  minGroups?: number,
+) => {
   const groups = princ.split("-");
-  if (groups.length > groupsL + groupsR) {
+  if (groups.length > (minGroups ? minGroups + 1 : groupsL + groupsR)) {
     let left = "";
     for (let index = 0; index < groupsL; index++) {
       left = left + groups[index] + "-";
     }
-    let right = "-";
+    let right = "";
     for (let index = 0; index < groupsR; index++) {
-      right = right + groups[groups.length - 1 - index] + "-";
+      right = "-" + groups[groups.length - 1 - index] + right;
     }
-    return `${prefix ? prefix : ""}${left} ... ${right.slice(0, -1)}${sufix ? sufix : ""}`;
+    return `${prefix ? prefix : ""}${left} ... ${right}${sufix ? sufix : ""}`;
   } else return princ;
 };
 
@@ -734,16 +741,16 @@ export const formatHplRemotes = (
 export const getDisplaySymbolFromFt = (ft: HPLAsset) => {
   return ft.symbol === "" ? (ft.token_symbol === "" ? "" : ft.token_symbol) : ft.symbol;
 };
-export const getDisplayNameFromFt = (ft: HPLAsset, t?: any) => {
+export const getDisplayNameFromFt = (ft: HPLAsset, t?: any, emptyFormat?: boolean) => {
   if (ft.name === "")
     if (ft.symbol === "")
       if (ft.token_symbol === "") {
-        return `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
+        return emptyFormat ? "" : `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
       } else {
         return ft.token_name;
       }
     else {
-      return `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
+      return emptyFormat ? "" : `[ ${t ? t("asset") : "Asset"} ${ft.id} ]`;
     }
   else {
     return ft.name;

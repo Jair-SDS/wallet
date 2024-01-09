@@ -43,7 +43,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
           }`}</p>
         </div>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
-          <p className="opacity-60">{t("asset.name")}</p>
+          <p className="opacity-60">{t("name")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -52,7 +52,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             value={editedFt.name}
             onChange={onNameChange}
           />
-          <p className="opacity-60 mt-4">{t("asset.symbol")}</p>
+          <p className="opacity-60 mt-4">{t("symbol")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -61,7 +61,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             value={editedFt.symbol}
             onChange={onSymbolChange}
           />
-          <p className="opacity-60 mt-4">{t("asset.controller")}</p>
+          <p className="opacity-60 mt-4">{t("controller")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -72,7 +72,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             sufix={<CustomCopy className="opacity-70" copyText={editedFt.controller} />}
             disabled
           />
-          <p className="opacity-60 mt-4">{t("asset.supply")}</p>
+          <p className="opacity-60 mt-4">{t("supply")}</p>
           <CustomInput
             sizeInput={"medium"}
             intent={"secondary"}
@@ -82,7 +82,7 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
             onChange={onSymbolChange}
             disabled
           />
-          <p className="opacity-60 mt-4">{t("asset.decimal")}</p>
+          <p className="opacity-60 mt-4">{t("decimals")}</p>
           <CustomInput
             sizeInput={"medium"}
             compOutClass={"!w-1/2"}
