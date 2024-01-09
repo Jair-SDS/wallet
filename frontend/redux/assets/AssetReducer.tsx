@@ -361,6 +361,8 @@ const assetSlice = createSlice({
         ft: action.payload.ftId,
         virtuals: [],
       });
+
+      state.nHpl = { ...state.nHpl, nAccounts: (BigInt(state.nHpl.nAccounts) + BigInt(1)).toString() };
     },
     editHPLSub: {
       reducer(
@@ -404,6 +406,7 @@ const assetSlice = createSlice({
         });
         state.subaccounts = auxSubs;
         state.hplVTsData.push(vtLocal);
+        state.nHpl = { ...state.nHpl, nVirtualAccounts: (BigInt(state.nHpl.nVirtualAccounts) + BigInt(1)).toString() };
         if (newSelSub) state.selectSub = newSelSub;
       },
       prepare(vt: HPLVirtualSubAcc, vtLocal: HPLVirtualData, subId: string) {
