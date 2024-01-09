@@ -49,7 +49,7 @@ const AssetSymbol = ({
     <div className={`flex flex-row justify-start items-center gap-2 ${compClass}`}>
       {sufix && sufix}
       {boxView || showBox ? (
-        emptyFormat ? (
+        !emptyFormat ? (
           <div
             className={`flex justify-center items-center px-2 border border-AssetSymbol rounded bg-AssetSymbol/20 ${outBoxClass}`}
           >

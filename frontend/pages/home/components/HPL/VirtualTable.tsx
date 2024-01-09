@@ -19,6 +19,7 @@ import { clsx } from "clsx";
 import dayjs from "dayjs";
 import LoadingLoader from "@components/Loader";
 import { DrawerOption, DrawerOptionEnum } from "@/const";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -118,9 +119,13 @@ const VirtualTable: FC<VirtualTableProps> = ({
                   {vt.name}
                 </td>
                 <td className={`${rowStyle(vt.expiration)}`}>
-                  {`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)} ${
-                    selectSub ? getDisplaySymbolFromFt(getFtFromSub(selectSub.ft)) : ""
-                  }`}
+                  <div className="flex flex-row w-full justify-center">
+                    {" "}
+                    <AssetSymbol
+                      ft={getFtFromSub(selectSub?.ft || "0")}
+                      sufix={<p>{`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)}`}</p>}
+                    />
+                  </div>
                 </td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getAccesByContactName(vt.accesBy)}</td>

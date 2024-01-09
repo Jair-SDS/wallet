@@ -59,6 +59,7 @@ export const useAssetList = () => {
   };
 
   return {
+    dictionaryHplFTs,
     searchKey,
     setSearchKey,
     allAssets,

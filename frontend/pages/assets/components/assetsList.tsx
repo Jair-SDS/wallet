@@ -1,5 +1,6 @@
 // svgs
 import PlusIcon from "@assets/svg/files/plus-icon.svg"; // svgs
+import { ReactComponent as VerifiedIcon } from "@assets/svg/files/verified-icon.svg";
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 //
 import { getDisplayNameFromFt, shortPrincipals } from "@/utils";
@@ -9,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import CustomHoverCard from "@components/HoverCard";
 import { CustomCopy } from "@components/CopyTooltip";
+import { FungibleTokenLocal } from "@redux/models/TokenModels";
 
 interface AssetListTableProps {
   assets: HPLAsset[];
@@ -18,6 +20,7 @@ interface AssetListTableProps {
   setSelAsset(value: HPLAsset | undefined): void;
   setEditView(value: boolean): void;
   getContactName(principal: string): string;
+  dictionaryHplFTs: FungibleTokenLocal[];
 }
 
 const AssetListTable = ({
@@ -28,6 +31,7 @@ const AssetListTable = ({
   setSelAsset,
   setEditView,
   getContactName,
+  dictionaryHplFTs,
 }: AssetListTableProps) => {
   const { t } = useTranslation();
   const { getAssetLogo } = useHPL(false);
@@ -55,13 +59,13 @@ const AssetListTable = ({
             <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[16%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[14%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
+            <th className="p-2 w-[7%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
             <th className="p-2 w-[12%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
             </th>
-            <th className="p-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +73,8 @@ const AssetListTable = ({
             const find = subsInAsset.find((sub) => sub.id === ft.id);
             const contactName = getContactName(ft.controller);
             const noLogo = ft.name !== "" || ft.symbol !== "" || ft.logo === "";
+            const inDict = dictionaryHplFTs.find((dict) => dict.assetId === ft.id);
+            const verified = inDict && ft.name === "" && ft.symbol === "";
 
             return (
               <tr
@@ -122,6 +128,7 @@ const AssetListTable = ({
                           <AssetSymbol
                             ft={ft}
                             textClass="text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 font-normal"
+                            emptyFormat
                           />
                         }
                       >
@@ -137,6 +144,7 @@ const AssetListTable = ({
                       <AssetSymbol
                         ft={ft}
                         textClass="text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70  font-normal"
+                        emptyFormat
                       />
                     )}
                   </div>
@@ -144,6 +152,17 @@ const AssetListTable = ({
                 <td className="p-2">
                   <div className="flex flex-row justify-start items-center w-full">
                     <p>{getDisplayNameFromFt(ft, t, true)}</p>
+                  </div>
+                </td>
+                <td className="p-2">
+                  <div className="flex flex-row justify-end items-center w-full gap-2">
+                    {verified && <VerifiedIcon className="w-4 h-4 " />}
+                    <PencilIcon
+                      onClick={() => {
+                        onEdit(ft);
+                      }}
+                      className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor opacity-50 cursor-pointer"
+                    />
                   </div>
                 </td>
                 <td className="p-2">
@@ -163,16 +182,6 @@ const AssetListTable = ({
                         <img src={PlusIcon} alt="plus-icon" />
                       </button>
                     </div>
-                  </div>
-                </td>
-                <td className="p-2">
-                  <div className="flex flex-row justify-center items-center w-full">
-                    <PencilIcon
-                      onClick={() => {
-                        onEdit(ft);
-                      }}
-                      className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor opacity-50 cursor-pointer"
-                    />
                   </div>
                 </td>
               </tr>

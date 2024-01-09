@@ -20,6 +20,7 @@ const Assets = () => {
     editView,
     setEditView,
     getContactName,
+    dictionaryHplFTs,
   } = useAssetList();
   const { assetOpen, setAssetOpen } = DrawerHook();
 
@@ -48,6 +49,7 @@ const Assets = () => {
             setSelAsset={setSelAsset}
             setEditView={setEditView}
             getContactName={getContactName}
+            dictionaryHplFTs={dictionaryHplFTs}
           />
           <div
             id="asset-drower"
