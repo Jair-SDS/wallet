@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
-import DrawerSend from "./ICRC/DrawerSend";
-import DrawerWrap from "./ICRC/DrawerWrap";
-import DrawerAction from "./ICRC/DrawerAction";
-import DrawerTransaction from "./ICRC/Transaction";
 import { DrawerHook } from "../hooks/drawerHook";
 import { UseTransaction } from "../hooks/useTransaction";
-import { DrawerOption, DrawerOptionEnum, ProtocolType, ProtocolTypeEnum } from "@/const";
+import {
+  DrawerOption,
+  DrawerOptionEnum,
+  ICRCSubaccountInfo,
+  ICRCSubaccountInfoEnum,
+  ProtocolType,
+  ProtocolTypeEnum,
+} from "@/const";
 import ICRCSubaccountAction from "./ICRC/SubaccountAction";
 import ICRCTransactionsTable from "./ICRC/TransactionsTable";
-import HPLSubaccountAction from "./HPL/SubaccountActions";
 import { AssetHook } from "../hooks/assetHook";
 import SubaccountInfo from "./HPL/SubaccountInfo";
 import DrawerVirtual from "./HPL/DrawerVirtual";
 import TransactionDrawer from "./HPL/TransactionDrawer";
 import VirtualTable from "./HPL/VirtualTable";
-import DrawerReceive from "./ICRC/DrawerReceive";
 import HPLDrawerReceive from "./HPL/HPLDrawerReceive";
 import { useHPL } from "@pages/hooks/hplHook";
+import ICRCSubInfo from "./ICRC/detail/subaccountTableInfo";
+import DrawerTransaction from "./ICRC/detail/transaction/Transaction";
+import DrawerAction from "./ICRC/drawer/DrawerAction";
+import DrawerSend from "./ICRC/drawer/DrawerSend";
+import DrawerReceive from "./ICRC/drawer/DrawerReceive";
 
 const icrc1DrawerOptions = [
   { name: "send", type: DrawerOptionEnum.Enum.SEND },
@@ -29,10 +35,10 @@ const DetailList = () => {
   const { protocol } = AssetHook();
   const { selectSub } = useHPL(false);
   const { drawerOption, setDrawerOption, drawerOpen, setDrawerOpen } = DrawerHook();
+  const [subInfoType, setSubInfoType] = useState<ICRCSubaccountInfo>(ICRCSubaccountInfoEnum.Enum.TRANSACTIONS);
   const { selectedTransaction } = UseTransaction();
 
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
-  const enableReceiveAction = selectedVirtualAccount !== null;
 
   useEffect(() => {
     setSelectedVirtualAccount(null);
@@ -49,12 +55,15 @@ const DetailList = () => {
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <ICRCSubaccountAction onActionClick={handleActionClick} />
           ) : (
-            <HPLSubaccountAction onActionClick={handleActionClick} enableReceiveAction={enableReceiveAction} />
+            <ICRCSubaccountAction onActionClick={handleActionClick} />
           )}
         </div>
-
         {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-          <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
+          <ICRCSubInfo subInfoType={subInfoType} setSubInfoType={setSubInfoType}>
+            {subInfoType === ICRCSubaccountInfoEnum.Enum.TRANSACTIONS && (
+              <ICRCTransactionsTable setDrawerOpen={setDrawerOpen} />
+            )}
+          </ICRCSubInfo>
         ) : (
           <SubaccountInfo onAddVirtualAccount={handleAddVirtualAccount}>
             <div className="w-full max-h-[calc(100vh-18rem)] scroll-y-light">
@@ -108,7 +117,6 @@ const DetailList = () => {
                 <DrawerSend drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
               )}
               {drawerOption === DrawerOptionEnum.Enum.RECEIVE && <DrawerReceive />}
-              {drawerOption === DrawerOptionEnum.Enum.WRAP && <DrawerWrap />}
             </DrawerAction>
           </div>
         );

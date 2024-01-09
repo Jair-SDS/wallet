@@ -7,6 +7,7 @@ import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
 import { checkHexString, getUSDfromToken, hexToNumber, hexToUint8Array, removeLeadingZeros } from "@/utils";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
+import { GeneralHook } from "../../../hooks/generalHook";
 import { Token } from "@redux/models/TokenModels";
 import { useAppDispatch } from "@redux/Store";
 import { addSubAccount, setAcordeonAssetIdx } from "@redux/assets/AssetReducer";
@@ -15,7 +16,6 @@ import { ChangeEvent, useState } from "react";
 import { IcrcLedgerCanister } from "@dfinity/ledger";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { CustomInput } from "@components/Input";
-import { GeneralHook } from "@pages/home/hooks/generalHook";
 
 interface DialogAddAssetProps {
   newErr: any;
