@@ -214,5 +214,14 @@
   "acc.subacc": "Subcuenta",
   "acc.principal": "Principal",
   "congrats": "Felicitaciones",
-  "": ""
+  "": "",
+  "subAccount": "Subcuenta",
+  "spender": "Gastador",
+  "principal": "Principal",
+  "contact.book": "Libro de Contactos",
+  "allowance.allowances": "Asignaciones",
+  "allowance.add.allowance": "Agregar Asignación",
+  "allowance.sure.remove": "¿Estás seguro de que quieres Eliminar?",
+  "allowance.permanently.deleted": "Esta Asignación se eliminará permanentemente.",
+  "allowance.edit.allowance": "Editar Asignación"
 }

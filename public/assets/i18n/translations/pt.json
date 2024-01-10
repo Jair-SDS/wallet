@@ -214,5 +214,14 @@
   "acc.subacc": "Sub conta",
   "acc.principal": "Diretora",
   "congrats": "Parabéns",
-  "": ""
+  "": "",
+  "subAccount": "Subconta",
+  "spender": "Gastador",
+  "principal": "Principal",
+  "contact.book": "Livro de Contatos",
+  "allowance.allowances": "Mesadas",
+  "allowance.add.allowance": "Adicionar Mesada",
+  "allowance.sure.remove": "Tem certeza de que deseja Remover?",
+  "allowance.permanently.deleted": "Esta Mesada será excluída permanentemente.",
+  "allowance.edit.allowance": "Editar Mesada"
 }

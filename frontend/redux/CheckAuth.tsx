@@ -40,6 +40,7 @@ import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { defaultTokens } from "@/defaultTokens";
 import { parseFungibleToken } from "@/utils";
+import { allowanceFullReload } from "@pages/home/helpers/allowanceCache";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -191,6 +192,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
   } catch (e) {
     console.log("feeConstant-err", e);
   }
+  // ALLOWANCES
+  await allowanceFullReload();
 };
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {
