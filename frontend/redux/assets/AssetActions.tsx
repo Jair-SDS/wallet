@@ -30,7 +30,6 @@ import {
   setHPLVTsData,
   setHPLAssetsData,
   setHPLSubsData,
-  setWorkerInit,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -495,12 +494,10 @@ export const updateHPLBalances = async (
       store.dispatch(setHPLSelectedSub(sel));
     }
     updateHplRemotes(state, contacts);
-    store.dispatch(setWorkerInit(true));
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
     console.log("err", e);
   }
-  store.dispatch(setWorkerInit(true));
   return { subs: [], fts: [] };
 };
 

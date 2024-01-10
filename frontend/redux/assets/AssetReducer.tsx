@@ -25,7 +25,6 @@ const defaultValue = {} as any;
 interface AssetState {
   storageCode: string;
   protocol: ProtocolType;
-  workerInit: boolean;
   // ICRC 1
   ICPSubaccounts: Array<ICPSubAccount>;
   assetLoading: boolean;
@@ -58,7 +57,6 @@ interface AssetState {
 const initialState: AssetState = {
   storageCode: "",
   protocol: ProtocolTypeEnum.Enum.ICRC1,
-  workerInit: false,
   // ICRC 1
   ICPSubaccounts: [],
   assetLoading: false,
@@ -97,9 +95,6 @@ const assetSlice = createSlice({
     },
     setProtocol(state, action: PayloadAction<ProtocolType>) {
       state.protocol = action.payload;
-    },
-    setWorkerInit(state, action: PayloadAction<boolean>) {
-      state.workerInit = action.payload;
     },
     setICPSubaccounts(state, action: PayloadAction<ICPSubAccount[]>) {
       state.ICPSubaccounts = action.payload;
@@ -432,7 +427,6 @@ const assetSlice = createSlice({
       },
     },
     clearDataAsset(state) {
-      state.workerInit = false;
       state.storageCode = "";
       state.ICPSubaccounts = [];
       state.tokens = [];
@@ -460,7 +454,6 @@ export const {
   setStorageCodeA,
   clearDataAsset,
   setProtocol,
-  setWorkerInit,
   setICPSubaccounts,
   setLoading,
   setTokens,

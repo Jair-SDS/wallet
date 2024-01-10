@@ -10,7 +10,7 @@ import { ReactComponent as RefreshIcon } from "@/assets/svg/files/refresh-ccw.sv
 import { ReactComponent as HplLogo } from "@/assets/svg/files/hpl-logo.svg";
 import { ReactComponent as HpllogoLight } from "@/assets/svg/files/hpl-wallet-light.svg";
 //
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { ThemeHook } from "@hooks/themeHook";

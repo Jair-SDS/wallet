@@ -19,7 +19,7 @@ import { useEffect } from "react";
 
 export const WorkerHook = () => {
   const dispatch = useAppDispatch();
-  const { tokens, assets, txWorker, ingressActor, workerInit } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, ingressActor } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 
