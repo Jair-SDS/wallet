@@ -9,7 +9,6 @@ import AddAsset from "./ICRC/asset/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
 import { useTranslation } from "react-i18next";
 import Menu from "@pages/components/Menu";
-import { WorkerHook } from "@pages/hooks/workerHook";
 import { AssetHook } from "../hooks/assetHook";
 import { UseAsset } from "../hooks/useAsset";
 import { ProtocolTypeEnum } from "@/const";
@@ -20,7 +19,6 @@ import EditHplAsset from "./HPL/EditHplAsset";
 
 const AssetsList = () => {
   const { t } = useTranslation();
-  WorkerHook();
   UseAsset();
   const { assetOpen, setAssetOpen } = DrawerHook();
   const {

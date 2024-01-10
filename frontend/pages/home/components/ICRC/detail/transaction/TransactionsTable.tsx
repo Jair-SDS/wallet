@@ -13,7 +13,7 @@ const ICRCTransactionsTable = ({ setDrawerOpen }: ICRCTransactionsTableProps) =>
   const { selectedTransaction, changeSelectedTransaction } = UseTransaction();
   const { columns, sorting, setSorting } = TableHook();
   const table = useReactTable({
-    data: transactions,
+    data: transactions ?? [],
     columns,
     state: {
       sorting,
@@ -24,7 +24,7 @@ const ICRCTransactionsTable = ({ setDrawerOpen }: ICRCTransactionsTableProps) =>
   });
 
   return (
-    <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light">
+    <div className="w-full max-h-[calc(100vh-16rem)] scroll-y-light">
       <table className="w-full text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           {table.getHeaderGroups().map((headerGroup, idxTR) => (

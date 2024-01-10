@@ -10,7 +10,6 @@ import {
   ProtocolTypeEnum,
 } from "@/const";
 import ICRCSubaccountAction from "./ICRC/SubaccountAction";
-import ICRCTransactionsTable from "./ICRC/TransactionsTable";
 import { AssetHook } from "../hooks/assetHook";
 import SubaccountInfo from "./HPL/SubaccountInfo";
 import DrawerVirtual from "./HPL/DrawerVirtual";
@@ -25,6 +24,7 @@ import DrawerSend from "./ICRC/drawer/DrawerSend";
 import DrawerReceive from "./ICRC/drawer/DrawerReceive";
 import AllowanceList from "./ICRC/allowance/AllowanceList";
 import AddAllowanceDrawer from "./ICRC/allowance/AddAllowanceDrawer";
+import ICRCTransactionsTable from "./ICRC/detail/transaction/TransactionsTable";
 
 const icrc1DrawerOptions = [
   { name: "send", type: DrawerOptionEnum.Enum.SEND },

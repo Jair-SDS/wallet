@@ -1,11 +1,13 @@
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import { WorkerHook } from "@pages/hooks/workerHook";
 
 interface TabNetworkProps {
   children: any;
 }
 
 const TabNetwork = ({ children }: TabNetworkProps) => {
+  WorkerHook();
   const { protocol, setProtocolType } = AssetHook();
   const networks = Object.keys(ProtocolTypeEnum.Values);
   return (

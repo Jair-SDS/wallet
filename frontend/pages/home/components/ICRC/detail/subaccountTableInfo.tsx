@@ -16,15 +16,15 @@ export default function ICRCSubInfo({ subInfoType, setSubInfoType, children }: I
 
   const { transactions } = useAppSelector((state) => state.asset);
   const { allowances } = useAllowances();
-  const transactionsCount = useMemo(() => transactions.length, [transactions]);
-  const allowancesCount = useMemo(() => allowances.length, [allowances]);
+  const transactionsCount = useMemo(() => transactions?.length || 0, [transactions]);
+  const allowancesCount = useMemo(() => allowances?.length || 0, [allowances]);
 
   const selectedButton = "border-AccpetButtonColor border-b-2";
   const unselectedButton = "text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-60 !font-light";
   return (
     <div className="flex flex-col items-start justify-start w-full mt-2">
-      <div className="flex flex-row items-center justify-between w-full mb-4">
-        <div className="flex flex-row items-center justify-start gap-10 mb-4">
+      <div className="flex flex-row items-center justify-between w-full">
+        <div className="flex flex-row items-center justify-start gap-10 mb-2">
           <CustomButton
             intent={"noBG"}
             border={"underline"}

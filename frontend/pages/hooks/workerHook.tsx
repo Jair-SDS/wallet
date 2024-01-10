@@ -9,15 +9,17 @@ import {
   updateAllBalances,
   updateHPLBalances,
 } from "@redux/assets/AssetActions";
-import { setLoading, setTokens, setTxWorker, setWorkerKey } from "@redux/assets/AssetReducer";
+import { setLoading, setTokens, setTxWorker } from "@redux/assets/AssetReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
-import timer_script from "@workers/timerWorker";
-import { useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { minutesToMilliseconds } from "@/utils/time";
+import timer_script from "@pages/workers/timerWorker";
+import { useEffect } from "react";
 
 export const WorkerHook = () => {
   const dispatch = useAppDispatch();
-  const { tokens, assets, txWorker, ingressActor, workerKey } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, ingressActor, workerInit } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 
@@ -67,7 +69,7 @@ export const WorkerHook = () => {
     });
   };
 
-  const getAssetsWorker = async (myWorker: Worker) => {
+  const getAssetsWorker = async () => {
     // ICRC1
     dispatch(setLoading(true));
     const userData = localStorage.getItem(authClient);
@@ -79,49 +81,54 @@ export const WorkerHook = () => {
       const { tokens } = await updateAllBalances(true, userAgent, defaultTokens, true, false);
       store.dispatch(setTokens(tokens));
     }
-    let nLocalHpl = {
-      nAccounts: "0",
-      nVirtualAccounts: "0",
-      nFtAssets: "0",
+    const nLocalHpl = {
+      nAccounts: store.getState().asset.nHpl.nAccounts || "0",
+      nVirtualAccounts: store.getState().asset.nHpl.nVirtualAccounts || "0",
+      nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
-    const nLocalHplStr = localStorage.getItem("nhpl-" + authClient);
-    if (nLocalHplStr) {
-      nLocalHpl = JSON.parse(nLocalHplStr);
-    }
-    console.log("workerKey:", workerKey);
-
     // HPL
     updateHPLBalances(ingressActor, hplContacts, authClient, true, false, nLocalHpl);
-    setTimeout(() => {
-      console.log("setWorkerKey");
-      dispatch(setWorkerKey(Math.random().toString()));
-    }, 500);
   };
 
+  let timeOut = false;
+
+  const reloadBackgroudData = () => {
+    console.log("backgroud-realod");
+    return { updatedAt: Date.now() };
+  };
+
+  const query = useQuery({
+    queryKey: [timeOut],
+    queryFn: reloadBackgroudData,
+    staleTime: minutesToMilliseconds(1),
+    enabled: true,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+
   // TRANSACTION WEB WORKER
-  const timerWorker = useMemo(() => {
-    const myWorker = new Worker(timer_script, { type: "module", credentials: "include" });
+  let timerWorker = new Worker(timer_script, { type: "module", credentials: "include" });
 
-    myWorker.onmessage = (event) => {
-      if (event.data && event.data.debug) {
-        if (event.data) {
-          console.log("message from worker: %o", event.data);
-        }
-      } else {
-        if (event.data === WorkerTaskEnum.Values.TRANSACTIONS) {
-          getTransactionsWorker();
-        } else if (event.data === WorkerTaskEnum.Values.ASSETS) {
-          getAssetsWorker(myWorker);
-        }
+  timerWorker.onmessage = (event) => {
+    if (event.data && event.data.debug) {
+      if (event.data) {
+        console.log("message from worker: %o", event.data);
       }
-    };
+    } else {
+      if (event.data.wType === WorkerTaskEnum.Values.TRANSACTIONS) {
+        getTransactionsWorker();
+      } else if (event.data.wType === WorkerTaskEnum.Values.ASSETS) {
+        console.log("updatedAt:", new Date(event.data.updatedAt));
 
-    myWorker.onerror = (event) => {
-      console.log(event);
-    };
+        getAssetsWorker();
+      }
+    }
+  };
 
-    return myWorker;
-  }, [workerKey]);
+  timerWorker.onerror = (event) => {
+    console.log(event);
+  };
 
   const clearTimeWorker = () => {
     timerWorker.terminate();
@@ -138,5 +145,5 @@ export const WorkerHook = () => {
     };
   }, []);
 
-  return { txWorker, clearTimeWorker };
+  return { txWorker, clearTimeWorker, query };
 };

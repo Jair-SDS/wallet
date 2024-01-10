@@ -1,12 +1,13 @@
 // eslint-disable-next-line no-restricted-globals
 const timerCode = () => {
   self.onmessage = () => {
-    self.postMessage("TRANSACTIONS");
+    self.postMessage({ wType: "TRANSACTIONS" });
     setInterval(() => {
-      self.postMessage("TRANSACTIONS");
+      self.postMessage({ wType: "TRANSACTIONS" });
     }, 10 * 60 * 1000);
     setInterval(() => {
-      self.postMessage("ASSETS");
+      const updatedAt = Date.now();
+      self.postMessage({ wType: "ASSETS", updatedAt });
     }, 1 * 60 * 1000);
   };
 };
