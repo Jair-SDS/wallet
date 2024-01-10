@@ -330,17 +330,18 @@ export const updateHPLBalances = async (
   principal: string,
   fromWorker?: boolean,
   updateInfo?: boolean,
+  nLocalData?: {
+    nAccounts: string;
+    nVirtualAccounts: string;
+    nFtAssets: string;
+  },
 ) => {
   // Get amounts nAccounts, nVirtualAccounts, nFtAssets
-  let nLocalHpl = {
-    nAccounts: "0",
-    nVirtualAccounts: "0",
-    nFtAssets: "0",
+  const nLocalHpl = {
+    nAccounts: nLocalData ? nLocalData.nAccounts : "0",
+    nVirtualAccounts: nLocalData ? nLocalData.nVirtualAccounts : "0",
+    nFtAssets: nLocalData ? nLocalData.nFtAssets : "0",
   };
-  const nLocalHplStr = localStorage.getItem("nhpl-" + principal);
-  if (nLocalHplStr) {
-    nLocalHpl = JSON.parse(nLocalHplStr);
-  }
   const nHpl = store.getState().asset.nHpl;
   const nInfo = {
     nAccounts: BigInt(nLocalHpl.nAccounts || nHpl.nAccounts || 0),
@@ -471,6 +472,7 @@ export const updateHPLBalances = async (
       store.dispatch(setHPLSubsData(subData));
     }
     let vtData = store.getState().asset.hplVTsData;
+
     if (vtInfo && vtInfo.length > 0) {
       vtData = formatVirtualAccountInfo(vtInfo, vtData);
       localStorage.setItem(
@@ -483,7 +485,6 @@ export const updateHPLBalances = async (
     }
 
     const { auxSubaccounts, auxFT } = formatHPLSubaccounts({ ft: ftData, sub: subData, vt: vtData }, ftDict, state);
-
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
 

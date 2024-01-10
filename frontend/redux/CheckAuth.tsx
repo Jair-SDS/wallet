@@ -24,6 +24,7 @@ import {
   setHPLSubsData,
   setHPLVTsData,
   setIngressActor,
+  setStorageCodeA,
   setTokens,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
@@ -194,6 +195,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
 
 export const dispatchAuths = (authIdentity: Identity, myAgent: HttpAgent, myPrincipal: Principal) => {
   store.dispatch(setStorageCode("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
+  store.dispatch(setStorageCodeA("contacts-" + authIdentity.getPrincipal().toText().toLowerCase()));
   store.dispatch(setUserAgent(myAgent));
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));

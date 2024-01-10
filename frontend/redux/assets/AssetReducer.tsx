@@ -23,7 +23,9 @@ import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 const defaultValue = {} as any;
 interface AssetState {
+  storageCode: string;
   protocol: ProtocolType;
+  workerKey: string;
   // ICRC 1
   ICPSubaccounts: Array<ICPSubAccount>;
   assetLoading: boolean;
@@ -54,7 +56,9 @@ interface AssetState {
 }
 
 const initialState: AssetState = {
+  storageCode: "",
   protocol: ProtocolTypeEnum.Enum.ICRC1,
+  workerKey: Math.random().toString(),
   // ICRC 1
   ICPSubaccounts: [],
   assetLoading: false,
@@ -88,8 +92,14 @@ const assetSlice = createSlice({
   name: "asset",
   initialState,
   reducers: {
+    setStorageCodeA(state, action: PayloadAction<string>) {
+      state.storageCode = action.payload;
+    },
     setProtocol(state, action: PayloadAction<ProtocolType>) {
       state.protocol = action.payload;
+    },
+    setWorkerKey(state, action: PayloadAction<string>) {
+      state.workerKey = action.payload;
     },
     setICPSubaccounts(state, action: PayloadAction<ICPSubAccount[]>) {
       state.ICPSubaccounts = action.payload;
@@ -361,8 +371,9 @@ const assetSlice = createSlice({
         ft: action.payload.ftId,
         virtuals: [],
       });
-
-      state.nHpl = { ...state.nHpl, nAccounts: (BigInt(state.nHpl.nAccounts) + BigInt(1)).toString() };
+      const newCount = { ...state.nHpl, nAccounts: (BigInt(state.nHpl.nAccounts) + BigInt(1)).toString() };
+      state.nHpl = newCount;
+      localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
     },
     editHPLSub: {
       reducer(
@@ -406,7 +417,12 @@ const assetSlice = createSlice({
         });
         state.subaccounts = auxSubs;
         state.hplVTsData.push(vtLocal);
-        state.nHpl = { ...state.nHpl, nVirtualAccounts: (BigInt(state.nHpl.nVirtualAccounts) + BigInt(1)).toString() };
+        const newCount = {
+          ...state.nHpl,
+          nVirtualAccounts: (BigInt(state.nHpl.nVirtualAccounts) + BigInt(1)).toString(),
+        };
+        state.nHpl = newCount;
+        localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
         if (newSelSub) state.selectSub = newSelSub;
       },
       prepare(vt: HPLVirtualSubAcc, vtLocal: HPLVirtualData, subId: string) {
@@ -416,6 +432,7 @@ const assetSlice = createSlice({
       },
     },
     clearDataAsset(state) {
+      state.storageCode = "";
       state.ICPSubaccounts = [];
       state.tokens = [];
       state.tokensMarket = [];
@@ -439,8 +456,10 @@ const assetSlice = createSlice({
 });
 
 export const {
+  setStorageCodeA,
   clearDataAsset,
   setProtocol,
+  setWorkerKey,
   setICPSubaccounts,
   setLoading,
   setTokens,

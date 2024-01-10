@@ -9,15 +9,15 @@ import {
   updateAllBalances,
   updateHPLBalances,
 } from "@redux/assets/AssetActions";
-import { setLoading, setTokens, setTxWorker } from "@redux/assets/AssetReducer";
+import { setLoading, setTokens, setTxWorker, setWorkerKey } from "@redux/assets/AssetReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
 import timer_script from "@workers/timerWorker";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export const WorkerHook = () => {
   const dispatch = useAppDispatch();
-  const { tokens, assets, txWorker, ingressActor } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, ingressActor, workerKey } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 
@@ -67,7 +67,7 @@ export const WorkerHook = () => {
     });
   };
 
-  const getAssetsWorker = async () => {
+  const getAssetsWorker = async (myWorker: Worker) => {
     // ICRC1
     dispatch(setLoading(true));
     const userData = localStorage.getItem(authClient);
@@ -79,30 +79,49 @@ export const WorkerHook = () => {
       const { tokens } = await updateAllBalances(true, userAgent, defaultTokens, true, false);
       store.dispatch(setTokens(tokens));
     }
+    let nLocalHpl = {
+      nAccounts: "0",
+      nVirtualAccounts: "0",
+      nFtAssets: "0",
+    };
+    const nLocalHplStr = localStorage.getItem("nhpl-" + authClient);
+    if (nLocalHplStr) {
+      nLocalHpl = JSON.parse(nLocalHplStr);
+    }
+    console.log("workerKey:", workerKey);
+
     // HPL
-    updateHPLBalances(ingressActor, hplContacts, authClient, true);
+    updateHPLBalances(ingressActor, hplContacts, authClient, true, false, nLocalHpl);
+    setTimeout(() => {
+      console.log("setWorkerKey");
+      dispatch(setWorkerKey(Math.random().toString()));
+    }, 500);
   };
 
   // TRANSACTION WEB WORKER
-  let timerWorker = new Worker(timer_script, { type: "module", credentials: "include" });
+  const timerWorker = useMemo(() => {
+    const myWorker = new Worker(timer_script, { type: "module", credentials: "include" });
 
-  timerWorker.onmessage = (event) => {
-    if (event.data && event.data.debug) {
-      if (event.data) {
-        console.log("message from worker: %o", event.data);
+    myWorker.onmessage = (event) => {
+      if (event.data && event.data.debug) {
+        if (event.data) {
+          console.log("message from worker: %o", event.data);
+        }
+      } else {
+        if (event.data === WorkerTaskEnum.Values.TRANSACTIONS) {
+          getTransactionsWorker();
+        } else if (event.data === WorkerTaskEnum.Values.ASSETS) {
+          getAssetsWorker(myWorker);
+        }
       }
-    } else {
-      if (event.data === WorkerTaskEnum.Values.TRANSACTIONS) {
-        getTransactionsWorker();
-      } else if (event.data === WorkerTaskEnum.Values.ASSETS) {
-        getAssetsWorker();
-      }
-    }
-  };
+    };
 
-  timerWorker.onerror = (event) => {
-    console.log(event);
-  };
+    myWorker.onerror = (event) => {
+      console.log(event);
+    };
+
+    return myWorker;
+  }, [workerKey]);
 
   const clearTimeWorker = () => {
     timerWorker.terminate();
