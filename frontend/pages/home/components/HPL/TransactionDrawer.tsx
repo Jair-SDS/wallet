@@ -54,6 +54,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   const [rmtAmountTo, setRmtAmountTo] = useState("0");
   const [ftId, setFtId] = useState("0");
   const [decimals, setDecimals] = useState(0);
+  const [manualFromFt, setManualFromFt] = useState<string>();
+  const [manualToFt, setManualToFt] = useState<string>();
 
   return (
     <div className="flex flex-col justify-start items-between bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
@@ -118,11 +120,14 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             subaccounts={subaccounts}
             txType={HplTransactionsTypeEnum.Enum.from}
             setQRview={setQRview}
-            otherAsset={to.subaccount?.ft || to.remote?.ftIndex}
+            otherAsset={to.subaccount?.ft || to.remote?.ftIndex || manualToFt}
             otherId={to.subaccount?.sub_account_id || to.remote?.index}
             otherPrincipal={to.remote ? to.principal : undefined}
             isRemote={to.type === HplTransactionsEnum.Enum.VIRTUAL}
             errMsg={errMsgFrom}
+            validateData={validateData}
+            validateAssetMatch={validateAssetMatch}
+            setManualFt={setManualFromFt}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -135,11 +140,14 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             subaccounts={subaccounts}
             txType={HplTransactionsTypeEnum.Enum.to}
             setQRview={setQRview}
-            otherAsset={from.subaccount?.ft || from.remote?.ftIndex}
+            otherAsset={from.subaccount?.ft || from.remote?.ftIndex || manualFromFt}
             otherId={from.subaccount?.sub_account_id || from.remote?.index}
             otherPrincipal={from.remote ? from.principal : undefined}
             isRemote={from.type === HplTransactionsEnum.Enum.VIRTUAL}
             errMsg={errMsgTo}
+            validateData={validateData}
+            validateAssetMatch={validateAssetMatch}
+            setManualFt={setManualToFt}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -162,18 +170,41 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setSummary(false);
   }
 
+  async function validateData(selection: string) {
+    let valid = true;
+    const ftId = await getAssetId(selection === "from" ? from : to);
+    if (!validation(selection === "from" ? from : to)) {
+      valid = false;
+      if (selection === "from") setErrMsgFrom("err.from");
+      else setErrMsgTo("err.to");
+    } else if (ftId === "non") {
+      valid = false;
+      if (selection === "from") setErrMsgFrom(t("remote.no.yours.from"));
+      else setErrMsgTo(t("remote.no.yours.to"));
+    }
+    return { ftId, valid };
+  }
+
+  async function validateAssetMatch() {
+    let valid = false;
+
+    const { ftId: fromFtId, valid: validFrom } = await validateData("from");
+    const { ftId: toFtId, valid: validTo } = await validateData("to");
+    if (validFrom && validTo)
+      if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsgTo("not.match.asset.id");
+      else if (!errMsgFrom && !errMsgTo) valid = true;
+
+    return { fromFtId, toFtId, valid };
+  }
+
   async function onNext() {
     setAmount("");
     setAmountReceiver("");
     setLoadingNext(true);
-    const fromFtId = await getAssetId(from);
-    const toFtId = await getAssetId(to);
-    if (!validation(from)) setErrMsgFrom("err.from");
-    else if (!validation(to)) setErrMsgTo("err.to");
-    else if (fromFtId === "non") setErrMsgFrom(t("remote.no.yours.from"));
-    else if (toFtId === "non") setErrMsgTo(t("remote.no.yours.to"));
-    else if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsgFrom("not.match.asset.id");
-    else if (!errMsgFrom) {
+
+    const { fromFtId, toFtId, valid } = await validateAssetMatch();
+
+    if (valid) {
       setFtId(fromFtId ? fromFtId : toFtId);
       setDecimals(getFtFromSub(fromFtId).decimal);
       if (from.type === HplTransactionsEnum.Enum.VIRTUAL) {
@@ -184,6 +215,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
       }
       setSummary(true);
     }
+
     setLoadingNext(false);
   }
 

@@ -2,7 +2,7 @@
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
-import { ChangeEvent, Fragment, useState } from "react";
+import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
@@ -11,6 +11,8 @@ import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
 import { useTranslation } from "react-i18next";
 import { Principal } from "@dfinity/principal";
 import AssetSymbol from "@components/AssetSymbol";
+import { validatePrincipal } from "@/utils/identity";
+import { HplTransactionsType } from "@/const";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -18,10 +20,14 @@ interface SelectTxRemoteProps {
   manual: boolean;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
+  validateData(selection: string): Promise<{ ftId: string; valid: boolean }>;
+  validateAssetMatch(): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
+  setManualFt(value: string | undefined): void;
   hplContacts: HplContact[];
   otherAsset?: string;
   otherId?: string;
   otherPrincipal?: string;
+  txType: HplTransactionsType;
 }
 
 const SelectTxRemote = ({
@@ -30,15 +36,31 @@ const SelectTxRemote = ({
   setSelect,
   getAssetLogo,
   getFtFromSub,
+  validateData,
   hplContacts,
   otherAsset,
   otherId,
   otherPrincipal,
+  txType,
+  validateAssetMatch,
+  setManualFt,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
+  const [isPrincFocus, setIsPricFocus] = useState(false);
+  const [isIdxFocus, setIsIdxFocus] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [principalErr, setPrincipalErr] = useState(false);
+
+  useEffect(() => {
+    checkValidOnLeave();
+  }, [isIdxFocus, isPrincFocus]);
+
+  useEffect(() => {
+    setPrincipalErr(false);
+    setManualFt(undefined);
+  }, [manual]);
+
   return (
     <Fragment>
       {manual ? (
@@ -51,6 +73,12 @@ const SelectTxRemote = ({
             onChange={onChangePrincipal}
             sizeInput="small"
             border={principalErr ? "error" : "secondary"}
+            onFocus={() => {
+              onFocusInputs("prin");
+            }}
+            onBlur={() => {
+              onLeaveFocus("prin");
+            }}
           />
           <CustomInput
             compOutClass="!w-1/3"
@@ -60,6 +88,12 @@ const SelectTxRemote = ({
             onChange={onChangeIdx}
             sizeInput="small"
             border={"secondary"}
+            onFocus={() => {
+              onFocusInputs("idx");
+            }}
+            onBlur={() => {
+              onLeaveFocus("idx");
+            }}
           />
         </div>
       ) : (
@@ -203,6 +237,8 @@ const SelectTxRemote = ({
       ...select,
       principal: e.target.value,
     });
+
+    setManualFt(undefined);
     if (e.target.value.trim() !== "")
       try {
         Principal.fromText(e.target.value);
@@ -214,11 +250,13 @@ const SelectTxRemote = ({
   }
   function onChangeIdx(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
-    if (value === "" || /^\+?([0-9]\d*)$/.test(value))
+    if (value === "" || /^\+?([0-9]\d*)$/.test(value)) {
       setSelect({
         ...select,
         vIdx: value === "" ? "" : Number(value).toString(),
       });
+      setManualFt(undefined);
+    }
   }
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchKey(e.target.value);
@@ -235,6 +273,26 @@ const SelectTxRemote = ({
   function onSelectRemote(rmt: HplRemote, prin: string) {
     setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt });
     setSubsOpen(false);
+  }
+  function onFocusInputs(from: string) {
+    if (from === "prin") setIsPricFocus(true);
+    else setIsIdxFocus(true);
+  }
+  function onLeaveFocus(from: string) {
+    setTimeout(() => {
+      if (from === "prin") setIsPricFocus(false);
+      else setIsIdxFocus(false);
+    }, 100);
+  }
+  async function checkValidOnLeave() {
+    const valid = validatePrincipal(select.principal) && select.vIdx !== "";
+    if (valid && !isIdxFocus && !isPrincFocus) {
+      const { valid, ftId } = await validateData(txType);
+      if (valid) {
+        setManualFt(ftId);
+        validateAssetMatch();
+      }
+    }
   }
 };
 

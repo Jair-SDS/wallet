@@ -32,6 +32,9 @@ interface SelectTransferProps {
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
+  validateData(selection: string): Promise<{ ftId: string; valid: boolean }>;
+  validateAssetMatch(): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
+  setManualFt(value: string | undefined): void;
   errMsg: string;
 }
 
@@ -50,6 +53,9 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   setQRview,
   getAssetLogo,
   getFtFromSub,
+  validateData,
+  setManualFt,
+  validateAssetMatch,
   errMsg,
 }) => {
   const { t } = useTranslation();
@@ -240,6 +246,10 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherAsset={otherAsset}
             otherId={otherId}
             otherPrincipal={otherPrincipal}
+            validateData={validateData}
+            validateAssetMatch={validateAssetMatch}
+            txType={txType}
+            setManualFt={setManualFt}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
@@ -261,7 +271,11 @@ const SelectTransfer: FC<SelectTransferProps> = ({
       ...select,
       type: value,
       subaccount: value === HplTransactionsEnum.Enum.SUBACCOUNT ? select.subaccount : undefined,
+      principal: "",
+      vIdx: "",
+      remote: undefined,
     });
+    setManualFt(undefined);
   }
 
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {

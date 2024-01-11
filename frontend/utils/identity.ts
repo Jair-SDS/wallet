@@ -5,7 +5,7 @@ export function validatePrincipal(principal: string): boolean {
     Principal.fromText(principal);
     return true;
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return false;
   }
 }
