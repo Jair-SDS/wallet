@@ -41,7 +41,6 @@ import { _SERVICE as IngressActor, RemoteId } from "@candid/HPL/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
 
 export const updateAllBalances = async (
-  loading: boolean,
   myAgent: HttpAgent,
   tokens: Token[],
   basicSearch?: boolean,
@@ -275,22 +274,20 @@ export const updateAllBalances = async (
   const newTokensUpload = tokensAseets.map((tA) => {
     return tA.newToken;
   });
-  if (loading) {
-    store.dispatch(setAssets(newAssetsUpload));
-    if (newTokensUpload.length !== 0) {
-      localStorage.setItem(
-        myPrincipal.toString(),
-        JSON.stringify({
-          from: "II",
-          tokens: newTokensUpload.sort((a, b) => {
-            return a.id_number - b.id_number;
-          }),
+  store.dispatch(setAssets(newAssetsUpload));
+  if (newTokensUpload.length !== 0) {
+    localStorage.setItem(
+      myPrincipal.toString(),
+      JSON.stringify({
+        from: "II",
+        tokens: newTokensUpload.sort((a, b) => {
+          return a.id_number - b.id_number;
         }),
-      );
-    }
-    if (fromLogin) {
-      newAssetsUpload.length > 0 && store.dispatch(setAcordeonAssetIdx([newAssetsUpload[0].tokenSymbol]));
-    }
+      }),
+    );
+  }
+  if (fromLogin) {
+    newAssetsUpload.length > 0 && store.dispatch(setAcordeonAssetIdx([newAssetsUpload[0].tokenSymbol]));
   }
 
   const icpAsset = newAssetsUpload.find((ast) => ast.tokenSymbol === "ICP");

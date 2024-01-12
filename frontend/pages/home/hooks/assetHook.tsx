@@ -51,13 +51,13 @@ export const AssetHook = () => {
 
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor, hplContacts, authClient);
   };
 
   const reloadOnlyICRCBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances(true, userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
   };
 
   const reloadOnlyHPLBallance = () => {

@@ -124,9 +124,9 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean)
     setAssetFromLocalData(userDataJson.tokens, myPrincipalTxt);
     // AUTH
     dispatchAuths(authIdentity, myAgent, myPrincipal);
-    updateAllBalances(true, myAgent, userDataJson.tokens, false, true);
+    updateAllBalances(myAgent, userDataJson.tokens, false, true);
   } else {
-    const { tokens } = await updateAllBalances(true, myAgent, defaultTokens, true, true);
+    const { tokens } = await updateAllBalances(myAgent, defaultTokens, true, true);
     store.dispatch(setTokens(tokens));
     // AUTH
     dispatchAuths(authIdentity, myAgent, myPrincipal);

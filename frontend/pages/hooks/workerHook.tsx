@@ -76,9 +76,9 @@ export const WorkerHook = () => {
     if (userData) {
       const userDataJson = JSON.parse(userData);
       store.dispatch(setTokens(userDataJson.tokens));
-      await updateAllBalances(true, userAgent, userDataJson.tokens, false, false);
+      await updateAllBalances(userAgent, userDataJson.tokens, false, false);
     } else {
-      const { tokens } = await updateAllBalances(true, userAgent, defaultTokens, true, false);
+      const { tokens } = await updateAllBalances(userAgent, defaultTokens, true, false);
       store.dispatch(setTokens(tokens));
     }
     const nLocalHpl = {
