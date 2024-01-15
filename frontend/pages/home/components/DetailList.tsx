@@ -25,6 +25,7 @@ import DrawerReceive from "./ICRC/drawer/DrawerReceive";
 import AllowanceList from "./ICRC/allowance/AllowanceList";
 import AddAllowanceDrawer from "./ICRC/allowance/AddAllowanceDrawer";
 import ICRCTransactionsTable from "./ICRC/detail/transaction/TransactionsTable";
+import HPLSubaccountAction from "./HPL/SubaccountActions";
 
 const icrc1DrawerOptions = [
   { name: "send", type: DrawerOptionEnum.Enum.SEND },
@@ -57,7 +58,10 @@ const DetailList = () => {
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <ICRCSubaccountAction onActionClick={handleActionClick} />
           ) : (
-            <ICRCSubaccountAction onActionClick={handleActionClick} />
+            <HPLSubaccountAction
+              onActionClick={handleActionClick}
+              enableReceiveAction={selectedVirtualAccount ? true : false}
+            />
           )}
         </div>
         {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
