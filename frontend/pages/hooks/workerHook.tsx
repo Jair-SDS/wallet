@@ -12,8 +12,6 @@ import {
 import { setLoading, setTokens, setTxWorker } from "@redux/assets/AssetReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
-import { useQuery } from "@tanstack/react-query";
-import { minutesToMilliseconds } from "@/utils/time";
 import timer_script from "@pages/workers/timerWorker";
 import { useEffect } from "react";
 
