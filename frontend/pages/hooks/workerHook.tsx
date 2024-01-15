@@ -90,23 +90,6 @@ export const WorkerHook = () => {
     updateHPLBalances(ingressActor, hplContacts, authClient, true, false, nLocalHpl);
   };
 
-  let timeOut = false;
-
-  const reloadBackgroudData = () => {
-    console.log("backgroud-realod");
-    return { updatedAt: Date.now() };
-  };
-
-  const query = useQuery({
-    queryKey: [timeOut],
-    queryFn: reloadBackgroudData,
-    staleTime: minutesToMilliseconds(1),
-    enabled: true,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  });
-
   // TRANSACTION WEB WORKER
   let timerWorker = new Worker(timer_script, { type: "module", credentials: "include" });
 
@@ -145,5 +128,5 @@ export const WorkerHook = () => {
     };
   }, []);
 
-  return { txWorker, clearTimeWorker, query };
+  return { txWorker, clearTimeWorker };
 };
