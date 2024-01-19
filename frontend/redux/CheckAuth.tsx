@@ -148,62 +148,65 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
 
-  // HPL FT
-  const hplFTsData = localStorage.getItem("hplFT-" + identityPrincipalStr);
-  if (hplFTsData != null) {
-    const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
-    store.dispatch(setHPLAssetsData(hplFTsDataJson));
-  }
-  // HPL DICTIONARY
-  const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + identityPrincipalStr);
-
-  store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
-  if (hplDictPrin) {
-    try {
-      const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
-        agent: myAgent,
-        canisterId: hplDictPrin,
-      });
-      const dictFTs = await dictActor.getDump();
-      store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
-    } catch (e) {
-      console.log("dictFTs-err:", e);
-      localStorage.removeItem("hpl-dict-pric-" + identityPrincipalStr);
-    }
-  }
-  // HPL SUBACCOUNTS
-  const hplSubsData = localStorage.getItem("hplSUB-" + identityPrincipalStr);
-  if (hplSubsData != null) {
-    const hplSubsDataJson = JSON.parse(hplSubsData);
-    store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
-  }
-  // HPL VIRTUALS
-  const hplVTsData = localStorage.getItem("hplVT-" + identityPrincipalStr);
-  if (hplVTsData != null) {
-    const hplVTsDataJson = JSON.parse(hplVTsData);
-    store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
-  }
-  // HPL CONTACTS
-  let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
-  const hplContactsData = localStorage.getItem("hpl-contacts-" + identityPrincipalStr);
-  if (hplContactsData != null) {
-    try {
-      hplContactsDataJson = JSON.parse(hplContactsData);
-    } catch {
-      //
-    }
-  }
-  // HPL TOKENS
-  const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
-  await updateHPLBalances(ingressActor, hplContactsDataJson.contacts, identityPrincipalStr, false, forceUpdate);
-  try {
-    const feeConstant = await ingressActor.feeRatio();
-    store.dispatch(setFeeConstant(Number(feeConstant.toString())));
-  } catch (e) {
-    console.log("feeConstant-err", e);
-  }
   // ALLOWANCES
   await allowanceFullReload();
+
+  if (!fixedPrincipal) {
+    // HPL FT
+    const hplFTsData = localStorage.getItem("hplFT-" + identityPrincipalStr);
+    if (hplFTsData != null) {
+      const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
+      store.dispatch(setHPLAssetsData(hplFTsDataJson));
+    }
+    // HPL DICTIONARY
+    const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + identityPrincipalStr);
+
+    store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
+    if (hplDictPrin) {
+      try {
+        const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+          agent: myAgent,
+          canisterId: hplDictPrin,
+        });
+        const dictFTs = await dictActor.getDump();
+        store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
+      } catch (e) {
+        console.log("dictFTs-err:", e);
+        localStorage.removeItem("hpl-dict-pric-" + identityPrincipalStr);
+      }
+    }
+    // HPL SUBACCOUNTS
+    const hplSubsData = localStorage.getItem("hplSUB-" + identityPrincipalStr);
+    if (hplSubsData != null) {
+      const hplSubsDataJson = JSON.parse(hplSubsData);
+      store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
+    }
+    // HPL VIRTUALS
+    const hplVTsData = localStorage.getItem("hplVT-" + identityPrincipalStr);
+    if (hplVTsData != null) {
+      const hplVTsDataJson = JSON.parse(hplVTsData);
+      store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
+    }
+    // HPL CONTACTS
+    let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
+    const hplContactsData = localStorage.getItem("hpl-contacts-" + identityPrincipalStr);
+    if (hplContactsData != null) {
+      try {
+        hplContactsDataJson = JSON.parse(hplContactsData);
+      } catch {
+        //
+      }
+    }
+    // HPL TOKENS
+    const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
+    await updateHPLBalances(ingressActor, hplContactsDataJson.contacts, identityPrincipalStr, false, forceUpdate);
+    try {
+      const feeConstant = await ingressActor.feeRatio();
+      store.dispatch(setFeeConstant(Number(feeConstant.toString())));
+    } catch (e) {
+      console.log("feeConstant-err", e);
+    }
+  }
 };
 
 export const dispatchAuths = (
