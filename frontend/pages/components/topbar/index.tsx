@@ -26,11 +26,12 @@ import { ThemesEnum } from "@/const";
 import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import HplSettingsModal from "./hplSettings";
+import { useAppSelector } from "@redux/Store";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
   const { onLanguageChange } = LanguageHook();
-
+  const { watchOnlyMode } = useAppSelector((state) => state.auth);
   const { theme, themeOpen, setThemeOpen } = ThemeHook();
   const { authClient } = AccountHook();
   const { getTotalAmountInCurrency, reloadBallance, assetLoading } = AssetHook();
@@ -62,6 +63,7 @@ const TopBarComponent = () => {
               }`}
               onClick={handleReloadButton}
             />
+            {watchOnlyMode && <p className="opacity-50">{t("watchOnlyMode.title")}</p>}
           </div>
         </div>
         <div className="flex flex-row justify-start items-center pr-9 gap-9">
