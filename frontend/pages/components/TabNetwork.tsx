@@ -1,6 +1,7 @@
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { WorkerHook } from "@pages/hooks/workerHook";
+import { useAppSelector } from "@redux/Store";
 
 interface TabNetworkProps {
   children: any;
@@ -9,12 +10,18 @@ interface TabNetworkProps {
 const TabNetwork = ({ children }: TabNetworkProps) => {
   WorkerHook();
   const { protocol, setProtocolType } = AssetHook();
-  const networks = Object.keys(ProtocolTypeEnum.Values);
+  const { watchOnlyMode } = useAppSelector((state) => state.auth);
+
+  const networks = [
+    { network: ProtocolTypeEnum.Enum.ICRC1, visible: true },
+    { network: ProtocolTypeEnum.Enum.HPL, visible: !watchOnlyMode },
+  ];
+
   return (
     <div className="w-full h-full flex flex-col justify-start items-start px-3">
       <div className="flex flex-row justify-start items-center w-full gap-5">
         {networks.map((ntw, k) => {
-          return getTabItem(ntw as ProtocolType, k);
+          if (ntw.visible) return getTabItem(ntw.network, k);
         })}
       </div>
       <div className="flex justify-start items-start w-full h-full border rounded-tr border-SelectRowColor">

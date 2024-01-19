@@ -110,8 +110,11 @@ const Login = () => {
                         autoFocus
                         sufix={
                           <CheckIcon
+                            onClick={() => {
+                              handlePrincipalAuthenticated(principalAddress);
+                            }}
                             className={clsx(
-                              "w-4 h-4 opacity-50 mr-2",
+                              "w-4 h-4 opacity-50 mr-2 cursor-pointer",
                               principalAddress.length > 0 && !watchOnlyLoginErr
                                 ? "stroke-BorderSuccessColor"
                                 : "stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor",
