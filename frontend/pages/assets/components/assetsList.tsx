@@ -47,7 +47,7 @@ const AssetListTable = ({
             <th className="p-2 w-[22.5%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[14.5%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[12.5%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>
             <th className="p-2 w-[6%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">

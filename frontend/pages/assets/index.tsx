@@ -11,7 +11,7 @@ const Assets = () => {
   const {
     searchKey,
     setSearchKey,
-    allAssets,
+    allAssetsView,
     setAllAssets,
     assetList,
     subsInAsset,
@@ -38,7 +38,7 @@ const Assets = () => {
           <AssetsFilter
             searchKey={searchKey}
             setSearchKey={setSearchKey}
-            allAssets={allAssets}
+            allAssets={allAssetsView}
             onAllAssetToggle={setAllAssets}
           />
           <AssetListTable

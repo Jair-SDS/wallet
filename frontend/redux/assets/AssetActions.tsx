@@ -489,7 +489,7 @@ export const updateHPLBalances = async (
     const selectedSub = store.getState().asset.selectSub;
     if (selectedSub) {
       const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
-      store.dispatch(setHPLSelectedSub(sel));
+      if (sel) store.dispatch(setHPLSelectedSub(sel));
     }
     updateHplRemotes(state, contacts);
     return { subs: auxSubaccounts, fts: auxFT };

@@ -21,6 +21,7 @@ import { AccountHook } from "@pages/hooks/accountHook";
 import LoadingLoader from "@components/Loader";
 import BackingSelector from "./BackingSelector";
 import AccesBySelector from "./AccesBySelector";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -118,7 +119,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           compOutClass=""
           value={newVt.amount}
           onChange={onBalanceChange}
-          sufix={<p className="pr-2">{getFtFromVt(newVt.backing).symbol}</p>}
+          sufix={<AssetSymbol ft={getFtFromVt(newVt.backing)} />}
         />
       </div>
       <div className="flex flex-col items-start justify-start mt-3 mb-3 w-full">

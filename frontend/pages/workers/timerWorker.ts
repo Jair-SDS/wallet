@@ -8,7 +8,7 @@ const timerCode = () => {
     setInterval(() => {
       const updatedAt = Date.now();
       self.postMessage({ wType: "ASSETS", updatedAt });
-    }, 1 * 60 * 1000);
+    }, 10 * 60 * 1000);
   };
 };
 

@@ -13,6 +13,7 @@ import { clsx } from "clsx";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
+import AssetSymbol from "@components/AssetSymbol";
 
 interface BackingSelectorProps {
   newVt: HPLVirtualSubAcc;
@@ -22,7 +23,17 @@ interface BackingSelectorProps {
 
 const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
   const { t } = useTranslation();
-  const { subaccounts, selectSub, getSubFromVt, selAssetOpen, setSelAssetOpen, selectVt } = useHPL(false);
+  const {
+    subaccounts,
+    selectSub,
+    getSubFromVt,
+    getFtFromVt,
+    getFtFromSub,
+    selAssetOpen,
+    setSelAssetOpen,
+    selectVt,
+    getAssetLogo,
+  } = useHPL(false);
 
   const [searchKey, setSearchKey] = useState("");
   const [selBacking, setSelBacking] = useState({ id: "-1", name: "" });
@@ -62,18 +73,22 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
                 </div>
               ) : (
                 <div className="flex flex-row justify-between items-center w-full">
-                  <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
+                  <div className="p-1 flex flex-row justify-start items-center gap-2 text-sm">
                     <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
                       <p className=" text-PrimaryTextColor">{getSubFromVt(newVt.backing).sub_account_id}</p>
                     </div>
                     <p className="text-left">{getSubFromVt(newVt.backing).name}</p>
                   </div>
-                  <img
-                    src={ChevIcon}
-                    style={{ width: "2rem", height: "2rem" }}
-                    alt="chevron-icon"
-                    className={`${selAssetOpen ? "rotate-90" : ""}`}
-                  />
+                  <div className="flex flex-row justify-start items-center gap-2">
+                    <AssetSymbol ft={getFtFromVt(newVt.backing)} />
+                    <img src={getAssetLogo(getFtFromVt(newVt.backing).id)} className="w-5 h-5" alt="info-icon" />
+                    <img
+                      src={ChevIcon}
+                      style={{ width: "2rem", height: "2rem" }}
+                      alt="chevron-icon"
+                      className={`${selAssetOpen ? "rotate-90" : ""}`}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -109,15 +124,22 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
                     return (
                       <button
                         key={k}
-                        className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                        className="p-1 flex flex-row justify-between items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
                         onClick={() => {
                           onSelectBacking(sub);
                         }}
                       >
-                        <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                          <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
+                        <div className="flex justify-center items-center gap-3">
+                          <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
+                            <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
+                          </div>
+                          <p className="text-left">{sub.name}</p>
                         </div>
-                        <p className="text-left">{sub.name}</p>
+
+                        <div className="flex flex-row justify-start items-center gap-2 pr-10">
+                          <AssetSymbol ft={getFtFromSub(sub.ft)} />
+                          <img src={getAssetLogo(getFtFromSub(sub.ft).id)} className="w-5 h-5" alt="info-icon" />
+                        </div>
                       </button>
                     );
                   })}

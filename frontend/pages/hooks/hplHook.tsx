@@ -146,10 +146,6 @@ export const useHPL = (open: boolean) => {
   }, [open]);
 
   useEffect(() => {
-    if (!selectSub && subaccounts.length > 0) setSelSub(subaccounts[0]);
-  }, [subaccounts]);
-
-  useEffect(() => {
     const auxSubs = subaccounts?.filter((sub: HPLSubAccount) => {
       let includeInSub = false;
       const mySearch = searchKeyHPL.toLowerCase().trim();

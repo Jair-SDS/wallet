@@ -1,24 +1,28 @@
-import { useAppSelector } from "@redux/Store";
+import { useAppDispatch, useAppSelector } from "@redux/Store";
+import { setAllAssetsView } from "@redux/assets/AssetReducer";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useEffect, useState } from "react";
 
 export const useAssetList = () => {
-  const { dictionaryHplFTs, hplFTs, subaccounts } = useAppSelector((state) => state.asset);
+  const dispatch = useAppDispatch();
+
+  const { dictionaryHplFTs, hplFTs, subaccounts, allAssetsView } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
 
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [searchKey, setSearchKey] = useState("");
-  const [allAssets, setAllAssets] = useState(false);
   const [assetList, setAssetList] = useState<HPLAsset[]>([]);
   const [subsInAsset, setSubsInAsset] = useState<{ id: string; accounts: number }[]>([]);
   const [editView, setEditView] = useState(false);
+
+  const setAllAssets = (value: boolean) => dispatch(setAllAssetsView(value));
 
   useEffect(() => {
     let auxAssetList: HPLAsset[] = [];
     const auxSubsInAsset: { id: string; accounts: number }[] = [];
     const auxSearchKey = searchKey.trim().toLowerCase();
 
-    if (allAssets) auxAssetList = hplFTs;
+    if (allAssetsView) auxAssetList = hplFTs;
     else {
       const index = dictionaryHplFTs.map((ft) => {
         return ft.assetId;
@@ -51,7 +55,7 @@ export const useAssetList = () => {
 
     setSubsInAsset(auxSubsInAsset);
     setAssetList(auxhplFTs);
-  }, [searchKey, allAssets, subaccounts, hplFTs]);
+  }, [searchKey, allAssetsView, subaccounts, hplFTs]);
 
   const getContactName = (principal: string) => {
     const found = hplContacts.find((cntc) => cntc.principal === principal);
@@ -62,7 +66,7 @@ export const useAssetList = () => {
     dictionaryHplFTs,
     searchKey,
     setSearchKey,
-    allAssets,
+    allAssetsView,
     setAllAssets,
     assetList,
     subsInAsset,
