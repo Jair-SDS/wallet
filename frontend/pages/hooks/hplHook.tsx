@@ -17,6 +17,7 @@ import {
   setHPLSubsData,
   setHPLVTsData,
   setLoading,
+  setOwnerId,
 } from "@redux/assets/AssetReducer";
 import {
   HPLAsset,
@@ -42,7 +43,9 @@ export const useHPL = (open: boolean) => {
     hplSubsData,
     hplVTsData,
     ingressActor,
+    ownersActor,
     nHpl,
+    ownerId,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient } = useAppSelector((state) => state.auth);
@@ -67,6 +70,7 @@ export const useHPL = (open: boolean) => {
     expiration: 0,
     accesBy: "",
     backing: "",
+    code: "",
   });
 
   const [newHplSub, setNewHplSub] = useState<HPLSubAccount>({
@@ -111,6 +115,10 @@ export const useHPL = (open: boolean) => {
     dispatch(setHPLSubsData(subData));
   };
 
+  const editOwnerId = (id: string) => {
+    dispatch(setOwnerId(id));
+  };
+
   const addVt = (vt: HPLVirtualData, newVt: HPLVirtualSubAcc) => {
     const hplVt: HPLVirtualSubAcc = {
       virt_sub_acc_id: vt.id,
@@ -120,6 +128,7 @@ export const useHPL = (open: boolean) => {
       expiration: newVt.expiration,
       accesBy: vt.accesBy,
       backing: newVt.backing,
+      code: newVt.code,
     };
     dispatch(addHplVt(hplVt, vt, newVt.backing));
   };
@@ -178,7 +187,7 @@ export const useHPL = (open: boolean) => {
 
   const reloadHPLBallance = async (updateInfo?: boolean) => {
     dispatch(setLoading(true));
-    const { subs } = await updateHPLBalances(ingressActor, hplContacts, authClient, false, updateInfo);
+    const { subs } = await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, false, updateInfo);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);
@@ -326,11 +335,13 @@ export const useHPL = (open: boolean) => {
   }
 
   return {
+    ownerId,
     protocol,
     ingressActor,
     subaccounts,
     hplFTs,
     selAsset,
+    ownersActor,
     setSelAsset,
     selAssetOpen,
     setSelAssetOpen,
@@ -360,6 +371,7 @@ export const useHPL = (open: boolean) => {
     hplFTsData,
     hplSubsData,
     hplVTsData,
+    editOwnerId,
     editNameId,
     setEditNameId,
     editSubName,

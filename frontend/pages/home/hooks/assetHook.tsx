@@ -29,6 +29,7 @@ export const AssetHook = () => {
     subaccounts,
     dictionaryHplFTs,
     ingressActor,
+    ownersActor,
   } = useAppSelector((state) => state.asset);
   const { userAgent, authClient } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
@@ -52,7 +53,7 @@ export const AssetHook = () => {
   const reloadBallance = (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
-    updateHPLBalances(ingressActor, hplContacts, authClient);
+    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
   };
 
   const reloadOnlyICRCBallance = (tkns?: Token[]) => {
@@ -61,7 +62,7 @@ export const AssetHook = () => {
   };
 
   const reloadOnlyHPLBallance = () => {
-    updateHPLBalances(ingressActor, hplContacts, authClient);
+    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
   };
 
   const getTotalAmountInCurrency = () => {

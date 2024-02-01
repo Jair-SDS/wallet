@@ -125,6 +125,7 @@ export type nHplData = z.infer<typeof nHplData>;
 
 const HPLVirtualSubAcc = z.object({
   virt_sub_acc_id: z.string(),
+  code: z.string(),
   name: z.string(),
   amount: z.string(),
   currency_amount: z.string(),

@@ -71,7 +71,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 }}
                 className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
               >
-                <p>{"ID"}</p>
+                <p>{"code"}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
               </div>
             </th>
@@ -109,7 +109,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={handleVirtualAccountClick(vt.virt_sub_acc_id)}
               >
                 <td className={`${rowStyle(vt.expiration)}`}>
-                  <p className="ml-[-0.4rem]">{vt.virt_sub_acc_id}</p>
+                  <p className="ml-[-0.4rem]">{vt.code}</p>
                 </td>
                 <td
                   className={`${rowStyle(

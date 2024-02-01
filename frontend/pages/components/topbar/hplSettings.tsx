@@ -13,7 +13,7 @@ import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandi
 import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
-import { useAppDispatch } from "@redux/Store";
+import { useAppDispatch, useAppSelector } from "@redux/Store";
 import {
   setFeeConstant,
   setHPLAssets,
@@ -36,6 +36,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
+  const { ownersActor } = useAppSelector((state) => state.asset);
   const { reloadOnlyHPLBallance } = AssetHook();
   const { hplFTs, hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
@@ -123,7 +124,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             console.log("feeConstant-err", e);
           }
           localStorage.setItem("hpl-led-pric-" + authClient, ledger.principal);
-          await updateHPLBalances(hplActor, hplContacts, authClient, false, false);
+          await updateHPLBalances(hplActor, ownersActor, hplContacts, authClient, false, false);
         } catch (e) {
           setLeder((prev) => {
             return { ...prev, err: true };

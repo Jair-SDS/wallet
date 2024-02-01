@@ -161,6 +161,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                               ft.id.toString().includes(key);
                       })
                       .map((ft, k) => {
+                        const ftName = ft.name !== "" ? ft.name : ft.token_name;
                         return (
                           <button
                             key={k}
@@ -171,6 +172,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                           >
                             <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />
                             <AssetSymbol ft={ft} />
+                            {ftName && <p>{`[ ${ftName} ]`}</p>}
                           </button>
                         );
                       })}

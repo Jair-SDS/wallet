@@ -33,6 +33,8 @@ import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
 import { FungibleToken } from "@candid/Dictionary/dictService.did";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
+import { getCodeFromVt } from "./services/owners";
+import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -566,6 +568,20 @@ export const getInitialFromName = (name: string, length: number) => {
   }
 };
 
+export const getPxlCode = (prinCode: string, vtId: string) => {
+  const id = BigInt(prinCode).toString(16);
+  const link = BigInt(vtId).toString(16);
+  return (link.length - 1).toString() + id + link;
+};
+
+export const getOwnerIdFromPxl = (code: string) => {
+  if (code.length > 2) {
+    const size = Number(code[0]) + 1;
+    const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
+    return princCode;
+  } else return undefined;
+};
+
 export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
   return assets.find((a: Asset) => {
     return a.tokenSymbol === symbol;
@@ -588,16 +604,22 @@ export const parseFungibleToken = (tokens: FungibleToken[]) => {
   return auxTkns;
 };
 
-export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleTokenLocal[], stateData: ResQueryState) => {
+export const formatHPLSubaccounts = (
+  hplData: HPLData,
+  dictFT: FungibleTokenLocal[],
+  stateData: ResQueryState,
+  owner: string,
+) => {
   const auxSubaccounts: HPLSubAccount[] = [];
 
   stateData.accounts.map((sa) => {
     const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
 
     const auxVirtuals: HPLVirtualSubAcc[] = [];
-    stateData.virtualAccounts.map((va) => {
+    stateData.virtualAccounts.map(async (va) => {
       const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
       if (va[1][1] === sa[0]) {
+        const newCode = getPxlCode(owner, va[0].toString());
         auxVirtuals.push({
           name: vtData ? vtData.name : "",
           virt_sub_acc_id: va[0].toString(),
@@ -606,6 +628,7 @@ export const formatHPLSubaccounts = (hplData: HPLData, dictFT: FungibleTokenLoca
           expiration: Math.trunc(Number(va[1][2].toString()) / 1000000),
           accesBy: vtData ? vtData.accesBy : "",
           backing: va[1][1].toString(),
+          code: newCode,
         });
       }
     });

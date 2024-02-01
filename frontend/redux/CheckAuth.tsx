@@ -24,6 +24,7 @@ import {
   setHPLSubsData,
   setHPLVTsData,
   setIngressActor,
+  setOwnersActor,
   setStorageCodeA,
   setTokens,
 } from "./assets/AssetReducer";
@@ -36,6 +37,8 @@ import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
 import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
+import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
+import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
 import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { defaultTokens } from "@/defaultTokens";
@@ -197,9 +200,23 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
         //
       }
     }
+    // HPL OWNERS
+    const ownerActor = Actor.createActor<OwnersActor>(OwnersIDLFactory, {
+      agent: myAgent,
+      canisterId: "n65ik-oqaaa-aaaag-acb4q-cai",
+    });
+    store.dispatch(setOwnersActor(ownerActor));
+
     // HPL TOKENS
     const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
-    await updateHPLBalances(ingressActor, hplContactsDataJson.contacts, identityPrincipalStr, false, forceUpdate);
+    await updateHPLBalances(
+      ingressActor,
+      ownerActor,
+      hplContactsDataJson.contacts,
+      identityPrincipalStr,
+      false,
+      forceUpdate,
+    );
     try {
       const feeConstant = await ingressActor.feeRatio();
       store.dispatch(setFeeConstant(Number(feeConstant.toString())));

@@ -75,6 +75,7 @@ const AssetListTable = ({
             const noLogo = ft.name !== "" || ft.symbol !== "" || ft.logo === "";
             const inDict = dictionaryHplFTs.find((dict) => dict.assetId === ft.id);
             const verified = inDict && ft.name === "" && ft.symbol === "";
+            const inDictEdited = inDict && (ft.name !== "" || ft.symbol !== "");
 
             return (
               <tr
@@ -156,7 +157,8 @@ const AssetListTable = ({
                 </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-end items-center w-full gap-2">
-                    {verified && <VerifiedIcon className="w-4 h-4 " />}
+                    {verified && <VerifiedIcon className="w-4 h-4 fill-SelectRowColor" />}
+                    {inDictEdited && <VerifiedIcon className="w-4 h-4 fill-gray-500 " />}
                     <PencilIcon
                       onClick={() => {
                         onEdit(ft);

@@ -30,6 +30,7 @@ import {
   setHPLVTsData,
   setHPLAssetsData,
   setHPLSubsData,
+  setOwnerId,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
@@ -38,6 +39,7 @@ import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 import { _SERVICE as IngressActor, RemoteId } from "@candid/HPL/service.did";
+import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
 
 export const updateAllBalances = async (
@@ -324,6 +326,7 @@ export const updateAllBalances = async (
 
 export const updateHPLBalances = async (
   actor: ActorSubclass<IngressActor>,
+  owner: ActorSubclass<OwnersActor>,
   contacts: HplContact[],
   principal: string,
   fromWorker?: boolean,
@@ -482,7 +485,19 @@ export const updateHPLBalances = async (
       store.dispatch(setHPLVTsData(vtData));
     }
 
-    const { auxSubaccounts, auxFT } = formatHPLSubaccounts({ ft: ftData, sub: subData, vt: vtData }, ftDict, state);
+    let myOwnerId = "";
+    const ownerID = await owner.lookup(Principal.fromText(principal));
+    if (ownerID[0]) {
+      myOwnerId = ownerID[0].toString();
+      store.dispatch(setOwnerId(myOwnerId));
+    }
+
+    const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
+      { ft: ftData, sub: subData, vt: vtData },
+      ftDict,
+      state,
+      myOwnerId,
+    );
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
     store.dispatch(setHPLAssets(auxFT));
 
@@ -491,7 +506,9 @@ export const updateHPLBalances = async (
       const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
       if (sel) store.dispatch(setHPLSelectedSub(sel));
     }
+
     updateHplRemotes(state, contacts);
+
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
     console.log("err", e);

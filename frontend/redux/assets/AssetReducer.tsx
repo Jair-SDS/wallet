@@ -20,6 +20,7 @@ import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { HPLClient } from "@research-ag/hpl-client";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -40,8 +41,10 @@ interface AssetState {
   txWorker: Array<TransactionList>;
   txLoad: boolean;
   // HPL LEDGER
+  ownerId: string;
   hplClient: HPLClient;
   ingressActor: ActorSubclass<IngressActor>;
+  ownersActor: ActorSubclass<OwnersActor>;
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
@@ -73,9 +76,11 @@ const initialState: AssetState = {
   txWorker: [],
   txLoad: false,
   // HPL LEDGER
+  ownerId: "",
   nHpl: { nAccounts: "0", nFtAssets: "0", nVirtualAccounts: "0" },
   hplClient: defaultValue,
   ingressActor: defaultValue,
+  ownersActor: defaultValue,
   subaccounts: [],
   hplFTs: [],
   hplFTsData: [],
@@ -298,6 +303,9 @@ const assetSlice = createSlice({
     setAcordeonAssetIdx(state, action: PayloadAction<string[]>) {
       state.acordeonIdx = action.payload;
     },
+    setOwnerId(state, action: PayloadAction<string>) {
+      state.ownerId = action.payload;
+    },
     setnHpl(state, action: PayloadAction<nHplData>) {
       state.nHpl = action.payload;
     },
@@ -306,6 +314,9 @@ const assetSlice = createSlice({
     },
     setIngressActor(state, action: PayloadAction<ActorSubclass<IngressActor>>) {
       state.ingressActor = action.payload;
+    },
+    setOwnersActor(state, action: PayloadAction<ActorSubclass<OwnersActor>>) {
+      state.ownersActor = action.payload;
     },
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
@@ -451,6 +462,8 @@ const assetSlice = createSlice({
       state.hplSubsData = [];
       state.hplVTsData = [];
       state.acordeonIdx = [];
+      state.ownerId = "";
+      state.protocol = ProtocolTypeEnum.Enum.ICRC1;
     },
   },
 });
@@ -480,9 +493,11 @@ export const {
   setTxLoad,
   setAcordeonAssetIdx,
   // HPL LEDGER
+  setOwnerId,
   setnHpl,
   setHPLClient,
   setIngressActor,
+  setOwnersActor,
   setFeeConstant,
   setAllAssetsView,
   setHPLSubAccounts,

@@ -17,7 +17,7 @@ import { useEffect } from "react";
 
 export const WorkerHook = () => {
   const dispatch = useAppDispatch();
-  const { tokens, assets, txWorker, ingressActor } = useAppSelector((state) => state.asset);
+  const { tokens, assets, txWorker, ingressActor, ownersActor } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, userAgent } = useAppSelector((state) => state.auth);
 
@@ -85,7 +85,7 @@ export const WorkerHook = () => {
       nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
     // HPL
-    updateHPLBalances(ingressActor, hplContacts, authClient, true, false, nLocalHpl);
+    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
   };
 
   // TRANSACTION WEB WORKER

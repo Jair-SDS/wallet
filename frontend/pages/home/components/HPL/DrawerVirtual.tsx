@@ -14,7 +14,7 @@ import { ThemeHook } from "@pages/hooks/themeHook";
 import { CustomCheck } from "@components/CheckBox";
 import { CustomButton } from "@components/Button";
 import { CustomCopy } from "@components/CopyTooltip";
-import { getDecimalAmount, getHoleAmount, shortAddress } from "@/utils";
+import { getDecimalAmount, getHoleAmount, getPxlCode, shortAddress } from "@/utils";
 import dayjs from "dayjs";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
@@ -54,6 +54,9 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     onDateChange,
     accesErr,
     setAccesErr,
+    ownerId,
+    ownersActor,
+    editOwnerId,
   } = useHPL(false);
 
   const [loading, setLoading] = useState(false);
@@ -83,6 +86,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         expiration: 0,
         accesBy: "",
         backing: "",
+        code: "",
       });
     }
   }, [drawerOpen, selectVt]);
@@ -224,9 +228,11 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           },
           selectVt,
           true,
+          false,
         );
       } else {
         try {
+          const isFirstVt = hplVTsData.length === 0;
           const res = (await ingressActor.openVirtualAccount(
             { ft: BigInt(getFtFromVt(newVt.backing).id) },
             Principal.fromText(newVt.accesBy),
@@ -238,6 +244,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             { id: res.ok.id.toString(), name: newVt.name, ftId: getFtFromVt(newVt.backing).id, accesBy: newVt.accesBy },
             selectVt!,
             false,
+            isFirstVt,
           );
         } catch (e) {
           setErrMsg(t("err.back"));
@@ -262,8 +269,17 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     return res;
   }
 
-  function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean) {
+  async function saveInLocalstorage(vt: HPLVirtualData, selVt: HPLVirtualSubAcc, edit: boolean, isFirstVt: boolean) {
     let auxVts: HPLVirtualData[] = [];
+
+    let myOwnerId = ownerId;
+    if (isFirstVt) {
+      const ownerID = await ownersActor.lookup(Principal.fromText(authClient));
+      if (ownerID[0]) {
+        myOwnerId = ownerID[0].toString();
+        editOwnerId(myOwnerId);
+      }
+    }
 
     if (edit) {
       let exist = false;
@@ -289,7 +305,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       editVtData(auxVts);
       changeVtName(selectSub?.sub_account_id || "", { ...newVt, amount: amnt.toString() });
     } else {
-      addVt(vt, { ...newVt, amount: amnt.toString() });
+      addVt(vt, { ...newVt, amount: amnt.toString(), code: getPxlCode(myOwnerId, vt.id) });
     }
     onClose();
   }
