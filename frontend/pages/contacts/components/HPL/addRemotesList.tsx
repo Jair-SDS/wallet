@@ -33,7 +33,7 @@ const AddRemoteList = ({
           <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo dark:text-PrimaryTextColor/70 text-PrimaryTextColorLight/70 sticky top-0 z-[1]">
             <tr>
               <th className="p-2 text-center w-[11%] bg-SecondaryColorLight dark:bg-ThirdColor">
-                <p>{"ID"}</p>
+                <p>{t("code")}</p>
               </th>
               <th className="p-2 text-left w-[35%] bg-SecondaryColorLight dark:bg-ThirdColor">
                 <p>{t("name")}</p>
@@ -67,7 +67,7 @@ const AddRemoteList = ({
                   <td className="p-2 text-center">
                     <div className="relative flex flex-row justify-center items-center w-full">
                       <div className={`absolute left-0 w-2 h-full rounded-full ${bg}`}></div>
-                      <p>{rmt.index}</p>
+                      <p>{rmt.code}</p>
                     </div>
                   </td>
                   <td>

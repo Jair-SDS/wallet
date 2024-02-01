@@ -16,6 +16,7 @@ import SelectTxRemote from "./SelectTxRemote";
 import { getDecimalAmount } from "@/utils";
 import SwitchButton from "@components/Switch";
 import AssetSymbol from "@components/AssetSymbol";
+import { Principal } from "@dfinity/principal";
 
 interface SelectTransferProps {
   select: HplTxUser;
@@ -32,9 +33,14 @@ interface SelectTransferProps {
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
-  validateData(selection: string): Promise<{ ftId: string; valid: boolean }>;
-  validateAssetMatch(): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
+  validateData(selection: string, link?: HplTxUser): Promise<{ ftId: string; valid: boolean }>;
+  validateAssetMatch(data?: {
+    selection: string;
+    link: HplTxUser;
+  }): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
   setManualFt(value: string | undefined): void;
+  getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
+  getAssetId(data: HplTxUser): Promise<string>;
   errMsg: string;
 }
 
@@ -56,6 +62,8 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   validateData,
   setManualFt,
   validateAssetMatch,
+  getPrincipalFromOwnerId,
+  getAssetId,
   errMsg,
 }) => {
   const { t } = useTranslation();
@@ -250,6 +258,8 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             validateAssetMatch={validateAssetMatch}
             txType={txType}
             setManualFt={setManualFt}
+            getPrincipalFromOwnerId={getPrincipalFromOwnerId}
+            getAssetId={getAssetId}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">

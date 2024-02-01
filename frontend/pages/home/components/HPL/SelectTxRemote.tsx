@@ -7,12 +7,11 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { getContactColor, getDecimalAmount, getInitialFromName } from "@/utils";
+import { getContactColor, getDecimalAmount, getInitialFromName, getOwnerInfoFromPxl } from "@/utils";
 import { useTranslation } from "react-i18next";
-import { Principal } from "@dfinity/principal";
 import AssetSymbol from "@components/AssetSymbol";
-import { validatePrincipal } from "@/utils/identity";
 import { HplTransactionsType } from "@/const";
+import { Principal } from "@dfinity/principal";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -20,14 +19,19 @@ interface SelectTxRemoteProps {
   manual: boolean;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
-  validateData(selection: string): Promise<{ ftId: string; valid: boolean }>;
-  validateAssetMatch(): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
+  validateData(selection: string, link?: HplTxUser): Promise<{ ftId: string; valid: boolean }>;
+  validateAssetMatch(data?: {
+    selection: string;
+    link: HplTxUser;
+  }): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
   setManualFt(value: string | undefined): void;
   hplContacts: HplContact[];
   otherAsset?: string;
   otherId?: string;
   otherPrincipal?: string;
   txType: HplTransactionsType;
+  getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
+  getAssetId(data: HplTxUser): Promise<string>;
 }
 
 const SelectTxRemote = ({
@@ -44,21 +48,18 @@ const SelectTxRemote = ({
   txType,
   validateAssetMatch,
   setManualFt,
+  getPrincipalFromOwnerId,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
+  const [code, setCode] = useState("");
   const [subsOpen, setSubsOpen] = useState(false);
-  const [isPrincFocus, setIsPricFocus] = useState(false);
-  const [isIdxFocus, setIsIdxFocus] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [principalErr, setPrincipalErr] = useState(false);
 
   useEffect(() => {
-    checkValidOnLeave();
-  }, [isIdxFocus, isPrincFocus]);
-
-  useEffect(() => {
     setPrincipalErr(false);
     setManualFt(undefined);
+    setCode("");
   }, [manual]);
 
   return (
@@ -67,20 +68,20 @@ const SelectTxRemote = ({
         <div className="flex flex-col justify-start items-start w-full gap-2">
           <CustomInput
             intent={"secondary"}
-            placeholder={"Principal"}
+            placeholder={"PXL"}
             compOutClass="mb-1"
-            value={select.principal}
-            onChange={onChangePrincipal}
+            value={code}
+            onChange={onChangeCode}
             sizeInput="small"
             border={principalErr ? "error" : "secondary"}
-            onFocus={() => {
-              onFocusInputs("prin");
-            }}
+            // onFocus={() => {
+            //   onFocusInputs("prin");
+            // }}
             onBlur={() => {
-              onLeaveFocus("prin");
+              onLeaveFocus();
             }}
           />
-          <CustomInput
+          {/* <CustomInput
             compOutClass="!w-1/3"
             intent={"secondary"}
             placeholder={t("index")}
@@ -94,7 +95,7 @@ const SelectTxRemote = ({
             onBlur={() => {
               onLeaveFocus("idx");
             }}
-          />
+          /> */}
         </div>
       ) : (
         <DropdownMenu.Root
@@ -232,32 +233,19 @@ const SelectTxRemote = ({
       )}
     </Fragment>
   );
-  function onChangePrincipal(e: ChangeEvent<HTMLInputElement>) {
-    setSelect({
-      ...select,
-      principal: e.target.value,
-    });
-
+  function onChangeCode(e: ChangeEvent<HTMLInputElement>) {
+    setCode(e.target.value.trim());
+    setSelect({ ...select, code: e.target.value.trim() });
     setManualFt(undefined);
-    if (e.target.value.trim() !== "")
-      try {
-        Principal.fromText(e.target.value);
-        setPrincipalErr(false);
-      } catch {
-        setPrincipalErr(true);
-      }
-    else setPrincipalErr(false);
-  }
-  function onChangeIdx(e: ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
-    if (value === "" || /^\+?([0-9]\d*)$/.test(value)) {
-      setSelect({
-        ...select,
-        vIdx: value === "" ? "" : Number(value).toString(),
-      });
-      setManualFt(undefined);
+    if (e.target.value.trim() === "") {
+      setPrincipalErr(false);
+    } else if (e.target.value.trim().length < 3) {
+      setPrincipalErr(true);
+    } else {
+      setPrincipalErr(false);
     }
   }
+
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchKey(e.target.value);
   }
@@ -274,24 +262,34 @@ const SelectTxRemote = ({
     setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt });
     setSubsOpen(false);
   }
-  function onFocusInputs(from: string) {
-    if (from === "prin") setIsPricFocus(true);
-    else setIsIdxFocus(true);
-  }
-  function onLeaveFocus(from: string) {
-    setTimeout(() => {
-      if (from === "prin") setIsPricFocus(false);
-      else setIsIdxFocus(false);
-    }, 100);
-  }
-  async function checkValidOnLeave() {
-    const valid = validatePrincipal(select.principal) && select.vIdx !== "";
-    if (valid && !isIdxFocus && !isPrincFocus) {
-      const { valid, ftId } = await validateData(txType);
-      if (valid) {
-        setManualFt(ftId);
-        validateAssetMatch();
+  async function onLeaveFocus() {
+    if (code.length > 2) {
+      const ownerInfo = getOwnerInfoFromPxl(code);
+      if (ownerInfo) {
+        const princ = await getPrincipalFromOwnerId(ownerInfo.ownerId);
+        if (princ) {
+          const linkAcc = {
+            ...select,
+            principal: princ.toText(),
+            vIdx: ownerInfo.linkId,
+            subaccount: undefined,
+            remote: undefined,
+          };
+          setSelect(linkAcc);
+          checkValidOnLeave(linkAcc);
+        } else {
+          setPrincipalErr(true);
+        }
+      } else {
+        setPrincipalErr(true);
       }
+    }
+  }
+  async function checkValidOnLeave(linkAcc: HplTxUser) {
+    const { valid, ftId } = await validateData(txType, linkAcc);
+    if (valid) {
+      setManualFt(ftId);
+      validateAssetMatch({ selection: txType, link: linkAcc });
     }
   }
 };

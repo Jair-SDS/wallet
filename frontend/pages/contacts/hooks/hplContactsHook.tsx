@@ -14,6 +14,7 @@ export const useHplContacts = () => {
 
   const dispatch = useAppDispatch();
   const { hplContacts, storageCode } = useAppSelector((state) => state.contacts);
+  const { ownersActor } = useAppSelector((state) => state.asset);
   const { protocol } = useAppSelector((state) => state.asset);
 
   const saveHplContacts = (contacts: HplContact[]) => {
@@ -117,8 +118,11 @@ export const useHplContacts = () => {
         })
       ).remoteAccounts;
       setNewContact(edit);
+
+      const ownerID = await getOwnerId(edit.principal);
+
       const auxRemotes: HplRemote[] = [];
-      const actorRemotes = formatHplRemotes(remotesInfo, remoteState);
+      const actorRemotes = formatHplRemotes(remotesInfo, remoteState, ownerID);
 
       const actorIds: string[] = [];
       actorRemotes.map((actorRemote) => {
@@ -180,13 +184,23 @@ export const useHplContacts = () => {
         ).remoteAccounts;
         if (remotesInfo.length === 0 || remoteState.length === 0) setNewContactErr("no.remotes.found");
         else {
-          setChainremotes(formatHplRemotes(remotesInfo, remoteState));
+          const ownerID = await getOwnerId(principal);
+          setChainremotes(formatHplRemotes(remotesInfo, remoteState, ownerID));
         }
       } catch (e) {
         setNewContactErr("no.remotes.found");
       }
     }
   }
+
+  const getOwnerId = async (principal: string) => {
+    let myOwnerId = undefined;
+    const ownerID = await ownersActor.lookup(Principal.fromText(principal));
+    if (ownerID[0]) {
+      myOwnerId = ownerID[0].toString();
+    }
+    return myOwnerId;
+  };
 
   return {
     protocol,

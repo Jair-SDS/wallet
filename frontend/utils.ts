@@ -33,8 +33,6 @@ import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
 import { FungibleToken } from "@candid/Dictionary/dictService.did";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
-import { getCodeFromVt } from "./services/owners";
-import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -574,11 +572,11 @@ export const getPxlCode = (prinCode: string, vtId: string) => {
   return (link.length - 1).toString() + id + link;
 };
 
-export const getOwnerIdFromPxl = (code: string) => {
+export const getOwnerInfoFromPxl = (code: string) => {
   if (code.length > 2) {
     const size = Number(code[0]) + 1;
     const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
-    return princCode;
+    return { ownerId: princCode, linkId: BigInt(`0x${code.slice(-size)}`).toString() };
   } else return undefined;
 };
 
@@ -742,6 +740,7 @@ export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {
 export const formatHplRemotes = (
   info: Array<[RemoteId, AccountType]>,
   state: Array<[RemoteId, [AccountState, Time]]>,
+  principal?: string,
 ) => {
   const auxRemotes: HplRemote[] = [];
   info.map((rmtInfo) => {
@@ -754,6 +753,7 @@ export const formatHplRemotes = (
         expired: Number(rmtState[1][1]),
         amount: rmtState[1][0].ft.toString(),
         ftIndex: rmtInfo[1].ft.toString(),
+        code: principal ? getPxlCode(principal, rmtInfo[0][1].toString()) : "",
       });
     }
   });

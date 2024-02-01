@@ -153,7 +153,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
               <CustomButton
                 className="min-w-[5rem]"
                 onClick={() => {
-                  onAddContact(edit ? true : false, setAddOpen);
+                  onAddContact(!!edit, setAddOpen);
                 }}
               >
                 <p>{t(edit ? "save" : "add.contact")}</p>

@@ -213,6 +213,7 @@ const HplRemote = z.object({
   expired: z.number(),
   amount: z.string(),
   ftIndex: z.string(),
+  code: z.string(),
 });
 export type HplRemote = z.infer<typeof HplRemote>;
 
@@ -227,6 +228,7 @@ const HplTxUser = z.object({
   type: HplTransactionsEnum,
   principal: z.string(),
   vIdx: z.string(),
+  code: z.string().optional(),
   subaccount: HPLSubAccount.optional(),
   remote: HplRemote.optional(),
 });

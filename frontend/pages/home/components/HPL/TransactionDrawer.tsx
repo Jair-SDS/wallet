@@ -42,6 +42,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     amountReceiver,
     setAmountReceiver,
     hplContacts,
+    getPrincipalFromOwnerId,
   } = useHPLTx(drawerOpen, drawerOption, locat);
 
   const { getAssetLogo, getFtFromSub, reloadHPLBallance } = useHPL(false);
@@ -128,6 +129,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             validateData={validateData}
             validateAssetMatch={validateAssetMatch}
             setManualFt={setManualFromFt}
+            getPrincipalFromOwnerId={getPrincipalFromOwnerId}
+            getAssetId={getAssetId}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -148,6 +151,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             validateData={validateData}
             validateAssetMatch={validateAssetMatch}
             setManualFt={setManualToFt}
+            getPrincipalFromOwnerId={getPrincipalFromOwnerId}
+            getAssetId={getAssetId}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -170,10 +175,10 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setSummary(false);
   }
 
-  async function validateData(selection: string) {
+  async function validateData(selection: string, link?: HplTxUser) {
     let valid = true;
-    const ftId = await getAssetId(selection === "from" ? from : to);
-    if (!validation(selection === "from" ? from : to)) {
+    const ftId = await getAssetId(link ? link : selection === "from" ? from : to);
+    if (!validation(link ? link : selection === "from" ? from : to)) {
       valid = false;
       if (selection === "from") setErrMsgFrom("err.from");
       else setErrMsgTo("err.to");
@@ -185,11 +190,17 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     return { ftId, valid };
   }
 
-  async function validateAssetMatch() {
+  async function validateAssetMatch(data?: { selection: string; link: HplTxUser }) {
     let valid = false;
 
-    const { ftId: fromFtId, valid: validFrom } = await validateData("from");
-    const { ftId: toFtId, valid: validTo } = await validateData("to");
+    const { ftId: fromFtId, valid: validFrom } = await validateData(
+      "from",
+      data ? (data.selection === "from" ? data.link : undefined) : undefined,
+    );
+    const { ftId: toFtId, valid: validTo } = await validateData(
+      "to",
+      data ? (data.selection === "to" ? data.link : undefined) : undefined,
+    );
     if (validFrom && validTo)
       if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsgTo("not.match.asset.id");
       else if (!errMsgFrom && !errMsgTo) valid = true;

@@ -105,7 +105,7 @@ const TxAccountInfo = ({
           </div>
           <div className="flex flex-row justify-between items-center w-full pb-3 ">
             <p className="opacity-70">{t("virtual")}</p>
-            <p>{txUser.vIdx}</p>
+            <p>{txUser.remote ? txUser.remote.code : txUser.code || ""}</p>
           </div>
           {txUser.remote && (
             <div className="flex flex-row justify-between items-center w-full pt-3 border-t border-t-BorderColor/70">

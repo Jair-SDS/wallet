@@ -28,7 +28,7 @@ const TableRemotes = ({ cntc, setDeleteHpl, setDeleteModal, setDeleteObject, set
           <tr className=" font-normal text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60">
             <th className="p-2 w-[5%]"></th>
             <th className="p-2 text-center w-[7%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
-              <p>ID</p>
+              <p>{t("code")}</p>
             </th>
             <th className="p-2 w-[31%] text-left border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
               <p>{t("name")}</p>
@@ -64,7 +64,7 @@ const TableRemotes = ({ cntc, setDeleteHpl, setDeleteModal, setDeleteObject, set
               <td className="py-0 h-full border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
                 <div className="relative flex flex-row justify-center items-center w-full h-full">
                   <div className={`absolute left-0 w-1 h-10 rounded-full ${bg}`}></div>
-                  <p>{rmt.index}</p>
+                  <p>{rmt.code}</p>
                 </div>
               </td>
               <td className="p-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
