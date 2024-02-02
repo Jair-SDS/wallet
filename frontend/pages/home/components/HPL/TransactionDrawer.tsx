@@ -131,6 +131,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             setManualFt={setManualFromFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
+            setErrMsg={setErrMsgFrom}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -153,6 +154,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             setManualFt={setManualToFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
+            setErrMsg={setErrMsgTo}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">

@@ -41,6 +41,7 @@ interface SelectTransferProps {
   setManualFt(value: string | undefined): void;
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<string>;
+  setErrMsg(msg: string): void;
   errMsg: string;
 }
 
@@ -65,6 +66,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   getPrincipalFromOwnerId,
   getAssetId,
   errMsg,
+  setErrMsg,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -260,6 +262,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             setManualFt={setManualFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
+            setErrMsg={setErrMsg}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">

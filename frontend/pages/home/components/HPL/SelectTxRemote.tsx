@@ -10,8 +10,9 @@ import { clsx } from "clsx";
 import { checkPxlCode, getContactColor, getDecimalAmount, getInitialFromName, getOwnerInfoFromPxl } from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
-import { HplTransactionsType } from "@/const";
+import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
+import { isValid } from "zod";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -32,6 +33,7 @@ interface SelectTxRemoteProps {
   txType: HplTransactionsType;
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<string>;
+  setErrMsg(msg: string): void;
 }
 
 const SelectTxRemote = ({
@@ -49,6 +51,7 @@ const SelectTxRemote = ({
   validateAssetMatch,
   setManualFt,
   getPrincipalFromOwnerId,
+  setErrMsg,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [code, setCode] = useState("");
@@ -257,9 +260,11 @@ const SelectTxRemote = ({
             remote: undefined,
           };
           setSelect(linkAcc);
-          checkValidOnLeave(linkAcc);
+          const valid = await checkValidOnLeave(linkAcc);
+          if (!valid) setPrincipalErr(true);
         } else {
           setPrincipalErr(true);
+          setErrMsg(t(txType === HplTransactionsTypeEnum.Enum.from ? "remote.no.yours.from" : "remote.no.yours.to"));
         }
       } else {
         setPrincipalErr(true);
@@ -270,8 +275,9 @@ const SelectTxRemote = ({
     const { valid, ftId } = await validateData(txType, linkAcc);
     if (valid) {
       setManualFt(ftId);
-      validateAssetMatch({ selection: txType, link: linkAcc });
-    }
+      const { valid: isValid } = await validateAssetMatch({ selection: txType, link: linkAcc });
+      return valid && isValid;
+    } else return false;
   }
 };
 
