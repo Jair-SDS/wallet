@@ -109,7 +109,7 @@ const TxSummary = ({
             <p>{t("back")}</p>
           </CustomButton>
           <CustomButton className="min-w-[5rem]" onClick={onSend} size={"small"}>
-            {loading ? <LoadingLoader className="mt-1" /> : <p>{t("send")}</p>}
+            {loading ? <LoadingLoader className="mt-1" /> : <p>{t("submit")}</p>}
           </CustomButton>
         </div>
       </div>

@@ -105,6 +105,22 @@ export interface LedgerIngressAPI {
   >;
   virtualAccountInfo: ActorMethod<[IdSelector], Array<[VirId, [AccountType, Principal]]>>;
   feeRatio: ActorMethod<[], bigint>;
+  adminState: ActorMethod<
+    [
+      {
+        ftSupplies: [] | [IdSelector];
+        virtualAccounts: [] | [IdSelector];
+        accounts: [] | [IdSelector];
+        remoteAccounts: [] | [RemoteAccountSelector];
+      },
+    ],
+    {
+      ftSupplies: Array<[bigint, bigint]>;
+      virtualAccounts: Array<[bigint, [{ ft: bigint }, SubaccountId, Expiration]]>;
+      accounts: Array<[bigint, { ft: bigint }]>;
+      remoteAccounts: Array<[[Principal, bigint], [{ ft: bigint }, Expiration]]>;
+    }
+  >;
 }
 export type ProcessingError = { ftTransfer: FtTransferErrors };
 export type RemoteId = [Principal, bigint];

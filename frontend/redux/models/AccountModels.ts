@@ -159,6 +159,7 @@ const HPLAsset = z.object({
   logo: z.string(),
   controller: z.string(),
   supply: z.string(),
+  ledgerBalance: z.string(),
 });
 
 export type HPLAsset = z.infer<typeof HPLAsset>;

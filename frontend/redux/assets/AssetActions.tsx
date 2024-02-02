@@ -38,7 +38,7 @@ import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";
 import bigInt from "big-integer";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
-import { _SERVICE as IngressActor, RemoteId } from "@candid/HPL/service.did";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
 
@@ -422,7 +422,7 @@ export const updateHPLBalances = async (
     }
   }
 
-  const remotesToLook: { id: RemoteId }[] = [];
+  const remotesToLook: { id: [Principal, bigint] }[] = [];
   contacts.map((cntc) => {
     const pncpl = Principal.fromText(cntc.principal);
     cntc.remotes.map((rmt) => {
@@ -492,10 +492,24 @@ export const updateHPLBalances = async (
       store.dispatch(setOwnerId(myOwnerId));
     }
 
+    let adminAccountState: Array<[bigint, { ft: bigint }]> = [];
+    try {
+      const adminState = await actor.adminState({
+        ftSupplies: [],
+        virtualAccounts: [],
+        accounts: [{ idRange: [BigInt(0), []] }],
+        remoteAccounts: [],
+      });
+      adminAccountState = adminState.accounts;
+    } catch (e) {
+      console.log("errState", e);
+    }
+
     const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
       { ft: ftData, sub: subData, vt: vtData },
       ftDict,
       state,
+      adminAccountState,
       myOwnerId,
     );
     store.dispatch(setHPLSubAccounts(auxSubaccounts));

@@ -92,7 +92,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                 id="own"
               />
               <label className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50" htmlFor="own">
-                {t("own")}
+                {t("account")}
               </label>
               <RadioGroupItem
                 active={select.type === HplTransactionsEnum.Enum.VIRTUAL}

@@ -499,6 +499,44 @@ type LedgerIngressAPI = service {
 
   feeRatio : () -> (nat) query;
 
+  adminState : (
+    record {
+      accounts : opt IdSelector;
+      ftSupplies : opt IdSelector;
+      remoteAccounts : opt RemoteAccountSelector;
+      virtualAccounts : opt IdSelector;
+    }
+  ) -> (
+    record {
+      accounts : vec record {
+        nat;
+        variant { ft : nat };
+      };
+      ftSupplies : vec record {
+        nat;
+        nat;
+      };
+      remoteAccounts : vec record {
+        record {
+          principal;
+          nat;
+        };
+        record {
+          variant { ft : nat };
+          Expiration;
+        };
+      };
+      virtualAccounts : vec record {
+        nat;
+        record {
+          variant { ft : nat };
+          SubaccountId;
+          Expiration;
+        };
+      };
+    }
+  ) query;
+
 };
 
 service : () -> LedgerIngressAPI;

@@ -7,6 +7,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const SubId = IDL.Nat;
   const AssetId = IDL.Nat;
+  const SubaccountId = IDL.Nat;
   const AccountType = IDL.Variant({ "ft" : AssetId });
   const VirId = IDL.Nat;
   const AccountState = IDL.Variant({ "ft" : IDL.Nat });
@@ -19,6 +20,16 @@ export const idlFactory = ({ IDL }) => {
       IDL.Variant({ "id" : RemoteId, "idRange" : RemoteIdRange })
     ),
     "idRange" : RemoteIdRange,
+  });
+  const Expiration = IDL.Nat64;
+   const RangedSubSelector_1 = IDL.Variant({
+    "id" : IDL.Tuple(IDL.Principal, IDL.Nat),
+    "idRange" : IDL.Tuple(IDL.Principal, IDL.Nat, IDL.Opt(IDL.Nat)),
+  });
+  const RemoteAccountSelector = IDL.Variant({
+    "id" : IDL.Tuple(IDL.Principal, IDL.Nat),
+    "cat" : IDL.Vec(RangedSubSelector_1),
+    "idRange" : IDL.Tuple(IDL.Principal, IDL.Nat, IDL.Opt(IDL.Nat)),
   });
   const FtSupply = IDL.Nat;
   const GlobalId = IDL.Tuple(IDL.Nat, IDL.Nat);
@@ -212,6 +223,41 @@ export const idlFactory = ({ IDL }) => {
       ),
       
     "feeRatio" : IDL.Func([], [IDL.Nat], ["query"]),
+    "adminState" : IDL.Func(
+        [
+          IDL.Record({
+            "ftSupplies" : IDL.Opt(IdSelector),
+            "virtualAccounts" : IDL.Opt(IdSelector),
+            "accounts" : IDL.Opt(IdSelector),
+            "remoteAccounts" : IDL.Opt(RemoteAccountSelector),
+          }),
+        ],
+        [
+          IDL.Record({
+            "ftSupplies" : IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat)),
+            "virtualAccounts" : IDL.Vec(
+              IDL.Tuple(
+                IDL.Nat,
+                IDL.Tuple(
+                  IDL.Variant({ "ft" : IDL.Nat }),
+                  SubaccountId,
+                  Expiration,
+                ),
+              )
+            ),
+            "accounts" : IDL.Vec(
+              IDL.Tuple(IDL.Nat, IDL.Variant({ "ft" : IDL.Nat }))
+            ),
+            "remoteAccounts" : IDL.Vec(
+              IDL.Tuple(
+                IDL.Tuple(IDL.Principal, IDL.Nat),
+                IDL.Tuple(IDL.Variant({ "ft" : IDL.Nat }), Expiration),
+              )
+            ),
+          }),
+        ],
+        ["query"],
+      ),
   });
   return LedgerIngressAPI;
 };

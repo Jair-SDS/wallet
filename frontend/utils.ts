@@ -619,6 +619,7 @@ export const formatHPLSubaccounts = (
   hplData: HPLData,
   dictFT: FungibleTokenLocal[],
   stateData: ResQueryState,
+  adminAccountState: Array<[bigint, { ft: bigint }]>,
   owner: string,
 ) => {
   const auxSubaccounts: HPLSubAccount[] = [];
@@ -654,7 +655,7 @@ export const formatHPLSubaccounts = (
       virtuals: auxVirtuals,
     });
   });
-  const auxFT: HPLAsset[] = getFtsFormated(stateData.ftSupplies, hplData.ft, dictFT);
+  const auxFT: HPLAsset[] = getFtsFormated(stateData.ftSupplies, hplData.ft, dictFT, adminAccountState);
   return { auxSubaccounts, auxFT };
 };
 
@@ -662,11 +663,13 @@ export const getFtsFormated = (
   ftSupplies: Array<[AssetId, FtSupply]>,
   ftsData: HPLAssetData[],
   dictFT: FungibleTokenLocal[],
+  adminAccountState: Array<[bigint, { ft: bigint }]>,
 ) => {
   const auxFT: HPLAsset[] = [];
   ftSupplies.map((asst) => {
     const ftData = ftsData.find((ft) => ft.id === asst[0].toString());
     const ftDict = dictFT.find((ft) => ft.assetId === asst[0].toString());
+    const ftAdmin = adminAccountState.find((ft) => ft[0] === asst[0]);
     auxFT.push({
       id: asst[0].toString(),
       name: ftData ? ftData.name : "",
@@ -678,6 +681,7 @@ export const getFtsFormated = (
       logo: ftDict ? ftDict.logo : "",
       controller: ftData ? ftData.controller : "",
       supply: asst[1].toString(),
+      ledgerBalance: ftAdmin ? ftAdmin[1].ft.toString() : "0",
     });
   });
   return auxFT;

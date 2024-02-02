@@ -209,6 +209,7 @@ export const useHPL = (open: boolean) => {
         logo: "",
         controller: "",
         supply: "",
+        ledgerBalance: "0",
       }
     );
   };

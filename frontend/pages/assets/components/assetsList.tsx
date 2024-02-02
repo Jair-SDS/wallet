@@ -41,14 +41,17 @@ const AssetListTable = ({
       <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
           <tr>
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-2 w-[22.5%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[22%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[12.5%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
+            </th>{" "}
+            <th className="p-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{t("ledger.balance")}</p>
             </th>
             <th className="p-2 w-[6%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("decimals")}</p>
@@ -59,11 +62,11 @@ const AssetListTable = ({
             <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[14%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[10%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
             <th className="p-2 w-[7%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
-            <th className="p-2 w-[12%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
             </th>
           </tr>
@@ -104,12 +107,17 @@ const AssetListTable = ({
                       <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
                     </div>
                   </div>
-                </td>{" "}
+                </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.supply}</p>
                   </div>
-                </td>{" "}
+                </td>
+                <td className="p-2">
+                  <div className="flex flex-row justify-end items-center w-full">
+                    <p>{ft.ledgerBalance}</p>
+                  </div>
+                </td>
                 <td className="p-2">
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.decimal}</p>
@@ -170,18 +178,18 @@ const AssetListTable = ({
                 <td className="p-2">
                   <div className="flex flex-row justify-center items-center w-full">
                     <div
-                      className={"flex flex-row justify-between items-center h-8 rounded bg-black/10 dark:bg-white/10"}
+                      className={"flex flex-row justify-between items-center h-6 rounded bg-black/10 dark:bg-white/10"}
                     >
-                      <div className="flex flex-row justify-center items-center w-14">
+                      <div className="flex flex-row justify-center items-center w-10">
                         <p>{find ? find.accounts : 0}</p>
                       </div>
                       <button
-                        className="flex justify-center items-center p-0 h-full bg-AccpetButtonColor rounded-md w-8"
+                        className="flex justify-center items-center p-0 h-full bg-AccpetButtonColor rounded-md w-6"
                         onClick={() => {
                           onAddAccount(ft);
                         }}
                       >
-                        <img src={PlusIcon} alt="plus-icon" />
+                        <img src={PlusIcon} alt="plus-icon" className="w-4" />
                       </button>
                     </div>
                   </div>
