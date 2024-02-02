@@ -7,7 +7,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { getContactColor, getDecimalAmount, getInitialFromName, getOwnerInfoFromPxl } from "@/utils";
+import { checkPxlCode, getContactColor, getDecimalAmount, getInitialFromName, getOwnerInfoFromPxl } from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsType } from "@/const";
@@ -68,34 +68,16 @@ const SelectTxRemote = ({
         <div className="flex flex-col justify-start items-start w-full gap-2">
           <CustomInput
             intent={"secondary"}
-            placeholder={"PXL"}
+            placeholder={t("virtual")}
             compOutClass="mb-1"
             value={code}
             onChange={onChangeCode}
             sizeInput="small"
             border={principalErr ? "error" : "secondary"}
-            // onFocus={() => {
-            //   onFocusInputs("prin");
-            // }}
             onBlur={() => {
               onLeaveFocus();
             }}
           />
-          {/* <CustomInput
-            compOutClass="!w-1/3"
-            intent={"secondary"}
-            placeholder={t("index")}
-            value={select.vIdx}
-            onChange={onChangeIdx}
-            sizeInput="small"
-            border={"secondary"}
-            onFocus={() => {
-              onFocusInputs("idx");
-            }}
-            onBlur={() => {
-              onLeaveFocus("idx");
-            }}
-          /> */}
         </div>
       ) : (
         <DropdownMenu.Root
@@ -237,12 +219,11 @@ const SelectTxRemote = ({
     setCode(e.target.value.trim());
     setSelect({ ...select, code: e.target.value.trim() });
     setManualFt(undefined);
-    if (e.target.value.trim() === "") {
+    if (e.target.value.trim() === "") setPrincipalErr(false);
+    else if (checkPxlCode(e.target.value.trim())) {
       setPrincipalErr(false);
-    } else if (e.target.value.trim().length < 3) {
-      setPrincipalErr(true);
     } else {
-      setPrincipalErr(false);
+      setPrincipalErr(true);
     }
   }
 

@@ -1,22 +1,17 @@
 import { FC, Fragment } from "react";
-import { encodeIcrcAccount } from "@dfinity/ledger";
-import { Principal } from "@dfinity/principal";
-import { numToUint32Array } from "@/utils";
+import { getPxlCode } from "@/utils";
 import QRCode from "react-qr-code";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { CustomCopy } from "@components/CopyTooltip";
+import { useHPL } from "@pages/hooks/hplHook";
 
 interface HPLDrawerReceive {
   virtualAccount: string | null;
 }
 
 const HPLDrawerReceive: FC<HPLDrawerReceive> = ({ virtualAccount }) => {
-  const { authClient } = AccountHook();
+  const { ownerId } = useHPL(false);
 
-  const qrCodeValue = encodeIcrcAccount({
-    owner: Principal.fromText(authClient),
-    ...(virtualAccount ? { subaccount: numToUint32Array(parseInt(virtualAccount)) } : {}),
-  });
+  const qrCodeValue = getPxlCode(ownerId, virtualAccount || "");
 
   return (
     <Fragment>

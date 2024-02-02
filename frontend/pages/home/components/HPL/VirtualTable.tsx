@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import LoadingLoader from "@components/Loader";
 import { DrawerOption, DrawerOptionEnum } from "@/const";
 import AssetSymbol from "@components/AssetSymbol";
+import { CustomCopy } from "@components/CopyTooltip";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -64,18 +65,18 @@ const VirtualTable: FC<VirtualTableProps> = ({
       <table className="w-full text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           <tr>
-            <th className="p-2 w-[10%]font-normal">
+            <th className="p-2 w-[14%]font-normal">
               <div
                 onClick={() => {
                   onSort("ID");
                 }}
                 className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
               >
-                <p>{"code"}</p>
+                <p>{t("code")}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
               </div>
             </th>
-            <th className="p-2 text-left w-[30%] font-normal">
+            <th className="p-2 text-left w-[28%] font-normal">
               <p>{`${t("name")} (${selectSub?.virtuals.length || 0})`}</p>
             </th>
             <th className="p-2 w-[17%] font-normal">
@@ -95,7 +96,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
             <th className="p-2 w-[20%] font-normal">
               <p>{t("access.by")}</p>
             </th>
-            <th className="p-2 w-[10%] font-normal">
+            <th className="p-2 w-[8%] font-normal">
               <p>{t("action")}</p>
             </th>
           </tr>
@@ -109,7 +110,10 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={handleVirtualAccountClick(vt.virt_sub_acc_id)}
               >
                 <td className={`${rowStyle(vt.expiration)}`}>
-                  <p className="ml-[-0.4rem]">{vt.code}</p>
+                  <div className="flex flex-row justify-center items-center gap-1">
+                    <p className="ml-[-0.4rem]">{vt.code}</p>{" "}
+                    <CustomCopy size={"xSmall"} copyText={vt.code} className="opacity-60" />{" "}
+                  </div>
                 </td>
                 <td
                   className={`${rowStyle(

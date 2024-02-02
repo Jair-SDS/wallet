@@ -569,15 +569,28 @@ export const getInitialFromName = (name: string, length: number) => {
 export const getPxlCode = (prinCode: string, vtId: string) => {
   const id = BigInt(prinCode).toString(16);
   const link = BigInt(vtId).toString(16);
-  return (link.length - 1).toString() + id + link;
+  return (link.length - 1).toString(16) + id + link;
 };
 
 export const getOwnerInfoFromPxl = (code: string) => {
   if (code.length > 2) {
-    const size = Number(code[0]) + 1;
+    const size = Number(`0x${code[0]}`) + 1;
     const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
     return { ownerId: princCode, linkId: BigInt(`0x${code.slice(-size)}`).toString() };
   } else return undefined;
+};
+
+export const checkPxlCode = (code: string) => {
+  const firstDigit = Number(`0x${code[0]}`);
+  if (!checkHexString(code) || code.length < 3) return false;
+  else if (code.length <= firstDigit + 2) return false;
+  else if (firstDigit > 0) {
+    const size = firstDigit + 1;
+    const minValue = BigInt(`0x${"f".repeat(firstDigit)}`);
+    const value = BigInt(`0x${code.slice(-size)}`);
+    if (minValue >= value) return false;
+  }
+  return true;
 };
 
 export const getAssetSymbol = (symbol: string, assets: Array<Asset>) => {
