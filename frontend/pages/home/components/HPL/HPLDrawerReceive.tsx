@@ -3,12 +3,14 @@ import { getPxlCode } from "@/utils";
 import QRCode from "react-qr-code";
 import { CustomCopy } from "@components/CopyTooltip";
 import { useHPL } from "@pages/hooks/hplHook";
+import { useTranslation } from "react-i18next";
 
 interface HPLDrawerReceive {
   virtualAccount: string | null;
 }
 
 const HPLDrawerReceive: FC<HPLDrawerReceive> = ({ virtualAccount }) => {
+  const { t } = useTranslation();
   const { ownerId } = useHPL(false);
 
   const qrCodeValue = getPxlCode(ownerId, virtualAccount || "");
@@ -22,15 +24,18 @@ const HPLDrawerReceive: FC<HPLDrawerReceive> = ({ virtualAccount }) => {
             value={qrCodeValue}
           />
         </div>
-        <div className="flex flex-row justify-center items-center p-2 border border-BorderColorLight dark:border-BorderColor bg-PrimaryColorLight dark:bg-SecondaryColor rounded">
-          <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-2 break-all">{qrCodeValue}</p>
-          <CustomCopy
-            background="default"
-            copyStroke="fill-PrimaryTextColor"
-            size={"small"}
-            boxSize={"small"}
-            copyText={qrCodeValue}
-          />
+        <div className="flex flex-row justify-center items-center">
+          <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-5">{t("virtual")}:</p>
+          <div className="flex flex-row justify-center items-center p-2 border border-BorderColorLight dark:border-BorderColor bg-PrimaryColorLight dark:bg-SecondaryColor rounded">
+            <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor mr-2 break-all">{qrCodeValue}</p>
+            <CustomCopy
+              background="default"
+              copyStroke="fill-PrimaryTextColor"
+              size={"small"}
+              boxSize={"small"}
+              copyText={qrCodeValue}
+            />
+          </div>
         </div>
       </div>
     </Fragment>
