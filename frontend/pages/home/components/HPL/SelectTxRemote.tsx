@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
-import { isValid } from "zod";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
