@@ -573,11 +573,15 @@ export const getPxlCode = (prinCode: string, vtId: string) => {
 };
 
 export const getOwnerInfoFromPxl = (code: string) => {
-  if (code.length > 2) {
-    const size = Number(`0x${code[0]}`) + 1;
-    const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
-    return { ownerId: princCode, linkId: BigInt(`0x${code.slice(-size)}`).toString() };
-  } else return undefined;
+  try {
+    if (code.length > 2) {
+      const size = Number(`0x${code[0]}`) + 1;
+      const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
+      return { ownerId: princCode, linkId: BigInt(`0x${code.slice(-size)}`).toString() };
+    } else return undefined;
+  } catch {
+    return undefined;
+  }
 };
 
 export const checkPxlCode = (code: string) => {

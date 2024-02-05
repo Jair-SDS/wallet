@@ -14,7 +14,7 @@ import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import LoadingLoader from "@components/Loader";
 import TxSummary from "./TxSummary";
-import { toNumberFromUint8Array } from "@/utils";
+import { getOwnerInfoFromPxl, toNumberFromUint8Array } from "@/utils";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;
@@ -126,12 +126,11 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherPrincipal={to.remote ? to.principal : undefined}
             isRemote={to.type === HplTransactionsEnum.Enum.VIRTUAL}
             errMsg={errMsgFrom}
-            validateData={validateData}
-            validateAssetMatch={validateAssetMatch}
             setManualFt={setManualFromFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgFrom}
+            nextTrigger={loadingNext}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -149,16 +148,15 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherPrincipal={from.remote ? from.principal : undefined}
             isRemote={from.type === HplTransactionsEnum.Enum.VIRTUAL}
             errMsg={errMsgTo}
-            validateData={validateData}
-            validateAssetMatch={validateAssetMatch}
             setManualFt={setManualToFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgTo}
+            nextTrigger={loadingNext}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
-          <CustomButton className="min-w-[5rem]" onClick={onNext} size={"small"}>
+          <CustomButton id="on-next-send-hpl" className="min-w-[5rem]" onClick={onNext} size={"small"}>
             {loadingNext ? <LoadingLoader className="mt-1" /> : <p>{t("next")}</p>}
           </CustomButton>
         </div>
@@ -177,43 +175,39 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setSummary(false);
   }
 
-  async function validateData(selection: string, link?: HplTxUser) {
+  async function validateData(selection: string) {
     let valid = true;
-    const ftId = await getAssetId(link ? link : selection === "from" ? from : to);
-    if (!validation(link ? link : selection === "from" ? from : to)) {
+    const ftId = await getAssetId(selection === "from" ? from : to);
+    const manual = selection === "from" ? !(from.subaccount || from.remote) : !(to.subaccount || to.remote);
+    if (!validation(selection === "from" ? from : to)) {
       valid = false;
       if (selection === "from") setErrMsgFrom("err.from");
       else setErrMsgTo("err.to");
-    } else if (ftId === "non") {
+    } else if (ftId === "non" || ftId === "") {
       valid = false;
       if (selection === "from") setErrMsgFrom(t("remote.no.yours.from"));
       else setErrMsgTo(t("remote.no.yours.to"));
     }
-    return { ftId, valid };
+    return { ftId, valid, manual };
   }
 
-  async function validateAssetMatch(data?: { selection: string; link: HplTxUser }) {
+  async function validateAssetMatch() {
     let valid = false;
 
-    const { ftId: fromFtId, valid: validFrom } = await validateData(
-      "from",
-      data ? (data.selection === "from" ? data.link : undefined) : undefined,
-    );
-    const { ftId: toFtId, valid: validTo } = await validateData(
-      "to",
-      data ? (data.selection === "to" ? data.link : undefined) : undefined,
-    );
+    const { ftId: fromFtId, valid: validFrom, manual: manualFrom } = await validateData("from");
+    const { ftId: toFtId, valid: validTo, manual: manualTo } = await validateData("to");
     if (validFrom && validTo)
-      if (fromFtId === "" || toFtId === "" || fromFtId !== toFtId) setErrMsgTo("not.match.asset.id");
+      if (fromFtId !== toFtId)
+        manualTo || !manualFrom ? setErrMsgTo("not.match.asset.id") : setErrMsgFrom("not.match.asset.id");
       else if (!errMsgFrom && !errMsgTo) valid = true;
 
     return { fromFtId, toFtId, valid };
   }
 
   async function onNext() {
+    setLoadingNext(true);
     setAmount("");
     setAmountReceiver("");
-    setLoadingNext(true);
 
     const { fromFtId, toFtId, valid } = await validateAssetMatch();
 
@@ -280,15 +274,20 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
       case HplTransactionsEnum.Enum.SUBACCOUNT:
         return data.subaccount ? true : false;
       case HplTransactionsEnum.Enum.VIRTUAL:
-        if (data.principal.trim() === "") return false;
+        if (data.code && data.code.trim() !== "") {
+          const ownerInfo = getOwnerInfoFromPxl(data.code);
+          return !!ownerInfo;
+        } else if (data.principal.trim() === "") return false;
         else if (data.vIdx.trim() === "") return false;
-        else {
+        else if (data.principal.trim() !== "") {
           try {
             Principal.fromText(data.principal.trim());
           } catch {
             return false;
           }
           return true;
+        } else {
+          return false;
         }
       default:
         return false;
@@ -299,18 +298,30 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     let id = "";
     if (data.subaccount) id = data.subaccount.ft;
     else if (data.remote) id = data.remote.ftIndex;
-    else {
-      try {
-        const rem = await ingressActor.remoteAccountInfo({
-          id: [Principal.fromText(data.principal), BigInt(data.vIdx)],
-        });
-        if (rem.length === 0) return "non";
-        return rem[0][1].ft.toString();
-      } catch {
-        return "";
+    else if (data.principal !== "" && data.vIdx !== "") {
+      return getAssetIdFromPrinc(data.principal, data.vIdx);
+    } else if (data.code && data.code !== "") {
+      const ownerInfo = getOwnerInfoFromPxl(data.code);
+      if (ownerInfo) {
+        const princ = await getPrincipalFromOwnerId(ownerInfo.ownerId);
+        if (princ) {
+          return getAssetIdFromPrinc(princ.toText(), ownerInfo.linkId);
+        }
       }
-    }
+    } else return "";
     return id;
+  }
+
+  async function getAssetIdFromPrinc(principal: string, vIdx: string) {
+    try {
+      const rem = await ingressActor.remoteAccountInfo({
+        id: [Principal.fromText(principal), BigInt(vIdx)],
+      });
+      if (rem.length === 0) return "non";
+      return rem[0][1].ft.toString();
+    } catch {
+      return "";
+    }
   }
 
   function parseQrCode(code: string) {

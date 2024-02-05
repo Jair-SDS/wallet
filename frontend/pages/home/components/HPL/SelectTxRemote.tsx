@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
+import LoadingLoader from "@components/Loader";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;
@@ -19,11 +20,6 @@ interface SelectTxRemoteProps {
   manual: boolean;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
-  validateData(selection: string, link?: HplTxUser): Promise<{ ftId: string; valid: boolean }>;
-  validateAssetMatch(data?: {
-    selection: string;
-    link: HplTxUser;
-  }): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
   setManualFt(value: string | undefined): void;
   hplContacts: HplContact[];
   otherAsset?: string;
@@ -33,6 +29,8 @@ interface SelectTxRemoteProps {
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<string>;
   setErrMsg(msg: string): void;
+  errMsg: string;
+  nextTrigger: boolean;
 }
 
 const SelectTxRemote = ({
@@ -41,20 +39,22 @@ const SelectTxRemote = ({
   setSelect,
   getAssetLogo,
   getFtFromSub,
-  validateData,
   hplContacts,
   otherAsset,
   otherId,
   otherPrincipal,
   txType,
-  validateAssetMatch,
+  getAssetId,
   setManualFt,
   getPrincipalFromOwnerId,
   setErrMsg,
+  errMsg,
+  nextTrigger,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [subsOpen, setSubsOpen] = useState(false);
+  const [loadingCheck, setLoadingCheck] = useState(false);
   const [searchKey, setSearchKey] = useState("");
   const [principalErr, setPrincipalErr] = useState(false);
 
@@ -63,6 +63,10 @@ const SelectTxRemote = ({
     setManualFt(undefined);
     setCode("");
   }, [manual]);
+
+  useEffect(() => {
+    manual && onLeaveFocus();
+  }, [otherAsset]);
 
   return (
     <Fragment>
@@ -75,10 +79,11 @@ const SelectTxRemote = ({
             value={code}
             onChange={onChangeCode}
             sizeInput="small"
-            border={principalErr ? "error" : "secondary"}
-            onBlur={() => {
+            border={principalErr || errMsg !== "" ? "error" : "secondary"}
+            onBlur={(e) => {
               onLeaveFocus();
             }}
+            sufix={loadingCheck ? <LoadingLoader className="mt-1" /> : <p></p>}
           />
         </div>
       ) : (
@@ -219,7 +224,14 @@ const SelectTxRemote = ({
   );
   function onChangeCode(e: ChangeEvent<HTMLInputElement>) {
     setCode(e.target.value.trim());
-    setSelect({ ...select, code: e.target.value.trim() });
+    setSelect({
+      ...select,
+      code: e.target.value.trim(),
+      principal: "",
+      vIdx: "",
+      subaccount: undefined,
+      remote: undefined,
+    });
     setManualFt(undefined);
     if (e.target.value.trim() === "") setPrincipalErr(false);
     else if (checkPxlCode(e.target.value.trim())) {
@@ -246,6 +258,7 @@ const SelectTxRemote = ({
     setSubsOpen(false);
   }
   async function onLeaveFocus() {
+    setLoadingCheck(true);
     if (code.length > 2) {
       const ownerInfo = getOwnerInfoFromPxl(code);
       if (ownerInfo) {
@@ -261,6 +274,7 @@ const SelectTxRemote = ({
           setSelect(linkAcc);
           const valid = await checkValidOnLeave(linkAcc);
           if (!valid) setPrincipalErr(true);
+          else setPrincipalErr(false);
         } else {
           setPrincipalErr(true);
           setErrMsg(t(txType === HplTransactionsTypeEnum.Enum.from ? "remote.no.yours.from" : "remote.no.yours.to"));
@@ -269,14 +283,20 @@ const SelectTxRemote = ({
         setPrincipalErr(true);
       }
     }
+
+    setLoadingCheck(false);
   }
   async function checkValidOnLeave(linkAcc: HplTxUser) {
-    const { valid, ftId } = await validateData(txType, linkAcc);
-    if (valid) {
-      setManualFt(ftId);
-      const { valid: isValid } = await validateAssetMatch({ selection: txType, link: linkAcc });
-      return valid && isValid;
-    } else return false;
+    const ftId = await getAssetId(linkAcc);
+    if (ftId === "" || ftId === "non") {
+      setErrMsg(t(txType === HplTransactionsTypeEnum.Enum.from ? "remote.no.yours.from" : "remote.no.yours.to"));
+      return false;
+    } else if (otherAsset && otherAsset !== ftId) {
+      setErrMsg("not.match.asset.id");
+      return false;
+    } else {
+      return true;
+    }
   }
 };
 

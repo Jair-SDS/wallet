@@ -33,16 +33,12 @@ interface SelectTransferProps {
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
-  validateData(selection: string, link?: HplTxUser): Promise<{ ftId: string; valid: boolean }>;
-  validateAssetMatch(data?: {
-    selection: string;
-    link: HplTxUser;
-  }): Promise<{ fromFtId: string; toFtId: string; valid: boolean }>;
   setManualFt(value: string | undefined): void;
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<string>;
   setErrMsg(msg: string): void;
   errMsg: string;
+  nextTrigger: boolean;
 }
 
 const SelectTransfer: FC<SelectTransferProps> = ({
@@ -60,13 +56,12 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   setQRview,
   getAssetLogo,
   getFtFromSub,
-  validateData,
   setManualFt,
-  validateAssetMatch,
   getPrincipalFromOwnerId,
   getAssetId,
   errMsg,
   setErrMsg,
+  nextTrigger,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -256,13 +251,13 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherAsset={otherAsset}
             otherId={otherId}
             otherPrincipal={otherPrincipal}
-            validateData={validateData}
-            validateAssetMatch={validateAssetMatch}
             txType={txType}
             setManualFt={setManualFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsg}
+            errMsg={errMsg}
+            nextTrigger={nextTrigger}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
