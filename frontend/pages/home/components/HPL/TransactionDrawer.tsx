@@ -14,7 +14,7 @@ import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import LoadingLoader from "@components/Loader";
 import TxSummary from "./TxSummary";
-import { getOwnerInfoFromPxl, toNumberFromUint8Array } from "@/utils";
+import { getOwnerInfoFromPxl } from "@/utils";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;
@@ -130,7 +130,6 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgFrom}
-            nextTrigger={loadingNext}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -152,7 +151,6 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgTo}
-            nextTrigger={loadingNext}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -240,23 +238,21 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     }
   }
 
-  function onQRSuccess(value: string) {
-    const data = parseQrCode(value);
-    if (!data.err) {
+  async function onQRSuccess(value: string) {
+    const data = await parseQrCode(value);
+    if (data.err === "") {
+      const newTx = {
+        type: HplTransactionsEnum.Enum.VIRTUAL,
+        principal: data.principal,
+        vIdx: data.id,
+        subaccount: undefined,
+        remote: undefined,
+        code: data.code,
+      };
       if (qrView === HplTransactionsTypeEnum.Enum.from) {
-        setFrom({
-          type: HplTransactionsEnum.Enum.VIRTUAL,
-          principal: data.principal,
-          vIdx: data.id,
-          subaccount: undefined,
-        });
+        setFrom(newTx);
       } else {
-        setTo({
-          type: HplTransactionsEnum.Enum.VIRTUAL,
-          principal: data.principal,
-          vIdx: data.id,
-          subaccount: undefined,
-        });
+        setTo(newTx);
       }
     } else {
       if (qrView === HplTransactionsTypeEnum.Enum.from) setErrMsgFrom("err.qr.img");
@@ -324,16 +320,22 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     }
   }
 
-  function parseQrCode(code: string) {
-    try {
-      const princ = decodeIcrcAccount(code);
-      return {
-        principal: princ.owner.toString(),
-        id: princ.subaccount ? toNumberFromUint8Array(princ.subaccount!).toString() : "0",
-        err: false,
-      };
-    } catch {
-      return { principal: "", id: "", err: true };
+  async function parseQrCode(code: string) {
+    const ownerInfo = getOwnerInfoFromPxl(code);
+    if (ownerInfo) {
+      const princ = await getPrincipalFromOwnerId(ownerInfo.ownerId);
+      if (princ) {
+        return {
+          code: code,
+          principal: princ.toText(),
+          id: ownerInfo.linkId,
+          err: "",
+        };
+      } else {
+        return { code: "", principal: "", id: "", err: "err-form" };
+      }
+    } else {
+      return { code: "", principal: "", id: "", err: "err-princ" };
     }
   }
 };

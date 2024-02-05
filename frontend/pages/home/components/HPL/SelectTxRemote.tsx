@@ -30,7 +30,6 @@ interface SelectTxRemoteProps {
   getAssetId(data: HplTxUser): Promise<string>;
   setErrMsg(msg: string): void;
   errMsg: string;
-  nextTrigger: boolean;
 }
 
 const SelectTxRemote = ({
@@ -49,10 +48,9 @@ const SelectTxRemote = ({
   getPrincipalFromOwnerId,
   setErrMsg,
   errMsg,
-  nextTrigger,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(select.code || "");
   const [subsOpen, setSubsOpen] = useState(false);
   const [loadingCheck, setLoadingCheck] = useState(false);
   const [searchKey, setSearchKey] = useState("");
@@ -76,11 +74,11 @@ const SelectTxRemote = ({
             intent={"secondary"}
             placeholder={t("virtual")}
             compOutClass="mb-1"
-            value={code}
+            value={select.code || ""}
             onChange={onChangeCode}
             sizeInput="small"
             border={principalErr || errMsg !== "" ? "error" : "secondary"}
-            onBlur={(e) => {
+            onBlur={() => {
               onLeaveFocus();
             }}
             sufix={loadingCheck ? <LoadingLoader className="mt-1" /> : <p></p>}
@@ -286,6 +284,7 @@ const SelectTxRemote = ({
 
     setLoadingCheck(false);
   }
+
   async function checkValidOnLeave(linkAcc: HplTxUser) {
     const ftId = await getAssetId(linkAcc);
     if (ftId === "" || ftId === "non") {

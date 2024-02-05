@@ -38,7 +38,6 @@ interface SelectTransferProps {
   getAssetId(data: HplTxUser): Promise<string>;
   setErrMsg(msg: string): void;
   errMsg: string;
-  nextTrigger: boolean;
 }
 
 const SelectTransfer: FC<SelectTransferProps> = ({
@@ -61,7 +60,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   getAssetId,
   errMsg,
   setErrMsg,
-  nextTrigger,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -257,7 +255,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             getAssetId={getAssetId}
             setErrMsg={setErrMsg}
             errMsg={errMsg}
-            nextTrigger={nextTrigger}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
