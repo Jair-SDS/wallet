@@ -3,7 +3,6 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { useHPLTx } from "@pages/home/hooks/hplTxHook";
 import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@/const";
-import { decodeIcrcAccount } from "@dfinity/ledger";
 import { FC, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SelectTransfer from "./SelectTransfer";
