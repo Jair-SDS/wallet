@@ -66,6 +66,8 @@
   "remote.no.yours.from": "Você não tem acesso à Link",
   "remote.no.yours.to": "Você não tem acesso à Link",
   "not.same.subaccount": "As contas não podem ser iguais",
+  "not.same.subaccount.from": "Não pode ser igual ao receptor",
+  "not.same.subaccount.to": "Não pode ser igual ao remetente",
   "use.dictionary": "Usar Diretório",
   "show.all.assets": "Mostrar todos os ativos",
   "succes.caps": "SUCESSO",

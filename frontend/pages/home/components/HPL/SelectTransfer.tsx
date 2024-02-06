@@ -29,13 +29,15 @@ interface SelectTransferProps {
   otherPrincipal?: string;
   isRemote: boolean;
   manual: boolean;
+  manualFt?: string;
+  otherCode?: string;
   setManual(value: boolean): void;
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
   setManualFt(value: string | undefined): void;
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
-  getAssetId(data: HplTxUser): Promise<string>;
+  getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
   errMsg: string;
 }
@@ -50,6 +52,8 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   otherId,
   otherPrincipal,
   isRemote,
+  manualFt,
+  otherCode,
   setSelect,
   setManual,
   setQRview,
@@ -250,11 +254,13 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherId={otherId}
             otherPrincipal={otherPrincipal}
             txType={txType}
+            manualFt={manualFt}
             setManualFt={setManualFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsg}
             errMsg={errMsg}
+            otherCode={otherCode}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
@@ -279,6 +285,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
       principal: "",
       vIdx: "",
       remote: undefined,
+      code: "",
     });
     setManualFt(undefined);
   }
@@ -288,15 +295,15 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   }
 
   function onClear() {
-    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
+    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined, code: "" });
   }
 
   function onSelectSub(sub: HPLSubAccount) {
-    setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined });
+    setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined, code: "" });
     setSubsOpen(false);
   }
   function onManualToggle() {
-    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined });
+    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined, code: "" });
     setManual(!manual);
   }
 };

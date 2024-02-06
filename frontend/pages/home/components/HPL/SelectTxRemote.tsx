@@ -1,6 +1,7 @@
 // svgs
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
+import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
 //
 import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -26,8 +27,10 @@ interface SelectTxRemoteProps {
   otherId?: string;
   otherPrincipal?: string;
   txType: HplTransactionsType;
+  manualFt?: string;
+  otherCode?: string;
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
-  getAssetId(data: HplTxUser): Promise<string>;
+  getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
   errMsg: string;
 }
@@ -43,14 +46,17 @@ const SelectTxRemote = ({
   otherId,
   otherPrincipal,
   txType,
+  manualFt,
   getAssetId,
   setManualFt,
   getPrincipalFromOwnerId,
   setErrMsg,
   errMsg,
+  otherCode,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [code, setCode] = useState(select.code || "");
+  const [rmtAmount, setRmtAmount] = useState("");
   const [subsOpen, setSubsOpen] = useState(false);
   const [loadingCheck, setLoadingCheck] = useState(false);
   const [searchKey, setSearchKey] = useState("");
@@ -60,6 +66,7 @@ const SelectTxRemote = ({
     setPrincipalErr(false);
     setManualFt(undefined);
     setCode("");
+    setRmtAmount("");
   }, [manual]);
 
   useEffect(() => {
@@ -81,8 +88,34 @@ const SelectTxRemote = ({
             onBlur={() => {
               onLeaveFocus();
             }}
-            sufix={loadingCheck ? <LoadingLoader className="mt-1" /> : <p></p>}
+            sufix={
+              manualFt ? (
+                <div className="flex flex-row justify-end items-center gap-1">
+                  <GreenCheck className="w-5 h-5" />
+                </div>
+              ) : loadingCheck ? (
+                <div className="flex flex-row justify-end items-center">
+                  <LoadingLoader className="mt-1" />
+                </div>
+              ) : (
+                <p></p>
+              )
+            }
           />
+          {manualFt && rmtAmount !== "" && (
+            <div className="flex flex-row justify-start items-center gap-1 pl-2">
+              <img src={getAssetLogo(manualFt)} className="w-5 h-5" alt="info-icon" />
+              <AssetSymbol
+                ft={getFtFromSub(manualFt)}
+                textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
+                sufix={
+                  <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
+                    {`${getDecimalAmount(rmtAmount, getFtFromSub(manualFt).decimal)}`}{" "}
+                  </p>
+                }
+              />
+            </div>
+          )}
         </div>
       ) : (
         <DropdownMenu.Root
@@ -200,7 +233,6 @@ const SelectTxRemote = ({
                               <p>{rmt.name}</p>
                               <div className="flex flex-row justify-start items-center gap-2">
                                 <img src={getAssetLogo(rmt.ftIndex)} className="w-4 h-4" alt="info-icon" />
-
                                 <AssetSymbol
                                   ft={ft}
                                   textClass="opacity-60"
@@ -231,6 +263,7 @@ const SelectTxRemote = ({
       remote: undefined,
     });
     setManualFt(undefined);
+    setRmtAmount("");
     if (e.target.value.trim() === "") setPrincipalErr(false);
     else if (checkPxlCode(e.target.value.trim())) {
       setPrincipalErr(false);
@@ -252,14 +285,18 @@ const SelectTxRemote = ({
     return auxRemotes;
   }
   function onSelectRemote(rmt: HplRemote, prin: string) {
-    setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt });
+    setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt, code: rmt.code });
     setSubsOpen(false);
   }
   async function onLeaveFocus() {
     setLoadingCheck(true);
     if (code.length > 2) {
       const ownerInfo = getOwnerInfoFromPxl(code);
-      if (ownerInfo) {
+      if (otherCode === code) {
+        setErrMsg(
+          t(txType === HplTransactionsTypeEnum.Enum.from ? "not.same.subaccount.from" : "not.same.subaccount.to"),
+        );
+      } else if (ownerInfo) {
         const princ = await getPrincipalFromOwnerId(ownerInfo.ownerId);
         if (princ) {
           const linkAcc = {
@@ -287,14 +324,15 @@ const SelectTxRemote = ({
 
   async function checkValidOnLeave(linkAcc: HplTxUser) {
     const ftId = await getAssetId(linkAcc);
-    if (ftId === "" || ftId === "non") {
+    if (ftId.ft === "" || ftId.ft === "non") {
       setErrMsg(t(txType === HplTransactionsTypeEnum.Enum.from ? "remote.no.yours.from" : "remote.no.yours.to"));
       return false;
-    } else if (otherAsset && otherAsset !== ftId) {
+    } else if (otherAsset && otherAsset !== ftId.ft) {
       setErrMsg("not.match.asset.id");
       return false;
     } else {
-      setManualFt(ftId);
+      setManualFt(ftId.ft);
+      setRmtAmount(ftId.balance);
       return true;
     }
   }

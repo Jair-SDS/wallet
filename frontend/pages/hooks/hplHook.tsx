@@ -1,6 +1,6 @@
 // svgs
 import { SubaccountInfo, SubaccountInfoEnum } from "@/const";
-import { validateAmount } from "@/utils";
+import { getLogoString, validateAmount } from "@/utils";
 import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { Principal } from "@dfinity/principal";
 //
@@ -233,11 +233,7 @@ export const useHPL = (open: boolean) => {
   const getAssetLogo = (id: string) => {
     const ft = hplFTs.find((ft) => ft.id === id);
     if (ft) {
-      if (ft.name !== "" || ft.symbol !== "") return HplDefaultIcon;
-      else if (ft.logo === "") return HplDefaultIcon;
-      else {
-        return ft.logo;
-      }
+      return getLogoString(ft);
     } else {
       return HplDefaultIcon;
     }

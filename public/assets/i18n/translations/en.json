@@ -66,6 +66,8 @@
   "remote.no.yours.from": "You don't have access to this link",
   "remote.no.yours.to": "You don't have access to this link",
   "not.same.subaccount": "Accounts can't be the same",
+  "not.same.subaccount.from": "Can't be the same as receiver",
+  "not.same.subaccount.to": "Can't be the same as sender",
   "use.dictionary": "Use Directory",
   "show.all.assets": "Show all Assets",
   "succes.caps": "SUCCESS",

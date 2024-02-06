@@ -66,6 +66,8 @@
   "remote.no.yours.from": "Non hai accesso all'collegamento",
   "remote.no.yours.to": "Non hai accesso all'collegamento",
   "not.same.subaccount": "Gli account non possono essere uguali",
+  "not.same.subaccount.from": "Non può essere lo stesso del destinatario",
+  "not.same.subaccount.to": "Non può essere lo stesso del mittente",
   "use.dictionary": "Usa Directory",
   "show.all.assets": "Mostra tutte le risorse",
   "succes.caps": "SUCCESSO",

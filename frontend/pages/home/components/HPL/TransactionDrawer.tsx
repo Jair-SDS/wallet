@@ -124,7 +124,9 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherId={to.subaccount?.sub_account_id || to.remote?.index}
             otherPrincipal={to.remote ? to.principal : undefined}
             isRemote={to.type === HplTransactionsEnum.Enum.VIRTUAL}
+            otherCode={to.type === HplTransactionsEnum.Enum.VIRTUAL ? to.code : undefined}
             errMsg={errMsgFrom}
+            manualFt={manualFromFt}
             setManualFt={setManualFromFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
@@ -145,7 +147,9 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             otherId={from.subaccount?.sub_account_id || from.remote?.index}
             otherPrincipal={from.remote ? from.principal : undefined}
             isRemote={from.type === HplTransactionsEnum.Enum.VIRTUAL}
+            otherCode={from.type === HplTransactionsEnum.Enum.VIRTUAL ? from.code : undefined}
             errMsg={errMsgTo}
+            manualFt={manualToFt}
             setManualFt={setManualToFt}
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
@@ -180,7 +184,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
       valid = false;
       if (selection === "from") setErrMsgFrom("err.from");
       else setErrMsgTo("err.to");
-    } else if (ftId === "non" || ftId === "") {
+    } else if (ftId.ft === "non" || ftId.ft === "") {
       valid = false;
       if (selection === "from") setErrMsgFrom(t("remote.no.yours.from"));
       else setErrMsgTo(t("remote.no.yours.to"));
@@ -209,8 +213,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     const { fromFtId, toFtId, valid } = await validateAssetMatch();
 
     if (valid) {
-      setFtId(fromFtId ? fromFtId : toFtId);
-      setDecimals(getFtFromSub(fromFtId).decimal);
+      setFtId(fromFtId.ft ? fromFtId.ft : toFtId.ft);
+      setDecimals(getFtFromSub(fromFtId.ft).decimal);
       if (from.type === HplTransactionsEnum.Enum.VIRTUAL) {
         await getVirtualAmount(from, setRmtAmountFrom);
       }
@@ -291,9 +295,14 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
 
   async function getAssetId(data: HplTxUser) {
     let id = "";
-    if (data.subaccount) id = data.subaccount.ft;
-    else if (data.remote) id = data.remote.ftIndex;
-    else if (data.principal !== "" && data.vIdx !== "") {
+    let blnc = "";
+    if (data.subaccount) {
+      id = data.subaccount.ft;
+      blnc = data.subaccount.amount;
+    } else if (data.remote) {
+      id = data.remote.ftIndex;
+      blnc = data.remote.amount;
+    } else if (data.principal !== "" && data.vIdx !== "") {
       return getAssetIdFromPrinc(data.principal, data.vIdx);
     } else if (data.code && data.code !== "") {
       const ownerInfo = getOwnerInfoFromPxl(data.code);
@@ -303,8 +312,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           return getAssetIdFromPrinc(princ.toText(), ownerInfo.linkId);
         }
       }
-    } else return "";
-    return id;
+    } else return { ft: "", balance: "" };
+    return { ft: id, balance: blnc };
   }
 
   async function getAssetIdFromPrinc(principal: string, vIdx: string) {
@@ -312,10 +321,20 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
       const rem = await ingressActor.remoteAccountInfo({
         id: [Principal.fromText(principal), BigInt(vIdx)],
       });
-      if (rem.length === 0) return "non";
-      return rem[0][1].ft.toString();
+      if (rem.length === 0) return { ft: "non", balance: "" };
+      const auxState = await ingressActor.state({
+        ftSupplies: [],
+        virtualAccounts: [],
+        accounts: [],
+        remoteAccounts: [
+          {
+            id: [Principal.fromText(principal), BigInt(vIdx)],
+          },
+        ],
+      });
+      return { ft: rem[0][1].ft.toString(), balance: auxState.remoteAccounts[0][1][0].ft.toString() };
     } catch {
-      return "";
+      return { ft: "", balance: "" };
     }
   }
 

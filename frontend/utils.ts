@@ -28,6 +28,7 @@ import {
   SpecialTxTypeEnum,
 } from "./const";
 import { Account, Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
+import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
@@ -802,7 +803,7 @@ export const getDisplayNameFromFt = (ft: HPLAsset, t?: any, emptyFormat?: boolea
 };
 
 export const getLogoString = (ft: HPLAsset) => {
-  if (ft.name !== "" || ft.symbol !== "") return "";
+  if (ft.name !== "" || ft.symbol !== "" || ft.logo === "") return HplDefaultIcon;
   else return ft.logo;
 };
 
