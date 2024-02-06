@@ -294,6 +294,7 @@ const SelectTxRemote = ({
       setErrMsg("not.match.asset.id");
       return false;
     } else {
+      setManualFt(ftId);
       return true;
     }
   }
