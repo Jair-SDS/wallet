@@ -14,15 +14,16 @@ export default function AuthMethodRender() {
   const {
     loginOpts,
     seedOpen,
-    setSeedOpen,
     seed,
     mnemonicOpen,
-    setMnemonicOpen,
-    setSeed,
     watchOnlyOpen,
-    setWatchOnlyOpen,
     principalAddress,
+    phrase,
     setPrincipalAddress,
+    setSeed,
+    setPhrase,
+    handleMethodChange,
+    resetMethods,
   } = LoginHook();
 
   return (
@@ -30,8 +31,8 @@ export default function AuthMethodRender() {
       <p className="font-light text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor">
         {t("login.choose.msg")}
       </p>
-      {loginOpts.map((opt, k) => (
-        <OptionItem key={`${opt.name}-${k}`} opt={opt} />
+      {loginOpts.map((opt, index) => (
+        <OptionItem key={`${opt.name}-${index}`} opt={opt} />
       ))}
     </div>
   );
@@ -52,36 +53,38 @@ export default function AuthMethodRender() {
         </div>
 
         {seedOpen && opt.type === AuthNetworkTypeEnum.Enum.S && <SeedInput seed={seed} setSeed={setSeed} />}
+
         {watchOnlyOpen && opt.type === AuthNetworkTypeEnum.Enum.WO && (
           <WatchOnlyInput principalAddress={principalAddress} setPrincipalAddress={setPrincipalAddress} />
         )}
-        {mnemonicOpen && opt.type === AuthNetworkTypeEnum.Enum.Mnemonic && <MnemonicInput />}
+
+        {mnemonicOpen && opt.type === AuthNetworkTypeEnum.Enum.MNEMONIC && (
+          <MnemonicInput phrase={phrase} setPhrase={setPhrase} />
+        )}
       </div>
     );
   }
 
   async function handleLogin(opt: AuthNetwork) {
     if (opt.type === AuthNetworkTypeEnum.Values.IC || opt.type === AuthNetworkTypeEnum.Values.NFID) {
-      setSeedOpen(false);
-      setWatchOnlyOpen(false);
+      resetMethods();
       localStorage.setItem("network_type", JSON.stringify({ type: opt.type, network: opt.network, name: opt.name }));
       handleAuthenticated(opt);
+      return;
     }
 
     if (opt.type === AuthNetworkTypeEnum.Enum.S) {
-      setSeedOpen((prev) => !prev);
-      setSeed("");
+      handleMethodChange(AuthNetworkTypeEnum.Values.S);
       return;
     }
 
     if (opt.type === AuthNetworkTypeEnum.Enum.WO) {
-      setWatchOnlyOpen((prev) => !prev);
-      setPrincipalAddress("");
+      handleMethodChange(AuthNetworkTypeEnum.Values.WO);
       return;
     }
 
-    if (opt.type === AuthNetworkTypeEnum.Enum.Mnemonic) {
-      setMnemonicOpen((prev) => !prev);
+    if (opt.type === AuthNetworkTypeEnum.Enum.MNEMONIC) {
+      handleMethodChange(AuthNetworkTypeEnum.Values.MNEMONIC);
       return;
     }
   }

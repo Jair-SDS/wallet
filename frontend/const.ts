@@ -55,7 +55,7 @@ export type WorkerTask = z.infer<typeof WorkerTaskEnum>;
 export const AuthNetworkNameEnum = z.enum(["Internet Identity", "NFID", "Metamask", "Seed", "Watch-Only", "Mnemonic", "NONE"]);
 export type AuthNetworkName = z.infer<typeof AuthNetworkNameEnum>;
 
-export const AuthNetworkTypeEnum = z.enum(["IC", "NFID", "MM", "S", "WO", "Mnemonic", "NONE"]);
+export const AuthNetworkTypeEnum = z.enum(["IC", "NFID", "MM", "S", "WO", "MNEMONIC", "NONE"]);
 export type AuthNetworkType = z.infer<typeof AuthNetworkTypeEnum>;
 
 export const DeleteContactTypeEnum = z.enum(["CONTACT", "ASSET", "SUB"]);

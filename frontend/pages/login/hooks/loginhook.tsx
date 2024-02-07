@@ -5,7 +5,7 @@ import nfidUrl from "@/assets/img/nfid-logo.png";
 import metamaskUrl from "@/assets/img/metamask-logo.png";
 //
 import { useState } from "react";
-import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
+import { AuthNetworkNameEnum, AuthNetworkType, AuthNetworkTypeEnum } from "@/const";
 import { AuthNetwork } from "@redux/models/TokenModels";
 
 export const LoginHook = () => {
@@ -45,27 +45,71 @@ export const LoginHook = () => {
     {
       name: AuthNetworkNameEnum.Values.Mnemonic,
       icon: <img className={""} src={XxxxIcon} alt="" />,
-      type: AuthNetworkTypeEnum.Values.Mnemonic,
+      type: AuthNetworkTypeEnum.Values.MNEMONIC,
       network: "",
     },
   ];
   const [seedOpen, setSeedOpen] = useState(false);
   const [seed, setSeed] = useState("");
+
   const [watchOnlyOpen, setWatchOnlyOpen] = useState(false);
-  const [mnemonicOpen, setMnemonicOpen] = useState(false);
   const [principalAddress, setPrincipalAddress] = useState("");
+
+  const [mnemonicOpen, setMnemonicOpen] = useState(false);
+  const [phrase, setPhrase] = useState("");
+
+  console.log("login hook: ", [
+    { seedOpen, seed },
+    { watchOnlyOpen, principalAddress },
+    { mnemonicOpen, phrase },
+  ]);
+
+  function clearLoginInputs() {
+    setSeed("");
+    setPrincipalAddress("");
+    setPhrase("");
+  }
+
+  function closeLoginInputs() {
+    setSeedOpen(false);
+    setWatchOnlyOpen(false);
+    setMnemonicOpen(false);
+  }
+
+  function resetMethods() {
+    clearLoginInputs();
+    closeLoginInputs();
+  }
+
+  function handleMethodChange(method: AuthNetworkType) {
+    resetMethods();
+
+    if (method === AuthNetworkTypeEnum.Enum.S) {
+      setSeedOpen((prev) => !prev);
+    }
+
+    if (method === AuthNetworkTypeEnum.Enum.WO) {
+      setWatchOnlyOpen((prev) => !prev);
+    }
+
+    if (method === AuthNetworkTypeEnum.Enum.MNEMONIC) {
+      setMnemonicOpen((prev) => !prev);
+    }
+  }
 
   return {
     loginOpts,
     seedOpen,
-    setSeedOpen,
     seed,
     setSeed,
     watchOnlyOpen,
-    setWatchOnlyOpen,
     mnemonicOpen,
-    setMnemonicOpen,
     principalAddress,
     setPrincipalAddress,
+    phrase,
+    setPhrase,
+
+    handleMethodChange,
+    resetMethods,
   };
 };
