@@ -43,19 +43,13 @@ export const LoginHook = () => {
       network: "",
     },
   ];
-  const [open, setOpen] = useState(false);
   const [seedOpen, setSeedOpen] = useState(false);
   const [seed, setSeed] = useState("");
   const [watchOnlyOpen, setWatchOnlyOpen] = useState(false);
   const [principalAddress, setPrincipalAddress] = useState("");
-  const handleOpenChange = (value: boolean) => {
-    setOpen(value);
-  };
 
   return {
-    handleOpenChange,
     loginOpts,
-    open,
     seedOpen,
     setSeedOpen,
     seed,
