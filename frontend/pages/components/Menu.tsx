@@ -6,13 +6,15 @@ import { useContacts } from "@pages/contacts/hooks/contactsHook";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@/const";
+import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 
 const Menu = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
   const { assets, subaccounts, protocol, dictionaryHplFTs } = AssetHook();
-  const { contacts, hplContacts } = useContacts();
+  const { contacts } = useContacts();
+  const { hplContacts } = useHplContacts();
 
   const menuList = [
     {
