@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
 import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/hpl-client";
+import { SupportedStandardEnum } from "@/@types/icrc";
 
 const TokenSubAccount = z.object({
   numb: z.string(),
@@ -8,7 +9,6 @@ const TokenSubAccount = z.object({
   amount: z.string(),
   currency_amount: z.string(),
 });
-
 export type TokenSubAccount = z.infer<typeof TokenSubAccount>;
 
 const Token = z.object({
@@ -24,8 +24,8 @@ const Token = z.object({
   fee: z.string(),
   index: z.string().optional(),
   logo: z.string().optional(),
+  supportedStandards: z.array(SupportedStandardEnum),
 });
-
 export type Token = z.infer<typeof Token>;
 
 const UserInfo = z.object({

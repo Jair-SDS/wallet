@@ -11,9 +11,9 @@ import { AccountHook } from "@pages/hooks/accountHook";
 import { Token } from "@redux/models/TokenModels";
 import { AssetHook } from "../../../hooks/assetHook";
 import { useAppDispatch } from "@redux/Store";
-import { addToken, setAcordeonAssetIdx } from "@redux/assets/AssetReducer";
-import AddAssetAutomatic from "./AddAssetAutomatic";
 import AddAssetManual from "./AddAssetManual";
+import { addToken, setAcordeonAssetIdx, setSelectedAsset } from "@redux/assets/AssetReducer";
+import AddAssetAutomatic from "./AddAssetAutomatic";
 import DialogAssetConfirmation from "./DialogAssetConfirmation";
 
 interface AddAssetsProps {
@@ -68,11 +68,11 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
 
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-        <div className="flex flex-row justify-between items-center w-full mb-5">
+      <div className="flex flex-col items-center justify-start w-full h-full px-6 pt-8 bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
+        <div className="flex flex-row items-center justify-between w-full mb-5">
           <p className="text-lg font-bold">{asset ? t("edit.asset") : t("add.asset")}</p>
           <CloseIcon
-            className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+            className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
             onClick={onClose}
           />
         </div>
@@ -147,6 +147,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
       subAccounts: [{ numb: "0x0", name: AccountDefaultEnum.Values.Default, amount: "0", currency_amount: "0" }],
       index: "",
       id_number: 999,
+      supportedStandards: [],
     });
     setManual(false);
     setAssetInfo(undefined);
@@ -185,6 +186,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
       setAddStatus(AddingAssetsEnum.enum.adding);
       showModal(true);
       dispatch(addToken(tknSave));
+      dispatch(setSelectedAsset(tknSave));
+      dispatch(setAcordeonAssetIdx([tknSave.symbol]));
       reloadBallance(
         [...tokens, tknSave].sort((a, b) => {
           return a.id_number - b.id_number;

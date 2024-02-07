@@ -141,6 +141,7 @@ export const roundToDecimalN = (numb: number | string, decimal: number | string)
 
 export const toFullDecimal = (numb: bigint | string, decimal: number, maxDecimals?: number) => {
   if (BigInt(numb) === BigInt(0)) return "0";
+
   let numbStr = numb.toString();
   if (decimal === numbStr.length) {
     if (maxDecimals === 0) return "0";
@@ -178,9 +179,9 @@ export const toHoleBigInt = (numb: string, decimal: number) => {
     for (let index = 0; index < decimal; index++) {
       addZeros = "0" + addZeros;
     }
-    return BigInt(parts[0] + addZeros);
+    return BigInt(parts[0].replace(/,/g, "") + addZeros);
   } else {
-    const hole = parts[0];
+    const hole = parts[0].replace(/,/g, "");
     const dec = parts[1];
     let addZeros = "";
     for (let index = 0; index < decimal - dec.length; index++) {
@@ -342,7 +343,11 @@ export const getAccountIdentifier = (pricipal: string, sub: number) => {
   }).toHex();
 };
 
-export const formatIcpTransaccion = (accountId: string, rosettaTransaction: RosettaTransaction): Transaction => {
+export const formatIcpTransaccion = (
+  accountId: string,
+  rosettaTransaction: RosettaTransaction,
+  blockHash: string,
+): Transaction => {
   const {
     operations,
     metadata: { timestamp, block_height },
@@ -385,7 +390,7 @@ export const formatIcpTransaccion = (accountId: string, rosettaTransaction: Rose
 
   return {
     ...transaction,
-    hash,
+    hash: hash + "-" + blockHash,
     timestamp: Math.floor(timestamp / MILI_PER_SECOND),
   } as Transaction;
 };
@@ -546,8 +551,8 @@ export const getMetadataInfo = (myMetadata: IcrcTokenMetadataResponse) => {
       logo = auxName.Text;
     }
     if (dt[0] === "icrc1:fee") {
-      const auxName = dt[1] as { Text: string };
-      fee = auxName.Text;
+      const auxName = dt[1] as any;
+      fee = String(auxName.Nat);
     }
   });
 

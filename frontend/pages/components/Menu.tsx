@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
 import { AssetHook } from "@pages/home/hooks/assetHook";
-import { useContacts } from "@pages/contacts/hooks/contactsHook";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@/const";
@@ -13,8 +12,7 @@ const Menu = () => {
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
   const { assets, subaccounts, protocol, dictionaryHplFTs } = AssetHook();
-  const { contacts } = useContacts();
-  const { hplContacts } = useHplContacts();
+  const { hplContacts, contacts } = useHplContacts();
 
   const menuList = [
     {

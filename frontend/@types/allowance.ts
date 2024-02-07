@@ -1,3 +1,4 @@
+import { AssetSchema } from "@redux/models/AccountModels";
 import { z } from "zod";
 
 const subAccount = z.object({
@@ -13,24 +14,12 @@ const subAccount = z.object({
 
 export const allowanceSchema = z.object({
   id: z.string().optional(),
-  asset: z.object({
-    logo: z.string().optional(),
-    subAccounts: z.array(subAccount),
-    name: z.string(),
-    symbol: z.string(),
-    address: z.string(),
-    decimal: z.string(),
-    shortDecimal: z.string(),
-    sort_index: z.number(),
-    index: z.string().optional(),
-    tokenName: z.string(),
-    tokenSymbol: z.string(),
-  }),
+  asset: AssetSchema,
   subAccount,
   amount: z.string(),
   spender: z.object({
-    name: z.string(),
     principal: z.string(),
+    name: z.string().optional(),
     accountIdentifier: z.string().optional(),
   }),
   expiration: z.string().optional(),

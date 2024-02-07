@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
-const colors = require('tailwindcss/colors')
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   darkMode: "class",
@@ -12,10 +12,10 @@ module.exports = {
   theme: {
     extend: {
       transitionProperty: {
-        "height": "height",
-        "spacing": "margin, padding",
-        "width": "width"
-      }
+        height: "height",
+        spacing: "margin, padding",
+        width: "width",
+      },
     },
     fontSize: {
       xm: ".55rem",
@@ -98,6 +98,39 @@ module.exports = {
       AmountRemote:"#258CBF",
       AssetSymbol:"#805E0C",
       
+      TooltipBackground: "#1F2B55",
+
+      // WARNING: These colors MUST be used in new feature, which are part of new design system provided.
+      // MAIN COLORS
+      "gold-color": "#805E0C",
+      "primary-color": "#33B2EF",
+      "secondary-color-1": "#201D47",
+      "secondary-color-2": "#262250",
+      "secondary-color-3": "#2A316B",
+      "secondary-color-4": "#FF7A00",
+      "secondary-color-6": "#293F70",
+      "secondary-color-1-light": "#f2f2f1",
+      "secondary-color-2-light": "#bfbfbf",
+
+      // BACKGROUND
+      "level-1-color": "#141331",
+      // GRAY COLORS
+      "black-color": "#201D47",
+      "gray-color-1": "#363459",
+      "gray-color-2": "#4D4A6C",
+      "gray-color-3": "#63617E",
+      "gray-color-4": "#797791",
+      "gray-color-5": "#8F8EA3",
+      "gray-color-6": "#A6A5B5",
+      "gray-color-7": "#B4B6C1",
+      "gray-color-8": "#E9E8ED",
+      "gray-color-9": "#F6F6F6",
+      // SLATE COLORS
+      "slate-color-info": "#33B2EF",
+      "slate-color-success": "#50E2C2",
+      "slate-color-warning": "#E2B93B",
+      "slate-color-error": "#E2507A",
+
       black: colors.black,
       white: colors.white,
       slate: colors.slate,
@@ -125,7 +158,6 @@ module.exports = {
       transparent: colors.transparent,
       current: colors.current,
       inherit: colors.inherit,
-    }
+    },
   },
-}
-
+};

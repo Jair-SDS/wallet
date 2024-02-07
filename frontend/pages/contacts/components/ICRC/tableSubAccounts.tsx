@@ -1,7 +1,3 @@
-import { useTranslation } from "react-i18next";
-import { encodeIcrcAccount } from "@dfinity/ledger";
-import { hexToNumber, hexToUint8Array, removeLeadingZeros } from "@/utils";
-import { Principal } from "@dfinity/principal";
 import {
   AssetContact,
   Contact,
@@ -10,11 +6,8 @@ import {
   SubAccountContactErr,
 } from "@redux/models/ContactsModels";
 import { DeleteContactTypeEnum } from "@/const";
-import { useContacts } from "../../hooks/contactsHook";
-import { GeneralHook } from "@pages/home/hooks/generalHook";
-import bigInt from "big-integer";
-import AddSubAccount from "./addSubAccount";
-import SubAccountRow from "./subAccountRow";
+import SubAccountBody from "./SubAccountBody";
+import SubAccountHeader from "./subAccountHeader";
 
 interface TableSubAccountsProps {
   asst: AssetContact;
@@ -55,165 +48,30 @@ const TableSubAccounts = ({
   setSubaccEditedErr,
   setDeleteObject,
 }: TableSubAccountsProps) => {
-  const { t } = useTranslation();
-
-  const { asciiHex } = GeneralHook();
-  const { checkSubIndxValid, editCntctSubacc, addCntctSubacc } = useContacts();
-
   return (
     <table className="w-full text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md ">
-      {asst && (asst?.subaccounts?.length > 0 || addSub) && (
-        <thead className="text-PrimaryTextColor/70">
-          <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">
-            <th className="p-2 text-left w-[4.5%] "></th>
-            <th className="p-2 text-left w-[5%] "></th>
-            <th className="p-2 text-left w-[35%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo ">
-              <p>{t("name")}</p>
-            </th>
-            <th className="p-2 w-[10%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo ">
-              <p>{t("sub-acc")}</p>
-            </th>
-            <th className="p-2 w-[30%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo ">
-              <p>{t("account.indentifier")}</p>
-            </th>
-            <th className="p-2 w-[12.5%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo "></th>
-            <th className="w-[3%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo "></th>
-          </tr>
-        </thead>
-      )}
-      <tbody>
-        {asst?.subaccounts?.map((sa, l) => {
-          const encodedAcc = encodeIcrcAccount({
-            owner: Principal.fromText(cntc.principal || ""),
-            subaccount: hexToUint8Array(`0x${sa.subaccount_index}`),
-          });
-          return (
-            <SubAccountRow
-              l={l}
-              sa={sa}
-              cntc={cntc}
-              asst={asst}
-              encodedAcc={encodedAcc}
-              selSubaccIdx={selSubaccIdx}
-              subaccEdited={subaccEdited}
-              subaccEditedErr={subaccEditedErr}
-              changeName={changeName}
-              changeSubIdx={changeSubIdx}
-              onKeyDownIndex={onKeyDownIndex}
-              checkSubAcc={checkSubAcc}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              setSelSubaccIdx={setSelSubaccIdx}
-              key={l}
-            />
-          );
-        })}
-        {addSub && (
-          <AddSubAccount
-            asst={asst}
-            subaccEdited={subaccEdited}
-            subaccEditedErr={subaccEditedErr}
-            cntc={cntc}
-            changeName={changeName}
-            changeSubIdx={changeSubIdx}
-            onKeyDownIndex={onKeyDownIndex}
-            setAddSub={setAddSub}
-            setSelSubaccIdx={setSelSubaccIdx}
-            checkSubAcc={checkSubAcc}
-          />
-        )}
-      </tbody>
+      <SubAccountHeader asst={asst} addSub={addSub} />
+      <SubAccountBody
+        asst={asst}
+        addSub={addSub}
+        selSubaccIdx={selSubaccIdx}
+        subaccEdited={subaccEdited}
+        subaccEditedErr={subaccEditedErr}
+        cntc={cntc}
+        setSubaccEdited={setSubaccEdited}
+        changeSubIdx={changeSubIdx}
+        changeName={changeName}
+        setAddSub={setAddSub}
+        setSelSubaccIdx={setSelSubaccIdx}
+        setSelContactPrin={setSelContactPrin}
+        setDeleteModal={setDeleteModal}
+        setDeleteType={setDeleteType}
+        setSubaccEditedErr={setSubaccEditedErr}
+        setDeleteObject={setDeleteObject}
+        setDeleteHpl={setDeleteHpl}
+      />
     </table>
   );
-
-  function checkSubAcc(edit: boolean, cntc: Contact, asst: AssetContact, sa?: SubAccountContact) {
-    let subacc = subaccEdited.subaccount_index.trim();
-    if (subacc.slice(0, 2).toLowerCase() === "0x") subacc = subacc.substring(2);
-
-    const checkedIdx = removeLeadingZeros(subacc) === "" ? "0" : removeLeadingZeros(subacc);
-    const checkedIdxValid = checkSubIndxValid(checkedIdx, asst.subaccounts);
-
-    let eqHexValid = false;
-    let eqHex = false;
-    if (edit) {
-      eqHex = (hexToNumber(`0x${subacc}`) || bigInt()).eq(hexToNumber(`0x${sa?.subaccount_index}`) || bigInt());
-      if (!eqHex) {
-        eqHexValid = !checkedIdxValid;
-      }
-    } else {
-      eqHexValid = !checkedIdxValid;
-    }
-
-    setSubaccEditedErr({
-      name: subaccEdited.name.trim() === "",
-      subaccount_index: subacc === "" || eqHexValid,
-    });
-
-    if (edit) {
-      if (subacc !== "" && subaccEdited.name.trim() !== "" && (eqHex || checkedIdxValid)) {
-        editCntctSubacc(
-          cntc.principal,
-          asst.tokenSymbol,
-          sa?.subaccount_index || "0",
-          subaccEdited.name.trim(),
-          checkedIdx,
-        );
-        setSelSubaccIdx("");
-      }
-    } else {
-      if (subacc !== "" && subaccEdited.name.trim() !== "" && checkedIdxValid) {
-        addCntctSubacc(
-          cntc.principal,
-          asst.tokenSymbol,
-          subaccEdited.name.trim(),
-          removeLeadingZeros(subacc) === "" ? "0" : removeLeadingZeros(subacc),
-        );
-        setSelSubaccIdx("");
-        setAddSub(false);
-      }
-    }
-  }
-
-  function onKeyDownIndex(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!asciiHex.includes(e.key)) {
-      e.preventDefault();
-    }
-    if (subaccEdited.subaccount_index.includes("0x") || subaccEdited.subaccount_index.includes("0X")) {
-      if (e.key === "X" || e.key == "x") {
-        e.preventDefault();
-      }
-    }
-  }
-
-  function onEdit(sa: SubAccountContact) {
-    setAddSub(false);
-    setSelContactPrin("");
-    setSelSubaccIdx(sa.subaccount_index);
-    setSubaccEdited(sa);
-    setSubaccEditedErr({
-      name: false,
-      subaccount_index: false,
-    });
-  }
-
-  function onDelete(sa: SubAccountContact) {
-    setAddSub(false);
-    setSelContactPrin("");
-    setSelSubaccIdx("");
-    setDeleteType(DeleteContactTypeEnum.Enum.SUB);
-    setDeleteObject({
-      principal: cntc.principal,
-      name: cntc.name,
-      tokenSymbol: asst.tokenSymbol,
-      symbol: asst.symbol,
-      subaccIdx: sa.subaccount_index,
-      subaccName: sa.name,
-      totalAssets: 0,
-      TotalSub: 0,
-    });
-    setDeleteHpl(false);
-    setDeleteModal(true);
-  }
 };
 
 export default TableSubAccounts;

@@ -1,8 +1,10 @@
 /* eslint-disable no-empty */
-import { ActorSubclass, HttpAgent } from "@dfinity/agent";
+import { ActorSubclass, HttpAgent, Actor } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
+import { _SERVICE as LedgerActor } from "@candid/icrcLedger/icrcLedgerService";
+import { idlFactory as LedgerFactory } from "@candid/icrcLedger/icrcLedgerCandid.did";
 import {
   formatIcpTransaccion,
   getSubAccountArray,
@@ -41,13 +43,13 @@ import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
+import { SupportedStandard } from "@/@types/icrc";
 
 export const updateAllBalances = async (
   myAgent: HttpAgent,
   tokens: Token[],
   basicSearch?: boolean,
   fromLogin?: boolean,
-  fixedPrincipal?: Principal,
 ) => {
   let tokenMarkets: TokenMarketInfo[] = [];
   try {
@@ -79,9 +81,14 @@ export const updateAllBalances = async (
   }
   store.dispatch(setTokenMarket(tokenMarkets));
 
-  const myPrincipal = fixedPrincipal || (await myAgent.getPrincipal());
+  const myPrincipal = store.getState().auth.userPrincipal;
   const tokensAseets = await Promise.all(
     tokens.map(async (tkn, idNum) => {
+      const ledgerActor = Actor.createActor<LedgerActor>(LedgerFactory, {
+        agent: myAgent,
+        canisterId: tkn.address as any,
+      });
+      const standards = await ledgerActor.icrc1_supported_standards();
       try {
         const { balance, metadata, transactionFee } = IcrcLedgerCanister.create({
           agent: myAgent,
@@ -226,7 +233,9 @@ export const updateAllBalances = async (
           subAccounts: (basicSearch ? userSubAcc : saTokens).sort((a, b) => {
             return hexToNumber(a.numb)?.compare(hexToNumber(b.numb) || bigInt()) || 0;
           }),
+          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
         };
+
         const newAsset: Asset = {
           symbol: tkn.symbol,
           name: tkn.name,
@@ -241,6 +250,7 @@ export const updateAllBalances = async (
           tokenName: name,
           tokenSymbol: symbol,
           logo: logo,
+          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
         };
         return { newToken, newAsset };
       } catch (e) {
@@ -266,11 +276,13 @@ export const updateAllBalances = async (
           sort_index: 99999 + idNum,
           tokenName: tkn.name,
           tokenSymbol: tkn.symbol,
+          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
         };
         return { newToken: tkn, newAsset };
       }
     }),
   );
+
   const newAssetsUpload = tokensAseets.map((tA) => {
     return tA.newAsset;
   });
@@ -591,6 +603,7 @@ export const setAssetFromLocalData = (tokens: Token[], myPrincipal: string) => {
       tokenName: tkn.tokenName,
       tokenSymbol: tkn.tokenSymbol,
       logo: tkn.logo,
+      supportedStandards: tkn.supportedStandards,
     });
   });
 
@@ -633,8 +646,8 @@ export const getAllTransactionsICP = async (subaccount_index: string, loading: b
     ).catch();
     if (!response.ok) throw Error(`${response.statusText}`);
     const { transactions } = await response.json();
-    const transactionsInfo = transactions.map(({ transaction }: any) =>
-      formatIcpTransaccion(accountIdentifier.toHex(), transaction),
+    const transactionsInfo = transactions.map(({ transaction, block_identifier }: any) =>
+      formatIcpTransaccion(accountIdentifier.toHex(), transaction, block_identifier.hash),
     );
 
     if (loading) {

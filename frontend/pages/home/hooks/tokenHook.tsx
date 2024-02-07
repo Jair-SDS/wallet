@@ -27,6 +27,7 @@ export const TokenHook = (asset: Asset | undefined) => {
     index: "",
     id_number: 999,
     logo: "",
+    supportedStandards: [],
   });
   const [validToken, setValidToken] = useState(false);
   const [validIndex, setValidIndex] = useState(false);
@@ -50,6 +51,7 @@ export const TokenHook = (asset: Asset | undefined) => {
         }),
         index: asset.index,
         id_number: asset.sort_index,
+        supportedStandards: [],
       });
       setErrToken("");
       setErrIndex("");

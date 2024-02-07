@@ -1,5 +1,6 @@
 import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
 import { defaultTokens } from "@/defaultTokens";
+import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import {
@@ -14,6 +15,7 @@ import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
+import { allowanceCacheRefresh } from "../helpers/allowanceCache";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
@@ -50,15 +52,21 @@ export const AssetHook = () => {
   const [newSub, setNewSub] = useState<SubAccount | undefined>();
   const [hexChecked, setHexChecked] = useState<boolean>(false);
 
-  const reloadBallance = (tkns?: Token[]) => {
+  const reloadBallance = async (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
+    const principal = (await userAgent.getPrincipal()).toText();
+    allowanceCacheRefresh(principal);
+    await contactCacheRefresh(principal);
   };
 
-  const reloadOnlyICRCBallance = (tkns?: Token[]) => {
+  const reloadOnlyICRCBallance = async (tkns?: Token[]) => {
     dispatch(setLoading(true));
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    const principal = (await userAgent.getPrincipal()).toText();
+    allowanceCacheRefresh(principal);
+    await contactCacheRefresh(principal);
   };
 
   const reloadOnlyHPLBallance = () => {

@@ -6,7 +6,8 @@ import Modal from "@components/Modal";
 import { CustomButton } from "@components/Button";
 import { useTranslation } from "react-i18next";
 import { DeleteContactTypeEnum } from "@/const";
-import { useContacts } from "../hooks/contactsHook";
+import useContactTable from "../hooks/useContactTable";
+import { useHplContacts } from "../hooks/hplContactsHook";
 
 interface RemoveModalProps {
   deleteModal: boolean;
@@ -35,7 +36,8 @@ const RemoveModal = ({
   deleteObject,
 }: RemoveModalProps) => {
   const { t } = useTranslation();
-  const { removeCntct, removeAsset, removeSubacc, removeHplCntct, removeHplCntctRemote } = useContacts();
+  const { removeCntct, removeAsset, removeSubacc } = useContactTable();
+  const { removeHplCntct, removeHplCntctRemote } = useHplContacts();
 
   return (
     <Modal
@@ -44,20 +46,20 @@ const RemoveModal = ({
       padding="py-5"
       border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
     >
-      <div className="flex flex-col justify-start items-start w-full gap-4 text-md">
-        <div className="flex flex-row justify-between items-center w-full px-8">
+      <div className="flex flex-col items-start justify-start w-full gap-4 text-md">
+        <div className="flex flex-row items-center justify-between w-full px-8">
           <WarningIcon className="w-6 h-6" />
           <CloseIcon
-            className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+            className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
             onClick={() => {
               setDeleteModal(false);
             }}
           />
         </div>
-        <div className="flex flex-col justify-start items-start w-full px-8">
-          <p className="text-left font-light">
+        <div className="flex flex-col items-start justify-start w-full px-8">
+          <p className="font-light text-left">
             {getDeleteMsg().msg1}
-            <span className="font-semibold ml-1 break-all">{getDeleteMsg().msg2}</span>?
+            <span className="ml-1 font-semibold break-all">{getDeleteMsg().msg2}</span>?
           </p>
         </div>
         {(deleteType === DeleteContactTypeEnum.Enum.CONTACT || deleteType === DeleteContactTypeEnum.Enum.ASSET) && (
@@ -68,7 +70,7 @@ const RemoveModal = ({
               )}
               {!deleteHpl && <p>{t("total.subacc")}</p>}
             </div>
-            <div className="flex flex-col justify-start items-start">
+            <div className="flex flex-col items-start justify-start">
               {deleteType === DeleteContactTypeEnum.Enum.CONTACT && (
                 <p className="font-semibold">{deleteObject.totalAssets}</p>
               )}
@@ -76,7 +78,7 @@ const RemoveModal = ({
             </div>
           </div>
         )}
-        <div className="flex flex-row justify-end items-center w-full px-8">
+        <div className="flex flex-row items-center justify-end w-full px-8">
           <CustomButton className="min-w-[5rem]" onClick={handleConfirmButton} size={"small"}>
             <p>{t("confirm")}</p>
           </CustomButton>

@@ -2,7 +2,7 @@ import { DeleteContactTypeEnum } from "@/const";
 import { ActorSubclass } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { setHplContacts } from "@redux/contacts/ContactsReducer";
+import { removeHplContact, removeHplContactRemote, setHplContacts } from "@redux/contacts/ContactsReducer";
 import { HplContact, HplRemote } from "@redux/models/AccountModels";
 import { ContactErr } from "@redux/models/ContactsModels";
 import { useState } from "react";
@@ -13,7 +13,7 @@ export const useHplContacts = () => {
   // reducer
 
   const dispatch = useAppDispatch();
-  const { hplContacts, storageCode } = useAppSelector((state) => state.contacts);
+  const { contacts, hplContacts, storageCode } = useAppSelector((state) => state.contacts);
   const { ownersActor } = useAppSelector((state) => state.asset);
   const { protocol } = useAppSelector((state) => state.asset);
 
@@ -202,8 +202,12 @@ export const useHplContacts = () => {
     return myOwnerId;
   };
 
+  const removeHplCntct = (principal: string) => dispatch(removeHplContact(principal));
+  const removeHplCntctRemote = (principal: string, index: string) => dispatch(removeHplContactRemote(principal, index));
+
   return {
     protocol,
+    contacts,
     storageCode,
     hplContacts,
     newContact,
@@ -236,5 +240,7 @@ export const useHplContacts = () => {
     onAddContact,
     fetchRemotes,
     searchRemotes,
+    removeHplCntct,
+    removeHplCntctRemote,
   };
 };

@@ -1,36 +1,25 @@
 // svgs
 import SearchIcon from "@assets/svg/files/icon-search.svg";
+import { ReactComponent as PlusIcon } from "@assets/svg/files/plus-icon.svg";
 import ChevronRightIcon from "@assets/svg/files/chevron-right-icon.svg";
 import ChevronRightDarkIcon from "@assets/svg/files/chevron-right-dark-icon.svg";
-import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useContacts } from "../hooks/contactsHook";
 import { CustomInput } from "@components/Input";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { ThemeHook } from "@pages/hooks/themeHook";
 import { IconTypeEnum, ProtocolTypeEnum, ThemesEnum } from "@/const";
 import { CustomCheck } from "@components/CheckBox";
-import { CustomButton } from "@components/Button";
 import Modal from "@components/Modal";
-import AddContact from "./ICRC/addContact";
 import { clsx } from "clsx";
-import { Asset, HPLAsset, HplContact } from "@redux/models/AccountModels";
+import { Asset, HPLAsset } from "@redux/models/AccountModels";
 import { useHPL } from "@pages/hooks/hplHook";
 import AddEditHplContact from "./HPL/addHplContact";
-
-interface ContactFiltersProps {
-  searchKey: string;
-  assetFilter: string[];
-  setSearchKey(value: string): void;
-  setAssetFilter(value: string[]): void;
-  edit: HplContact | undefined;
-  setEdit(value: HplContact | undefined): void;
-  setAddOpen(value: boolean): void;
-  addOpen: boolean;
-}
+import { IUseContactFilters } from "../hooks/useContactFilters";
+import { IconButton } from "@components/button";
+import AddContact from "./ICRC/AddContact";
 
 const ContactFilters = ({
   searchKey,
@@ -41,18 +30,20 @@ const ContactFilters = ({
   setEdit,
   setAddOpen,
   addOpen,
-}: ContactFiltersProps) => {
+  assetOpen,
+  setAssetOpen,
+}: IUseContactFilters) => {
   const { t } = useTranslation();
   const { theme } = ThemeHook();
-  const { assetOpen, setAssetOpen } = useContacts();
   const { assets, getAssetIcon, hplFTs, protocol } = GeneralHook();
   const { getAssetLogo, getFtFromSub } = useHPL(false);
   const [assetSearch, setAssetSearch] = useState("");
 
   return (
     <Fragment>
-      <div className="text-md flex flex-row justify-start items-center gap-3 w-full">
+      <div className="flex flex-row items-center justify-start w-full gap-3 text-md">
         <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("asset")}</p>
+
         <DropdownMenu.Root
           onOpenChange={(e: boolean) => {
             setAssetOpen(e);
@@ -122,7 +113,7 @@ const ContactFilters = ({
               )}
               <div
                 onClick={handleSelectAll}
-                className="flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-HoverColorLight2 hover:dark:bg-HoverColor"
+                className="flex flex-row items-center justify-between w-full px-3 py-2 rounded-t-lg hover:bg-HoverColorLight hover:dark:bg-HoverColor"
               >
                 <p>{t("selected.all")}</p>
                 <CustomCheck
@@ -194,6 +185,7 @@ const ContactFilters = ({
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
         <CustomInput
           compOutClass="!w-[40%]"
           prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
@@ -205,21 +197,22 @@ const ContactFilters = ({
             setSearchKey(e.target.value);
           }}
         />
-        <CustomButton
-          size={"icon"}
+        <IconButton
+          icon={<PlusIcon className="w-6 h-6" />}
+          size="medium"
           onClick={() => {
             setEdit(undefined);
             setAddOpen(true);
           }}
-        >
-          <img src={PlusIcon} alt="plus-icon" className="w-5 h-5" />
-        </CustomButton>
+        />
       </div>
       <Modal
         open={addOpen}
         width="w-[48rem]"
         padding="py-5 px-8"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
+        overlayZIndex="0"
+        contentZIndex="0"
       >
         {protocol === ProtocolTypeEnum.Enum.HPL ? (
           <AddEditHplContact setAddOpen={setAddOpen} edit={edit} />

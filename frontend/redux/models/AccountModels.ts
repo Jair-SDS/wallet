@@ -8,6 +8,7 @@ import {
   Time,
   VirId,
 } from "@research-ag/hpl-client/dist/candid/ledger";
+import { SupportedStandardEnum } from "@/@types/icrc";
 import { z } from "zod";
 
 // ICRC1 Models
@@ -23,15 +24,13 @@ const SubAccount = z.object({
 });
 
 export type SubAccount = z.infer<typeof SubAccount>;
-
 const ICPSubAccount = z.object({
   legacy: z.string(),
   sub_account_id: z.string(),
 });
 
 export type ICPSubAccount = z.infer<typeof ICPSubAccount>;
-
-const Asset = z.object({
+export const AssetSchema = z.object({
   logo: z.string().optional(),
   name: z.string(),
   symbol: z.string(),
@@ -43,9 +42,10 @@ const Asset = z.object({
   index: z.string().optional(),
   tokenName: z.string(),
   tokenSymbol: z.string(),
+  supportedStandards: z.array(SupportedStandardEnum),
 });
 
-export type Asset = z.infer<typeof Asset>;
+export type Asset = z.infer<typeof AssetSchema>;
 
 const Transaction = z.object({
   idx: z.string().optional(),
@@ -240,5 +240,9 @@ const AssetToAdd = z.object({
   symbol: z.string(),
   tokenSymbol: z.string(),
   logo: z.string().optional(),
+  address: z.string(),
+  decimal: z.string(),
+  shortDecimal: z.string(),
+  supportedStandards: z.array(SupportedStandardEnum),
 });
 export type AssetToAdd = z.infer<typeof AssetToAdd>;

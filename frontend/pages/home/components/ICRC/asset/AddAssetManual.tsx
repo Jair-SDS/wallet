@@ -3,7 +3,7 @@ import { ReactComponent as InfoIcon } from "@assets/svg/files/info-icon.svg";
 //
 import { GeneralHook } from "../../../hooks/generalHook";
 import { IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
-import { getMetadataInfo } from "@/utils";
+import { getMetadataInfo, toFullDecimal } from "@/utils";
 import { CustomInput } from "@components/Input";
 import { CustomCopy } from "@components/CopyTooltip";
 import { editAssetName } from "@redux/contacts/ContactsReducer";
@@ -66,26 +66,22 @@ const AddAssetManual = ({
   const { getAssetIcon, checkAssetAdded } = GeneralHook();
   const { userAgent } = IdentityHook();
   const [testLoading, setTestLoading] = useState(false);
+  const [tested, setTested] = useState(false);
   const [errShortDec, serErrShortDec] = useState(false);
 
   return (
-    <div className="flex flex-col justify-start items-start w-full">
+    <div className="flex flex-col items-start justify-start w-full">
       {asset ? (
-        <div className="flex flex-col justify-start items-center w-full p-2">
+        <div className="flex flex-col items-center justify-start w-full p-2">
           {getAssetIcon(IconTypeEnum.Enum.ASSET, asset.tokenSymbol, asset.logo)}
-          <p className="text-lg font-bold mt-2">{`${asset.tokenName} - ${asset.tokenSymbol}`}</p>
+          <p className="mt-2 text-lg font-bold">{`${asset.tokenName} - ${asset.tokenSymbol}`}</p>
         </div>
       ) : (
-        <div className="flex flex-col justify-start items-center w-full gap-2">
-          <div className="flex flex-row justify-start items-start w-full p-2 rounded-lg border border-SelectRowColor bg-SelectRowColor/10">
-            <InfoIcon className="h-5 w-5 fill-SelectRowColor mr-2 mt-1" />
-            <p className="w-full text-justify opacity-60">
-              {t("asset.add.warning.1")} <span className=" text-SelectRowColor">{t("asset.add.warning.2")}</span>
-            </p>
-          </div>
-          {newToken.logo &&
-            newToken.logo !== "" &&
-            getAssetIcon(IconTypeEnum.Enum.ASSET, newToken.symbol, newToken.logo)}
+        <div className="flex flex-row items-start justify-start w-full p-2 border rounded-lg border-SelectRowColor bg-SelectRowColor/10">
+          <InfoIcon className="w-5 h-5 mt-1 mr-2 fill-SelectRowColor" />
+          <p className="w-full text-justify opacity-60">
+            {t("asset.add.warning.1")} <span className=" text-SelectRowColor">{t("asset.add.warning.2")}</span>
+          </p>
         </div>
       )}
       <div className="flex flex-col items-start w-full mt-3 mb-3">
@@ -102,8 +98,8 @@ const AddAssetManual = ({
           value={newToken.address || ""}
           onChange={onLedgerChange}
         />
-        {errToken !== "" && errToken !== "non" && <p className="text-LockColor text-left text-sm">{errToken}</p>}
-        {validToken && <p className="text-BorderSuccessColor text-left text-sm">{t("token.validation.msg")}</p>}
+        {errToken !== "" && errToken !== "non" && <p className="text-sm text-left text-LockColor">{errToken}</p>}
+        {validToken && <p className="text-sm text-left text-BorderSuccessColor">{t("token.validation.msg")}</p>}
       </div>
       <div className="flex flex-col items-start w-full mb-3">
         <p className="opacity-60">{t("token.index.address")}</p>
@@ -119,9 +115,20 @@ const AddAssetManual = ({
           value={newToken.index || ""}
           onChange={onChangeIndex}
         />
-        {errIndex !== "" && errIndex !== "non" && <p className="text-LockColor text-left text-sm">{errIndex}</p>}
-        {validIndex && <p className="text-BorderSuccessColor text-left text-sm">{t("index.validation.msg")}</p>}
+        {errIndex !== "" && errIndex !== "non" && <p className="text-sm text-left text-LockColor">{errIndex}</p>}
+        {validIndex && <p className="text-sm text-left text-BorderSuccessColor">{t("index.validation.msg")}</p>}
       </div>
+      {!asset && (
+        <div className="flex justify-end w-full">
+          <CustomButton
+            intent={newToken.address.length > 5 ? "success" : "deny"}
+            onClick={() => onTest(true)}
+            disabled={newToken.address.length <= 5}
+          >
+            {testLoading ? <LoadingLoader className="mt-1" /> : t("test")}
+          </CustomButton>
+        </div>
+      )}
       <div className="flex flex-col items-start w-full mb-3">
         <p className="opacity-60">{t("token.symbol")}</p>
         <CustomInput
@@ -131,6 +138,7 @@ const AddAssetManual = ({
           compOutClass=""
           value={newToken.symbol || ""}
           onChange={onChangeSymbol}
+          disabled={!asset && !tested}
         />
       </div>
       <div className="flex flex-col items-start w-full mb-3">
@@ -142,6 +150,18 @@ const AddAssetManual = ({
           compOutClass=""
           value={newToken.name || ""}
           onChange={onChangeName}
+          disabled={!asset && !tested}
+        />
+      </div>
+      <div className="flex flex-col items-start w-full mb-3">
+        <p className="opacity-60">{t("fee")}</p>
+        <CustomInput
+          sizeInput={"medium"}
+          intent={"secondary"}
+          placeholder="0"
+          compOutClass="opacity-60"
+          value={toFullDecimal(newToken.fee || "0", Number(newToken.decimal || "0"))}
+          disabled
         />
       </div>
       <div className={`flex flex-row justify-start items-center ${asset ? "w-[85%]" : "w-full"} gap-2`}>
@@ -151,8 +171,8 @@ const AddAssetManual = ({
             sizeInput={"medium"}
             inputClass={asset ? "opacity-40" : ""}
             intent={"secondary"}
-            placeholder="8"
-            disabled={asset ? true : false}
+            placeholder=""
+            disabled={true}
             compOutClass=""
             type="number"
             value={newToken.decimal}
@@ -161,7 +181,7 @@ const AddAssetManual = ({
         </div>
         {asset && (
           <div className="flex flex-col items-start w-full mb-3">
-            <p>{t("short.form.limit")}</p>
+            <p className="opacity-60 text-md">{t("short.form.limit")}</p>
             <CustomInput
               sizeInput={"medium"}
               intent={"secondary"}
@@ -182,24 +202,13 @@ const AddAssetManual = ({
             <p>{t("back")}</p>
           </CustomButton>
         )}
-        <div className="flex flex-row justify-end w-full gap-4">
-          {!asset && (
-            <CustomButton
-              intent={newToken.address.length > 5 ? "success" : "deny"}
-              onClick={onTest}
-              disabled={newToken.address.length <= 5}
-            >
-              {testLoading ? <LoadingLoader className="mt-1" /> : t("test")}
-            </CustomButton>
-          )}
-          <CustomButton
-            intent={newToken.address.length > 5 ? "accept" : "deny"}
-            onClick={onSave}
-            disabled={newToken.address.length <= 5 || newToken.name === "" || newToken.symbol === ""}
-          >
-            {t("save")}
-          </CustomButton>
-        </div>
+        <CustomButton
+          intent={(asset ? newToken.address.length > 5 : tested) ? "accept" : "deny"}
+          onClick={onSave}
+          disabled={asset ? newToken.address.length <= 5 : !tested}
+        >
+          {t("save")}
+        </CustomButton>
       </div>
     </div>
   );
@@ -283,7 +292,7 @@ const AddAssetManual = ({
     setValidIndex(false);
   }
 
-  async function onTest() {
+  async function onTest(override: boolean): Promise<boolean> {
     setTestLoading(true);
     let validData = false;
     if (checkAssetAdded(newToken.address)) {
@@ -308,8 +317,8 @@ const AddAssetManual = ({
             ...prev,
             decimal: decimals.toFixed(0),
             shortDecimal: decimals.toFixed(0),
-            symbol: symbol,
-            name: name,
+            symbol: override ? symbol : prev.symbol,
+            name: override ? name : prev.name,
             logo: logo,
             tokenSymbol: symbol,
             tokenName: name,
@@ -339,6 +348,7 @@ const AddAssetManual = ({
     else setValidIndex(false);
 
     setTestLoading(false);
+    setTested(validData);
     return validData;
   }
 
@@ -368,7 +378,7 @@ const AddAssetManual = ({
       // Edit tokens list and assets list
       dispatch(editToken(newToken, asset.tokenSymbol));
       setAssetOpen(false);
-    } else if (await onTest()) addAssetToData();
+    } else if (await onTest(false)) addAssetToData();
   }
 };
 

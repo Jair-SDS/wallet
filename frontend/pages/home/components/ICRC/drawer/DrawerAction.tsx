@@ -5,6 +5,7 @@ import { Fragment, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/Button";
 import { DrawerOption } from "@/const";
+import { resetSendStateAction } from "@redux/transaction/TransactionActions";
 
 interface Option {
   name: string;
@@ -46,6 +47,7 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
           className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={() => {
             setDrawerOpen(false);
+            resetSendStateAction();
           }}
         />
       </div>

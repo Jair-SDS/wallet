@@ -40,10 +40,12 @@ import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandi
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
 import { HPLAssetData, HplContact } from "./models/AccountModels";
+import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
 import { defaultTokens } from "@/defaultTokens";
-import { parseFungibleToken } from "@/utils";
-import { allowanceFullReload } from "@pages/home/helpers/allowanceCache";
+import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
+import contactCacheRefresh from "@pages/contacts/helpers/contacts";
+import { setAllowances } from "./allowance/AllowanceReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -100,7 +102,7 @@ export const handlePrincipalAuthenticated = async (principalAddress: string) => 
 };
 
 export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean, fixedPrincipal?: Principal) => {
-  if (localStorage.getItem("network_type") === null && !fromSeed) {
+  if (localStorage.getItem("network_type") === null && !fromSeed && !fixedPrincipal) {
     logout();
     return;
   }
@@ -137,12 +139,12 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
     // AUTH
     dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
-    updateAllBalances(myAgent, userDataJson.tokens, false, true, fixedPrincipal);
+    updateAllBalances(myAgent, userDataJson.tokens, false, true);
   } else {
-    const { tokens } = await updateAllBalances(myAgent, defaultTokens, true, true, fixedPrincipal);
+    const { tokens } = await updateAllBalances(myAgent, defaultTokens, true, true);
     store.dispatch(setTokens(tokens));
     // AUTH
-    dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
+    store.dispatch(setTokens(tokens));
   }
   // ICRC-1 CONTACTS
   const contactsData = localStorage.getItem("contacts-" + identityPrincipalStr);
@@ -150,9 +152,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     const contactsDataJson = JSON.parse(contactsData);
     store.dispatch(setContacts(contactsDataJson.contacts));
   }
-
-  // ALLOWANCES
-  await allowanceFullReload();
 
   if (!fixedPrincipal) {
     // HPL FT
@@ -224,6 +223,10 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
       console.log("feeConstant-err", e);
     }
   }
+
+  // ALLOWANCES
+  allowanceCacheRefresh(myPrincipal.toText());
+  await contactCacheRefresh(myPrincipal.toText());
 };
 
 export const dispatchAuths = (
@@ -249,6 +252,7 @@ export const logout = async () => {
   store.dispatch(clearDataContacts());
   store.dispatch(clearDataAsset());
   store.dispatch(clearDataAuth());
+  store.dispatch(setAllowances([]));
   store.dispatch(setUnauthenticated());
   store.dispatch(setUserAgent(undefined));
   store.dispatch(setUserPrincipal(undefined));

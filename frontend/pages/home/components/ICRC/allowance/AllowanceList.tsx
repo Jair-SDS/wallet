@@ -36,7 +36,7 @@ export default function AllowanceList() {
     return (
       <TableHead>
         {table.getHeaderGroups().map((headerGroup, indexTH) => (
-          <TableRow key={`allowance-${indexTH}`} className="border-b border-opacity-50 border-BorderColor">
+          <TableRow key={`allowance-${indexTH}`}>
             {headerGroup.headers.map((header, indexTR) => {
               const column = header.column.id;
               return (
@@ -46,7 +46,7 @@ export default function AllowanceList() {
                       className: indexTR <= 3 && header.column.getCanSort() ? "cursor-pointer select-none" : "",
                       onClick: indexTR <= 3 ? () => handleSorter(column as AllowancesTableColumns) : undefined,
                     }}
-                    className="flex opacity-50 text-PrimaryTextColorLight dark:text-PrimaryTextColor"
+                    className="flex font-normal opacity-50 text-PrimaryTextColorLight dark:text-PrimaryTextColor"
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </div>

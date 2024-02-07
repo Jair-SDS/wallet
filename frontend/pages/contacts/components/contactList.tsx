@@ -1,11 +1,11 @@
 import { Fragment } from "react";
-import { useContacts } from "../hooks/contactsHook";
 import { useTranslation } from "react-i18next";
 import { checkHexString } from "@/utils";
 import { DeleteContactTypeEnum, ProtocolTypeEnum } from "@/const";
 import RemoveModal from "./removeModal";
 import TableContacts from "./ICRC/tableContacts";
 import TableHplContacts from "./HPL/tableHplContacts";
+import useContactTable from "../hooks/useContactTable";
 import { HplContact } from "@redux/models/AccountModels";
 
 interface ContactListProps {
@@ -31,7 +31,7 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
     setSubaccEditedErr,
     deleteHpl,
     setDeleteHpl,
-  } = useContacts();
+  } = useContactTable();
 
   return (
     <Fragment>
@@ -77,7 +77,7 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
   function changeSubIdx(e: string) {
     if (checkHexString(e)) {
       setSubaccEdited((prev) => {
-        return { ...prev, subaccount_index: e.trim() };
+        return { ...prev, subaccount_index: e.trim(), sub_account_id: `0x${e.trim()}` };
       });
       setSubaccEditedErr((prev) => {
         return {
@@ -89,7 +89,8 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
   }
   function changeName(e: string) {
     setSubaccEdited((prev) => {
-      return { ...prev, name: e };
+      const newSubAccount = { ...prev, name: e };
+      return newSubAccount;
     });
     setSubaccEditedErr((prev) => {
       return {

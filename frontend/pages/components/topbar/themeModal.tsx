@@ -21,7 +21,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
 
   return (
     <Fragment>
-      <div className="flex flex-row justify-between items-center w-full mb-2 top-modal">
+      <div className="flex flex-row items-center justify-between w-full mb-2 top-modal">
         <p className="font-bold text-[1.15rem]">{t("themes")}</p>
         <CloseIcon
           className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
@@ -30,14 +30,9 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
           }}
         />
       </div>
-      <p className="font-light mb-2">{t("theme.modal.msg")}</p>
+      <p className="mb-2 font-light">{t("theme.modal.msg")}</p>
       <div
-        className={clsx(
-          "cursor-pointer",
-          themeBox,
-          "bg-ThemeColorSelectorLight",
-          theme === ThemesEnum.enum.light ? "border-SelectRowColor" : "border-BorderColor",
-        )}
+        className={clsx(themeBox, "bg-ThemeColorSelectorLight", "border-BorderColor")}
         onClick={() => {
           handleChange(ThemesEnum.enum.light);
         }}
@@ -65,7 +60,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
               >
                 <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-3 after:h-3 after:rounded-full after:bg-RadioCheckColor" />
               </RadioGroup.Item>
-              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ml-4">
+              <p className="ml-4 opacity-50 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
                 {t(ThemesEnum.enum.light)}
               </p>
             </div>
@@ -73,12 +68,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
         </div>
       </div>
       <div
-        className={clsx(
-          "cursor-pointer",
-          themeBox,
-          "bg-ThemeColorSelector",
-          theme === ThemesEnum.enum.dark ? "border-SelectRowColor" : "border-BorderColor",
-        )}
+        className={clsx(themeBox, "bg-ThemeColorSelector", "border-BorderColor")}
         onClick={() => {
           handleChange(ThemesEnum.enum.dark);
         }}
@@ -108,7 +98,7 @@ const ThemeModal = ({ setOpen }: ThemeModalProps) => {
               >
                 <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-3 after:h-3 after:rounded-full after:bg-RadioCheckColor" />
               </RadioGroup.Item>
-              <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-50 ml-4">
+              <p className="ml-4 opacity-50 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
                 {t(ThemesEnum.enum.dark)}
               </p>
             </div>

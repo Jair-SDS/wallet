@@ -89,6 +89,7 @@ const DetailList = () => {
           </SubaccountInfo>
         )}
       </div>
+
       <div
         id="right-drower"
         className={`h-full fixed z-[999] top-0 w-[28rem] overflow-x-hidden transition-{right} duration-500 ${
@@ -118,7 +119,7 @@ const DetailList = () => {
         return selectedTransaction ? (
           <DrawerTransaction setDrawerOpen={setDrawerOpen} />
         ) : (
-          <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor gap-5 w-full h-full pt-8 px-6">
+          <div className="flex flex-col items-center justify-start w-full h-full gap-5 px-6 pt-8 bg-PrimaryColorLight dark:bg-PrimaryColor">
             <DrawerAction
               options={icrc1DrawerOptions}
               drawerOption={drawerOption}
