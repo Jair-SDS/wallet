@@ -7,6 +7,7 @@ import { LoginHook } from "../hooks/loginhook";
 import { useTranslation } from "react-i18next";
 import SeedInput from "./SeedInput";
 import WatchOnlyInput from "./WatchOnlyInput";
+import MnemonicInput from "./MnemonicInput";
 
 export default function AuthMethodRender() {
   const { t } = useTranslation();
@@ -15,6 +16,8 @@ export default function AuthMethodRender() {
     seedOpen,
     setSeedOpen,
     seed,
+    mnemonicOpen,
+    setMnemonicOpen,
     setSeed,
     watchOnlyOpen,
     setWatchOnlyOpen,
@@ -52,6 +55,7 @@ export default function AuthMethodRender() {
         {watchOnlyOpen && opt.type === AuthNetworkTypeEnum.Enum.WO && (
           <WatchOnlyInput principalAddress={principalAddress} setPrincipalAddress={setPrincipalAddress} />
         )}
+        {mnemonicOpen && opt.type === AuthNetworkTypeEnum.Enum.Mnemonic && <MnemonicInput />}
       </div>
     );
   }
@@ -62,12 +66,23 @@ export default function AuthMethodRender() {
       setWatchOnlyOpen(false);
       localStorage.setItem("network_type", JSON.stringify({ type: opt.type, network: opt.network, name: opt.name }));
       handleAuthenticated(opt);
-    } else if (opt.type === AuthNetworkTypeEnum.Enum.S) {
+    }
+
+    if (opt.type === AuthNetworkTypeEnum.Enum.S) {
       setSeedOpen((prev) => !prev);
       setSeed("");
-    } else if (opt.type === AuthNetworkTypeEnum.Enum.WO) {
+      return;
+    }
+
+    if (opt.type === AuthNetworkTypeEnum.Enum.WO) {
       setWatchOnlyOpen((prev) => !prev);
       setPrincipalAddress("");
+      return;
+    }
+
+    if (opt.type === AuthNetworkTypeEnum.Enum.Mnemonic) {
+      setMnemonicOpen((prev) => !prev);
+      return;
     }
   }
 }

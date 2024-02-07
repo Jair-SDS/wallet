@@ -42,10 +42,17 @@ export const LoginHook = () => {
       type: AuthNetworkTypeEnum.Values.WO,
       network: "",
     },
+    {
+      name: AuthNetworkNameEnum.Values.Mnemonic,
+      icon: <img className={""} src={XxxxIcon} alt="" />,
+      type: AuthNetworkTypeEnum.Values.Mnemonic,
+      network: "",
+    },
   ];
   const [seedOpen, setSeedOpen] = useState(false);
   const [seed, setSeed] = useState("");
   const [watchOnlyOpen, setWatchOnlyOpen] = useState(false);
+  const [mnemonicOpen, setMnemonicOpen] = useState(false);
   const [principalAddress, setPrincipalAddress] = useState("");
 
   return {
@@ -56,6 +63,8 @@ export const LoginHook = () => {
     setSeed,
     watchOnlyOpen,
     setWatchOnlyOpen,
+    mnemonicOpen,
+    setMnemonicOpen,
     principalAddress,
     setPrincipalAddress,
   };
