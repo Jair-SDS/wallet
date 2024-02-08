@@ -1,7 +1,7 @@
 import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
 import { defaultTokens } from "@/defaultTokens";
 import contactCacheRefresh from "@pages/contacts/helpers/contacts";
-import { useAppDispatch, useAppSelector } from "@redux/Store";
+import store, { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import {
   removeToken,
@@ -56,7 +56,7 @@ export const AssetHook = () => {
     dispatch(setLoading(true));
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
-    const principal = (await userAgent.getPrincipal()).toText();
+    const principal = store.getState().auth.userPrincipal.toText();
     allowanceCacheRefresh(principal);
     await contactCacheRefresh(principal);
   };
