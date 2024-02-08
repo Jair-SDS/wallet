@@ -1,6 +1,6 @@
 import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";
 import { CustomInput } from "@components/Input";
-import { handleSeedAuthenticated } from "@redux/CheckAuth";
+import { handleMnemonicAuthenticated } from "@redux/CheckAuth";
 import clsx from "clsx";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
@@ -22,7 +22,7 @@ export default function MnemonicInput({ phrase, setPhrase }: MnemonicInputProps)
         <div className="flex flex-row items-center justify-start gap-2">
           <CheckIcon
             onClick={() => {
-              // handleSeedAuthenticated(phrase);
+              handleMnemonicAuthenticated(phrase);
             }}
             className={getCheckIconStyles(phrase)}
           />
@@ -30,12 +30,11 @@ export default function MnemonicInput({ phrase, setPhrase }: MnemonicInputProps)
         </div>
       }
       onKeyDown={(e) => {
-        // if (e.key === "Enter") handleSeedAuthenticated(phrase);
+        if (e.key === "Enter") handleMnemonicAuthenticated(phrase);
       }}
     />
   );
   function onPhraseChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log(e.target.value);
     setPhrase(e.target.value);
   }
 }

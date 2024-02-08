@@ -22,6 +22,7 @@ import { defaultTokens } from "@/defaultTokens";
 import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
 import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 import { setAllowances } from "./allowance/AllowanceReducer";
+import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -74,6 +75,15 @@ export const handlePrincipalAuthenticated = async (principalAddress: string) => 
     handleLoginApp(authClient.getIdentity(), false, principal);
   } catch {
     return;
+  }
+};
+
+export const handleMnemonicAuthenticated = (phrase: string) => {
+  try {
+    const identity = Secp256k1KeyIdentity.fromSeedPhrase(phrase);
+    console.log("identity: ", identity);
+  } catch (error) {
+    console.log("Error: ", error);
   }
 };
 

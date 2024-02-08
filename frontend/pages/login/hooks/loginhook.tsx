@@ -9,13 +9,10 @@ import { AuthNetworkNameEnum, AuthNetworkType, AuthNetworkTypeEnum } from "@/con
 import { AuthNetwork } from "@redux/models/TokenModels";
 
 export const LoginHook = () => {
-  // seed auth method
   const [seedOpen, setSeedOpen] = useState(false);
   const [seed, setSeed] = useState("");
-  // principal auth method
   const [watchOnlyOpen, setWatchOnlyOpen] = useState(false);
   const [principalAddress, setPrincipalAddress] = useState("");
-  // mnemonic auth method
   const [mnemonicOpen, setMnemonicOpen] = useState(false);
   const [phrase, setPhrase] = useState("");
 
@@ -59,12 +56,6 @@ export const LoginHook = () => {
       network: "",
     },
   ];
-
-  console.log("login hook: ", [
-    { seedOpen, seed },
-    { watchOnlyOpen, principalAddress },
-    { mnemonicOpen, phrase },
-  ]);
 
   function clearLoginInputs() {
     setSeed("");
