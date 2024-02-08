@@ -2,8 +2,6 @@
 import InfoIcon from "@assets/svg/files/info-icon.svg";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 import CheckIcon from "@assets/svg/files/check.svg";
-import { ReactComponent as VirtualIcon } from "@assets/svg/files/virtualIcon.svg";
-import { ReactComponent as VirtualIconLight } from "@assets/svg/files/virtualIconLight.svg";
 //
 import { HPLAsset, HPLSubAccount, HPLSubData } from "@redux/models/AccountModels";
 import { ChangeEvent, Fragment } from "react";
@@ -11,8 +9,6 @@ import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/Input";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, getDisplayNameFromFt, getFirstNChars } from "@/utils";
-import { ThemeHook } from "@pages/hooks/themeHook";
-import { ThemesEnum } from "@/const";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 
@@ -34,7 +30,6 @@ const HplSubaccountElem = ({
   setEditNameId,
 }: HplSubaccountElemProps) => {
   const { authClient } = AccountHook();
-  const { theme } = ThemeHook();
   const {
     hplFTs,
     hplSubsData,
@@ -106,14 +101,7 @@ const HplSubaccountElem = ({
                   </div>
                 )}
                 {editNameId != sub.sub_account_id && (
-                  <div className="flex flex-row justify-start items-center gap-1">
-                    <p className="font-semibold">{sub.virtuals.length}</p>
-                    {theme === ThemesEnum.enum.dark ? (
-                      <VirtualIcon className="w-6 h-5 mb-[0.15rem]" />
-                    ) : (
-                      <VirtualIconLight className="w-6 h-5 mb-[0.15rem]" />
-                    )}
-                  </div>
+                  <p className="font-semibold whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
                 )}
               </div>
 
