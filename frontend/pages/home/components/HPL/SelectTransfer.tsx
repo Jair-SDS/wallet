@@ -2,11 +2,10 @@
 // svgs
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
-import QRIcon from "@assets/svg/files/qr.svg";
 //
 import { HplTransactions, HplTransactionsEnum, HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import { HPLAsset, HPLSubAccount, HplContact, HplTxUser } from "@redux/models/AccountModels";
+import { HPLAsset, HPLSubAccount, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChangeEvent, FC, useState } from "react";
@@ -14,7 +13,6 @@ import { clsx } from "clsx";
 import { CustomInput } from "@components/Input";
 import SelectTxRemote from "./SelectTxRemote";
 import { getDecimalAmount } from "@/utils";
-import SwitchButton from "@components/Switch";
 import AssetSymbol from "@components/AssetSymbol";
 import { Principal } from "@dfinity/principal";
 
@@ -28,10 +26,8 @@ interface SelectTransferProps {
   otherId?: string;
   otherPrincipal?: string;
   isRemote: boolean;
-  manual: boolean;
   manualFt?: string;
   otherCode?: string;
-  setManual(value: boolean): void;
   setQRview(value: string): void;
   getAssetLogo(id: string): string;
   getFtFromSub(id: string): HPLAsset;
@@ -40,6 +36,7 @@ interface SelectTransferProps {
   getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
   setClearCam(value: boolean): void;
+  checkIfIsContact(code: string): { rmt: HplRemote; prin: string } | undefined;
   errMsg: string;
 }
 
@@ -48,7 +45,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   subaccounts,
   hplContacts,
   txType,
-  manual,
   otherAsset,
   otherId,
   otherPrincipal,
@@ -56,7 +52,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   manualFt,
   otherCode,
   setSelect,
-  setManual,
   setQRview,
   getAssetLogo,
   getFtFromSub,
@@ -66,6 +61,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   errMsg,
   setClearCam,
   setErrMsg,
+  checkIfIsContact,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -105,21 +101,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
           </RadioGroup.Root>
         </div>
       </div>
-      {select.type === HplTransactionsEnum.Enum.VIRTUAL && (
-        <div className="flex flex-row justify-between items-center w-full">
-          <SwitchButton textLeft={t("contatc.book")} textRight={t("new")} enabled={manual} onToggle={onManualToggle} />
-          {/* {manual && (
-            <img
-              src={QRIcon}
-              className="cursor-pointer"
-              alt="search-icon"
-              onClick={() => {
-                setQRview(txType);
-              }}
-            />
-          )} */}
-        </div>
-      )}
       <div className="flex flex-col justify-start items-start w-full ">
         {select.type === HplTransactionsEnum.Enum.SUBACCOUNT ? (
           <DropdownMenu.Root
@@ -248,7 +229,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
           <SelectTxRemote
             select={select}
             setSelect={setSelect}
-            manual={manual}
             getAssetLogo={getAssetLogo}
             getFtFromSub={getFtFromSub}
             hplContacts={hplContacts}
@@ -265,10 +245,29 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             errMsg={errMsg}
             otherCode={otherCode}
             setClearCam={setClearCam}
+            checkIfIsContact={checkIfIsContact}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">
-          <p className="text-sm text-TextErrorColor text-left ">{t(errMsg)}</p>
+          {errMsg !== "" ? (
+            <p className="text-sm text-TextErrorColor text-left ">{t(errMsg)}</p>
+          ) : select.remote ? (
+            <div className=" flex flex-row justify-start items-center gap-1 pl-3">
+              <p className="opacity-60">{select.remote.name}</p>
+              <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
+              <AssetSymbol
+                ft={getFtFromSub(select.remote.ftIndex)}
+                textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
+                sufix={
+                  <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
+                    {`${getDecimalAmount(select.remote.amount, getFtFromSub(select.remote.ftIndex).decimal)}`}{" "}
+                  </p>
+                }
+              />
+            </div>
+          ) : (
+            <p></p>
+          )}
           {(select.subaccount || select.remote) && (
             <div className="flex flex-row justify-end items-center mt-1">
               <p className="text-SelectRowColor underline cursor-pointer" onClick={onClear}>
@@ -305,10 +304,6 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   function onSelectSub(sub: HPLSubAccount) {
     setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined, code: "" });
     setSubsOpen(false);
-  }
-  function onManualToggle() {
-    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined, code: "" });
-    setManual(!manual);
   }
 };
 

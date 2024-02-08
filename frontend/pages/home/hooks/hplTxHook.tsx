@@ -1,6 +1,6 @@
 import { DrawerOption, DrawerOptionEnum, HplTransactionsEnum } from "@/const";
 import { useAppSelector } from "@redux/Store";
-import { HplTxUser } from "@redux/models/AccountModels";
+import { HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { useEffect, useState } from "react";
 
 export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: string) => {
@@ -63,6 +63,16 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     }
   };
 
+  const checkIfIsContact = (code: string): { rmt: HplRemote; prin: string } | undefined => {
+    for (let i = 0; i < hplContacts.length; i++) {
+      for (let j = 0; j < hplContacts[i].remotes.length; j++) {
+        if (hplContacts[i].remotes[j].code === code)
+          return { rmt: hplContacts[i].remotes[j], prin: hplContacts[i].principal };
+      }
+    }
+    return undefined;
+  };
+
   return {
     hplClient,
     ingressActor,
@@ -82,5 +92,6 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     amountReceiver,
     setAmountReceiver,
     getPrincipalFromOwnerId,
+    checkIfIsContact,
   };
 };

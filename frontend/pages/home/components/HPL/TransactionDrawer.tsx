@@ -42,13 +42,12 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setAmountReceiver,
     hplContacts,
     getPrincipalFromOwnerId,
+    checkIfIsContact,
   } = useHPLTx(drawerOpen, drawerOption, locat);
 
   const { getAssetLogo, getFtFromSub, reloadHPLBallance } = useHPL(false);
   const [summary, setSummary] = useState(false);
   const [loadingNext, setLoadingNext] = useState(false);
-  const [manualFrom, setManualFrom] = useState(false);
-  const [manualTo, setManualTo] = useState(false);
   const [qrView, setQRview] = useState("");
   const [rmtAmountFrom, setRmtAmountFrom] = useState("0");
   const [rmtAmountTo, setRmtAmountTo] = useState("0");
@@ -114,8 +113,6 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getAssetLogo={getAssetLogo}
             getFtFromSub={getFtFromSub}
             select={from}
-            manual={manualFrom}
-            setManual={setManualFrom}
             hplContacts={hplContacts}
             setSelect={setFrom}
             subaccounts={subaccounts}
@@ -133,13 +130,12 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getAssetId={getAssetId}
             setErrMsg={setErrMsgFrom}
             setClearCam={setClearCam}
+            checkIfIsContact={checkIfIsContact}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
             getFtFromSub={getFtFromSub}
             select={to}
-            manual={manualTo}
-            setManual={setManualTo}
             hplContacts={hplContacts}
             setSelect={setTo}
             subaccounts={subaccounts}
@@ -157,6 +153,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getAssetId={getAssetId}
             setErrMsg={setErrMsgTo}
             setClearCam={setClearCam}
+            checkIfIsContact={checkIfIsContact}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -172,8 +169,6 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setClearCam(true);
     setAmount("");
     setAmountReceiver("");
-    setManualFrom(false);
-    setManualTo(false);
     setLoadingNext(false);
     setSummary(false);
     setDrawerOpen(false);
