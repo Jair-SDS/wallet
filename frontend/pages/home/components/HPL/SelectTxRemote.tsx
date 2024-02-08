@@ -69,7 +69,7 @@ const SelectTxRemote = ({
   const [principalErr, setPrincipalErr] = useState(false);
 
   useEffect(() => {
-    onLeaveFocus();
+    !select.remote && onLeaveFocus();
   }, [otherAsset]);
 
   return (
