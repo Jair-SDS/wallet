@@ -35,7 +35,7 @@ const ContactList = ({ searchKey, assetFilter, setAddOpen, setEdit }: ContactLis
 
   return (
     <Fragment>
-      <div className="flex flex-col w-full h-full mt-3 scroll-y-light max-h-[calc(100vh-12rem)]">
+      <div className="flex flex-col w-full h-full mt-3 scroll-y-light max-h-[calc(100vh-14rem)]">
         {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
           <TableContacts
             changeName={changeName}

@@ -95,7 +95,7 @@ export default function TableContactRows(props: TableContactRowsProps) {
           <Fragment key={k}>
             <tr className={contactStyle(cntc)}>
               <td className="">
-                <div className="relative flex flex-row items-center justify-start w-full gap-2 px-4 min-h-14">
+                <div className="relative flex flex-row items-center justify-start w-full gap-2 px-4 min-h-[3.5rem]">
                   {(cntc.principal === selContactPrin ||
                     cntc.principal === openAssetsPrin ||
                     cntc.principal === selCntcPrinAddAsst) && (

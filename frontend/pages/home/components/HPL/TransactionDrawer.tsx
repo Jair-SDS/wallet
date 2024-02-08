@@ -56,6 +56,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   const [decimals, setDecimals] = useState(0);
   const [manualFromFt, setManualFromFt] = useState<string>();
   const [manualToFt, setManualToFt] = useState<string>();
+  const [clearCam, setClearCam] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col justify-start items-between bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
@@ -101,7 +102,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     if (qrView) {
       return (
         <div className="flex flex-col justify-start items-center w-full">
-          <QRscanner qrView={qrView !== ""} onSuccess={onQRSuccess} setQRview={setQRviewClose} />
+          <QRscanner qrView={qrView !== ""} onSuccess={onQRSuccess} setQRview={setQRviewClose} outsideBack={clearCam} />
         </div>
       );
     }
@@ -131,6 +132,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgFrom}
+            setClearCam={setClearCam}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -154,6 +156,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             getPrincipalFromOwnerId={getPrincipalFromOwnerId}
             getAssetId={getAssetId}
             setErrMsg={setErrMsgTo}
+            setClearCam={setClearCam}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -166,14 +169,14 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   }
 
   function onClose() {
-    setDrawerOpen(false);
-    setQRview("");
+    setClearCam(true);
     setAmount("");
     setAmountReceiver("");
     setManualFrom(false);
     setManualTo(false);
     setLoadingNext(false);
     setSummary(false);
+    setDrawerOpen(false);
   }
 
   async function validateData(selection: string) {

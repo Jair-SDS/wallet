@@ -45,7 +45,7 @@ const TableHplContacts = ({
 
   return (
     <table className="w-full  text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-      <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 sticky top-0 z-[1]">
+      <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 sticky top-0 z-[200]">
         <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor ">
           <th className="p-2 text-left w-[30%] bg-PrimaryColorLight dark:bg-PrimaryColor ">
             <p>{t("name")}</p>

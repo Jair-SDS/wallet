@@ -329,7 +329,7 @@ export default function SubAccountBody(props: SubAccountBodyProps) {
     }
 
     let allowance = undefined;
-    if (asst.supportedStandards.includes(SupportedStandardEnum.Values["ICRC-2"])) {
+    if (asst.supportedStandards?.includes(SupportedStandardEnum.Values["ICRC-2"])) {
       allowance = await getAllowanceDetails({
         spenderPrincipal: store.getState().auth.userPrincipal.toText(),
         spenderSubaccount: subaccEdited.sub_account_id,

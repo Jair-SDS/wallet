@@ -55,6 +55,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
           className="absolute top-5 right-5 cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={() => {
             setAddOpen(false);
+            setClearCam(true);
           }}
         />
         <p>{edit ? t("edit.contact") : t("add.contact")}</p>

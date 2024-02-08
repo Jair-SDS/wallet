@@ -23,7 +23,7 @@ const TableContacts = (props: TableContactsProps) => {
 
   return (
     <table className="w-full text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-      <thead className="sticky top-0 border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70">
+      <thead className="sticky top-0 border-b border-BorderColorTwoLight dark:border-BorderColorTwo text-PrimaryTextColor/70 z-[1000]">
         <tr className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">
           <th className="p-2 text-left w-[30%] bg-PrimaryColorLight dark:bg-PrimaryColor ">
             <p>{t("name")}</p>

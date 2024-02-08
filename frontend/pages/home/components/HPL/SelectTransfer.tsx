@@ -39,6 +39,7 @@ interface SelectTransferProps {
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
+  setClearCam(value: boolean): void;
   errMsg: string;
 }
 
@@ -63,6 +64,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   getPrincipalFromOwnerId,
   getAssetId,
   errMsg,
+  setClearCam,
   setErrMsg,
 }) => {
   const { t } = useTranslation();
@@ -262,6 +264,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             setErrMsg={setErrMsg}
             errMsg={errMsg}
             otherCode={otherCode}
+            setClearCam={setClearCam}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">

@@ -211,8 +211,8 @@ const ContactFilters = ({
         width="w-[48rem]"
         padding="py-5 px-8"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
-        overlayZIndex="0"
-        contentZIndex="0"
+        overlayZIndex="1000"
+        contentZIndex="2000"
       >
         {protocol === ProtocolTypeEnum.Enum.HPL ? (
           <AddEditHplContact setAddOpen={setAddOpen} edit={edit} />

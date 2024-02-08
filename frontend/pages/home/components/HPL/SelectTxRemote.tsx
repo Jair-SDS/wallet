@@ -35,6 +35,7 @@ interface SelectTxRemoteProps {
   getPrincipalFromOwnerId(value: bigint): Promise<Principal | undefined>;
   getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
+  setClearCam(value: boolean): void;
   errMsg: string;
 }
 
@@ -56,6 +57,7 @@ const SelectTxRemote = ({
   getPrincipalFromOwnerId,
   setErrMsg,
   errMsg,
+  setClearCam,
   otherCode,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
@@ -111,6 +113,7 @@ const SelectTxRemote = ({
                   alt="search-icon"
                   onClick={() => {
                     setQRview(txType);
+                    setClearCam(false);
                   }}
                 />
               </div>
