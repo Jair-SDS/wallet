@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 // svgs
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
+import QRIcon from "@assets/svg/files/qr.svg";
 //
 import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -20,6 +22,7 @@ interface SelectTxRemoteProps {
   setSelect(sel: HplTxUser): void;
   manual: boolean;
   getAssetLogo(id: string): string;
+  setQRview(value: string): void;
   getFtFromSub(id: string): HPLAsset;
   setManualFt(value: string | undefined): void;
   hplContacts: HplContact[];
@@ -41,6 +44,7 @@ const SelectTxRemote = ({
   setSelect,
   getAssetLogo,
   getFtFromSub,
+  setQRview,
   hplContacts,
   otherAsset,
   otherId,
@@ -89,17 +93,27 @@ const SelectTxRemote = ({
               onLeaveFocus();
             }}
             sufix={
-              manualFt ? (
-                <div className="flex flex-row justify-end items-center gap-1">
-                  <GreenCheck className="w-5 h-5" />
-                </div>
-              ) : loadingCheck ? (
-                <div className="flex flex-row justify-end items-center">
-                  <LoadingLoader className="mt-1" />
-                </div>
-              ) : (
-                <p></p>
-              )
+              <div>
+                {manualFt ? (
+                  <div className="flex flex-row justify-end items-center gap-1">
+                    <GreenCheck className="w-5 h-5" />
+                  </div>
+                ) : loadingCheck ? (
+                  <div className="flex flex-row justify-end items-center">
+                    <LoadingLoader className="mt-1" />
+                  </div>
+                ) : (
+                  <p></p>
+                )}
+                <img
+                  src={QRIcon}
+                  className="cursor-pointer"
+                  alt="search-icon"
+                  onClick={() => {
+                    setQRview(txType);
+                  }}
+                />
+              </div>
             }
           />
           {manualFt && rmtAmount !== "" && (

@@ -20,9 +20,9 @@ const Contacts = () => {
 
   return (
     <Fragment>
-      <div className="flex flex-col w-full h-full pt-6 px-9">
+      <div className="flex flex-col w-full h-full pt-6">
         <Menu />
-        <div className="flex flex-col items-start justify-start w-full h-full">
+        <div className="flex flex-col items-start justify-start w-full h-full px-3">
           <ContactFilters
             assetOpen={assetOpen}
             addOpen={addOpen}

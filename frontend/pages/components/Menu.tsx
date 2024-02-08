@@ -43,7 +43,7 @@ const Menu = () => {
 
   return (
     <Fragment>
-      <div className="flex flex-row gap-3 justify-start items-center w-full pl-4">
+      <div className="flex flex-row gap-3 justify-start items-center w-full pl-3">
         {menuList.map(
           (menu, k) =>
             menu.show && (

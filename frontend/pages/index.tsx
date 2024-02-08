@@ -35,7 +35,7 @@ const SwitchRoute = () => {
     <Loader></Loader>
   ) : (
     <>
-      {blur && <div className="fixed w-full h-full bg-black/50 z-[900]"></div>}
+      {blur && <div className="fixed w-full h-full bg-black/50 z-[2000]"></div>}
       <Router history={history}>
         {!superAdmin && authenticated && (
           <LayoutComponent>

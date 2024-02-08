@@ -106,7 +106,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
       {select.type === HplTransactionsEnum.Enum.VIRTUAL && (
         <div className="flex flex-row justify-between items-center w-full">
           <SwitchButton textLeft={t("contatc.book")} textRight={t("new")} enabled={manual} onToggle={onManualToggle} />
-          {manual && (
+          {/* {manual && (
             <img
               src={QRIcon}
               className="cursor-pointer"
@@ -115,7 +115,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
                 setQRview(txType);
               }}
             />
-          )}
+          )} */}
         </div>
       )}
       <div className="flex flex-col justify-start items-start w-full ">
@@ -253,6 +253,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherAsset={otherAsset}
             otherId={otherId}
             otherPrincipal={otherPrincipal}
+            setQRview={setQRview}
             txType={txType}
             manualFt={manualFt}
             setManualFt={setManualFt}

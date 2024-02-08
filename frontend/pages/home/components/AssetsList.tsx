@@ -51,7 +51,7 @@ const AssetsList = () => {
       <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
         <Menu />
 
-        <div className="flex flex-row items-center justify-start w-full gap-3 pr-5 mb-4">
+        <div className="flex flex-row items-center justify-start w-full gap-3 pr-5 pl-3 mb-4">
           <input
             className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
             type="text"
