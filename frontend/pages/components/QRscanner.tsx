@@ -40,9 +40,7 @@ const QRscanner = ({
             setScannerErr("");
           });
         },
-        (e) => {
-          // console.log("err", e);
-
+        () => {
           if (scanner.getState() === 1) setScannerErr(t("err.qr.img"));
           else if (scanner.getState() === 2) setScannerErr("");
         },
