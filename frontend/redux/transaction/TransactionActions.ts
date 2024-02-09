@@ -23,9 +23,12 @@ import {
   setIsLoading,
   setInitTime,
   setEndTime,
+  setHplSender,
+  setHplReceiver,
+  setHplFt,
 } from "./TransactionReducer";
 
-import { Asset, SubAccount } from "@redux/models/AccountModels";
+import { Asset, HPLAsset, HplTxUser, SubAccount } from "@redux/models/AccountModels";
 import {
   ContactSubAccount,
   NewContact,
@@ -105,4 +108,16 @@ export function setInitTxTime(init: Date) {
 }
 export function setEndTxTime(init: Date) {
   store.dispatch(setEndTime(init));
+}
+
+export function setHplSenderTx(data: HplTxUser) {
+  store.dispatch(setHplSender(data));
+}
+
+export function setHplReceiverTx(data: HplTxUser) {
+  store.dispatch(setHplReceiver(data));
+}
+
+export function setHplFtTx(data: HPLAsset) {
+  store.dispatch(setHplFt(data));
 }

@@ -12,7 +12,7 @@ import {
   ValidationErrorsType,
 } from "@/@types/transactions";
 import { SendingStatusEnum, SendingStatus } from "@/const";
-import { Asset, SubAccount } from "@redux/models/AccountModels";
+import { Asset, HPLAsset, HplTxUser, SubAccount } from "@redux/models/AccountModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface TransactionState {
@@ -26,6 +26,11 @@ interface TransactionState {
   amount?: string;
   initTime: Date;
   endTime: Date;
+
+  // HPL
+  hplSender: HplTxUser;
+  hplReceiver: HplTxUser;
+  hplFtTx: HPLAsset;
 }
 
 export const initialTransactionState = {
@@ -43,6 +48,19 @@ export const initialTransactionState = {
   },
   initTime: new Date(),
   endTime: new Date(),
+
+  // HPL
+  hplSender: {
+    type: "SUBACCOUNT",
+    principal: "",
+    vIdx: "",
+  },
+  hplReceiver: {
+    type: "SUBACCOUNT",
+    principal: "",
+    vIdx: "",
+  },
+  hplFtTx: {},
 } as TransactionState;
 
 const name = "transaction";
@@ -141,6 +159,15 @@ const transactionSlice = createSlice({
     setEndTime(state: TransactionState, action: PayloadAction<Date>) {
       state.endTime = action.payload;
     },
+    setHplSender(state: TransactionState, action: PayloadAction<HplTxUser>) {
+      state.hplSender = action.payload;
+    },
+    setHplReceiver(state: TransactionState, action: PayloadAction<HplTxUser>) {
+      state.hplReceiver = action.payload;
+    },
+    setHplFt(state: TransactionState, action: PayloadAction<HPLAsset>) {
+      state.hplFtTx = action.payload;
+    },
     resetSendState(state: TransactionState) {
       state.amount = initialTransactionState?.amount;
       state.errors = initialTransactionState?.errors;
@@ -149,6 +176,9 @@ const transactionSlice = createSlice({
       state.sendingStatus = initialTransactionState?.sendingStatus;
       state.scannerActiveOption = initialTransactionState?.scannerActiveOption;
       state.isInspectTransference = initialTransactionState?.isInspectTransference;
+      state.hplReceiver = initialTransactionState.hplReceiver;
+      state.hplSender = initialTransactionState.hplSender;
+      state.hplFtTx = initialTransactionState.hplFtTx;
     },
   },
 });
@@ -177,6 +207,9 @@ export const {
   resetSendState,
   setInitTime,
   setEndTime,
+  setHplSender,
+  setHplReceiver,
+  setHplFt,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

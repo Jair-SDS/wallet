@@ -94,6 +94,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           hplClient={hplClient}
           onClose={onClose}
           reloadHPLBallance={reloadHPLBallance}
+          setDrawerOpen={setDrawerOpen}
         />
       );
     }

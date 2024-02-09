@@ -11,6 +11,17 @@ import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-a
 import { catchError, lastValueFrom, map, of } from "rxjs";
 import { getDecimalAmount, getHoleAmount, validateAmount } from "@/utils";
 import { useAppSelector } from "@redux/Store";
+import DialogSendConfirmation from "../ICRC/detail/transaction/DialogSendConfirmation";
+import { ProtocolTypeEnum, SendingStatusEnum } from "@/const";
+import {
+  setAmountAction,
+  setEndTxTime,
+  setHplFtTx,
+  setHplReceiverTx,
+  setHplSenderTx,
+  setInitTxTime,
+  setSendingStatusAction,
+} from "@redux/transaction/TransactionActions";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -33,6 +44,7 @@ interface TxSummaryProps {
   hplClient: HPLClient;
   onClose(): void;
   reloadHPLBallance(): void;
+  setDrawerOpen(val: boolean): void;
 }
 
 const TxSummary = ({
@@ -56,10 +68,12 @@ const TxSummary = ({
   hplClient,
   onClose,
   reloadHPLBallance,
+  setDrawerOpen,
 }: TxSummaryProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [fee, setFee] = useState("0");
+  const [sendDialog, showSendDialog] = useState(false);
   const { feeConstant } = useAppSelector((state) => state.asset);
   return (
     <Fragment>
@@ -113,6 +127,12 @@ const TxSummary = ({
           </CustomButton>
         </div>
       </div>
+      <DialogSendConfirmation
+        modal={sendDialog}
+        setDrawerOpen={setDrawerOpen}
+        showConfirmationModal={onCloseTxDialog}
+        network={ProtocolTypeEnum.Enum.HPL}
+      />
     </Fragment>
   );
   function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {
@@ -166,8 +186,16 @@ const TxSummary = ({
     setSummary(false);
   }
   async function onSend() {
-    setLoading(true);
     const amnt = getHoleAmount(amountReceiver, getFtFromSub(ftId).decimal);
+    const amountToSend = BigInt(amnt);
+    setHplSenderTx(from);
+    setHplReceiverTx(to);
+    setHplFtTx(getFtFromSub(ftId || "0"));
+    setAmountAction(amnt.toString());
+    setLoading(true);
+    showSendDialog(true);
+    setSendingStatusAction(SendingStatusEnum.Enum.sending);
+    setInitTxTime(new Date());
     let txFrom: TransferAccountReference;
     if (from.subaccount)
       txFrom = {
@@ -182,7 +210,6 @@ const TxSummary = ({
 
     try {
       const aggregator = await hplClient.pickAggregator();
-      const amountToSend = BigInt(amnt);
       if (aggregator) {
         const res = await hplClient.simpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
         let validTx = false;
@@ -208,13 +235,16 @@ const TxSummary = ({
           ),
         );
         if (validTx) {
-          await reloadHPLBallance();
-          onClose();
-          onBack();
+          setEndTxTime(new Date());
+          setSendingStatusAction(SendingStatusEnum.Enum.done);
+          reloadHPLBallance();
+          // onClose();
+          // onBack();
         }
       }
     } catch (e) {
       console.log("txErr: ", e);
+      setEndTxTime(new Date());
     }
 
     setLoading(false);
@@ -229,6 +259,14 @@ const TxSummary = ({
     let err = "";
     if (msg.includes("InsufficientFunds")) err = "insufficient.funds";
     return err;
+  }
+
+  function onCloseTxDialog(val: boolean) {
+    if (!val) {
+      showSendDialog(false);
+      onBack();
+      onClose();
+    }
   }
 };
 
