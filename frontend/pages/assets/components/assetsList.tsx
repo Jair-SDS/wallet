@@ -41,32 +41,32 @@ const AssetListTable = ({
       <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
           <tr>
-            <th className="p-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-2 w-[22%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[19%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>{" "}
-            <th className="p-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("ledger.balance")}</p>
             </th>
-            <th className="p-2 w-[6%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[7%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("decimals")}</p>
             </th>
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
+            <th className="p-0.5 w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
               <p>{t("logo")}</p>
             </th>
-            <th className="p-2 text-left w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 text-left w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-2 w-[10%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
-            <th className="p-2 w-[7%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
-            <th className="p-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
+            <th className="p-0.5 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
             </th>
           </tr>
@@ -95,7 +95,7 @@ const AssetListTable = ({
                     </div>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-col justify-start items-start w-full gap-2">
                     {contactName && <p>{contactName}</p>}
                     <div className="flex flex-row justify-start items-center w-full gap-2">
@@ -108,27 +108,27 @@ const AssetListTable = ({
                     </div>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.supply}</p>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.ledgerBalance}</p>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.decimal}</p>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="relative flex flex-row justify-center items-center w-full">
                     {!noLogo && <img src={getAssetLogo(ft.id)} className="w-8 h-8" alt="info-icon" />}
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-start items-center w-full">
                     {ft.description ? (
                       <CustomHoverCard
@@ -158,12 +158,12 @@ const AssetListTable = ({
                     )}
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-start items-center w-full">
-                    <p>{getDisplayNameFromFt(ft, t, true)}</p>
+                    <p className="text-left">{getDisplayNameFromFt(ft, t, true)}</p>
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full gap-2">
                     {verified && <VerifiedIcon className="w-4 h-4 fill-SelectRowColor" />}
                     {inDictEdited && <VerifiedIcon className="w-4 h-4 fill-gray-500 " />}
@@ -175,7 +175,7 @@ const AssetListTable = ({
                     />
                   </div>
                 </td>
-                <td className="p-2">
+                <td className="p-0.5">
                   <div className="flex flex-row justify-center items-center w-full">
                     <div
                       className={"flex flex-row justify-between items-center h-6 rounded bg-black/10 dark:bg-white/10"}

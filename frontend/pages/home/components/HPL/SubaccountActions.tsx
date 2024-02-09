@@ -73,7 +73,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
           >
             <img src={QRIcon} className="w-full h-full px-1" alt="receive-icon" />
           </div>
-          <p className="text-md">{t("receive")}</p>
+          <p className="text-md">{t("exchange")}</p>
         </div>
       </div>
     </Fragment>

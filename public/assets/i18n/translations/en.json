@@ -25,6 +25,7 @@
   "light": "Light",
   "send": "Send",
   "receive": "Receive",
+  "exchange": "Exchange",
   "confirm": "Confirm",
   "name": "Name",
   "action": "Action",

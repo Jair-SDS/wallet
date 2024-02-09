@@ -101,7 +101,7 @@ const HplSubaccountElem = ({
                   </div>
                 )}
                 {editNameId != sub.sub_account_id && (
-                  <p className="font-semibold whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
+                  <p className=" whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
                 )}
               </div>
 
@@ -120,9 +120,11 @@ const HplSubaccountElem = ({
                 </div>
                 <AssetSymbol
                   ft={getFtFromSub(sub.ft)}
-                  textClass={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}
+                  textClass={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : "font-semibold"}`}
                   sufix={
-                    <p className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""}`}>
+                    <p
+                      className={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : "font-semibold"}`}
+                    >
                       {`${getDecimalAmount(sub.amount, getFtFromSub(sub.ft).decimal)}`}{" "}
                     </p>
                   }
