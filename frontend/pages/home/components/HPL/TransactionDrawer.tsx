@@ -172,11 +172,14 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setLoadingNext(false);
     setSummary(false);
     setDrawerOpen(false);
+    setManualToFt(undefined);
+    setManualFromFt(undefined);
   }
 
   async function validateData(selection: string) {
     let valid = true;
     const ftId = await getAssetId(selection === "from" ? from : to);
+
     const manual = selection === "from" ? !(from.subaccount || from.remote) : !(to.subaccount || to.remote);
     if (!validation(selection === "from" ? from : to)) {
       valid = false;
@@ -192,11 +195,10 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
 
   async function validateAssetMatch() {
     let valid = false;
-
     const { ftId: fromFtId, valid: validFrom, manual: manualFrom } = await validateData("from");
     const { ftId: toFtId, valid: validTo, manual: manualTo } = await validateData("to");
     if (validFrom && validTo)
-      if (fromFtId !== toFtId)
+      if (fromFtId.ft !== toFtId.ft)
         manualTo || !manualFrom ? setErrMsgTo("not.match.asset.id") : setErrMsgFrom("not.match.asset.id");
       else if (!errMsgFrom && !errMsgTo) valid = true;
 
@@ -248,6 +250,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
         vIdx: data.id,
         subaccount: undefined,
         remote: undefined,
+        principalName: undefined,
         code: data.code,
       };
       if (qrView === HplTransactionsTypeEnum.Enum.from) {

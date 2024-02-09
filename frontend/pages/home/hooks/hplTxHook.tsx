@@ -63,11 +63,11 @@ export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: st
     }
   };
 
-  const checkIfIsContact = (code: string): { rmt: HplRemote; prin: string } | undefined => {
+  const checkIfIsContact = (code: string): { rmt: HplRemote; prin: string; contactName: string } | undefined => {
     for (let i = 0; i < hplContacts.length; i++) {
       for (let j = 0; j < hplContacts[i].remotes.length; j++) {
         if (hplContacts[i].remotes[j].code === code)
-          return { rmt: hplContacts[i].remotes[j], prin: hplContacts[i].principal };
+          return { rmt: hplContacts[i].remotes[j], prin: hplContacts[i].principal, contactName: hplContacts[i].name };
       }
     }
     return undefined;

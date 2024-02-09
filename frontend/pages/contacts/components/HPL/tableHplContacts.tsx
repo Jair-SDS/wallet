@@ -54,7 +54,7 @@ const TableHplContacts = ({
             <p>{"Principal"}</p>
           </th>
           <th className="p-2 w-[15%] bg-PrimaryColorLight dark:bg-PrimaryColor">
-            <p>{t("remote.accounts")}</p>
+            <p>{t("remotes")}</p>
           </th>
           <th className="p-2 w-[12%] bg-PrimaryColorLight dark:bg-PrimaryColor">
             <p>{t("action")}</p>
@@ -109,10 +109,10 @@ const TableHplContacts = ({
                   <div className="flex flex-row justify-center items-center w-full">
                     <div
                       className={
-                        "flex flex-row justify-between items-center w-28 h-8 rounded bg-black/10 dark:bg-white/10"
+                        "flex flex-row justify-between items-center w-20 h-8 rounded bg-black/10 dark:bg-white/10"
                       }
                     >
-                      <p className="ml-2">{`${cntc.remotes.length} R.A.`}</p>
+                      <p className="ml-2">{`${cntc.remotes.length}`}</p>
                       <button
                         className="flex justify-center items-center p-0 h-full bg-AccpetButtonColor rounded-md w-8"
                         onClick={() => {

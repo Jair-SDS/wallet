@@ -85,7 +85,7 @@ const TxSummary = ({
           <p>{t("fee")}:</p>
           <p className="flex flex-row gap-2">
             {`${fee} `}
-            <p className="opacity-60">{getFtFromSub(ftId || "0").symbol}</p>
+            <span className="opacity-60">{getFtFromSub(ftId || "0").symbol}</span>
           </p>
         </div>
       </div>

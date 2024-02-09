@@ -232,6 +232,7 @@ const HplTxUser = z.object({
   code: z.string().optional(),
   subaccount: HPLSubAccount.optional(),
   remote: HplRemote.optional(),
+  principalName: z.string().optional(),
 });
 export type HplTxUser = z.infer<typeof HplTxUser>;
 

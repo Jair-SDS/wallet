@@ -36,7 +36,7 @@ interface SelectTransferProps {
   getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
   setClearCam(value: boolean): void;
-  checkIfIsContact(code: string): { rmt: HplRemote; prin: string } | undefined;
+  checkIfIsContact(code: string): { rmt: HplRemote; prin: string; contactName: string } | undefined;
   errMsg: string;
 }
 
@@ -252,18 +252,21 @@ const SelectTransfer: FC<SelectTransferProps> = ({
           {errMsg !== "" ? (
             <p className="text-sm text-TextErrorColor text-left ">{t(errMsg)}</p>
           ) : select.remote ? (
-            <div className=" flex flex-row justify-start items-center gap-1 pl-3">
-              <p className="opacity-60">{select.remote.name}</p>
-              <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
-              <AssetSymbol
-                ft={getFtFromSub(select.remote.ftIndex)}
-                textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
-                sufix={
-                  <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
-                    {`${getDecimalAmount(select.remote.amount, getFtFromSub(select.remote.ftIndex).decimal)}`}{" "}
-                  </p>
-                }
-              />
+            <div className=" flex flex-col justify-start items-start gap-1 pl-2">
+              <div className=" flex flex-row justify-start items-center gap-1 ">
+                <p className="opacity-60">{select.remote.name}</p>
+                <img src={getAssetLogo(select.remote.ftIndex)} className="w-4 h-4" alt="info-icon" />
+                <AssetSymbol
+                  ft={getFtFromSub(select.remote.ftIndex)}
+                  textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
+                  sufix={
+                    <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
+                      {`${getDecimalAmount(select.remote.amount, getFtFromSub(select.remote.ftIndex).decimal)}`}{" "}
+                    </p>
+                  }
+                />
+              </div>
+              {select.principalName && <p className="opacity-60">{`Principal: ${select.principalName}`}</p>}
             </div>
           ) : (
             <p></p>
@@ -288,6 +291,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
       principal: "",
       vIdx: "",
       remote: undefined,
+      principalName: undefined,
       code: "",
     });
     setManualFt(undefined);
@@ -298,11 +302,27 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   }
 
   function onClear() {
-    setSelect({ ...select, subaccount: undefined, principal: "", vIdx: "", remote: undefined, code: "" });
+    setSelect({
+      ...select,
+      subaccount: undefined,
+      principal: "",
+      vIdx: "",
+      remote: undefined,
+      code: "",
+      principalName: undefined,
+    });
   }
 
   function onSelectSub(sub: HPLSubAccount) {
-    setSelect({ ...select, subaccount: sub, principal: "", vIdx: "", remote: undefined, code: "" });
+    setSelect({
+      ...select,
+      subaccount: sub,
+      principal: "",
+      vIdx: "",
+      remote: undefined,
+      principalName: undefined,
+      code: "",
+    });
     setSubsOpen(false);
   }
 };

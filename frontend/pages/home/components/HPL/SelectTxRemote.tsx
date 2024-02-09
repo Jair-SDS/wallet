@@ -10,7 +10,14 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/Input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { checkPxlCode, getContactColor, getDecimalAmount, getInitialFromName, getOwnerInfoFromPxl } from "@/utils";
+import {
+  checkPxlCode,
+  getContactColor,
+  getDecimalAmount,
+  getInitialFromName,
+  getOwnerInfoFromPxl,
+  shortPrincipals,
+} from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
@@ -35,7 +42,7 @@ interface SelectTxRemoteProps {
   getAssetId(data: HplTxUser): Promise<{ ft: string; balance: string }>;
   setErrMsg(msg: string): void;
   setClearCam(value: boolean): void;
-  checkIfIsContact(code: string): { rmt: HplRemote; prin: string } | undefined;
+  checkIfIsContact(code: string): { rmt: HplRemote; prin: string; contactName: string } | undefined;
   errMsg: string;
 }
 
@@ -88,7 +95,7 @@ const SelectTxRemote = ({
           }}
           sufix={
             <div className="flex flex-row justify-end items-center w-15">
-              {manualFt ? (
+              {manualFt || select.remote ? (
                 <div className="flex flex-row justify-end items-center gap-1">
                   <GreenCheck className="w-5 h-5" />
                 </div>
@@ -141,19 +148,22 @@ const SelectTxRemote = ({
                           .filter((rmt) => {
                             const key = searchKey.toLowerCase();
                             return (
-                              (rmt.remote.name.toLowerCase().includes(key) || rmt.remote.ftIndex.includes(key)) &&
+                              (rmt.remote.name.toLowerCase().includes(key) ||
+                                rmt.contactName.includes(key) ||
+                                rmt.remote.ftIndex.includes(key) ||
+                                rmt.remote.code.includes(key)) &&
                               (!otherAsset || otherAsset === rmt.remote.ftIndex) &&
                               (!otherId || !(otherId === rmt.remote.index && otherPrincipal === rmt.principal))
                             );
                           })
-                          .map(({ remote: rmt, principal: prin }, k) => {
+                          .map(({ remote: rmt, principal: prin, contactName: cntcName }, k) => {
                             const ft = getFtFromSub(rmt.ftIndex);
                             return (
                               <button
                                 key={k}
                                 className="p-1 flex flex-row justify-start items-center w-full gap-4 text-md hover:bg-SelectRowColor/10 border-b border-b-BorderColor/10"
                                 onClick={() => {
-                                  onSelectRemote(rmt, prin);
+                                  onSelectRemote(rmt, prin, cntcName);
                                 }}
                               >
                                 <div className="p-1 flex flex-row justify-start items-center w-full gap-4">
@@ -199,17 +209,20 @@ const SelectTxRemote = ({
           }
         />
         {manualFt && rmtAmount !== "" && (
-          <div className="flex flex-row justify-start items-center gap-1 pl-2">
-            <img src={getAssetLogo(manualFt)} className="w-5 h-5" alt="info-icon" />
-            <AssetSymbol
-              ft={getFtFromSub(manualFt)}
-              textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
-              sufix={
-                <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
-                  {`${getDecimalAmount(rmtAmount, getFtFromSub(manualFt).decimal)}`}{" "}
-                </p>
-              }
-            />
+          <div className=" flex flex-col justify-start items-start gap-1 pl-2">
+            <div className="flex flex-row justify-start items-center gap-1 ">
+              <img src={getAssetLogo(manualFt)} className="w-5 h-5" alt="info-icon" />
+              <AssetSymbol
+                ft={getFtFromSub(manualFt)}
+                textClass="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote"
+                sufix={
+                  <p className="dark:text-RemoteAmount dark:opacity-60 text-AmountRemote">
+                    {`${getDecimalAmount(rmtAmount, getFtFromSub(manualFt).decimal)}`}{" "}
+                  </p>
+                }
+              />
+            </div>
+            <p className="opacity-60">{`Principal: ${shortPrincipals(select.principal, 2, 2, "", "", 6)}`}</p>
           </div>
         )}
       </div>
@@ -224,6 +237,7 @@ const SelectTxRemote = ({
       vIdx: "",
       subaccount: undefined,
       remote: undefined,
+      principalName: undefined,
     });
     setManualFt(undefined);
     setRmtAmount("");
@@ -239,16 +253,24 @@ const SelectTxRemote = ({
     setSearchKey(e.target.value);
   }
   function getRemotesToSelect() {
-    const auxRemotes: { remote: HplRemote; principal: string }[] = [];
+    const auxRemotes: { remote: HplRemote; principal: string; contactName: string }[] = [];
     hplContacts.map((cntc) => {
       cntc.remotes.map((rmt) => {
-        auxRemotes.push({ principal: cntc.principal, remote: { ...rmt, name: `${cntc.name} [${rmt.name}]` } });
+        auxRemotes.push({ principal: cntc.principal, remote: rmt, contactName: cntc.name });
       });
     });
     return auxRemotes;
   }
-  function onSelectRemote(rmt: HplRemote, prin: string) {
-    setSelect({ ...select, subaccount: undefined, principal: prin, vIdx: rmt.index, remote: rmt, code: rmt.code });
+  function onSelectRemote(rmt: HplRemote, prin: string, name: string) {
+    setSelect({
+      ...select,
+      subaccount: undefined,
+      principal: prin,
+      vIdx: rmt.index,
+      remote: rmt,
+      code: rmt.code,
+      principalName: name,
+    });
     setManualFt(undefined);
     setSubsOpen(false);
     setPrincipalErr(false);
@@ -258,7 +280,7 @@ const SelectTxRemote = ({
     if (code.length > 2) {
       const contactFounded = checkIfIsContact(code);
       if (contactFounded) {
-        onSelectRemote(contactFounded.rmt, contactFounded.prin);
+        onSelectRemote(contactFounded.rmt, contactFounded.prin, contactFounded.contactName);
       } else {
         const ownerInfo = getOwnerInfoFromPxl(code);
         if (otherCode === code) {
@@ -274,6 +296,7 @@ const SelectTxRemote = ({
               vIdx: ownerInfo.linkId,
               subaccount: undefined,
               remote: undefined,
+              principalName: undefined,
             };
             setSelect(linkAcc);
             const valid = await checkValidOnLeave(linkAcc);
