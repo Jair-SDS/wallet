@@ -15,12 +15,14 @@ const Assets = () => {
     setAllAssets,
     assetList,
     subsInAsset,
+    vtsInAsset,
     selAsset,
     setSelAsset,
     editView,
     setEditView,
     getContactName,
     dictionaryHplFTs,
+    hplVTsData,
   } = useAssetList();
   const { assetOpen, setAssetOpen } = DrawerHook();
 
@@ -44,6 +46,7 @@ const Assets = () => {
           <AssetListTable
             assets={assetList}
             subsInAsset={subsInAsset}
+            vtsInAsset={vtsInAsset}
             setAssetOpen={setAssetOpen}
             selAsset={selAsset}
             setSelAsset={setSelAsset}

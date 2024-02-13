@@ -15,6 +15,7 @@ import { FungibleTokenLocal } from "@redux/models/TokenModels";
 interface AssetListTableProps {
   assets: HPLAsset[];
   subsInAsset: { id: string; accounts: number }[];
+  vtsInAsset: { id: string; vts: number }[];
   setAssetOpen(value: boolean): void;
   selAsset?: HPLAsset;
   setSelAsset(value: HPLAsset | undefined): void;
@@ -26,6 +27,7 @@ interface AssetListTableProps {
 const AssetListTable = ({
   assets,
   subsInAsset,
+  vtsInAsset,
   setAssetOpen,
   selAsset,
   setSelAsset,
@@ -36,44 +38,59 @@ const AssetListTable = ({
   const { t } = useTranslation();
   const { getAssetLogo } = useHPL(false);
 
+  const rightBorderStyle = "border-r-[2px] border-BorderColorTwoLight dark:border-BorderColorTwo";
+
   return (
     <div className="flex flex-col w-full h-full mt-3 scroll-y-light max-h-[calc(100vh-15rem)]">
       <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
+          <tr className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
+            <th colSpan={5}>Ledger</th>
+            <th colSpan={4}>{t("directory")}</th>
+            <th colSpan={2}>{t("wallet")}</th>
+          </tr>
           <tr>
-            <th className="p-0.5 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 w-[4%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{"ID"}</p>
             </th>
-            <th className="p-0.5 w-[19%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 w-[19%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("controller")}</p>
             </th>
-            <th className="p-0.5 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 w-[13%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
             </th>{" "}
-            <th className="p-0.5 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("ledger.balance")}</p>
             </th>
-            <th className="p-0.5 w-[7%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th
+              className={`pl-0.5 pr-2 py-2 w-[8%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal ${rightBorderStyle}`}
+            >
               <p>{t("decimals")}</p>
             </th>
-            <th className="p-0.5 w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
+            <th className="p-0.5 py-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor  font-normal">
               <p>{t("logo")}</p>
             </th>
-            <th className="p-0.5 text-left w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 text-left w-[6%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("symbol")}</p>
             </th>
-            <th className="p-0.5 w-[18%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th className="p-0.5 py-2 w-[14%] text-left bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("name")}</p>
             </th>
-            <th className="p-0.5 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal"></th>
-            <th className="p-0.5 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+            <th
+              className={`p-0.5 py-2 w-[5%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal ${rightBorderStyle}`}
+            ></th>
+            <th className="p-0.5 py-2 w-[8%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("accounts")}</p>
+            </th>
+            <th className="p-0.5 py-2 w-[4%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
+              <p>{t("remotes")}</p>
             </th>
           </tr>
         </thead>
         <tbody>
           {assets.map((ft, k) => {
             const find = subsInAsset.find((sub) => sub.id === ft.id);
+            const findVts = vtsInAsset.find((vt) => vt.id === ft.id);
             const contactName = getContactName(ft.controller);
             const noLogo = ft.name !== "" || ft.symbol !== "" || ft.logo === "";
             const inDict = dictionaryHplFTs.find((dict) => dict.assetId === ft.id);
@@ -118,7 +135,7 @@ const AssetListTable = ({
                     <p>{ft.ledgerBalance}</p>
                   </div>
                 </td>
-                <td className="p-0.5">
+                <td className={`pl-0.5 pr-2 ${rightBorderStyle}`}>
                   <div className="flex flex-row justify-end items-center w-full">
                     <p>{ft.decimal}</p>
                   </div>
@@ -163,7 +180,7 @@ const AssetListTable = ({
                     <p className="text-left">{getDisplayNameFromFt(ft, t, true)}</p>
                   </div>
                 </td>
-                <td className="p-0.5">
+                <td className={`p-0.5 ${rightBorderStyle}`}>
                   <div className="flex flex-row justify-end items-center w-full gap-2">
                     {verified && <VerifiedIcon className="w-4 h-4 fill-SelectRowColor" />}
                     {inDictEdited && <VerifiedIcon className="w-4 h-4 fill-gray-500 " />}
@@ -192,6 +209,11 @@ const AssetListTable = ({
                         <img src={PlusIcon} alt="plus-icon" className="w-4" />
                       </button>
                     </div>
+                  </div>
+                </td>
+                <td className="p-0.5">
+                  <div className="flex flex-row justify-center items-center w-full">
+                    <p className="text-left">{findVts ? findVts.vts : 0}</p>
                   </div>
                 </td>
               </tr>

@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 export const useAssetList = () => {
   const dispatch = useAppDispatch();
 
-  const { dictionaryHplFTs, hplFTs, subaccounts, allAssetsView } = useAppSelector((state) => state.asset);
+  const { dictionaryHplFTs, hplFTs, subaccounts, allAssetsView, hplVTsData } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
 
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();
   const [searchKey, setSearchKey] = useState("");
   const [assetList, setAssetList] = useState<HPLAsset[]>([]);
   const [subsInAsset, setSubsInAsset] = useState<{ id: string; accounts: number }[]>([]);
+  const [vtsInAsset, setVtsInAsset] = useState<{ id: string; vts: number }[]>([]);
   const [editView, setEditView] = useState(false);
 
   const setAllAssets = (value: boolean) => dispatch(setAllAssetsView(value));
@@ -20,6 +21,7 @@ export const useAssetList = () => {
   useEffect(() => {
     let auxAssetList: HPLAsset[] = [];
     const auxSubsInAsset: { id: string; accounts: number }[] = [];
+    const auxVtsInAsset: { id: string; vts: number }[] = [];
     const auxSearchKey = searchKey.trim().toLowerCase();
 
     if (allAssetsView) auxAssetList = hplFTs;
@@ -43,6 +45,7 @@ export const useAssetList = () => {
           );
         })
       : auxAssetList;
+    setAssetList(auxhplFTs);
 
     const auxGroup = subaccounts.reduce((group, sub) => {
       group[sub.ft] = group[sub.ft] ?? [];
@@ -52,10 +55,18 @@ export const useAssetList = () => {
     Object.keys(auxGroup).forEach((key) => {
       auxSubsInAsset.push({ id: key, accounts: auxGroup[key].length || 0 });
     });
-
     setSubsInAsset(auxSubsInAsset);
-    setAssetList(auxhplFTs);
-  }, [searchKey, allAssetsView, subaccounts, hplFTs]);
+
+    const auxGroupVts = hplVTsData.reduce((group, vt) => {
+      group[vt.ftId] = group[vt.ftId] ?? [];
+      group[vt.ftId].push(vt);
+      return group;
+    }, Object.create(null));
+    Object.keys(auxGroupVts).forEach((key) => {
+      auxVtsInAsset.push({ id: key, vts: auxGroupVts[key].length || 0 });
+    });
+    setVtsInAsset(auxVtsInAsset);
+  }, [searchKey, allAssetsView, subaccounts, hplFTs, hplVTsData]);
 
   const getContactName = (principal: string) => {
     const found = hplContacts.find((cntc) => cntc.principal === principal);
@@ -75,5 +86,7 @@ export const useAssetList = () => {
     editView,
     setEditView,
     getContactName,
+    hplVTsData,
+    vtsInAsset,
   };
 };

@@ -129,11 +129,25 @@ const AddRemoteList = ({
     }
   }
   function onChangeRmtName(name: string, k: number) {
+    let checked = false;
+    let checkedID = "";
     const auxRmts = chainRemotes.map((rmt, j) => {
-      if (k === j) return { ...rmt, name: name };
-      else return rmt;
+      if (k === j) {
+        checked = checkIds.includes(rmt.index);
+        checkedID = rmt.index;
+        return { ...rmt, name: name };
+      } else return rmt;
     });
     setChainremotes(auxRmts);
+    if (name.length > 0 && !checked) {
+      setCheckIds([...checkIds, checkedID]);
+    } else if (name.length === 0 && checked) {
+      setCheckIds(
+        checkIds.filter((id) => {
+          return checkedID !== id;
+        }),
+      );
+    }
   }
   function checkRemoteIds(index: string) {
     if (checkIds.includes(index)) {

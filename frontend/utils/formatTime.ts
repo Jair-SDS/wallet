@@ -6,5 +6,5 @@ export function formatDateTime(date: string, format = "DD/MM/YYYY HH:mm") {
 
 export function getElapsedSecond(init: Date, end: Date) {
   const elapsed = end.valueOf() - init.valueOf();
-  return (elapsed / 1000).toString();
+  return (elapsed / 1000).toFixed(1);
 }

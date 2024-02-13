@@ -41,6 +41,8 @@
   "submit": "Submit",
   "remote": "Link",
   "remotes": "Links",
+  "directory": "Directory",
+  "wallet": "Wallet",
   "pull": "Pull",
   "amount": "Amount",
   "asset": "Asset",

@@ -85,7 +85,8 @@ export const WorkerHook = () => {
       nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
     // HPL
-    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
+    await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
+    dispatch(setLoading(false));
   };
 
   // TRANSACTION WEB WORKER

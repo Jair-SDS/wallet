@@ -32,7 +32,7 @@ const icrc1DrawerOptions = [
   { name: "receive", type: DrawerOptionEnum.Enum.RECEIVE },
 ];
 
-const hplDrawerOptions = [{ name: "receive", type: DrawerOptionEnum.Enum.HPL_QR, disabled: true }];
+const hplDrawerOptions = [{ name: "exchange", type: DrawerOptionEnum.Enum.HPL_QR, disabled: true }];
 
 const DetailList = () => {
   const { protocol } = AssetHook();
