@@ -143,9 +143,10 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
     updateAllBalances(myAgent, userDataJson.tokens, false, true);
   } else {
+    store.dispatch(setUserPrincipal(myPrincipal));
     const { tokens } = await updateAllBalances(myAgent, defaultTokens, true, true);
-    store.dispatch(setTokens(tokens));
     // AUTH
+    dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
     store.dispatch(setTokens(tokens));
   }
   // ICRC-1 CONTACTS
@@ -247,11 +248,6 @@ export const dispatchAuths = (
 };
 
 export const logout = async () => {
-  const authClient = await AuthClient.create();
-  await authClient.logout();
-  store.dispatch({
-    type: "USER_LOGGED_OUT",
-  });
   store.dispatch(clearDataContacts());
   store.dispatch(clearDataAsset());
   store.dispatch(clearDataAuth());
@@ -259,4 +255,9 @@ export const logout = async () => {
   store.dispatch(setUnauthenticated());
   store.dispatch(setUserAgent(undefined));
   store.dispatch(setUserPrincipal(undefined));
+  const authClient = await AuthClient.create();
+  await authClient.logout();
+  store.dispatch({
+    type: "USER_LOGGED_OUT",
+  });
 };

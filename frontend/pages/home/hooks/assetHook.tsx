@@ -32,6 +32,7 @@ export const AssetHook = () => {
     dictionaryHplFTs,
     ingressActor,
     ownersActor,
+    hplFTsData,
   } = useAppSelector((state) => state.asset);
   const { userAgent, authClient } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
@@ -51,6 +52,7 @@ export const AssetHook = () => {
   const [name, setName] = useState("");
   const [newSub, setNewSub] = useState<SubAccount | undefined>();
   const [hexChecked, setHexChecked] = useState<boolean>(false);
+  const [ftsUsed, setFtsUsed] = useState<number>(0);
 
   const reloadBallance = async (tkns?: Token[]) => {
     dispatch(setLoading(true));
@@ -117,6 +119,19 @@ export const AssetHook = () => {
     }
   }, [searchKey]);
 
+  useEffect(() => {
+    let count = 0;
+    const auxGroup = subaccounts.reduce((group, sub) => {
+      group[sub.ft] = group[sub.ft] ?? [];
+      group[sub.ft].push(sub);
+      return group;
+    }, Object.create(null));
+    Object.keys(auxGroup).forEach((key) => {
+      count++;
+    });
+    setFtsUsed(count);
+  }, [subaccounts]);
+
   return {
     protocol,
     setProtocolType,
@@ -149,5 +164,7 @@ export const AssetHook = () => {
     // HPL
     subaccounts,
     dictionaryHplFTs,
+    hplFTsData,
+    ftsUsed,
   };
 };

@@ -11,14 +11,14 @@ const Menu = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
-  const { assets, subaccounts, protocol, dictionaryHplFTs } = AssetHook();
+  const { assets, subaccounts, protocol, hplFTsData, ftsUsed } = AssetHook();
   const { hplContacts, contacts } = useHplContacts();
 
   const menuList = [
     {
       name: "HPLAssets",
       path: RoutingPathEnum.Enum.ASSETS,
-      label: `${dictionaryHplFTs?.length !== 1 ? t("assets") : t("asset")} (${dictionaryHplFTs?.length})`,
+      label: `${hplFTsData?.length !== 1 ? t("assets") : t("asset")} (${ftsUsed}/${hplFTsData?.length})`,
       show: protocol === ProtocolTypeEnum.Enum.HPL,
     },
     {
