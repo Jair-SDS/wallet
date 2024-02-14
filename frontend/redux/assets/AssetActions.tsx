@@ -3,8 +3,6 @@ import { ActorSubclass, HttpAgent, Actor } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
-import { _SERVICE as LedgerActor } from "@candid/icrcLedger/icrcLedgerService";
-import { idlFactory as LedgerFactory } from "@candid/icrcLedger/icrcLedgerCandid.did";
 import {
   formatIcpTransaccion,
   getSubAccountArray,
@@ -26,7 +24,6 @@ import {
   setHPLSubAccounts,
   setHPLAssets,
   setHPLSelectedSub,
-  setLoading,
   setAcordeonAssetIdx,
   setnHpl,
   setHPLVTsData,
@@ -43,7 +40,7 @@ import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
-import { SupportedStandard } from "@/@types/icrc";
+import { getICRCSupportedStandards } from "@pages/home/helpers/icrc";
 
 export const updateAllBalances = async (
   myAgent: HttpAgent,
@@ -52,6 +49,7 @@ export const updateAllBalances = async (
   fromLogin?: boolean,
 ) => {
   let tokenMarkets: TokenMarketInfo[] = [];
+
   try {
     const auxTokenMarkets: TokenMarketInfo[] = await fetch(import.meta.env.VITE_APP_TOKEN_MARKET).then((x) => x.json());
     tokenMarkets = auxTokenMarkets.filter((x) => !x.unreleased);
@@ -84,11 +82,12 @@ export const updateAllBalances = async (
   const myPrincipal = store.getState().auth.userPrincipal;
   const tokensAseets = await Promise.all(
     tokens.map(async (tkn, idNum) => {
-      const ledgerActor = Actor.createActor<LedgerActor>(LedgerFactory, {
-        agent: myAgent,
-        canisterId: tkn.address as any,
-      });
-      const standards = await ledgerActor.icrc1_supported_standards();
+      let standards = tkn.supportedStandards;
+
+      if (fromLogin) {
+        standards = await getICRCSupportedStandards({ assetAddress: tkn.address, agent: myAgent });
+      }
+
       try {
         const { balance, metadata, transactionFee } = IcrcLedgerCanister.create({
           agent: myAgent,
@@ -233,7 +232,7 @@ export const updateAllBalances = async (
           subAccounts: (basicSearch ? userSubAcc : saTokens).sort((a, b) => {
             return hexToNumber(a.numb)?.compare(hexToNumber(b.numb) || bigInt()) || 0;
           }),
-          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
+          supportedStandards: standards,
         };
 
         const newAsset: Asset = {
@@ -250,7 +249,7 @@ export const updateAllBalances = async (
           tokenName: name,
           tokenSymbol: symbol,
           logo: logo,
-          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
+          supportedStandards: standards,
         };
         return { newToken, newAsset };
       } catch (e) {
@@ -276,7 +275,7 @@ export const updateAllBalances = async (
           sort_index: 99999 + idNum,
           tokenName: tkn.name,
           tokenSymbol: tkn.symbol,
-          supportedStandards: standards.map((standard) => standard.name as SupportedStandard),
+          supportedStandards: standards,
         };
         return { newToken: tkn, newAsset };
       }
@@ -327,7 +326,6 @@ export const updateAllBalances = async (
     store.dispatch(setICPSubaccounts(sub));
   }
 
-  store.dispatch(setLoading(false));
   return {
     newAssetsUpload,
     tokens: newTokensUpload.sort((a, b) => {

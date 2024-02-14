@@ -1,6 +1,8 @@
 import { AssetSymbolEnum, WorkerTaskEnum } from "@/const";
 import { defaultTokens } from "@/defaultTokens";
 import { hexToUint8Array } from "@/utils";
+import contactCacheRefresh from "@pages/contacts/helpers/contacts";
+import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
 // import { AssetList, Metadata } from "@candid/metadata/service.did";
 import store, { useAppDispatch, useAppSelector } from "@redux/Store";
 import {
@@ -79,13 +81,18 @@ export const WorkerHook = () => {
       const { tokens } = await updateAllBalances(userAgent, defaultTokens, true, false);
       store.dispatch(setTokens(tokens));
     }
+    const myPrincipal = await userAgent.getPrincipal();
+    await contactCacheRefresh(myPrincipal.toText());
+    await allowanceCacheRefresh(myPrincipal.toText());
+
+    // HPL
     const nLocalHpl = {
       nAccounts: store.getState().asset.nHpl.nAccounts || "0",
       nVirtualAccounts: store.getState().asset.nHpl.nVirtualAccounts || "0",
       nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
-    // HPL
     await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
+
     dispatch(setLoading(false));
   };
 

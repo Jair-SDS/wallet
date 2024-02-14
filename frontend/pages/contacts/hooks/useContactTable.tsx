@@ -28,7 +28,6 @@ export default function useContactTable() {
   const { protocol } = useAppSelector((state) => state.asset);
   const [isPending, setIsPending] = useState(false);
 
-  // reducer
   const updateContact = (editedContact: Contact, pastPrincipal: string) =>
     dispatch(editContact(editedContact, pastPrincipal));
 
@@ -56,7 +55,6 @@ export default function useContactTable() {
     allowance?: { allowance: string; expires_at: string },
   ) => dispatch(addContactSubacc(principal, tokenSymbol, newName, newIndex, subAccountId, allowance));
 
-  // contact list
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteHpl, setDeleteHpl] = useState(false);
   const [deleteType, setDeleteType] = useState<DeleteContactTypeEnum>(DeleteContactTypeEnum.Enum.ASSET);
@@ -64,7 +62,6 @@ export default function useContactTable() {
   const [selContactPrin, setSelContactPrin] = useState("");
   const [openAssetsPrin, setOpenAssetsPrin] = useState("");
   const [openSubaccToken, setOpenSubaccToken] = useState("");
-  const [selSubaccIdx, setSelSubaccIdx] = useState("");
 
   const [contactEdited, setContactEdited] = useState<Contact>({
     name: "",
@@ -77,6 +74,8 @@ export default function useContactTable() {
     name: false,
     principal: false,
   });
+
+  const [selSubaccIdx, setSelSubaccIdx] = useState("");
   const [subaccEdited, setSubaccEdited] = useState<SubAccountContact>({
     name: "",
     subaccount_index: "",

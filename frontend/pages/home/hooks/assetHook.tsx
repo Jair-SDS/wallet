@@ -59,6 +59,7 @@ export const AssetHook = () => {
     const principal = store.getState().auth.userPrincipal.toText();
     allowanceCacheRefresh(principal);
     await contactCacheRefresh(principal);
+    dispatch(setLoading(false));
   };
 
   const reloadOnlyICRCBallance = async (tkns?: Token[]) => {

@@ -9,6 +9,7 @@ interface ContactsState {
   contacts: Contact[];
   hplContacts: HplContact[];
 }
+
 const initialState: ContactsState = {
   storageCode: "",
   contacts: [],

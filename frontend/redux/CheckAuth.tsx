@@ -27,6 +27,7 @@ import {
   setOwnersActor,
   setStorageCodeA,
   setTokens,
+  setLoading,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum } from "@/const";
@@ -102,6 +103,7 @@ export const handlePrincipalAuthenticated = async (principalAddress: string) => 
 };
 
 export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean, fixedPrincipal?: Principal) => {
+  store.dispatch(setLoading(true));
   if (localStorage.getItem("network_type") === null && !fromSeed && !fixedPrincipal) {
     logout();
     return;
@@ -225,8 +227,9 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   }
 
   // ALLOWANCES
-  allowanceCacheRefresh(myPrincipal.toText());
   await contactCacheRefresh(myPrincipal.toText());
+  await allowanceCacheRefresh(myPrincipal.toText());
+  store.dispatch(setLoading(false));
 };
 
 export const dispatchAuths = (
