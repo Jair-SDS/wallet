@@ -4,8 +4,12 @@ import ContactFilters from "./components/contactFilters";
 import Modal from "@components/Modal";
 import AddContact from "./components/ICRC/AddContact";
 import ContactList from "./components/contactList";
+import { GeneralHook } from "@pages/home/hooks/generalHook";
+import { ProtocolTypeEnum } from "@/const";
+import AddEditHplContact from "./components/HPL/addHplContact";
 
 const Contacts = () => {
+  const { protocol } = GeneralHook();
   const {
     assetOpen,
     addOpen,
@@ -43,7 +47,11 @@ const Contacts = () => {
         padding="py-5 px-8"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
       >
-        <AddContact setAddOpen={setAddOpen} />
+        {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
+          <AddContact setAddOpen={setAddOpen} />
+        ) : (
+          <AddEditHplContact edit={edit} setAddOpen={setAddOpen} />
+        )}
       </Modal>
     </div>
   );

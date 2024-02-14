@@ -540,32 +540,30 @@ export const updateHPLBalances = async (
   return { subs: [], fts: [] };
 };
 
-export const updateHplRemotes = async (auxState: ResQueryState, contacts?: HplContact[]) => {
-  if (contacts) {
-    try {
-      const updatedContacts: HplContact[] = [];
-      contacts.map((hplCntc) => {
-        const updatedRemotes: HplRemote[] = [];
-        hplCntc.remotes.map((rmt) => {
-          const rmtFounded = auxState.remoteAccounts.find((auxRmt) => {
-            return hplCntc.principal === auxRmt[0][0].toText() && auxRmt[0][1] === BigInt(rmt.index);
-          });
-          if (rmtFounded) {
-            updatedRemotes.push({
-              ...rmt,
-              amount: rmtFounded[1][0].ft.toString(),
-              expired: Math.trunc(Number(rmtFounded[1][1].toString()) / 1000000),
-            });
-          } else updatedRemotes.push(rmt);
+export const updateHplRemotes = async (auxState: ResQueryState, contacts: HplContact[]) => {
+  try {
+    const updatedContacts: HplContact[] = [];
+    contacts.map((hplCntc) => {
+      const updatedRemotes: HplRemote[] = [];
+      hplCntc.remotes.map((rmt) => {
+        const rmtFounded = auxState.remoteAccounts.find((auxRmt) => {
+          return hplCntc.principal === auxRmt[0][0].toText() && auxRmt[0][1] === BigInt(rmt.index);
         });
-        updatedContacts.push({ ...hplCntc, remotes: updatedRemotes });
+        if (rmtFounded) {
+          updatedRemotes.push({
+            ...rmt,
+            amount: rmtFounded[1][0].ft.toString(),
+            expired: Math.trunc(Number(rmtFounded[1][1].toString()) / 1000000),
+          });
+        } else updatedRemotes.push(rmt);
       });
+      updatedContacts.push({ ...hplCntc, remotes: updatedRemotes });
+    });
 
-      store.dispatch(setHplContacts(updatedContacts));
-    } catch (e) {
-      store.dispatch(setHplContacts(contacts));
-      console.log("errState-rem", e);
-    }
+    store.dispatch(setHplContacts(updatedContacts));
+  } catch (e) {
+    store.dispatch(setHplContacts(contacts));
+    console.log("errState-rem", e);
   }
 };
 
