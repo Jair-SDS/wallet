@@ -1,5 +1,5 @@
 /* eslint-disable no-empty */
-import { ActorSubclass, HttpAgent, Actor } from "@dfinity/agent";
+import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";

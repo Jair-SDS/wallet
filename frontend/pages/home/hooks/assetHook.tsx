@@ -126,7 +126,7 @@ export const AssetHook = () => {
       group[sub.ft].push(sub);
       return group;
     }, Object.create(null));
-    Object.keys(auxGroup).forEach((key) => {
+    Object.keys(auxGroup).forEach(() => {
       count++;
     });
     setFtsUsed(count);
