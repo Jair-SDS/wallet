@@ -22,7 +22,6 @@ const Assets = () => {
     setEditView,
     getContactName,
     dictionaryHplFTs,
-    hplVTsData,
   } = useAssetList();
   const { assetOpen, setAssetOpen } = DrawerHook();
 
