@@ -238,13 +238,15 @@ const TxSummary = ({
           setEndTxTime(new Date());
           setSendingStatusAction(SendingStatusEnum.Enum.done);
           reloadHPLBallance();
-          // onClose();
-          // onBack();
+        } else {
+          setEndTxTime(new Date());
+          setSendingStatusAction(SendingStatusEnum.Enum.error);
         }
       }
     } catch (e) {
       console.log("txErr: ", e);
       setEndTxTime(new Date());
+      setSendingStatusAction(SendingStatusEnum.Enum.error);
     }
 
     setLoading(false);

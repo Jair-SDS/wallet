@@ -562,6 +562,7 @@ export const updateHplRemotes = async (auxState: ResQueryState, contacts: HplCon
 
     store.dispatch(setHplContacts(updatedContacts));
   } catch (e) {
+    console.log("contacts-catch", contacts);
     store.dispatch(setHplContacts(contacts));
     console.log("errState-rem", e);
   }

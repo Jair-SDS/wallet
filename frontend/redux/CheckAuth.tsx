@@ -198,7 +198,10 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     if (hplContactsData != null) {
       try {
         hplContactsDataJson = JSON.parse(hplContactsData);
+
+        console.log("hplContactsDataJson", hplContactsDataJson);
       } catch {
+        console.log("hplContactsDataJson-err", hplContactsDataJson);
         //
       }
     }

@@ -42,17 +42,6 @@ export const getEncodeCrc = ({ owner, subaccount }: IcrcAccount): string => {
   return encodeBase32(crc);
 };
 
-export const uint8ArrayToNum = (arr: Uint8Array | undefined, len?: number) => {
-  if (arr) {
-    const size = len ? len : 32;
-    let num = 0;
-    for (let i = 0; i < size; i++) {
-      num += Math.pow(256, size - 1 - i) * arr[i];
-    }
-    return num;
-  } else return 0;
-};
-
 export const hexToNumber = (hexFormat: string) => {
   if (hexFormat.slice(0, 2) !== "0x") return undefined;
   const hex = hexFormat.substring(2);

@@ -99,7 +99,10 @@ export const useHplContacts = () => {
       } else {
         auxConatct = [...hplContacts, { ...newContact, remotes: selRemotes }];
       }
+      console.log("saveHplContacts", auxConatct);
+
       saveHplContacts(auxConatct);
+
       setAddOpen(false);
     }
   }

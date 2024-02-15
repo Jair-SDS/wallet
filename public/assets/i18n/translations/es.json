@@ -30,6 +30,7 @@
   "send": "Enviar",
   "receive": "Recibir",
   "exchange": "Intercambio",
+  "exchange.link": "Enlace de Intercambio",
   "confirm": "Confirmar",
   "name": "Nombre",
   "action": "Acción",

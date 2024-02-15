@@ -218,13 +218,14 @@ const TableHplContacts = ({
   }
 
   function onSave(cntc: HplContact) {
-    saveHplContacts(
-      hplContacts.map((contact) => {
-        if (cntc.principal === contact.principal) {
-          return { ...contact, name: selContact?.name || "" };
-        } else return contact;
-      }),
-    );
+    const auxContacts = hplContacts.map((contact) => {
+      if (cntc.principal === contact.principal) {
+        return { ...contact, name: selContact?.name || "" };
+      } else return contact;
+    });
+
+    console.log("onSave", auxContacts);
+    saveHplContacts(auxContacts);
     setSelContact(undefined);
   }
   function onEdit(cntc: HplContact) {
