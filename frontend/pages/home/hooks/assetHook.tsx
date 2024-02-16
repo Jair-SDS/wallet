@@ -16,6 +16,7 @@ import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
 import { allowanceCacheRefresh } from "../helpers/allowanceCache";
+import { db } from "@/database/db";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
@@ -36,8 +37,9 @@ export const AssetHook = () => {
   } = useAppSelector((state) => state.asset);
   const { userAgent, authClient } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
-  const deleteAsset = (symb: string) => {
+  const deleteAsset = (symb: string, address: string) => {
     dispatch(removeToken(symb));
+    db().deleteToken(address).then();
   };
 
   const [searchKey, setSearchKey] = useState("");
@@ -59,8 +61,8 @@ export const AssetHook = () => {
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
     const principal = store.getState().auth.userPrincipal.toText();
-    allowanceCacheRefresh(principal);
-    await contactCacheRefresh(principal);
+    await allowanceCacheRefresh(principal);
+    await contactCacheRefresh();
     dispatch(setLoading(false));
   };
 
@@ -69,7 +71,7 @@ export const AssetHook = () => {
     updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     const principal = (await userAgent.getPrincipal()).toText();
     allowanceCacheRefresh(principal);
-    await contactCacheRefresh(principal);
+    await contactCacheRefresh();
   };
 
   const reloadOnlyHPLBallance = () => {

@@ -26,13 +26,13 @@ import {
   setIngressActor,
   setOwnersActor,
   setStorageCodeA,
-  setTokens,
   setLoading,
+  setInitLoad,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum } from "@/const";
 import { Ed25519KeyIdentity } from "@dfinity/identity";
-import { clearDataContacts, setContacts, setStorageCode } from "./contacts/ContactsReducer";
+import { clearDataContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
@@ -43,10 +43,10 @@ import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
 import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
-import { defaultTokens } from "@/defaultTokens";
 import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
 import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 import { setAllowances } from "./allowance/AllowanceReducer";
+import { db } from "@/database/db";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -104,10 +104,12 @@ export const handlePrincipalAuthenticated = async (principalAddress: string) => 
 
 export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean, fixedPrincipal?: Principal) => {
   store.dispatch(setLoading(true));
-  if (localStorage.getItem("network_type") === null && !fromSeed && !fixedPrincipal) {
+  const opt: AuthNetwork | null = db().getNetworkType();
+  if (opt === null && !fromSeed && !fixedPrincipal) {
     logout();
     return;
   }
+
   store.dispatch(setAuthLoading(true));
   const myAgent = new HttpAgent({
     identity: authIdentity,
@@ -132,29 +134,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   const client = new HPLClient(hplLedPrin, "ic");
   await client.setIdentity(authIdentity as any);
   store.dispatch(setHPLClient(client));
-
-  // ICRC-1 TOKENS
-  const userData = localStorage.getItem(identityPrincipalStr);
-  if (userData) {
-    const userDataJson = JSON.parse(userData);
-    store.dispatch(setTokens(userDataJson.tokens));
-    setAssetFromLocalData(userDataJson.tokens, myPrincipal.toText());
-    // AUTH
-    dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
-    updateAllBalances(myAgent, userDataJson.tokens, false, true);
-  } else {
-    store.dispatch(setUserPrincipal(myPrincipal));
-    const { tokens } = await updateAllBalances(myAgent, defaultTokens, true, true);
-    // AUTH
-    dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal, !!fixedPrincipal);
-    store.dispatch(setTokens(tokens));
-  }
-  // ICRC-1 CONTACTS
-  const contactsData = localStorage.getItem("contacts-" + identityPrincipalStr);
-  if (contactsData) {
-    const contactsDataJson = JSON.parse(contactsData);
-    store.dispatch(setContacts(contactsDataJson.contacts));
-  }
 
   if (!fixedPrincipal) {
     // HPL FT
@@ -198,10 +177,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     if (hplContactsData != null) {
       try {
         hplContactsDataJson = JSON.parse(hplContactsData);
-
-        console.log("hplContactsDataJson", hplContactsDataJson);
-      } catch {
-        console.log("hplContactsDataJson-err", hplContactsDataJson);
+      } catch (e) {
+        console.log("hplContactsDataJson-err", e);
         //
       }
     }
@@ -230,27 +207,29 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     }
   }
 
+  dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal);
+
+  await db().setIdentity(authIdentity);
+
+  store.dispatch(setAuthenticated(true, false, !!fixedPrincipal, identityPrincipalStr.toLocaleLowerCase()));
+
   // ALLOWANCES
-  await contactCacheRefresh(myPrincipal.toText());
+  await contactCacheRefresh();
   await allowanceCacheRefresh(myPrincipal.toText());
   store.dispatch(setLoading(false));
+  store.dispatch(setInitLoad(false));
 };
 
-export const dispatchAuths = (
-  identityPrincipal: string,
-  myAgent: HttpAgent,
-  myPrincipal: Principal,
-  watchOnlyMode: boolean,
-) => {
-  store.dispatch(setAuthenticated(true, false, watchOnlyMode, identityPrincipal));
-  store.dispatch(setStorageCode("contacts-" + identityPrincipal));
-  store.dispatch(setStorageCodeA("contacts-" + identityPrincipal));
+export const dispatchAuths = (identityPrincipal: string, myAgent: HttpAgent, myPrincipal: Principal) => {
   store.dispatch(setUserAgent(myAgent));
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+  store.dispatch(setStorageCode("contacts-" + identityPrincipal));
+  store.dispatch(setStorageCodeA("contacts-" + identityPrincipal));
 };
 
 export const logout = async () => {
+  db().setIdentity(null);
   store.dispatch(clearDataContacts());
   store.dispatch(clearDataAsset());
   store.dispatch(clearDataAuth());

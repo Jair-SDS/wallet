@@ -79,9 +79,13 @@ export const updateAllBalances = async (
   }
   store.dispatch(setTokenMarket(tokenMarkets));
 
+  const auxTokens = [...tokens].sort((a, b) => {
+    return a.id_number - b.id_number;
+  });
+
   const myPrincipal = store.getState().auth.userPrincipal;
   const tokensAseets = await Promise.all(
-    tokens.map(async (tkn, idNum) => {
+    auxTokens.map(async (tkn, idNum) => {
       let standards = tkn.supportedStandards;
 
       if (fromLogin) {
@@ -127,7 +131,7 @@ export const updateAllBalances = async (
               subAccList.push({
                 name: i === 0 ? AccountDefaultEnum.Values.Default : "-",
                 sub_account_id: `0x${i.toString(16)}`,
-                address: myPrincipal.toString(),
+                address: myPrincipal?.toString(),
                 amount: myBalance.toString(),
                 currency_amount: assetMarket ? getUSDfromToken(myBalance.toString(), assetMarket.price, decimals) : "0",
                 transaction_fee: myTransactionFee.toString(),
@@ -163,7 +167,7 @@ export const updateAllBalances = async (
               const saAsset: SubAccount = {
                 name: sa.name,
                 sub_account_id: sa.numb,
-                address: myPrincipal.toString(),
+                address: myPrincipal?.toString(),
                 amount: amnt,
                 currency_amount: crncyAmnt,
                 transaction_fee: myTransactionFee.toString(),
@@ -197,7 +201,7 @@ export const updateAllBalances = async (
                 const saAsset: SubAccount = {
                   name: i === 0 ? AccountDefaultEnum.Values.Default : "-",
                   sub_account_id: `0x${i.toString(16)}`,
-                  address: myPrincipal.toString(),
+                  address: myPrincipal?.toString(),
                   amount: amnt,
                   currency_amount: crncyAmnt,
                   transaction_fee: myTransactionFee.toString(),
@@ -262,7 +266,7 @@ export const updateAllBalances = async (
             {
               name: AccountDefaultEnum.Values.Default,
               sub_account_id: "0x0",
-              address: myPrincipal.toString(),
+              address: myPrincipal?.toString(),
               amount: "0",
               currency_amount: "0",
               transaction_fee: "0",
@@ -282,24 +286,22 @@ export const updateAllBalances = async (
     }),
   );
 
-  const newAssetsUpload = tokensAseets.map((tA) => {
-    return tA.newAsset;
-  });
-  const newTokensUpload = tokensAseets.map((tA) => {
-    return tA.newToken;
-  });
+  const newAssetsUpload = tokensAseets
+    .map((tA) => {
+      return tA.newAsset;
+    })
+    .sort((a, b) => {
+      return a.sort_index - b.sort_index;
+    });
+  const newTokensUpload = tokensAseets
+    .map((tA) => {
+      return tA.newToken;
+    })
+    .sort((a, b) => {
+      return a.id_number - b.id_number;
+    });
   store.dispatch(setAssets(newAssetsUpload));
-  if (newTokensUpload.length !== 0) {
-    localStorage.setItem(
-      myPrincipal.toString(),
-      JSON.stringify({
-        from: "II",
-        tokens: newTokensUpload.sort((a, b) => {
-          return a.id_number - b.id_number;
-        }),
-      }),
-    );
-  }
+
   if (fromLogin) {
     newAssetsUpload.length > 0 && store.dispatch(setAcordeonAssetIdx([newAssetsUpload[0].tokenSymbol]));
   }
@@ -570,7 +572,6 @@ export const updateHplRemotes = async (auxState: ResQueryState, contacts: HplCon
 
 export const setAssetFromLocalData = (tokens: Token[], myPrincipal: string) => {
   const assets: Asset[] = [];
-
   tokens.map((tkn) => {
     const subAccList: SubAccount[] = [];
     tkn.subAccounts.map((sa) => {
@@ -686,7 +687,7 @@ export const getAllTransactionsICRC1 = async (
     });
 
     const transactionsInfo = ICRC1getTransactions.transactions.map(({ transaction, id }) =>
-      formatckBTCTransaccion(transaction, id, myPrincipal.toString(), assetSymbol, canister, subNumber),
+      formatckBTCTransaccion(transaction, id, myPrincipal?.toString(), assetSymbol, canister, subNumber),
     );
     if (
       loading &&

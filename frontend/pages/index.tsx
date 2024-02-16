@@ -8,6 +8,8 @@ import Loader from "./components/Loader";
 import { RoutingPathEnum, ThemesEnum } from "@/const";
 import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
+import { db } from "@/database/db";
+
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
 const Assets = lazy(() => import("./assets"));
@@ -17,16 +19,17 @@ const SwitchRoute = () => {
   const { changeTheme } = ThemeHook();
 
   useEffect(() => {
+    const theme = db().getTheme();
     if (
-      localStorage.theme === ThemesEnum.enum.dark ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+      theme === ThemesEnum.enum.dark ||
+      (theme === null && window.matchMedia("(prefers-color-scheme: dark)").matches)
     ) {
       document.documentElement.classList.add(ThemesEnum.enum.dark);
-      localStorage.theme = ThemesEnum.enum.dark;
+      db().setTheme(ThemesEnum.enum.dark);
       changeTheme(ThemesEnum.enum.dark);
     } else {
       document.documentElement.classList.remove(ThemesEnum.enum.dark);
-      localStorage.theme = ThemesEnum.enum.light;
+      db().setTheme(ThemesEnum.enum.light);
       changeTheme(ThemesEnum.enum.light);
     }
   }, []);

@@ -27,6 +27,7 @@ import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import HplSettingsModal from "./hplSettings";
 import { useAppSelector } from "@redux/Store";
+import { db } from "@/database/db";
 
 const TopBarComponent = () => {
   const { t } = useTranslation();
@@ -157,7 +158,7 @@ const TopBarComponent = () => {
   function changeLanguage(lang: string) {
     onLanguageChange(lang);
     i18n.changeLanguage(lang, () => {
-      localStorage.setItem("language", lang);
+      db().setLanguage(lang);
     });
   }
 };
