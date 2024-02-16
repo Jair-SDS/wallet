@@ -14,7 +14,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { setAssetFromLocalData, updateAllBalances, updateHPLBalances } from "./assets/AssetActions";
+import { updateHPLBalances } from "./assets/AssetActions";
 import {
   clearDataAsset,
   setFeeConstant,
