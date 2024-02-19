@@ -1,31 +1,36 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import type { Principal } from "@dfinity/principal";
 import type { ActorMethod } from "@dfinity/agent";
 
-export type AssetId = bigint;
-export interface Directory {
-  addOwner: ActorMethod<[Principal], boolean>;
-  correctAssetId: ActorMethod<[Symbol, AssetId], boolean>;
-  correctSymbol: ActorMethod<[AssetId, Symbol], boolean>;
-  getByAssetId: ActorMethod<[AssetId], [] | [FungibleToken]>;
-  getBySymbol: ActorMethod<[Symbol], [] | [FungibleToken]>;
-  getDump: ActorMethod<[], Array<FungibleToken>>;
-  register: ActorMethod<[FungibleToken], boolean>;
-  removeOwner: ActorMethod<[Principal], boolean>;
-  updateTokenByAssetId: ActorMethod<[AssetId, string, string], boolean>;
-  updateTokenBySymbol: ActorMethod<[Symbol, string, string], boolean>;
+export interface CreateArgument {
+  assetId: bigint;
+  logo: string;
+  name: string;
+  symbol: string;
 }
 export interface FungibleToken {
-  creation_time: Time;
-  assetId: AssetId;
-  logo: Logo;
-  name: Name;
-  modification_time: Time;
-  displaySymbol: Symbol;
-  symbolKey: Symbol;
+  assetId: bigint;
+  modifiedAt: bigint;
+  logo: string;
+  name: string;
+  createdAt: bigint;
+  symbol: string;
 }
-export type Logo = string;
-export type Name = string;
-export type Symbol = string;
-export type Time = bigint;
-export interface _SERVICE extends Directory {}
+export interface UpdateArgument {
+  logo: [] | [string];
+  name: [] | [string];
+  symbol: [] | [string];
+}
+export interface _SERVICE {
+  addOwner: ActorMethod<[Principal], undefined>;
+  addToken: ActorMethod<[CreateArgument], undefined>;
+  allTokens: ActorMethod<[], Array<FungibleToken>>;
+  correctAssetId: ActorMethod<[string, bigint], undefined>;
+  correctSymbol: ActorMethod<[bigint, string], undefined>;
+  freezingPeriod: ActorMethod<[], bigint>;
+  nTokens: ActorMethod<[], bigint>;
+  owners: ActorMethod<[], Array<Principal>>;
+  removeOwner: ActorMethod<[Principal], undefined>;
+  tokenByAssetId: ActorMethod<[bigint], [] | [FungibleToken]>;
+  tokenBySymbol: ActorMethod<[string], [] | [FungibleToken]>;
+  updateToken: ActorMethod<[bigint, UpdateArgument], undefined>;
+}

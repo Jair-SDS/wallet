@@ -56,8 +56,7 @@ const FungibleTokenLocal = z.object({
   logo: z.string(),
   name: z.string(),
   modification_time: z.number(),
-  displaySymbol: z.string(),
-  symbolKey: z.string(),
+  symbol: z.string(),
 });
 export type FungibleTokenLocal = z.infer<typeof FungibleTokenLocal>;
 

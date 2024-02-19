@@ -152,7 +152,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
           agent: myAgent,
           canisterId: hplDictPrin,
         });
-        const dictFTs = await dictActor.getDump();
+        const dictFTs = await dictActor.allTokens();
         store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
       } catch (e) {
         console.log("dictFTs-err:", e);

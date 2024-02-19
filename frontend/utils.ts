@@ -602,13 +602,12 @@ export const parseFungibleToken = (tokens: FungibleToken[]) => {
   const auxTkns: FungibleTokenLocal[] = [];
   tokens.map((tkn) => {
     auxTkns.push({
-      creation_time: Number(tkn.creation_time),
+      creation_time: Number(tkn.createdAt),
       assetId: tkn.assetId.toString(),
-      logo: tkn.logo.toString(),
-      name: tkn.name.toString(),
-      modification_time: Number(tkn.modification_time),
-      displaySymbol: tkn.displaySymbol.toString(),
-      symbolKey: tkn.symbolKey.toString(),
+      logo: tkn.logo,
+      name: tkn.name,
+      modification_time: Number(tkn.modifiedAt),
+      symbol: tkn.symbol,
     });
   });
   return auxTkns;
@@ -674,7 +673,7 @@ export const getFtsFormated = (
       name: ftData ? ftData.name : "",
       token_name: ftDict ? ftDict.name : "",
       symbol: ftData ? ftData.symbol : "",
-      token_symbol: ftDict ? ftDict.displaySymbol : "",
+      token_symbol: ftDict ? ftDict.symbol : "",
       decimal: ftData ? Number(ftData.decimals) : 0,
       description: ftData ? ftData.description : "",
       logo: ftDict ? ftDict.logo : "",
@@ -745,7 +744,7 @@ export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {
     const ftDict = dictFT.find((ft) => ft.assetId.toString() === asst.id);
     auxFT.push({
       ...asst,
-      token_symbol: ftDict ? ftDict.displaySymbol : asst.token_symbol,
+      token_symbol: ftDict ? ftDict.symbol : asst.token_symbol,
       token_name: ftDict ? ftDict.name : asst.token_name,
     });
   });

@@ -1,38 +1,36 @@
 export const idlFactory = ({ IDL }) => {
-  const Symbol = IDL.Text;
-  const AssetId = IDL.Nat;
-  const Time = IDL.Int;
-  const Logo = IDL.Text;
-  const Name = IDL.Text;
+  const CreateArgument = IDL.Record({
+    "assetId" : IDL.Nat,
+    "logo" : IDL.Text,
+    "name" : IDL.Text,
+    "symbol" : IDL.Text,
+  });
   const FungibleToken = IDL.Record({
-    "creation_time" : Time,
-    "assetId" : AssetId,
-    "logo" : Logo,
-    "name" : Name,
-    "modification_time" : Time,
-    "displaySymbol" : Symbol,
-    "symbolKey" : Symbol,
+    "assetId" : IDL.Nat,
+    "modifiedAt" : IDL.Int,
+    "logo" : IDL.Text,
+    "name" : IDL.Text,
+    "createdAt" : IDL.Int,
+    "symbol" : IDL.Text,
   });
-  const Directory = IDL.Service({
-    "addOwner" : IDL.Func([IDL.Principal], [IDL.Bool], []),
-    "correctAssetId" : IDL.Func([Symbol, AssetId], [IDL.Bool], []),
-    "correctSymbol" : IDL.Func([AssetId, Symbol], [IDL.Bool], []),
-    "getByAssetId" : IDL.Func([AssetId], [IDL.Opt(FungibleToken)], ["query"]),
-    "getBySymbol" : IDL.Func([Symbol], [IDL.Opt(FungibleToken)], ["query"]),
-    "getDump" : IDL.Func([], [IDL.Vec(FungibleToken)], ["query"]),
-    "register" : IDL.Func([FungibleToken], [IDL.Bool], []),
-    "removeOwner" : IDL.Func([IDL.Principal], [IDL.Bool], []),
-    "updateTokenByAssetId" : IDL.Func(
-        [AssetId, IDL.Text, IDL.Text],
-        [IDL.Bool],
-        [],
-      ),
-    "updateTokenBySymbol" : IDL.Func(
-        [Symbol, IDL.Text, IDL.Text],
-        [IDL.Bool],
-        [],
-      ),
+  const UpdateArgument = IDL.Record({
+    "logo" : IDL.Opt(IDL.Text),
+    "name" : IDL.Opt(IDL.Text),
+    "symbol" : IDL.Opt(IDL.Text),
   });
-  return Directory;
+  return IDL.Service({
+    "addOwner" : IDL.Func([IDL.Principal], [], []),
+    "addToken" : IDL.Func([CreateArgument], [], []),
+    "allTokens" : IDL.Func([], [IDL.Vec(FungibleToken)], ["query"]),
+    "correctAssetId" : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    "correctSymbol" : IDL.Func([IDL.Nat, IDL.Text], [], []),
+    "freezingPeriod" : IDL.Func([], [IDL.Nat], ["query"]),
+    "nTokens" : IDL.Func([], [IDL.Nat], ["query"]),
+    "owners" : IDL.Func([], [IDL.Vec(IDL.Principal)], ["query"]),
+    "removeOwner" : IDL.Func([IDL.Principal], [], []),
+    "tokenByAssetId" : IDL.Func([IDL.Nat], [IDL.Opt(FungibleToken)], ["query"]),
+    "tokenBySymbol" : IDL.Func([IDL.Text], [IDL.Opt(FungibleToken)], ["query"]),
+    "updateToken" : IDL.Func([IDL.Nat, UpdateArgument], [], []),
+  });
 };
-export const init = ({ IDL }) => { return [IDL.Principal]; };
+export const init = ({ IDL }) => { return [IDL.Opt(IDL.Principal)]; };

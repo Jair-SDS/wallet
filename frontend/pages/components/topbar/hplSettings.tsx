@@ -143,7 +143,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
               agent: userAgent,
               canisterId: dictionary.principal,
             });
-            const dictFTs = await dictActor.getDump();
+            const dictFTs = await dictActor.allTokens();
             localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
             dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
             const auxFts = getUpdatedFts(dictFTs, hplFTs);
