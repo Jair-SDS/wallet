@@ -5,22 +5,39 @@ export const initialAllowanceState: TAllowance = {
   asset: {
     logo: "",
     name: "",
+    symbol: "",
+    subAccounts: [],
     address: "",
     decimal: "",
+    sort_index: 0,
+    index: "",
     tokenName: "",
     tokenSymbol: "",
+    shortDecimal: "",
     supportedStandards: [],
   },
-  subAccountId: "",
-  spender: "",
+  subAccount: {
+    name: "",
+    sub_account_id: "",
+    address: "",
+    amount: "",
+    currency_amount: "",
+    transaction_fee: "",
+    decimal: 0,
+    symbol: "",
+  },
+  spender: {
+    name: "",
+    principal: "",
+  },
   amount: "",
   expiration: "",
+  noExpire: true,
 };
 
 interface AllowanceState {
   isUpdateAllowance: boolean;
   isCreateAllowance: boolean;
-  isDeleteAllowance: boolean;
   selectedAllowance: TAllowance;
   allowances: TAllowance[];
   errors: string[];
@@ -31,7 +48,6 @@ const reducerName = "allowance";
 const initialState: AllowanceState = {
   isUpdateAllowance: false,
   isCreateAllowance: false,
-  isDeleteAllowance: false,
   selectedAllowance: initialAllowanceState,
   allowances: [],
   errors: [],
@@ -46,9 +62,6 @@ const allowanceSlice = createSlice({
     },
     setIsCreateAllowance(state: AllowanceState, action: PayloadAction<boolean>) {
       state.isCreateAllowance = action.payload;
-    },
-    setIsDeleteAllowance(state: AllowanceState, action: PayloadAction<boolean>) {
-      state.isDeleteAllowance = action.payload;
     },
     setSelectedAllowance(state: AllowanceState, action: PayloadAction<TAllowance>) {
       state.selectedAllowance = action.payload;
@@ -72,7 +85,6 @@ const allowanceSlice = createSlice({
 export const {
   setIsUpdateAllowance,
   setIsCreateAllowance,
-  setIsDeleteAllowance,
   setSelectedAllowance,
   setAllowances,
   setAllowanceError,

@@ -1,57 +1,56 @@
 import { TAllowance } from "@/@types/allowance";
+import { getFromLocalStorage, setInLocalStorage } from "../../../utils/localStorage";
 import store from "@redux/Store";
-import { getToCreateAllowance } from "../helpers/allowanceMappers";
 
-export const LOCAL_STORAGE_PREFIX = `allowances-${store.getState()?.auth?.userPrincipal?.toText()}`;
+export const LOCAL_STORAGE_PREFIX = `allowances-${store.getState().auth.userPrincipal.toText()}`;
 
-function getAllowanceKey(principal?: string) {
-  if (principal) return `allowances-${principal}`;
-  return LOCAL_STORAGE_PREFIX;
+export function postAllowance(newAllowance: TAllowance): Promise<TAllowance[]> {
+  return new Promise((resolve) => {
+    let allowances = getFromLocalStorage<TAllowance[]>(LOCAL_STORAGE_PREFIX);
+
+    if (!allowances || !Array.isArray(allowances)) {
+      allowances = [newAllowance];
+    }
+
+    if (Array.isArray(allowances)) {
+      const allowanceId = newAllowance.id;
+      allowances = allowances.filter((allowance) => allowance.id !== allowanceId);
+      allowances.push(newAllowance);
+    }
+
+    setInLocalStorage(LOCAL_STORAGE_PREFIX, allowances);
+    resolve(allowances);
+  });
 }
 
-export function getAllowancesFromStorage(principal?: string): TAllowance[] {
-  const storageAllowances = localStorage.getItem(getAllowanceKey(principal));
-  return JSON.parse(storageAllowances || "[]") as TAllowance[];
-}
+export const updateAllowanceRequest = (newAllowance: TAllowance): Promise<TAllowance[]> => {
+  return new Promise((resolve) => {
+    const allowances = getFromLocalStorage<TAllowance[]>(LOCAL_STORAGE_PREFIX);
 
-export function postAllowanceToStorage(newAllowance: TAllowance, principal?: string): TAllowance[] {
-  const allowances = getAllowancesFromStorage(principal);
-  const newAllowances = [...allowances, newAllowance];
-  localStorage.setItem(getAllowanceKey(principal), JSON.stringify(newAllowances.map(getToCreateAllowance)));
-  return newAllowances;
-}
+    if (Array.isArray(allowances)) {
+      const newAllowances = allowances.map((allowance) => {
+        if (allowance.id === newAllowance.id) {
+          return { ...allowance, ...newAllowance };
+        }
+        return allowance;
+      });
 
-export const putAllowanceToStorage = (updatedAllowance: TAllowance, principal?: string): TAllowance[] => {
-  const allowances = getAllowancesFromStorage(principal);
+      setInLocalStorage(LOCAL_STORAGE_PREFIX, newAllowances);
+      resolve(newAllowances);
+    }
 
-  const filteredAllowances = allowances.filter((allowance) =>
-    Boolean(
-      allowance.subAccountId !== updatedAllowance.subAccountId ||
-        allowance.spender !== updatedAllowance.spender ||
-        allowance.asset.tokenSymbol !== updatedAllowance.asset.tokenSymbol,
-    ),
-  );
-
-  const newAllowances = [...filteredAllowances, updatedAllowance];
-  console.log("storage updated: ", newAllowances);
-  localStorage.setItem(LOCAL_STORAGE_PREFIX, JSON.stringify(newAllowances.map(getToCreateAllowance)));
-  return newAllowances;
+    resolve(allowances || []);
+  });
 };
 
-export function replaceAllowancesToStorage(allowances: TAllowance[], principal?: string) {
-  localStorage.setItem(getAllowanceKey(principal), JSON.stringify(allowances.map(getToCreateAllowance)));
-  return allowances;
-}
-
-export function deleteAllowanceFromStorage(allowance: TAllowance, principal?: string): TAllowance[] {
-  const allowances = getAllowancesFromStorage(principal);
-  const filteredAllowances = allowances.filter((currentAllowance) => {
-    return Boolean(
-      allowance.subAccountId !== currentAllowance.subAccountId ||
-        allowance.spender !== currentAllowance.spender ||
-        allowance.asset.tokenSymbol !== currentAllowance.asset.tokenSymbol,
-    );
+export function removeAllowance(id: string): Promise<TAllowance[]> {
+  return new Promise((resolve) => {
+    const allowances = getFromLocalStorage<TAllowance[]>(LOCAL_STORAGE_PREFIX);
+    if (Array.isArray(allowances)) {
+      const newAllowances = allowances.filter((allowance) => allowance.id !== id);
+      setInLocalStorage(LOCAL_STORAGE_PREFIX, newAllowances);
+      resolve(newAllowances);
+    }
+    resolve(allowances || []);
   });
-  localStorage.setItem(LOCAL_STORAGE_PREFIX, JSON.stringify(filteredAllowances.map(getToCreateAllowance)));
-  return filteredAllowances;
 }

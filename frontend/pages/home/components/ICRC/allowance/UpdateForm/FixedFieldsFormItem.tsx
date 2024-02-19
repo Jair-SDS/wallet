@@ -17,7 +17,7 @@ export default function FixedFieldsFormItem({ allowance }: FixedFieldsProps) {
   const { contacts } = useAppSelector((state) => state.contacts);
 
   const spenderName = useMemo(() => {
-    const contact = contacts.find((contact) => contact.principal === allowance?.spender);
+    const contact = contacts.find((contact) => contact.principal === allowance?.spender?.principal);
     return contact?.name ? contact.name : "-";
   }, [allowance, contacts]);
 
@@ -31,9 +31,8 @@ export default function FixedFieldsFormItem({ allowance }: FixedFieldsProps) {
         </div>
 
         <div className="flex items-center justify-start">
-          <Chip size="medium" text={allowance.subAccountId || ""} className="mr-2" />
-          {/* Get the allowance sub account name here */}
-          <p className={textStyles}>{}</p>
+          <Chip size="medium" text={allowance.subAccount.sub_account_id || ""} className="mr-2" />
+          <p className={textStyles}>{allowance.subAccount.name}</p>
         </div>
       </div>
 
@@ -43,7 +42,7 @@ export default function FixedFieldsFormItem({ allowance }: FixedFieldsProps) {
 
       <div className="flex justify-between mt-4">
         <p className={textStyles}>{t("principal")}</p>
-        <p className={textStyles}>{middleTruncation(allowance?.spender, 5, 5)}</p>
+        <p className={textStyles}>{middleTruncation(allowance?.spender?.principal, 5, 5)}</p>
       </div>
 
       <div className="flex justify-between mt-4">

@@ -1,10 +1,8 @@
 import { TAllowance, AllowanceValidationErrorsEnum } from "@/@types/allowance";
 import { SelectOption } from "@/@types/components";
 import { SupportedStandardEnum } from "@/@types/icrc";
-import { IconTypeEnum } from "@/const";
-import { getAssetIcon } from "@/utils/icons";
+import formatAsset from "@/utils/formatAsset";
 import { Select } from "@components/select";
-import { getAllowanceAsset } from "@pages/home/helpers/allowanceMappers";
 import { useAppSelector } from "@redux/Store";
 import { initialAllowanceState } from "@redux/allowance/AllowanceReducer";
 import { Asset } from "@redux/models/AccountModels";
@@ -44,6 +42,18 @@ export default function AssetFormItem(props: AssetFormItemProps) {
       .map(formatAsset);
   }, [search, assets]);
 
+  const onAssetChange = (option: SelectOption) => {
+    setSearch(null);
+    const fullAsset = assets.find((currentAsset) => currentAsset.tokenName === option.value);
+    setAllowanceState({ asset: fullAsset, subAccount: initialAllowanceState.subAccount });
+  };
+
+  const onSearchChange = (searchValue: string) => {
+    setSearch(searchValue);
+  };
+
+  const onOpenChange = () => setSearch(null);
+
   return (
     <div className="mt-4">
       <label htmlFor="asset" className="text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor">
@@ -52,8 +62,8 @@ export default function AssetFormItem(props: AssetFormItemProps) {
       <Select
         onSelect={onAssetChange}
         options={options}
-        initialValue={selectedAsset?.tokenSymbol}
-        currentValue={asset?.tokenSymbol}
+        initialValue={selectedAsset?.tokenName}
+        currentValue={asset?.tokenName}
         disabled={isLoading}
         border={isError() ? "error" : undefined}
         onSearch={onSearchChange}
@@ -64,28 +74,5 @@ export default function AssetFormItem(props: AssetFormItemProps) {
 
   function isError(): boolean {
     return errors?.includes(AllowanceValidationErrorsEnum.Values["error.invalid.asset"]) || false;
-  }
-
-  function formatAsset(asset: Asset) {
-    return {
-      value: asset?.tokenSymbol,
-      label: `${asset?.tokenName} / ${asset?.tokenSymbol}`,
-      icon: getAssetIcon(IconTypeEnum.Enum.ASSET, asset?.tokenSymbol, asset?.logo),
-    };
-  }
-
-  function onAssetChange(option: SelectOption) {
-    setSearch(null);
-    const fullAsset = assets.find((currentAsset) => currentAsset.tokenSymbol === option.value) as Asset;
-    const asset = getAllowanceAsset(fullAsset);
-    setAllowanceState({ asset, subAccountId: initialAllowanceState.subAccountId });
-  }
-
-  function onSearchChange(searchValue: string) {
-    setSearch(searchValue);
-  }
-
-  function onOpenChange() {
-    setSearch(null);
   }
 }

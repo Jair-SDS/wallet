@@ -6,11 +6,11 @@ import Input from "@components/input/Input";
 import { Select } from "@components/select";
 import { Switch } from "@components/switch";
 import { useAppSelector } from "@redux/Store";
-import { removeAllowanceErrorAction } from "@redux/allowance/AllowanceActions";
-import { initialAllowanceState } from "@redux/allowance/AllowanceReducer";
+import { initialAllowanceState, removeAllowanceError } from "@redux/allowance/AllowanceReducer";
 import { Contact } from "@redux/models/ContactsModels";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 
 interface ISpenderFormItemProps {
   contacts: Contact[];
@@ -26,6 +26,7 @@ export default function SpenderFormItem(props: ISpenderFormItemProps) {
   const [search, setSearch] = useState<string | null>(null);
   const [isNew, setIsNew] = useState(false);
   const inputTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const dispatch = useDispatch();
 
   const onSearchChange = (searchValue: string) => setSearch(searchValue);
   const onOpenChange = () => setSearch(null);
@@ -60,7 +61,7 @@ export default function SpenderFormItem(props: ISpenderFormItemProps) {
           onSelect={onSelectedChange}
           options={options}
           disabled={isLoading}
-          currentValue={allowance?.spender || ""}
+          currentValue={allowance?.spender?.principal || ""}
           border={getError() ? "error" : undefined}
           onSearch={onSearchChange}
           onOpenChange={onOpenChange}
@@ -83,29 +84,30 @@ export default function SpenderFormItem(props: ISpenderFormItemProps) {
   }
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const newSearchValue = event.target.value.trim();
+    const newSearchValue = event.target.value;
 
     if (!validatePrincipal(newSearchValue)) {
       setIsPrincipalValid(false);
     } else {
       setIsPrincipalValid(true);
-      removeAllowanceErrorAction(AllowanceValidationErrorsEnum.Values["error.invalid.spender.principal"]);
+      dispatch(removeAllowanceError(AllowanceValidationErrorsEnum.Values["error.invalid.sender.principal"]));
     }
 
     clearTimeout(inputTimeoutRef.current);
 
     inputTimeoutRef.current = setTimeout(() => {
-      setAllowanceState({ spender: newSearchValue });
+      const spender = { principal: newSearchValue, name: "" };
+      setAllowanceState({ spender });
     }, 500);
   }
 
   function onSelectedChange(option: SelectOption) {
     setSearch(null);
     const fullSpender = contacts.find((contact) => contact.principal === option.value);
-    setAllowanceState({ spender: fullSpender?.principal || "" });
+    setAllowanceState({ spender: fullSpender });
   }
 
   function getError(): boolean {
-    return errors?.includes(AllowanceValidationErrorsEnum.Values["error.invalid.spender.principal"]) || false;
+    return errors?.includes(AllowanceValidationErrorsEnum.Values["error.invalid.sender.principal"]) || false;
   }
 }

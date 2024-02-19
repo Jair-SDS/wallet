@@ -1,11 +1,11 @@
-import { useAppSelector } from "@redux/Store";
+import { useAppDispatch, useAppSelector } from "@redux/Store";
 import {
-  setFullAllowanceErrorsAction,
-  setIsCreateAllowanceAction,
-  setIsUpdateAllowanceAction,
-  setSelectedAllowanceAction,
-} from "@redux/allowance/AllowanceActions";
-import { initialAllowanceState } from "@redux/allowance/AllowanceReducer";
+  initialAllowanceState,
+  setFullAllowanceErrors,
+  setIsCreateAllowance,
+  setIsUpdateAllowance,
+  setSelectedAllowance,
+} from "@redux/allowance/AllowanceReducer";
 
 interface UseAllowanceDrawer {
   isCreateAllowance: boolean;
@@ -18,24 +18,26 @@ interface UseAllowanceDrawer {
 
 export default function useAllowanceDrawer(): UseAllowanceDrawer {
   const { isCreateAllowance, isUpdateAllowance } = useAppSelector(({ allowance }) => allowance);
+  const dispatch = useAppDispatch();
+
   function onCloseCreateAllowanceDrawer() {
-    setIsCreateAllowanceAction(false);
-    setFullAllowanceErrorsAction([]);
-    setSelectedAllowanceAction(initialAllowanceState);
+    dispatch(setIsCreateAllowance(false));
+    dispatch(setFullAllowanceErrors([]));
+    dispatch(setSelectedAllowance(initialAllowanceState));
   }
 
   function onOpenCreateAllowanceDrawer() {
-    setIsCreateAllowanceAction(true);
+    dispatch(setIsCreateAllowance(true));
   }
 
   function onCloseUpdateAllowanceDrawer() {
-    setIsUpdateAllowanceAction(false);
-    setFullAllowanceErrorsAction([]);
-    setSelectedAllowanceAction(initialAllowanceState);
+    dispatch(setIsUpdateAllowance(false));
+    dispatch(setFullAllowanceErrors([]));
+    dispatch(setSelectedAllowance(initialAllowanceState));
   }
 
   function onOpenUpdateAllowanceDrawer() {
-    setIsUpdateAllowanceAction(true);
+    dispatch(setIsUpdateAllowance(true));
   }
 
   return {
