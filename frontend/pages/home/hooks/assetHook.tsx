@@ -6,17 +6,19 @@ import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions
 import {
   removeToken,
   setAcordeonAssetIdx,
+  setHPLAssets,
   setLoading,
   setProtocol,
   setSelectedAccount,
   setSelectedAsset,
 } from "@redux/assets/AssetReducer";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
-import { Asset, SubAccount } from "@redux/models/AccountModels";
-import { Token } from "@redux/models/TokenModels";
+import { Asset, ResQueryState, SubAccount } from "@redux/models/AccountModels";
+import { FungibleTokenLocal, Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
 import { allowanceCacheRefresh } from "../helpers/allowanceCache";
 import { db } from "@/database/db";
+import { getFtsFormated } from "@/utils";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
@@ -74,8 +76,41 @@ export const AssetHook = () => {
     await contactCacheRefresh();
   };
 
-  const reloadOnlyHPLBallance = () => {
-    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
+  const reloadOnlyHPLBallance = async () => {
+    await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
+  };
+
+  const reloadDictFts = async (dict: FungibleTokenLocal[]) => {
+    const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
+    try {
+      const auxState = await ingressActor.state({
+        ftSupplies: [{ idRange: [BigInt(0), []] }],
+        virtualAccounts: [],
+        accounts: [],
+        remoteAccounts: [],
+      });
+      state.ftSupplies = auxState.ftSupplies;
+      state.virtualAccounts = auxState.virtualAccounts;
+      state.accounts = auxState.accounts;
+      state.remoteAccounts = auxState.remoteAccounts as any;
+    } catch (e) {
+      console.log("errState", e);
+    }
+    let adminAccountState: Array<[bigint, { ft: bigint }]> = [];
+    try {
+      const adminState = await ingressActor.adminState({
+        ftSupplies: [],
+        virtualAccounts: [],
+        accounts: [{ idRange: [BigInt(0), []] }],
+        remoteAccounts: [],
+      });
+      adminAccountState = adminState.accounts;
+    } catch (e) {
+      console.log("errState", e);
+    }
+
+    const auxFT = getFtsFormated(state.ftSupplies, hplFTsData, dict, adminAccountState);
+    store.dispatch(setHPLAssets(auxFT));
   };
 
   const getTotalAmountInCurrency = () => {
@@ -168,5 +203,6 @@ export const AssetHook = () => {
     dictionaryHplFTs,
     hplFTsData,
     ftsUsed,
+    reloadDictFts,
   };
 };

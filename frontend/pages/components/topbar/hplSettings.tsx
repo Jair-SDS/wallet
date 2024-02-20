@@ -37,7 +37,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const dispatch = useAppDispatch();
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
   const { ownersActor } = useAppSelector((state) => state.asset);
-  const { reloadOnlyHPLBallance } = AssetHook();
+  const { reloadDictFts } = AssetHook();
   const { hplFTs, hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -134,7 +134,6 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           console.log("Ledger-prin-err:", e);
           return;
         }
-      else setOpen("");
 
       if (hplDictionary !== dictionary.principal)
         if (dictionary.principal !== "")
@@ -145,9 +144,9 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             });
             const dictFTs = await dictActor.allTokens();
             localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
+            const parsedFungibleTokens = parseFungibleToken(dictFTs);
             dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
-            const auxFts = getUpdatedFts(dictFTs, hplFTs);
-            dispatch(setHPLAssets(auxFts));
+            await reloadDictFts(parsedFungibleTokens);
             dispatch(setHplDictionaryPrincipal(dictionary.principal));
             setOpen("");
           } catch (e) {
@@ -165,11 +164,10 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           dispatch(setHplDictionaryPrincipal(dictionary.principal));
           localStorage.removeItem("hpl-dict-pric-" + authClient);
           dispatch(setHPLDictionary([]));
-          reloadOnlyHPLBallance();
+          reloadDictFts([]);
           setOpen("");
         }
-      else;
-      setOpen("");
+      else setOpen("");
     }
     setLoading(false);
   }
