@@ -12,13 +12,7 @@ import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import {
-  setFeeConstant,
-  setHPLAssets,
-  setHPLClient,
-  setHPLDictionary,
-  setIngressActor,
-} from "@redux/assets/AssetReducer";
+import { setFeeConstant, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/assets/AssetReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { useHPL } from "@pages/hooks/hplHook";
