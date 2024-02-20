@@ -7,18 +7,22 @@ import {
   removeToken,
   setAcordeonAssetIdx,
   setHPLAssets,
+  setHPLDictionary,
   setLoading,
   setProtocol,
   setSelectedAccount,
   setSelectedAsset,
 } from "@redux/assets/AssetReducer";
+import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
+import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { Asset, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { FungibleTokenLocal, Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
 import { allowanceCacheRefresh } from "../helpers/allowanceCache";
 import { db } from "@/database/db";
-import { getFtsFormated } from "@/utils";
+import { getFtsFormated, parseFungibleToken } from "@/utils";
+import { Actor } from "@dfinity/agent";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
@@ -80,7 +84,19 @@ export const AssetHook = () => {
     await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
   };
 
-  const reloadDictFts = async (dict: FungibleTokenLocal[]) => {
+  const reloadDictFts = async (dict?: string) => {
+    let parsedFungibleTokens: FungibleTokenLocal[] = [];
+    if (dict) {
+      const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
+        agent: userAgent,
+        canisterId: dict,
+      });
+      const dictFTs = await dictActor.allTokens();
+      localStorage.setItem("hpl-dict-pric-" + authClient, dict);
+      parsedFungibleTokens = parseFungibleToken(dictFTs);
+    }
+    dispatch(setHPLDictionary(parsedFungibleTokens));
+
     const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
     try {
       const auxState = await ingressActor.state({
@@ -109,7 +125,7 @@ export const AssetHook = () => {
       console.log("errState", e);
     }
 
-    const auxFT = getFtsFormated(state.ftSupplies, hplFTsData, dict, adminAccountState);
+    const auxFT = getFtsFormated(state.ftSupplies, hplFTsData, parsedFungibleTokens, adminAccountState);
     store.dispatch(setHPLAssets(auxFT));
   };
 

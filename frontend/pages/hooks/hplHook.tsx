@@ -48,7 +48,7 @@ export const useHPL = (open: boolean) => {
     ownerId,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
-  const { authClient } = useAppSelector((state) => state.auth);
+  const { authClient, hplDictionary } = useAppSelector((state) => state.auth);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);
   const [selAssetOpen, setSelAssetOpen] = useState(false);
   const [selAssetSearch, setSelAssetSearch] = useState("");
@@ -365,6 +365,7 @@ export const useHPL = (open: boolean) => {
     getSubFromVt,
     getFtFromVt,
     dictionaryHplFTs,
+    hplDictionary,
     hplFTsData,
     hplSubsData,
     hplVTsData,

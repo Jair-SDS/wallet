@@ -2,6 +2,7 @@
 import PlusIcon from "@assets/svg/files/plus-icon.svg"; // svgs
 import { ReactComponent as VerifiedIcon } from "@assets/svg/files/verified-icon.svg";
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
+import { ReactComponent as RefreshIcon } from "@/assets/svg/files/refresh-ccw.svg";
 //
 import { getDisplayNameFromFt, shortPrincipals } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
@@ -11,6 +12,8 @@ import AssetSymbol from "@components/AssetSymbol";
 import CustomHoverCard from "@components/HoverCard";
 import { CustomCopy } from "@components/CopyTooltip";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
+import { useState } from "react";
+import { AssetHook } from "@pages/home/hooks/assetHook";
 
 interface AssetListTableProps {
   assets: HPLAsset[];
@@ -36,7 +39,9 @@ const AssetListTable = ({
   dictionaryHplFTs,
 }: AssetListTableProps) => {
   const { t } = useTranslation();
-  const { getAssetLogo } = useHPL(false);
+  const { reloadDictFts } = AssetHook();
+  const { getAssetLogo, hplDictionary } = useHPL(false);
+  const [dictLoading, setDictLoading] = useState(false);
 
   const rightBorderStyle = "border-r-[2px] border-BorderColorTwoLight dark:border-BorderColorTwo";
 
@@ -46,7 +51,19 @@ const AssetListTable = ({
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
           <tr className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
             <th colSpan={5}>Ledger</th>
-            <th colSpan={4}>{t("directory")}</th>
+            <th colSpan={4}>
+              {
+                <div className="flex flex-row justify-center items-center gap-2">
+                  <p>{t("directory")}</p>
+                  <RefreshIcon
+                    className={`h-3 w-3 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor ${
+                      dictLoading ? "do-spin" : ""
+                    }`}
+                    onClick={handleReloadButton}
+                  />
+                </div>
+              }
+            </th>
             <th colSpan={2}>{t("wallet")}</th>
           </tr>
           <tr>
@@ -233,6 +250,12 @@ const AssetListTable = ({
     setEditView(true);
     setSelAsset(ft);
     setAssetOpen(true);
+  }
+
+  async function handleReloadButton() {
+    setDictLoading(true);
+    await reloadDictFts(hplDictionary);
+    setDictLoading(false);
   }
 };
 

@@ -8,8 +8,6 @@ import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
-import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
-import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
@@ -24,7 +22,6 @@ import {
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { useHPL } from "@pages/hooks/hplHook";
-import { getUpdatedFts, parseFungibleToken } from "@/utils";
 import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 
@@ -38,7 +35,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
   const { ownersActor } = useAppSelector((state) => state.asset);
   const { reloadDictFts } = AssetHook();
-  const { hplFTs, hplContacts } = useHPL(false);
+  const { hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [ledger, setLeder] = useState({ principal: hplLedger, err: false });
@@ -138,15 +135,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
       if (hplDictionary !== dictionary.principal)
         if (dictionary.principal !== "")
           try {
-            const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
-              agent: userAgent,
-              canisterId: dictionary.principal,
-            });
-            const dictFTs = await dictActor.allTokens();
-            localStorage.setItem("hpl-dict-pric-" + authClient, dictionary.principal);
-            const parsedFungibleTokens = parseFungibleToken(dictFTs);
-            dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
-            await reloadDictFts(parsedFungibleTokens);
+            await reloadDictFts(dictionary.principal);
             dispatch(setHplDictionaryPrincipal(dictionary.principal));
             setOpen("");
           } catch (e) {
@@ -159,12 +148,10 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             return;
           }
         else {
-          const auxFts = getUpdatedFts([], hplFTs);
-          dispatch(setHPLAssets(auxFts));
           dispatch(setHplDictionaryPrincipal(dictionary.principal));
           localStorage.removeItem("hpl-dict-pric-" + authClient);
           dispatch(setHPLDictionary([]));
-          reloadDictFts([]);
+          reloadDictFts();
           setOpen("");
         }
       else setOpen("");
