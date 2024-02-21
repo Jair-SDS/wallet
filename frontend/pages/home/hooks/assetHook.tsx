@@ -64,7 +64,7 @@ export const AssetHook = () => {
 
   const reloadBallance = async (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    await updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
     const principal = store.getState().auth.userPrincipal.toText();
     await allowanceCacheRefresh(principal);
