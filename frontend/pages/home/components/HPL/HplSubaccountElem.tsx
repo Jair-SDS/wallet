@@ -59,7 +59,7 @@ const HplSubaccountElem = ({
         )}
         <div className="flex flex-row justify-start w-full h-full text-md px-4">
           <div className="flex flex-row justify-start items-center gap-3 w-full">
-            <img src={getAssetLogo(sub.ft)} className="w-8 h-8" alt="info-icon" />
+            <img src={getAssetLogo(sub.ft)} className="min-w-[2rem] w-8 min-h-[2rem] h-8" alt="info-icon" />
             <div className="flex flex-col justify-start items-start text-md w-full gap-1">
               <div className="flex flex-row justify-between items-center w-full gap-2">
                 {editNameId === sub.sub_account_id ? (
@@ -92,11 +92,16 @@ const HplSubaccountElem = ({
                       <img src={PlusIcon} className="w-6 h-6 rotate-45" alt="info-icon" />
                     </div>
                   </div>
+                ) : sub.name === "" ? (
+                  <div className="flex justify-center items-center px-1 bg-slate-500 rounded">
+                    <p className="text-PrimaryTextColor text-md leading-4">{sub.sub_account_id}</p>
+                  </div>
                 ) : (
                   <div className="p-0  text-left " onDoubleClick={onDoubleClick}>
                     <p className="break-words">{`${sub.name != "" ? sub.name : "-"}`}</p>
                   </div>
                 )}
+
                 {editNameId != sub.sub_account_id && (
                   <div className="flex flex-row justify-start items-center">
                     <p
