@@ -40,7 +40,6 @@ import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
-import { getICRCSupportedStandards } from "@pages/home/helpers/icrc";
 
 export const updateAllBalances = async (
   myAgent: HttpAgent,
@@ -86,12 +85,6 @@ export const updateAllBalances = async (
   const myPrincipal = store.getState().auth.userPrincipal;
   const tokensAseets = await Promise.all(
     auxTokens.map(async (tkn, idNum) => {
-      let standards = tkn.supportedStandards;
-
-      if (fromLogin) {
-        standards = await getICRCSupportedStandards({ assetAddress: tkn.address, agent: myAgent });
-      }
-
       try {
         const { balance, metadata, transactionFee } = IcrcLedgerCanister.create({
           agent: myAgent,
@@ -236,7 +229,7 @@ export const updateAllBalances = async (
           subAccounts: (basicSearch ? userSubAcc : saTokens).sort((a, b) => {
             return hexToNumber(a.numb)?.compare(hexToNumber(b.numb) || bigInt()) || 0;
           }),
-          supportedStandards: standards,
+          supportedStandards: tkn.supportedStandards,
         };
 
         const newAsset: Asset = {
@@ -253,7 +246,7 @@ export const updateAllBalances = async (
           tokenName: name,
           tokenSymbol: symbol,
           logo: logo,
-          supportedStandards: standards,
+          supportedStandards: tkn.supportedStandards,
         };
         return { newToken, newAsset };
       } catch (e) {
@@ -279,7 +272,7 @@ export const updateAllBalances = async (
           sort_index: 99999 + idNum,
           tokenName: tkn.name,
           tokenSymbol: tkn.symbol,
-          supportedStandards: standards,
+          supportedStandards: tkn.supportedStandards,
         };
         return { newToken: tkn, newAsset };
       }

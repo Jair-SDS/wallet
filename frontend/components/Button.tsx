@@ -4,14 +4,15 @@ import { cva, type VariantProps } from "cva";
 const button = cva("button", {
   variants: {
     intent: {
-      accept: ["bg-AccpetButtonColor", "text-white"],
+      accept: ["bg-slate-color-info", "text-white"],
       deny: ["bg-DenyButtonColor", "text-white"],
-      success: ["bg-slate-color-info", "text-white"],
+      success: ["bg-slate-color-success", "text-white"],
       neutral: ["dark:bg-HoverColor", "dark:text-white", "bg-BorderColorLight", "text-PrimaryTextColorLight"],
       noBG: ["bg-transparent", "text-AccpetButtonColor"],
     },
     size: {
       icon: ["p-2", "rounded-md"],
+      xSmall: ["text-sm", "py-0.5", "px-1", "rounded-md"],
       small: ["text-md", "py-1", "px-2", "rounded-md"],
       medium: ["text-lg", "py-2", "px-4", "rounded-lg", "font-semibold"],
       large: ["text-xl", "py-3", "px-5", "rounded-lg", "font-semibold"],
