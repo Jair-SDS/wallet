@@ -61,12 +61,9 @@ const HplSubaccountElem = ({
           <div className="flex flex-row justify-start items-center gap-3 w-full">
             <img src={getAssetLogo(sub.ft)} className="w-8 h-8" alt="info-icon" />
             <div className="flex flex-col justify-start items-start text-md w-full gap-1">
-              <div className="flex flex-row justify-start items-center w-full gap-2">
-                <div className="flex justify-center items-center px-1 bg-slate-500 rounded">
-                  <p className="text-PrimaryTextColor text-md leading-4">{sub.sub_account_id}</p>
-                </div>
+              <div className="flex flex-row justify-between items-center w-full gap-2">
                 {editNameId === sub.sub_account_id ? (
-                  <div className="flex flex-row justify-start items-center w-full gap-2">
+                  <div className="flex flex-row justify-start w-full items-center  gap-2">
                     <CustomInput
                       intent={"primary"}
                       placeholder={""}
@@ -96,28 +93,28 @@ const HplSubaccountElem = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="p-0 w-full text-left " onDoubleClick={onDoubleClick}>
+                  <div className="p-0  text-left " onDoubleClick={onDoubleClick}>
                     <p className="break-words">{`${sub.name != "" ? sub.name : "-"}`}</p>
                   </div>
                 )}
                 {editNameId != sub.sub_account_id && (
-                  <p className=" whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
+                  <div className="flex flex-row justify-start items-center">
+                    <p
+                      className={`${
+                        sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
+                      } text-left w-full break-words`}
+                    >
+                      {getFirstNChars(getDisplayNameFromFt(getFtFromSub(sub.ft), t), 18)}
+                    </p>
+                    <div className="p-0" onClick={setEditFt}>
+                      <img src={InfoIcon} className="ml-1 !min-h-[0.7rem] !min-w-[0.7rem]" alt="info-icon" />
+                    </div>
+                  </div>
                 )}
               </div>
 
               <div className="flex flex-row justify-between items-center w-full gap-2">
-                <div className="flex flex-row justify-start items-center">
-                  <p
-                    className={`${
-                      sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
-                    } text-left w-full break-words`}
-                  >
-                    {getFirstNChars(getDisplayNameFromFt(getFtFromSub(sub.ft), t), 18)}
-                  </p>
-                  <div className="p-0" onClick={setEditFt}>
-                    <img src={InfoIcon} className="ml-1" alt="info-icon" />
-                  </div>
-                </div>
+                <p className=" whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
                 <AssetSymbol
                   ft={getFtFromSub(sub.ft)}
                   textClass={`${sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : "font-semibold"}`}
