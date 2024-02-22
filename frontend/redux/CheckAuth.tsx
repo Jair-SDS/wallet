@@ -182,6 +182,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
         //
       }
     }
+    console.log("hplContactsLH", hplContactsDataJson);
     // HPL OWNERS
     const ownerActor = Actor.createActor<OwnersActor>(OwnersIDLFactory, {
       agent: myAgent,

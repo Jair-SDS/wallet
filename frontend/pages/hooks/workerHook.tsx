@@ -89,6 +89,8 @@ export const WorkerHook = () => {
       nVirtualAccounts: store.getState().asset.nHpl.nVirtualAccounts || "0",
       nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
+    console.log("updateHPLBalances-worker", hplContacts);
+
     await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
 
     dispatch(setLoading(false));

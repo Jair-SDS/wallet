@@ -52,17 +52,15 @@ const AssetListTable = ({
           <tr className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
             <th colSpan={5}>Ledger</th>
             <th colSpan={4}>
-              {
-                <div className="flex flex-row justify-center items-center gap-2">
-                  <p>{t("directory")}</p>
-                  <RefreshIcon
-                    className={`h-3 w-3 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor ${
-                      dictLoading ? "do-spin" : ""
-                    }`}
-                    onClick={handleReloadButton}
-                  />
-                </div>
-              }
+              <div className="flex flex-row justify-center items-center gap-2">
+                <p>{t("directory")}</p>
+                <RefreshIcon
+                  className={`h-3 w-3 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor ${
+                    dictLoading ? "do-spin" : ""
+                  }`}
+                  onClick={handleReloadButton}
+                />
+              </div>
             </th>
             <th colSpan={2}>{t("wallet")}</th>
           </tr>

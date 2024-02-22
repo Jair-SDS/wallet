@@ -748,7 +748,6 @@ export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {
       token_name: ftDict ? ftDict.name : asst.token_name,
     });
   });
-
   return auxFT;
 };
 

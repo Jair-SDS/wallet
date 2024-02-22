@@ -46,12 +46,12 @@ const AddRemoteList = ({
               </th>
               <th className="p-2 text-center w-[7%] bg-SecondaryColorLight dark:bg-ThirdColor">
                 <div className="flex flex-row justify-center items-center">
-                  <button className="flex flex-row justify-center items-center p-0" onClick={onAllCheck}>
+                  <div className="flex flex-row justify-center items-center p-0" onClick={onAllCheck}>
                     <CustomCheck
                       className="border-BorderColorLight dark:border-BorderColor"
                       checked={checkIds.length === chainRemotes.length}
                     />
-                  </button>
+                  </div>
                 </div>
               </th>
             </tr>
