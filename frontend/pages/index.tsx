@@ -4,11 +4,12 @@ import LayoutComponent from "./components/LayoutComponent";
 import history from "./history";
 import { useAppSelector } from "@redux/Store";
 import { ThemeHook } from "./hooks/themeHook";
+import { DbLocationHook } from "./hooks/dbLocationHook";
 import Loader from "./components/Loader";
 import { RoutingPathEnum, ThemesEnum } from "@/const";
 import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
-import { db } from "@/database/db";
+import { db, DB_Type } from "@/database/db";
 
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
@@ -17,6 +18,7 @@ const Assets = lazy(() => import("./assets"));
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
   const { changeTheme } = ThemeHook();
+  const { changeDbLocation } = DbLocationHook();
 
   useEffect(() => {
     const theme = db().getTheme();
@@ -32,6 +34,10 @@ const SwitchRoute = () => {
       db().setTheme(ThemesEnum.enum.light);
       changeTheme(ThemesEnum.enum.light);
     }
+
+    // Default to LOCAL dbLocation if has not been set yet
+    !db().getDbLocation() && db().setDbLocation(DB_Type.LOCAL);
+    changeDbLocation(db().getDbLocation() || DB_Type.LOCAL);
   }, []);
 
   return authLoading ? (
@@ -41,7 +47,7 @@ const SwitchRoute = () => {
       {blur && <div className="fixed w-full h-full bg-black/50 z-[900]"></div>}
       <Router history={history}>
         {!superAdmin && authenticated && (
-          <LayoutComponent>
+          <LayoutComponent isLoginPage={false}>
             <Switch>
               <PrivateRoute
                 exact
