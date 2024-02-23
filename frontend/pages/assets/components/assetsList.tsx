@@ -73,7 +73,7 @@ const AssetListTable = ({
             </th>
             <th className="p-0.5 py-2 w-[13%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("supply")}</p>
-            </th>{" "}
+            </th>
             <th className="p-0.5 py-2 w-[12%] text-right bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
               <p>{t("ledger.balance")}</p>
             </th>

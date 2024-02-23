@@ -93,11 +93,14 @@ const HplSubaccountElem = ({
                     </div>
                   </div>
                 ) : sub.name === "" ? (
-                  <div className="flex justify-center items-center px-1 bg-slate-500 rounded">
+                  <div
+                    className="flex justify-center items-center px-1 bg-slate-500 rounded "
+                    onDoubleClick={onDoubleClick}
+                  >
                     <p className="text-PrimaryTextColor text-md leading-4">{sub.sub_account_id}</p>
                   </div>
                 ) : (
-                  <div className="p-0  text-left " onDoubleClick={onDoubleClick}>
+                  <div className="p-0  text-left min-w-[10rem]" onDoubleClick={onDoubleClick}>
                     <p className="break-words">{`${sub.name != "" ? sub.name : "-"}`}</p>
                   </div>
                 )}
