@@ -130,6 +130,14 @@ const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
                 >
                   <p>{t("themes")}</p>
                 </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={clsx(gearPopItem, "!justify-between")}
+                  onSelect={() => {
+                    setThemeOpen("SETTINGS");
+                  }}
+                >
+                  <p>{t("hpl.settings")}</p>
+                </DropdownMenu.Item>
                 {isLoginPage ? (
                   <DropdownMenu.Item
                     className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
