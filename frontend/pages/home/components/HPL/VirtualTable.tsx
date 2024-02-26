@@ -1,9 +1,8 @@
 // svgs
 import { ReactComponent as MoreIcon } from "@assets/svg/files/more-alt.svg";
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
+import { ReactComponent as ResetIcon } from "@assets/svg/files/refund-2-fill.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
-import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
-import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
 import { getDecimalAmount, shortAddress } from "@/utils";
@@ -13,14 +12,13 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { FC, Fragment, useEffect, useState } from "react";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import Modal from "@components/Modal";
-import { CustomButton } from "@components/Button";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
-import LoadingLoader from "@components/Loader";
 import { DrawerOption, DrawerOptionEnum } from "@/const";
 import AssetSymbol from "@components/AssetSymbol";
 import { CustomCopy } from "@components/CopyTooltip";
+import DeleteVirtualModal from "./Modals/deleteVirtual";
+import ResetVirtualModal from "./Modals/resetVirtual";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -36,23 +34,12 @@ const VirtualTable: FC<VirtualTableProps> = ({
   setDrawerOption,
 }) => {
   const { t } = useTranslation();
-  const { authClient } = AccountHook();
-  const {
-    ingressActor,
-    selectSub,
-    sortVt,
-    setSortVt,
-    getFtFromSub,
-    setSelVt,
-    selectVt,
-    hplVTsData,
-    hplContacts,
-    reloadHPLBallance,
-  } = useHPL(false);
+  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts } = useHPL(false);
 
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
+  const [resetModal, setResetModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -160,6 +147,15 @@ const VirtualTable: FC<VirtualTableProps> = ({
                             <p>{t("edit")}</p>
                           </div>
                           <div
+                            className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
+                            onClick={() => {
+                              onReset(vt);
+                            }}
+                          >
+                            <ResetIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
+                            <p>{t("reset")}</p>
+                          </div>
+                          <div
                             className="flex flex-row justify-start items-center gap-2 p-2 hover:bg-TextErrorColor/10 rounded-b-md cursor-pointer"
                             onClick={() => {
                               onDelete(vt);
@@ -179,35 +175,34 @@ const VirtualTable: FC<VirtualTableProps> = ({
         </tbody>
       </table>
       <Modal
-        open={deleteModal}
+        open={deleteModal || resetModal}
         width="w-[22rem]"
         padding="p-5"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
       >
-        <div className="flex flex-col justify-start items-start w-full gap-4 text-md">
-          <div className="flex flex-row justify-between items-center w-full">
-            <WarningIcon className="w-6 h-6" />
-            <CloseIcon
-              className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
-              onClick={() => {
-                setDeleteModal(false);
-              }}
-            />
-          </div>
-          <p className=" text-justify w-full">
-            {t("delete.virtual.1")}{" "}
-            <span className="font-semibold">
-              {selectVt?.name != "" ? selectVt?.name : `[ ${selectVt?.virt_sub_acc_id || "0"} ]`}?
-            </span>{" "}
-            {t("delete.virtual.2")}
-          </p>
-          <div className="w-full flex flex-row justify-between items-center gap-2">
-            <p className="text-sm text-TextErrorColor">{errMsg}</p>
-            <CustomButton className="min-w-[5rem]" onClick={onConfirmDelete} size={"small"}>
-              {loading ? <LoadingLoader className="mt-1" /> : <p>{t("yes")}</p>}
-            </CustomButton>
-          </div>
-        </div>
+        {deleteModal ? (
+          <DeleteVirtualModal
+            selectVt={selectVt}
+            loading={loading}
+            errMsg={errMsg}
+            setSelVt={setSelVt}
+            setLoading={setLoading}
+            setDeleteModal={setDeleteModal}
+            setErrMsg={setErrMsg}
+          />
+        ) : resetModal ? (
+          <ResetVirtualModal
+            selectVt={selectVt}
+            loading={loading}
+            errMsg={errMsg}
+            setSelVt={setSelVt}
+            setLoading={setLoading}
+            setResetModal={setResetModal}
+            setErrMsg={setErrMsg}
+          />
+        ) : (
+          <div></div>
+        )}
       </Modal>
     </Fragment>
   );
@@ -287,32 +282,16 @@ const VirtualTable: FC<VirtualTableProps> = ({
     setOpenMore(-1);
   }
 
+  function onReset(vt: HPLVirtualSubAcc) {
+    setSelVt(vt);
+    setOpenMore(-1);
+    setResetModal(true);
+  }
+
   function onDelete(vt: HPLVirtualSubAcc) {
     setSelVt(vt);
     setOpenMore(-1);
     setDeleteModal(true);
-  }
-
-  async function onConfirmDelete() {
-    setLoading(true);
-    if (selectVt) {
-      try {
-        await ingressActor.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id));
-        const auxVts = hplVTsData.filter((vt) => vt.id != selectVt.virt_sub_acc_id);
-        localStorage.setItem(
-          "hplVT-" + authClient,
-          JSON.stringify({
-            vt: auxVts,
-          }),
-        );
-        reloadHPLBallance(true);
-        setDeleteModal(false);
-        setSelVt(undefined);
-      } catch {
-        setErrMsg("err.back");
-      }
-    }
-    setLoading(false);
   }
 
   // Tailwind CSS

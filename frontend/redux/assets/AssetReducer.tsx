@@ -64,7 +64,7 @@ interface AssetState {
 
 const initialState: AssetState = {
   storageCode: "",
-  protocol: ProtocolTypeEnum.Enum.ICRC1,
+  protocol: ProtocolTypeEnum.Enum.HPL,
   // ICRC 1
   initLoad: true,
   ICPSubaccounts: [],
@@ -522,7 +522,7 @@ const assetSlice = createSlice({
       state.hplVTsData = [];
       state.acordeonIdx = [];
       state.ownerId = "";
-      state.protocol = ProtocolTypeEnum.Enum.ICRC1;
+      state.protocol = ProtocolTypeEnum.Enum.HPL;
     },
   },
 });

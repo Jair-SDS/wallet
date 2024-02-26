@@ -143,7 +143,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           }
         else {
           dispatch(setHplDictionaryPrincipal(dictionary.principal));
-          localStorage.removeItem("hpl-dict-pric-" + authClient);
+          localStorage.setItem("hpl-dict-pric-" + authClient, "");
           dispatch(setHPLDictionary([]));
           reloadDictFts();
           setOpen("");

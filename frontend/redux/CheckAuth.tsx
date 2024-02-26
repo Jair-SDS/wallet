@@ -143,10 +143,10 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
       store.dispatch(setHPLAssetsData(hplFTsDataJson));
     }
     // HPL DICTIONARY
-    const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + identityPrincipalStr);
+    const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + identityPrincipalStr) || "lpwlq-2iaaa-aaaap-ab2vq-cai";
 
-    store.dispatch(setHplDictionaryPrincipal(hplDictPrin || ""));
-    if (hplDictPrin) {
+    store.dispatch(setHplDictionaryPrincipal(hplDictPrin));
+    if (hplDictPrin && hplDictPrin !== "") {
       try {
         const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
           agent: myAgent,
@@ -156,7 +156,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
         store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
       } catch (e) {
         console.log("dictFTs-err:", e);
-        localStorage.removeItem("hpl-dict-pric-" + identityPrincipalStr);
+        localStorage.setItem("hpl-dict-pric-" + identityPrincipalStr, "");
       }
     }
     // HPL SUBACCOUNTS
