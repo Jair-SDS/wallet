@@ -4,7 +4,7 @@ import { ReactComponent as VerifiedIcon } from "@assets/svg/files/verified-icon.
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 import { ReactComponent as RefreshIcon } from "@/assets/svg/files/refresh-ccw.svg";
 //
-import { getDisplayNameFromFt, shortPrincipals } from "@/utils";
+import { getDecimalAmount, getDisplayNameFromFt, shortPrincipals } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -50,8 +50,10 @@ const AssetListTable = ({
       <table className="w-full  text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo sticky top-0 z-[1]">
           <tr className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
-            <th colSpan={5}>Ledger</th>
-            <th colSpan={4}>
+            <th className="bg-PrimaryColorLight dark:bg-PrimaryColor" colSpan={5}>
+              Ledger
+            </th>
+            <th className="bg-PrimaryColorLight dark:bg-PrimaryColor" colSpan={4}>
               <div className="flex flex-row justify-center items-center gap-2">
                 <p>{t("directory")}</p>
                 <RefreshIcon
@@ -62,7 +64,9 @@ const AssetListTable = ({
                 />
               </div>
             </th>
-            <th colSpan={2}>{t("wallet")}</th>
+            <th className="bg-PrimaryColorLight dark:bg-PrimaryColor" colSpan={2}>
+              {t("wallet")}
+            </th>
           </tr>
           <tr>
             <th className="p-0.5 py-2 w-[4%] bg-PrimaryColorLight dark:bg-PrimaryColor font-normal">
@@ -129,25 +133,37 @@ const AssetListTable = ({
                 </td>
                 <td className="p-0.5">
                   <div className="flex flex-col justify-start items-start w-full gap-2">
-                    {contactName && <p>{contactName}</p>}
-                    <div className="flex flex-row justify-start items-center w-full gap-2">
-                      <p className="text-left">
-                        {ft.controller.split("-").length > 4
-                          ? shortPrincipals(ft.controller, 2, 2, "", "", 6)
-                          : ft.controller}
-                      </p>
-                      <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
-                    </div>
+                    {contactName ? (
+                      <CustomHoverCard arrowFill="fill-SelectRowColor" side="right" trigger={<p>{contactName}</p>}>
+                        <div className="flex flex-row justify-center items-center max-w-xl p-2 bg-PrimaryColorLight dark:bg-PrimaryColor border border-SelectRowColor rounded gap-2">
+                          <p className="text-left text-sm">
+                            {ft.controller.split("-").length > 4
+                              ? shortPrincipals(ft.controller, 2, 2, "", "", 6)
+                              : ft.controller}
+                          </p>
+                          <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
+                        </div>
+                      </CustomHoverCard>
+                    ) : (
+                      <div className="flex flex-row justify-start items-center w-full gap-2">
+                        <p className="text-left">
+                          {ft.controller.split("-").length > 4
+                            ? shortPrincipals(ft.controller, 2, 2, "", "", 6)
+                            : ft.controller}
+                        </p>
+                        <CustomCopy size={"small"} copyText={ft.controller} className="opacity-60" />
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full">
-                    <p>{ft.supply}</p>
+                    <p>{getDecimalAmount(ft.supply, ft.decimal)}</p>
                   </div>
                 </td>
                 <td className="p-0.5">
                   <div className="flex flex-row justify-end items-center w-full">
-                    <p>{ft.ledgerBalance}</p>
+                    <p>{getDecimalAmount(ft.ledgerBalance, ft.decimal)}</p>
                   </div>
                 </td>
                 <td className={`pl-0.5 pr-2 ${rightBorderStyle}`}>
