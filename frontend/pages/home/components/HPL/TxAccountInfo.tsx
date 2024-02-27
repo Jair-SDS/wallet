@@ -2,11 +2,15 @@
 import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg";
 //
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomInput } from "@components/Input";
 import AssetSymbol from "@components/AssetSymbol";
+import { HplTransactionsEnum } from "@/const";
+import { Principal } from "@dfinity/principal";
+import { ActorSubclass } from "@dfinity/agent";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 
 interface TxAccountInfoProps {
   txUser: HplTxUser;
@@ -14,9 +18,11 @@ interface TxAccountInfoProps {
   getFtFromSub(sub: string): HPLAsset;
   ftId: string;
   rmtAmount: string;
+  setRmtAmount(value: string): void;
   amnt: string;
   onAmountChange(e: ChangeEvent<HTMLInputElement>): void;
   onMaxAmount(): void;
+  ingressActor: ActorSubclass<IngressActor>;
   sent?: boolean;
 }
 
@@ -25,13 +31,20 @@ const TxAccountInfo = ({
   getAssetLogo,
   ftId,
   getFtFromSub,
+  setRmtAmount,
   rmtAmount,
   amnt,
   onAmountChange,
   onMaxAmount,
+  ingressActor,
   sent,
 }: TxAccountInfoProps) => {
   const { t } = useTranslation();
+  useEffect(() => {
+    if (txUser.type === HplTransactionsEnum.Enum.VIRTUAL) {
+      getVirtualAmount(txUser, setRmtAmount);
+    }
+  }, [txUser]);
 
   const amountField = () => {
     return (
@@ -118,6 +131,22 @@ const TxAccountInfo = ({
       {amountField()}
     </div>
   );
+
+  async function getVirtualAmount(rmt: HplTxUser, set: (val: string) => void) {
+    try {
+      const auxState = await ingressActor.state({
+        ftSupplies: [],
+        virtualAccounts: [],
+        accounts: [],
+        remoteAccounts: [{ id: [Principal.fromText(rmt.principal), BigInt(rmt.vIdx)] }],
+      });
+      console.log("amount", auxState.remoteAccounts[0][1][0].ft.toString());
+
+      set(auxState.remoteAccounts[0][1][0].ft.toString() || "0");
+    } catch (e) {
+      set("0");
+    }
+  }
 };
 
 export default TxAccountInfo;

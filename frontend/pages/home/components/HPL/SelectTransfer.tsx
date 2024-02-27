@@ -38,6 +38,7 @@ interface SelectTransferProps {
   setClearCam(value: boolean): void;
   checkIfIsContact(code: string): { rmt: HplRemote; prin: string; contactName: string } | undefined;
   errMsg: string;
+  loadingNext: boolean;
 }
 
 const SelectTransfer: FC<SelectTransferProps> = ({
@@ -62,6 +63,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
   setClearCam,
   setErrMsg,
   checkIfIsContact,
+  loadingNext,
 }) => {
   const { t } = useTranslation();
   const [subsOpen, setSubsOpen] = useState(false);
@@ -246,6 +248,7 @@ const SelectTransfer: FC<SelectTransferProps> = ({
             otherCode={otherCode}
             setClearCam={setClearCam}
             checkIfIsContact={checkIfIsContact}
+            loadingNext={loadingNext}
           />
         )}
         <div className="flex flex-row justify-between items-center w-full">

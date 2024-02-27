@@ -13,6 +13,7 @@ import { getDecimalAmount, getHoleAmount, validateAmount } from "@/utils";
 import { useAppSelector } from "@redux/Store";
 import DialogSendConfirmation from "../ICRC/detail/transaction/DialogSendConfirmation";
 import { ProtocolTypeEnum, SendingStatusEnum } from "@/const";
+import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import {
   setAmountAction,
   setEndTxTime,
@@ -22,6 +23,7 @@ import {
   setInitTxTime,
   setSendingStatusAction,
 } from "@redux/transaction/TransactionActions";
+import { ActorSubclass } from "@dfinity/agent";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -30,7 +32,9 @@ interface TxSummaryProps {
   getFtFromSub(sub: string): HPLAsset;
   ftId: string;
   rmtAmountFrom: string;
+  setRmtAmountFrom(value: string): void;
   rmtAmountTo: string;
+  setRmtAmountTo(value: string): void;
   amount: string;
   decimals: number;
   setAmount(val: string): void;
@@ -45,6 +49,7 @@ interface TxSummaryProps {
   onClose(): void;
   reloadHPLBallance(): void;
   setDrawerOpen(val: boolean): void;
+  ingressActor: ActorSubclass<IngressActor>;
 }
 
 const TxSummary = ({
@@ -55,6 +60,8 @@ const TxSummary = ({
   ftId,
   rmtAmountFrom,
   rmtAmountTo,
+  setRmtAmountFrom,
+  setRmtAmountTo,
   amount,
   decimals,
   setAmount,
@@ -69,12 +76,14 @@ const TxSummary = ({
   onClose,
   reloadHPLBallance,
   setDrawerOpen,
+  ingressActor,
 }: TxSummaryProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [fee, setFee] = useState("0");
   const [sendDialog, showSendDialog] = useState(false);
   const { feeConstant } = useAppSelector((state) => state.asset);
+
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
@@ -89,6 +98,8 @@ const TxSummary = ({
           onAmountChange={onAmountChange}
           sent={true}
           onMaxAmount={onMaxAmount}
+          setRmtAmount={setRmtAmountFrom}
+          ingressActor={ingressActor}
         />
       </div>
       <div className="flex justify-center items-center w-full">
@@ -114,6 +125,8 @@ const TxSummary = ({
           amnt={amountReceiver}
           onAmountChange={onAmountReceiverChange}
           onMaxAmount={onMaxAmount}
+          setRmtAmount={setRmtAmountTo}
+          ingressActor={ingressActor}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">

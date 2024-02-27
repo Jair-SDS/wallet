@@ -68,7 +68,7 @@ const DeleteVirtualModal = ({
             vt: auxVts,
           }),
         );
-        reloadHPLBallance(true);
+        await reloadHPLBallance(true);
         setDeleteModal(false);
         setSelVt(undefined);
       } catch {

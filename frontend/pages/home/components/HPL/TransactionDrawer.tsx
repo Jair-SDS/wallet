@@ -81,6 +81,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           ftId={ftId}
           rmtAmountFrom={rmtAmountFrom}
           rmtAmountTo={rmtAmountTo}
+          setRmtAmountFrom={setRmtAmountFrom}
+          setRmtAmountTo={setRmtAmountTo}
           amount={amount}
           decimals={decimals}
           setAmount={setAmount}
@@ -95,6 +97,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
           onClose={onClose}
           reloadHPLBallance={reloadHPLBallance}
           setDrawerOpen={setDrawerOpen}
+          ingressActor={ingressActor}
         />
       );
     }
@@ -132,6 +135,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             setErrMsg={setErrMsgFrom}
             setClearCam={setClearCam}
             checkIfIsContact={checkIfIsContact}
+            loadingNext={loadingNext}
           />
           <SelectTransfer
             getAssetLogo={getAssetLogo}
@@ -155,6 +159,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             setErrMsg={setErrMsgTo}
             setClearCam={setClearCam}
             checkIfIsContact={checkIfIsContact}
+            loadingNext={loadingNext}
           />
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
@@ -175,6 +180,18 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     setDrawerOpen(false);
     setManualToFt(undefined);
     setManualFromFt(undefined);
+    setFrom({
+      type: HplTransactionsEnum.Enum.SUBACCOUNT,
+      principal: "",
+      vIdx: "",
+      subaccount: undefined,
+    });
+    setTo({
+      type: HplTransactionsEnum.Enum.SUBACCOUNT,
+      principal: "",
+      vIdx: "",
+      subaccount: undefined,
+    });
   }
 
   async function validateData(selection: string) {
@@ -216,30 +233,16 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
     if (valid) {
       setFtId(fromFtId.ft ? fromFtId.ft : toFtId.ft);
       setDecimals(getFtFromSub(fromFtId.ft).decimal);
-      if (from.type === HplTransactionsEnum.Enum.VIRTUAL) {
-        await getVirtualAmount(from, setRmtAmountFrom);
-      }
-      if (to.type === HplTransactionsEnum.Enum.VIRTUAL) {
-        await getVirtualAmount(to, setRmtAmountTo);
-      }
+      // if (from.type === HplTransactionsEnum.Enum.VIRTUAL) {
+      //   await getVirtualAmount(from, setRmtAmountFrom);
+      // }
+      // if (to.type === HplTransactionsEnum.Enum.VIRTUAL) {
+      //   await getVirtualAmount(to, setRmtAmountTo);
+      // }
       setSummary(true);
     }
 
     setLoadingNext(false);
-  }
-
-  async function getVirtualAmount(rmt: HplTxUser, set: (val: string) => void) {
-    try {
-      const auxState = await ingressActor.state({
-        ftSupplies: [],
-        virtualAccounts: [],
-        accounts: [],
-        remoteAccounts: [{ id: [Principal.fromText(rmt.principal), BigInt(rmt.vIdx)] }],
-      });
-      set(auxState.remoteAccounts[0][1][0].ft.toString() || "0");
-    } catch (e) {
-      set("0");
-    }
   }
 
   async function onQRSuccess(value: string) {

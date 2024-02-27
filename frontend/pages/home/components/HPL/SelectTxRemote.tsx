@@ -44,6 +44,7 @@ interface SelectTxRemoteProps {
   setClearCam(value: boolean): void;
   checkIfIsContact(code: string): { rmt: HplRemote; prin: string; contactName: string } | undefined;
   errMsg: string;
+  loadingNext: boolean;
 }
 
 const SelectTxRemote = ({
@@ -66,6 +67,7 @@ const SelectTxRemote = ({
   setClearCam,
   otherCode,
   checkIfIsContact,
+  loadingNext,
 }: SelectTxRemoteProps) => {
   const { t } = useTranslation();
   const [code, setCode] = useState(select.code || "");
@@ -208,7 +210,7 @@ const SelectTxRemote = ({
             </div>
           }
         />
-        {manualFt && rmtAmount !== "" && (
+        {!loadingNext && manualFt && rmtAmount !== "" && (
           <div className=" flex flex-col justify-start items-start gap-1 pl-2">
             <div className="flex flex-row justify-start items-center gap-1 ">
               <img src={getAssetLogo(manualFt)} className="w-5 h-5" alt="info-icon" />

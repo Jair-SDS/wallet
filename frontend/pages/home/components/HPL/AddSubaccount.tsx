@@ -111,14 +111,11 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className=" flex flex-row justify-start items-center w-full gap-2 text-sm">
                         <img src={getAssetLogo(selAsset.id)} className="w-8 h-8" alt="info-icon" />
-                        <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
-                          <p className=" text-PrimaryTextColor">{selAsset.id.toString()}</p>
-                        </div>
-                        <p>
-                          {`${selAsset.name !== "" ? selAsset.name : ""}${
-                            selAsset.name !== "" && selAsset.symbol !== "" ? " / " : ""
-                          }${selAsset.symbol !== "" ? selAsset.symbol : ""}`}
-                        </p>
+
+                        <AssetSymbol ft={selAsset} />
+                        {(selAsset.name !== "" || selAsset.token_name !== "") && (
+                          <p>{`[ ${selAsset.name !== "" ? selAsset.name : selAsset.token_name} ]`}</p>
+                        )}
                       </div>
                       <img
                         src={ChevIcon}
