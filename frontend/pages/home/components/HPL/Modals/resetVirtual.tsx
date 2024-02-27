@@ -5,7 +5,6 @@ import LoadingLoader from "@components/Loader";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
-import { AccountHook } from "@pages/hooks/accountHook";
 
 interface ResetVirtualModalProps {
   selectVt: HPLVirtualSubAcc | undefined;
