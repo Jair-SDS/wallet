@@ -22,6 +22,9 @@ import LoadingLoader from "@components/Loader";
 import BackingSelector from "./BackingSelector";
 import AccesBySelector from "./AccesBySelector";
 import AssetSymbol from "@components/AssetSymbol";
+import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
+import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
+import { Actor } from "@dfinity/agent";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -31,7 +34,7 @@ interface DrawerVirtualProps {
 const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   const { t } = useTranslation();
   const { theme } = ThemeHook();
-  const { authClient } = AccountHook();
+  const { authClient, userAgent } = AccountHook();
   const {
     ingressActor,
     selectSub,
@@ -87,6 +90,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
         accesBy: "",
         backing: "",
         code: "",
+        isMint: false,
       });
     }
   }, [drawerOpen, selectVt]);
@@ -151,10 +155,10 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               )}
             </div>
           </LocalizationProvider>
-          <button className="p-0 flex flex-row gap-2" onClick={onChangeExpirationCheck}>
+          <div className="p-0 flex flex-row gap-2 cursor-pointer" onClick={onChangeExpirationCheck}>
             <CustomCheck className="border-BorderColorLight dark:border-BorderColor" checked={expiration} />
             <p className="text-md">{t("no.expiration")}</p>
-          </button>
+          </div>
         </div>
       </div>
       {!selectVt ? (
@@ -225,6 +229,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             name: newVt.name,
             ftId: getFtFromVt(newVt.backing).id,
             accesBy: selectVt.accesBy,
+            isMint: newVt.isMint,
           },
           selectVt,
           true,
@@ -240,8 +245,26 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             BigInt(newVt.backing),
             BigInt(newVt.expiration * 1000000),
           )) as any;
+
+          const mintActor = Actor.createActor<HplMintActor>(HplMintIDLFactory, {
+            agent: userAgent,
+            canisterId: newVt.accesBy,
+          });
+          let isMint = false;
+          try {
+            isMint = await mintActor.isHplMinter();
+          } catch (error) {
+            isMint = false;
+          }
+
           saveInLocalstorage(
-            { id: res.ok.id.toString(), name: newVt.name, ftId: getFtFromVt(newVt.backing).id, accesBy: newVt.accesBy },
+            {
+              id: res.ok.id.toString(),
+              name: newVt.name,
+              ftId: getFtFromVt(newVt.backing).id,
+              accesBy: newVt.accesBy,
+              isMint: isMint,
+            },
             selectVt!,
             false,
             isFirstVt,

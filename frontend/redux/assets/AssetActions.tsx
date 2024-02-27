@@ -1,5 +1,5 @@
 /* eslint-disable no-empty */
-import { ActorSubclass, HttpAgent } from "@dfinity/agent";
+import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { Token, TokenMarketInfo, TokenSubAccount } from "@redux/models/TokenModels";
 import { IcrcAccount, IcrcIndexCanister, IcrcLedgerCanister } from "@dfinity/ledger";
@@ -39,6 +39,8 @@ import bigInt from "big-integer";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
+import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
+import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
 
 export const updateAllBalances = async (
@@ -415,10 +417,12 @@ export const updateHPLBalances = async (
     }
   }
 
+  let vtData = store.getState().asset.hplVTsData;
   let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
   if (
     nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) ||
-    (updateInfo && nInfo.nVirtualAccounts !== BigInt(0))
+    (updateInfo && nInfo.nVirtualAccounts !== BigInt(0)) ||
+    vtData.length === 0
   ) {
     try {
       vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] });
@@ -477,10 +481,46 @@ export const updateHPLBalances = async (
       );
       store.dispatch(setHPLSubsData(subData));
     }
-    let vtData = store.getState().asset.hplVTsData;
 
+    const myAgent = store.getState().auth.userAgent;
+
+    const getMintPrinc = async () => {
+      if (!vtInfo) return [];
+      const auxPric: string[] = [];
+      vtInfo.map((vt) => {
+        auxPric.push(vt[1][1].toText());
+      });
+
+      const checkPrinc = await Promise.all(
+        auxPric
+          .filter((item, index) => auxPric.indexOf(item) === index)
+          .map(async (vt) => {
+            const canisterPrinc = vt;
+            // HPL MINTER
+            const mintActor = Actor.createActor<HplMintActor>(HplMintIDLFactory, {
+              agent: myAgent,
+              canisterId: canisterPrinc,
+            });
+            let isMint = false;
+            try {
+              isMint = await mintActor.isHplMinter();
+            } catch {
+              isMint = false;
+            }
+            if (isMint) return canisterPrinc;
+          }),
+      );
+
+      return checkPrinc;
+    };
     if (vtInfo && vtInfo.length > 0) {
-      vtData = formatVirtualAccountInfo(vtInfo, vtData);
+      const mintsAll = await getMintPrinc();
+      const finalMints: string[] = [];
+      mintsAll.map((mnt) => {
+        if (mnt) finalMints.push(mnt);
+      });
+
+      vtData = formatVirtualAccountInfo(vtInfo, vtData, finalMints);
       localStorage.setItem(
         "hplVT-" + principal,
         JSON.stringify({

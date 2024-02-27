@@ -2,6 +2,7 @@
 import { ReactComponent as MoreIcon } from "@assets/svg/files/more-alt.svg";
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 import { ReactComponent as ResetIcon } from "@assets/svg/files/refund-2-fill.svg";
+import { ReactComponent as MintIcon } from "@assets/svg/files/mint-icon.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
@@ -19,6 +20,10 @@ import AssetSymbol from "@components/AssetSymbol";
 import { CustomCopy } from "@components/CopyTooltip";
 import DeleteVirtualModal from "./Modals/deleteVirtual";
 import ResetVirtualModal from "./Modals/resetVirtual";
+import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
+import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
+import { AccountHook } from "@pages/hooks/accountHook";
+import { Actor } from "@dfinity/agent";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -34,7 +39,8 @@ const VirtualTable: FC<VirtualTableProps> = ({
   setDrawerOption,
 }) => {
   const { t } = useTranslation();
-  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts } = useHPL(false);
+  const { userAgent } = AccountHook();
+  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts, getFtFromVt } = useHPL(false);
 
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -146,6 +152,17 @@ const VirtualTable: FC<VirtualTableProps> = ({
                             <PencilIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
                             <p>{t("edit")}</p>
                           </div>
+                          {vt.isMint && (
+                            <div
+                              className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
+                              onClick={() => {
+                                onMint(vt);
+                              }}
+                            >
+                              <MintIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
+                              <p>{t("mint")}</p>
+                            </div>
+                          )}
                           <div
                             className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
                             onClick={() => {
@@ -280,6 +297,24 @@ const VirtualTable: FC<VirtualTableProps> = ({
     setDrawerOpen(true);
     setDrawerOption(DrawerOptionEnum.Enum.EDIT_VIRTUAL);
     setOpenMore(-1);
+  }
+
+  async function onMint(vt: HPLVirtualSubAcc) {
+    const mintActor = Actor.createActor<HplMintActor>(HplMintIDLFactory, {
+      agent: userAgent,
+      canisterId: vt.accesBy,
+    });
+    try {
+      const res = (await mintActor.notifyAndMint(
+        BigInt(getFtFromVt(vt.backing).id),
+        BigInt(vt.virt_sub_acc_id),
+      )) as any;
+      if (res.err) {
+        console.error(res.err);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   function onReset(vt: HPLVirtualSubAcc) {

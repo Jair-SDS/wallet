@@ -71,6 +71,7 @@ export const useHPL = (open: boolean) => {
     accesBy: "",
     backing: "",
     code: "",
+    isMint: false,
   });
 
   const [newHplSub, setNewHplSub] = useState<HPLSubAccount>({
@@ -129,6 +130,7 @@ export const useHPL = (open: boolean) => {
       accesBy: vt.accesBy,
       backing: newVt.backing,
       code: newVt.code,
+      isMint: vt.isMint,
     };
     dispatch(addHplVt(hplVt, vt, newVt.backing));
   };

@@ -624,7 +624,6 @@ export const formatHPLSubaccounts = (
 
   stateData.accounts.map((sa) => {
     const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
-
     const auxVirtuals: HPLVirtualSubAcc[] = [];
     stateData.virtualAccounts.map(async (va) => {
       const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
@@ -639,6 +638,7 @@ export const formatHPLSubaccounts = (
           accesBy: vtData ? vtData.accesBy : "",
           backing: va[1][1].toString(),
           code: newCode,
+          isMint: vtData ? vtData.isMint : false,
         });
       }
     });
@@ -699,14 +699,17 @@ export const formatAccountInfo = (accInfo: Array<[SubId, AccountType]>, accLocal
 export const formatVirtualAccountInfo = (
   vtInfo: Array<[VirId, [AccountType, Principal]]>,
   vtLocal: HPLVirtualData[],
+  princMints: string[],
 ) => {
   return vtInfo.map((vt) => {
     const found = vtLocal.find((vtL) => vtL.id === vt[0].toString());
+    const mint = princMints.find((mnt) => mnt === vt[1][1].toText());
     const accData: HPLVirtualData = {
       id: vt[0].toString(),
       name: found?.name || "",
       ftId: vt[1][0].ft.toString(),
       accesBy: vt[1][1].toText(),
+      isMint: !!mint,
     };
     return accData;
   });

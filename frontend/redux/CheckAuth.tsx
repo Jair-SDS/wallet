@@ -28,6 +28,7 @@ import {
   setStorageCodeA,
   setLoading,
   setInitLoad,
+  setMintActor,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum } from "@/const";
@@ -40,6 +41,8 @@ import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did"
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
+import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
+import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { HPLAssetData, HplContact } from "./models/AccountModels";
 import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
@@ -115,6 +118,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     identity: authIdentity,
     host: "https://identity.ic0.app",
   });
+  store.dispatch(setUserAgent(myAgent));
 
   const myPrincipal = fixedPrincipal || (await myAgent.getPrincipal());
   const identityPrincipalStr = fixedPrincipal?.toString() || authIdentity.getPrincipal().toString();
@@ -182,13 +186,19 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
         //
       }
     }
-    console.log("hplContactsLH", hplContactsDataJson);
     // HPL OWNERS
     const ownerActor = Actor.createActor<OwnersActor>(OwnersIDLFactory, {
       agent: myAgent,
       canisterId: "n65ik-oqaaa-aaaag-acb4q-cai",
     });
     store.dispatch(setOwnersActor(ownerActor));
+
+    // HPL MINTER
+    const mintActor = Actor.createActor<HplMintActor>(HplMintIDLFactory, {
+      agent: myAgent,
+      canisterId: "n65ik-oqaaa-aaaag-acb4q-cai",
+    });
+    store.dispatch(setMintActor(mintActor));
 
     // HPL TOKENS
     const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
@@ -208,7 +218,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     }
   }
 
-  dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myAgent, myPrincipal);
+  dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myPrincipal);
 
   await db().setIdentity(authIdentity);
 
@@ -221,8 +231,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   store.dispatch(setInitLoad(false));
 };
 
-export const dispatchAuths = (identityPrincipal: string, myAgent: HttpAgent, myPrincipal: Principal) => {
-  store.dispatch(setUserAgent(myAgent));
+export const dispatchAuths = (identityPrincipal: string, myPrincipal: Principal) => {
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
   store.dispatch(setStorageCode("contacts-" + identityPrincipal));

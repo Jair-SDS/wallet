@@ -21,6 +21,7 @@ import { HPLClient } from "@research-ag/hpl-client";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
+import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { localDb, rxDb } from "@/database/db";
 import store from "@redux/Store";
 import { setAssetFromLocalData, updateAllBalances } from "./AssetActions";
@@ -49,6 +50,7 @@ interface AssetState {
   hplClient: HPLClient;
   ingressActor: ActorSubclass<IngressActor>;
   ownersActor: ActorSubclass<OwnersActor>;
+  mintActor: ActorSubclass<HplMintActor>;
   subaccounts: HPLSubAccount[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
@@ -86,6 +88,7 @@ const initialState: AssetState = {
   hplClient: defaultValue,
   ingressActor: defaultValue,
   ownersActor: defaultValue,
+  mintActor: defaultValue,
   subaccounts: [],
   hplFTs: [],
   hplFTsData: [],
@@ -375,6 +378,9 @@ const assetSlice = createSlice({
     setOwnersActor(state, action: PayloadAction<ActorSubclass<OwnersActor>>) {
       state.ownersActor = action.payload;
     },
+    setMintActor(state, action: PayloadAction<ActorSubclass<HplMintActor>>) {
+      state.mintActor = action.payload;
+    },
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
     },
@@ -576,6 +582,7 @@ export const {
   setHPLClient,
   setIngressActor,
   setOwnersActor,
+  setMintActor,
   setFeeConstant,
   setAllAssetsView,
   setHPLSubAccounts,

@@ -131,6 +131,7 @@ const HPLVirtualSubAcc = z.object({
   currency_amount: z.string(),
   expiration: z.number(),
   accesBy: z.string(),
+  isMint: z.boolean(),
   backing: z.string(),
 });
 
@@ -195,6 +196,7 @@ const HPLVirtualData = z.object({
   name: z.string(),
   ftId: z.string(),
   accesBy: z.string(),
+  isMint: z.boolean(),
 });
 
 export type HPLVirtualData = z.infer<typeof HPLVirtualData>;
