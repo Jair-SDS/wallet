@@ -23,15 +23,15 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
     <Fragment>
       <div className="flex flex-col justify-center items-start bg-SelectRowColor w-[17rem] h-full rounded-l-md p-4 text-[#ffff]">
         {selectSub ? (
-          <div className="flex flex-row justify-start items-center gap-3 w-full">
+          <div className="flex flex-row justify-between items-center gap-3 w-full">
             <img src={getAssetLogo(selectSub.ft)} className="w-8 h-8" alt="info-icon" />
 
             <AssetSymbol
               ft={getFtFromSub(selectSub.ft)}
-              textClass="font-semibold text-2x1 text-[#ffff]"
-              inBoxClass="text-[#ffff] !text-lg"
+              textClass="font-semibold text-xl text-[#ffff]"
+              inBoxClass="text-[#ffff] "
               sufix={
-                <p className="font-semibold text-2x1">
+                <p className="font-semibold text-xl">
                   {`${toFullDecimal(selectSub.amount, getFtFromSub(selectSub.ft).decimal, 8)}`}
                 </p>
               }

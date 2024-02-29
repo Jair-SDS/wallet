@@ -123,7 +123,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                   border={newContactPrinErr ? "error" : undefined}
                   value={newContact.principal}
                   onChange={(e) => {
-                    onPrincipalChange(e.target.value);
+                    onPrincipalChange(e.target.value.trim());
                   }}
                 />
               </div>

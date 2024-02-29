@@ -80,7 +80,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   );
   function onLedgerChange(e: ChangeEvent<HTMLInputElement>) {
     try {
-      Principal.fromText(e.target.value);
+      Principal.fromText(e.target.value.trim());
       setLeder({ principal: e.target.value.trim(), err: false });
     } catch {
       setLeder({ principal: e.target.value.trim(), err: true });
@@ -89,7 +89,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   }
   function onDictionaryChange(e: ChangeEvent<HTMLInputElement>) {
     try {
-      Principal.fromText(e.target.value);
+      Principal.fromText(e.target.value.trim());
       setDictionary({ principal: e.target.value.trim(), err: false });
     } catch {
       setDictionary({ principal: e.target.value.trim(), err: e.target.value === "" ? false : true });
