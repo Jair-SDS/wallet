@@ -59,6 +59,11 @@ export default defineConfig({
     // https://github.com/vitejs/vite/issues/8644#issuecomment-1159308803
     logOverride: { "this-is-undefined-in-esm": "silent" },
   },
+  build: {
+    rollupOptions: {
+      external: ["vite-plugin-node-polyfills/shims/buffer"],
+    },
+  },
   plugins: [
     react({
       include: "**/*.tsx",
@@ -69,7 +74,9 @@ export default defineConfig({
     }),
     svgrPlugin(),
     viteTsconfigPaths(),
-    nodePolyfills(),
+    nodePolyfills({
+      exclude: ["buffer"],
+    }),
   ],
   resolve: {
     alias: {

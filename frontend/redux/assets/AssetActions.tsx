@@ -421,8 +421,7 @@ export const updateHPLBalances = async (
   let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
   if (
     nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) ||
-    (updateInfo && nInfo.nVirtualAccounts !== BigInt(0)) ||
-    vtData.length === 0
+    ((updateInfo || vtData.length === 0) && nInfo.nVirtualAccounts !== BigInt(0))
   ) {
     try {
       vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] });
