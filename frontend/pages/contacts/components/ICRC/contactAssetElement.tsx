@@ -49,12 +49,12 @@ const ContactAssetElement = ({
             : "Sub"
         }`}</p>
         {contAst.tokenSymbol === selAstContact && (
-          <button
+          <div
             onClick={onAddSub}
             className="flex items-center justify-center w-8 h-8 p-0 rounded-r bg-AddSecondaryButton"
           >
             <img src={PlusIcon} alt="plus-icon" className="w-5 h-5" />
-          </button>
+          </div>
         )}
       </div>
     </button>

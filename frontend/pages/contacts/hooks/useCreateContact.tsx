@@ -1,12 +1,12 @@
-import { removeLeadingZeros } from "@/utils";
-import { useAppDispatch } from "@redux/Store";
-import { addContact } from "@redux/contacts/ContactsReducer";
+import { db } from "@/database/db";
+import { getAccountIdentifier, removeLeadingZeros } from "@/utils";
+import { validateSubaccounts } from "@/utils/checkers";
+import { retrieveAssetsWithAllowance } from "@pages/home/helpers/icrc";
 import { AssetContact, Contact, SubAccountContact } from "@redux/models/ContactsModels";
 
 import { useState } from "react";
 
 export const useCreateContact = () => {
-  const dispatch = useAppDispatch();
   const [newContact, setNewContact] = useState<Contact>({
     name: "",
     principal: "",
@@ -22,46 +22,8 @@ export const useCreateContact = () => {
   const [newContactSubNameErr, setNewContactSubNameErr] = useState<number[]>([]);
   const [newContactSubIdErr, setNewContactSubIdErr] = useState<number[]>([]);
 
-  function isValidSubacc(from: string, validContact: boolean, contAst?: AssetContact, onclose?: () => void) {
-    const auxNewSub: SubAccountContact[] = [];
-    const errName: number[] = [];
-    const errId: number[] = [];
-    let validSubaccounts = true;
-    const ids: string[] = [];
-    newSubAccounts.map((newSa, j) => {
-      let subacc = newSa.subaccount_index.trim();
-      // Check if string contains prefix "0x" and remove it if is the case
-      if (subacc.slice(0, 2).toLowerCase() === "0x") subacc = subacc.substring(2);
-      // Check if subaccount have data
-      if (newSa.name.trim() !== "" || newSa.subaccount_index.trim() !== "") {
-        // Removing zeros and check if subaccount index is not empty
-        if (removeLeadingZeros(subacc) === "") {
-          if (newSa.subaccount_index.length !== 0) subacc = "0";
-        } else subacc = removeLeadingZeros(subacc);
-        let valid = true;
-        // Pushing position index of subaccounts that contains errors in the name (empty)
-        if (newSa.name.trim() === "") {
-          errName.push(j);
-          valid = false;
-          validSubaccounts = false;
-        }
-        // Pushing position index of sub
-        if (subacc === "" || newSa.subaccount_index.trim().toLowerCase() === "0x" || ids.includes(subacc)) {
-          errId.push(j);
-          valid = false;
-          validSubaccounts = false;
-        } else {
-          ids.push(subacc);
-        }
-        // Adding SubAccountContact to the new contact
-        if (valid)
-          auxNewSub.push({
-            name: newSa.name.trim(),
-            subaccount_index: subacc,
-            sub_account_id: `0x${subacc}`,
-          });
-      }
-    });
+  async function isValidSubacc(from: string, validContact: boolean, contAst?: AssetContact, onclose?: () => void) {
+    const { auxNewSub, errName, errId, validSubaccounts } = validateSubaccounts(newSubAccounts);
     // Check if valid Subaccounts and Valid prev contact info
     if (validSubaccounts && validContact) {
       const auxContact = { ...newContact };
@@ -73,9 +35,10 @@ export const useCreateContact = () => {
           break;
         }
       }
+
       if (auxContact.assets.length > 0) auxContact.assets[editKey].subaccounts = auxNewSub;
-      // Verify if is an asset change or Add Contact action
       if (from === "change" && contAst) {
+        // INFO: change asset tab
         setNewContact(auxContact);
         setSelAstContact(contAst.tokenSymbol);
         setNewSubaccounts(
@@ -84,7 +47,20 @@ export const useCreateContact = () => {
             : contAst.subaccounts,
         );
       } else {
-        dispatch(addContact(auxContact));
+        // INFO: create contact into redux and local storage
+        setIsCreating(true);
+        const result = await retrieveAssetsWithAllowance({
+          accountPrincipal: newContact.principal,
+          assets: newContact.assets,
+        });
+
+        const toStoreContact = {
+          ...auxContact,
+          assets: result,
+          accountIdentier: getAccountIdentifier(auxContact.principal, 0),
+        };
+        await db().addContact(toStoreContact);
+        setIsCreating(false);
         onclose && onclose();
       }
       setNewContactSubNameErr([]);
