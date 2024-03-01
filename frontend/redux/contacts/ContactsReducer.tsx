@@ -1,6 +1,5 @@
-import { getAccountIdentifier, hexToNumber } from "@/utils";
 import { HplContact } from "@redux/models/AccountModels";
-import { AssetContact, Contact } from "@redux/models/ContactsModels";
+import { Contact } from "@redux/models/ContactsModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { localDb, rxDb } from "@/database/db";
 import store from "@redux/Store";
