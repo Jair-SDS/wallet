@@ -1,13 +1,8 @@
-// svgs
-import { ReactComponent as ChevIcon } from "@/assets/svg/files/chev-icon.svg";
-//
 import { useTranslation } from "react-i18next";
-import FlagSelector from "./flagSelector";
-import { useState } from "react";
 import AuthMethodRender from "./AuthMethodRender";
+import Setings from "@pages/components/Settings";
 
 export default function AuthMethods() {
-  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -28,20 +23,8 @@ export default function AuthMethods() {
         </p>
       </div>
       <div className="absolute flex flex-row items-center justify-center right-8 top-6 bg-none">
-        <FlagSelector open={open} handleOpenChange={handleOpenChange}></FlagSelector>
-        <div
-          className={`p-1 cursor-pointer ${open ? "" : "rotate-90"}`}
-          onClick={() => {
-            handleOpenChange(!open);
-          }}
-        >
-          <ChevIcon className="w-8 h-8 " />
-        </div>
+        <Setings isLoginPage={true} />
       </div>
     </div>
   );
-
-  function handleOpenChange(value: boolean) {
-    setOpen(value);
-  }
 }
