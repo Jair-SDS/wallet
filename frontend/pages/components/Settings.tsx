@@ -27,7 +27,7 @@ const langOpts = [
   { abrev: "pt", name: "portuguese", flag: <BrazilFlagIcon className={"mr-1 max-h-[1.5rem]"} /> },
 ];
 
-const Setings = ({ isLoginPage }: { isLoginPage: boolean }) => {
+const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; clearSiweIdentity?: any }) => {
   const { t } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const [dbLocationOpen, setDbLocationOpen] = useState(false);
@@ -107,6 +107,7 @@ const Setings = ({ isLoginPage }: { isLoginPage: boolean }) => {
                 className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
                 onSelect={() => {
                   logout();
+                  clearSiweIdentity && clearSiweIdentity();
                 }}
               >
                 <p className="text-LockColor">{t("lock")}</p>

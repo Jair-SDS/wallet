@@ -32,7 +32,7 @@ import {
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, RoutingPathEnum } from "@/const";
-import { Ed25519KeyIdentity } from "@dfinity/identity";
+import { Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
 import { clearDataContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
@@ -112,6 +112,11 @@ export const handleMnemonicAuthenticated = (phrase: string[]) => {
   };
   const secpIdentity = phraseToIdentity(phrase) as Identity;
   handleLoginApp(secpIdentity, true);
+};
+
+// FIXME: identity fail on icrc ledger interaction
+export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
+  handleLoginApp(identity);
 };
 
 export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean, fixedPrincipal?: Principal) => {
