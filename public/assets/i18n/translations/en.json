@@ -31,6 +31,8 @@
   "dark": "Dark",
   "light": "Light",
   "send": "Send",
+  "transfer": "Transfer",
+  "deposit": "Deposit",
   "receive": "Receive",
   "exchange": "Exchange",
   "exchange.link": "Exchange Link",

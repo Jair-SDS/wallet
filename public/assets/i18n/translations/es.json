@@ -32,6 +32,8 @@
   "dark": "Oscuro",
   "light": "Claro",
   "send": "Enviar",
+  "transfer": "Transferir",
+  "deposit": "Depositar",
   "receive": "Recibir",
   "exchange": "Intercambio",
   "exchange.link": "Enlace de Intercambio",

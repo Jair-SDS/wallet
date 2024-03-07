@@ -85,18 +85,11 @@ const DialogSendConfirmation = ({
               <p>{`${t("acc.subacc")}:`}</p>
               <p>{`${t("amount")}:`}</p>
             </div>
-            <div className="flex flex-col items-start justify-start gap-2">
-              <div className="flex flex-row items-center justify-start gap-2">
-                <p>{shortAddress(receiverPrincipal || "", 12, 10)}</p>
-                <CustomCopy size={"small"} copyText={receiverPrincipal} />
-              </div>
-              <div className="flex flex-row items-center justify-start gap-2">
-                <p>{receiverSubAccount.length > 20 && middleTruncation(receiverSubAccount, 10, 10)}</p>
-                <CustomCopy size={"small"} copyText={receiverSubAccount} />
-              </div>
+            <div className="flex flex-row items-center justify-start gap-2">
               <p>
-                {amount} {sender?.asset?.symbol || ""}
+                {receiverSubAccount.length > 20 ? middleTruncation(receiverSubAccount, 10, 10) : receiverSubAccount}
               </p>
+              <CustomCopy size={"small"} copyText={receiverSubAccount} />
             </div>
           </div>
         ) : (
