@@ -14,7 +14,7 @@ import {
   setUserPrincipal,
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
-import { updateHPLBalances } from "./assets/AssetActions";
+import { updateHPLBalances, getSNSTokens } from "./assets/AssetActions";
 import {
   clearDataAsset,
   setFeeConstant,
@@ -28,6 +28,7 @@ import {
   setStorageCodeA,
   setLoading,
   setInitLoad,
+  setICRC1SystemAssets,
   setMintActor,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
@@ -235,6 +236,9 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myPrincipal);
 
   await db().setIdentity(authIdentity, fixedPrincipal);
+
+  const snsTokens = await getSNSTokens();
+  store.dispatch(setICRC1SystemAssets(snsTokens));
 
   store.dispatch(setAuthenticated(true, false, !!fixedPrincipal, identityPrincipalStr.toLocaleLowerCase()));
 

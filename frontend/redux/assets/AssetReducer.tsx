@@ -25,6 +25,7 @@ import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { localDb, rxDb } from "@/database/db";
 import store from "@redux/Store";
 import { setAssetFromLocalData, updateAllBalances } from "./AssetActions";
+import { ICRC1systemAssets } from "@/defaultTokens";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -35,6 +36,7 @@ interface AssetState {
   ICPSubaccounts: Array<ICPSubAccount>;
   assetLoading: boolean;
   tokens: Token[];
+  icr1SystemTokens: Token[];
   tokensMarket: TokenMarketInfo[];
   assets: Array<Asset>;
   accounts: Array<SubAccount>;
@@ -72,6 +74,7 @@ const initialState: AssetState = {
   ICPSubaccounts: [],
   assetLoading: false,
   tokens: [],
+  icr1SystemTokens: ICRC1systemAssets,
   tokensMarket: [],
   assets: [],
   accounts: [],
@@ -116,6 +119,9 @@ const assetSlice = createSlice({
     },
     setReduxTokens(state, action: PayloadAction<Token[]>) {
       state.tokens = action.payload;
+    },
+    setICRC1SystemAssets(state, action: PayloadAction<Token[]>) {
+      state.icr1SystemTokens = [...ICRC1systemAssets, ...action.payload];
     },
     setICPSubaccounts(state, action: PayloadAction<ICPSubAccount[]>) {
       state.ICPSubaccounts = action.payload;
@@ -529,6 +535,7 @@ const assetSlice = createSlice({
       state.acordeonIdx = [];
       state.ownerId = "";
       state.protocol = ProtocolTypeEnum.Enum.HPL;
+      state.icr1SystemTokens = ICRC1systemAssets;
     },
   },
 });
@@ -557,6 +564,7 @@ export const {
   setInitLoad,
   clearDataAsset,
   setProtocol,
+  setICRC1SystemAssets,
   setICPSubaccounts,
   setLoading,
   removeToken,

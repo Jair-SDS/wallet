@@ -6,7 +6,7 @@ import { Token } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
 
 export const TokenHook = (asset: Asset | undefined) => {
-  const { assetLoading } = useAppSelector((state) => state.asset);
+  const { assetLoading, icr1SystemTokens } = useAppSelector((state) => state.asset);
   const [manual, setManual] = useState(false);
   const [network, setNetwork] = useState<TokenNetwork>(TokenNetworkEnum.enum["ICRC-1"]);
   const [newAssetList, setNewAssetList] = useState<Array<Token>>(ICRC1systemAssets);
@@ -63,6 +63,8 @@ export const TokenHook = (asset: Asset | undefined) => {
     if (!assetLoading) setAddStatus(AddingAssetsEnum.Enum.done);
   }, [assetLoading]);
 
+  useEffect(() => setNewAssetList(icr1SystemTokens), [icr1SystemTokens]);
+
   return {
     manual,
     setManual,
@@ -89,6 +91,5 @@ export const TokenHook = (asset: Asset | undefined) => {
     newAssetList,
     newToken,
     setNewToken,
-    setNewAssetList,
   };
 };

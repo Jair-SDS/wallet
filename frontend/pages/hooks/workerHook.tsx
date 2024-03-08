@@ -114,21 +114,16 @@ export const WorkerHook = () => {
       }
     }
   };
-
-  timerWorker.onerror = (event) => {
-    console.log(event);
-  };
+  timerWorker.onerror = (event) => console.log(event);
 
   const clearTimeWorker = () => {
     timerWorker.terminate();
   };
 
   useEffect(() => {
-    const postRequest = {
-      message: true,
-    };
-
+    const postRequest = { message: true };
     timerWorker.postMessage(postRequest);
+
     return () => {
       timerWorker.terminate();
     };
