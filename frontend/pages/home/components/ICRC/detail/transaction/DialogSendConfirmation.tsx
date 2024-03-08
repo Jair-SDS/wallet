@@ -6,7 +6,7 @@ import SendReceiveIcon from "@assets/svg/files/send_recaive_icon.svg";
 //
 import Modal from "@components/Modal";
 import { CustomCopy } from "@components/CopyTooltip";
-import { getDecimalAmount, shortAddress } from "@/utils";
+import { getDecimalAmount } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum, SendingStatusEnum } from "@/const";
 import { useTranslation } from "react-i18next";
 import useSend from "@pages/home/hooks/useSend";
@@ -29,19 +29,8 @@ const DialogSendConfirmation = ({
   modal,
   network,
 }: DialogSendConfirmationProps) => {
-  const {
-    receiverPrincipal,
-    receiverSubAccount,
-    amount,
-    sender,
-    sendingStatus,
-    errors,
-    initTime,
-    endTime,
-    hplSender,
-    hplReceiver,
-    hplFtTx,
-  } = useSend();
+  const { receiverSubAccount, amount, sendingStatus, errors, initTime, endTime, hplSender, hplReceiver, hplFtTx } =
+    useSend();
   const { t } = useTranslation();
 
   return (
