@@ -62,6 +62,7 @@ export default defineConfig(({ mode }) => {
       logOverride: { "this-is-undefined-in-esm": "silent" },
     },
     plugins: [
+      nodePolyfills(),
       react({
         include: "**/*.tsx",
         babel: {
@@ -71,7 +72,6 @@ export default defineConfig(({ mode }) => {
       }),
       svgrPlugin(),
       viteTsconfigPaths(),
-      nodePolyfills(),
     ],
     resolve: {
       alias: {

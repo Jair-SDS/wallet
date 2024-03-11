@@ -31,7 +31,7 @@ import {
   setHPLSubsData,
   setOwnerId,
 } from "./AssetReducer";
-import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
+import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountDefaultEnum } from "@/const";

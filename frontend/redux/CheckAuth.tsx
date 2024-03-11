@@ -50,8 +50,9 @@ import { Principal } from "@dfinity/principal";
 import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
 import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 import { setAllowances } from "./allowance/AllowanceReducer";
-import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 import { db } from "@/database/db";
+import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
+import { getSNSTokens } from "./assets/AssetActions";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -115,7 +116,6 @@ export const handleMnemonicAuthenticated = (phrase: string[]) => {
   handleLoginApp(secpIdentity, true);
 };
 
-// FIXME: identity fail on icrc ledger interaction
 export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
   handleLoginApp(identity);
 };

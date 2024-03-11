@@ -35,7 +35,7 @@ import {
 import { Account, Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
-import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/nns";
+import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
 import { FungibleToken } from "@candid/Dictionary/dictService.did";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";

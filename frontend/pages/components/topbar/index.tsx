@@ -15,7 +15,7 @@ import { CustomCopy } from "@components/CopyTooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppSelector } from "@redux/Store";
 import Setings from "../Settings";
-import { useSiweIdentity } from "@/siwe";
+import { useSiweIdentity } from "ic-use-siwe-identity";
 import { useAccount } from "wagmi";
 import Pill from "./Pill";
 
