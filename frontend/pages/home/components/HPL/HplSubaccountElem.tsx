@@ -6,7 +6,7 @@ import CheckIcon from "@assets/svg/files/check.svg";
 import { HPLAsset, HPLSubAccount, HPLSubData } from "@redux/models/AccountModels";
 import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, getDisplayNameFromFt, getFirstNChars } from "@/utils";
 import { useTranslation } from "react-i18next";

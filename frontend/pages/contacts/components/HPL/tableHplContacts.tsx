@@ -7,8 +7,8 @@ import { ReactComponent as ChevIcon } from "@assets/svg/files/chev-icon.svg";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import { getContactColor, getInitialFromName, shortAddress } from "@/utils";
-import { CustomCopy } from "@components/CopyTooltip";
-import { CustomInput } from "@components/Input";
+import { CustomCopy } from "@components/tooltip";
+import { CustomInput } from "@components/input";
 import { HplContact } from "@redux/models/AccountModels";
 import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";

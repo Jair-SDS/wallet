@@ -2,7 +2,7 @@
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 //
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";

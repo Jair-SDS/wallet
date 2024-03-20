@@ -1,8 +1,8 @@
 // svgs
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
-import { CustomInput } from "@components/Input";
-import SwitchButton from "@components/Switch";
+import { CustomInput } from "@components/input";
+import { SwitchButton } from "@components/switch";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +17,7 @@ const AssetsFilter = ({ searchKey, setSearchKey, allAssets, onAllAssetToggle }: 
   const { t } = useTranslation();
   return (
     <Fragment>
-      <div className="flex flex-row justify-between items-center text-md w-full">
+      <div className="flex flex-row items-center justify-between w-full text-md">
         <CustomInput
           compOutClass="!w-[30%]"
           prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}

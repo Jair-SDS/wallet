@@ -6,12 +6,12 @@ import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@/co
 import { FC, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SelectTransfer from "./SelectTransfer";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import QRscanner from "@pages/components/QRscanner";
 import { HplTxUser } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
-import LoadingLoader from "@components/Loader";
+import { LoadingLoader } from "@components/loader";
 import TxSummary from "./TxSummary";
 import { getOwnerInfoFromPxl } from "@/utils";
 

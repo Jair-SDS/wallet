@@ -1,7 +1,7 @@
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
-import { CustomButton } from "@components/Button";
-import LoadingLoader from "@components/Loader";
+import { CustomButton } from "@components/button";
+import { LoadingLoader } from "@components/loader";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";

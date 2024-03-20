@@ -3,15 +3,15 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { useHPL } from "@pages/hooks/hplHook";
 import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { clsx } from "clsx";
 import { HPLAsset } from "@redux/models/AccountModels";
-import { CustomButton } from "@components/Button";
-import LoadingLoader from "@components/Loader";
+import { CustomButton } from "@components/button";
+import { LoadingLoader } from "@components/loader";
 import { AccountHook } from "@pages/hooks/accountHook";
 import AssetSymbol from "@components/AssetSymbol";
 

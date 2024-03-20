@@ -5,7 +5,7 @@ import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
 import { ChangeEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getDecimalAmount, shortAddress } from "@/utils";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsEnum } from "@/const";
 import { Principal } from "@dfinity/principal";

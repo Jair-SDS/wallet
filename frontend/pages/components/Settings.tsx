@@ -9,7 +9,7 @@ import { ReactComponent as BrazilFlagIcon } from "@/assets/svg/files/brazil.svg"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Fragment, useState } from "react";
 import { clsx } from "clsx";
-import Modal from "@components/Modal";
+import { BasicModal } from "@components/modal";
 import { ThemeHook } from "@pages/hooks/themeHook";
 import { LanguageHook } from "@pages/hooks/languageHook";
 import { useTranslation } from "react-i18next";
@@ -116,12 +116,12 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      <Modal open={themeOpen !== ""} top="top-[35%]">
+      <BasicModal open={themeOpen !== ""} top="top-[35%]">
         {themeOpen === "THEMES" ? <ThemeModal setOpen={setThemeOpen} /> : <HplSettingsModal setOpen={setThemeOpen} />}
-      </Modal>
-      <Modal open={dbLocationOpen} top="top-[35%]">
+      </BasicModal>
+      <BasicModal open={dbLocationOpen} top="top-[35%]">
         <DbLocationModal setOpen={setDbLocationOpen} />
-      </Modal>
+      </BasicModal>
     </Fragment>
   );
   function changeLanguage(lang: string) {

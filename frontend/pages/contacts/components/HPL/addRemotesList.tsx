@@ -1,7 +1,7 @@
 import { getDisplayNameFromFt } from "@/utils";
 import AssetSymbol from "@components/AssetSymbol";
-import { CustomCheck } from "@components/CheckBox";
-import { CustomInput } from "@components/Input";
+import { CustomCheck } from "@components/checkbox";
+import { CustomInput } from "@components/input";
 import { HPLAsset, HplRemote } from "@redux/models/AccountModels";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";

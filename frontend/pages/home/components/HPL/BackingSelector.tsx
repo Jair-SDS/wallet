@@ -4,15 +4,15 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { CustomInput } from "@components/Input";
-import Modal from "@components/Modal";
+import { CustomInput } from "@components/input";
+import { BasicModal } from "@components/modal";
 import { useHPL } from "@pages/hooks/hplHook";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { HPLSubAccount, HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import AssetSymbol from "@components/AssetSymbol";
 
 interface BackingSelectorProps {
@@ -40,7 +40,7 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="flex flex-col justify-between items-center w-full mb-3">
+    <div className="flex flex-col items-center justify-between w-full mb-3">
       <p className="w-full text-left opacity-60">
         {t("backing.account")} <span className="text-RadioCheckColor">*</span>
       </p>
@@ -60,9 +60,9 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
               "pr-0",
             )}
           >
-            <div className="flex flex-row justify-start items-center w-full px-2 py-1 border border-BorderColorLight dark:border-BorderColor rounded-md">
+            <div className="flex flex-row items-center justify-start w-full px-2 py-1 border rounded-md border-BorderColorLight dark:border-BorderColor">
               {newVt.backing === "" ? (
-                <div className="flex flex-row justify-between items-center w-full">
+                <div className="flex flex-row items-center justify-between w-full">
                   <p className="opacity-60">{t("select.backing")}</p>
                   <img
                     src={ChevIcon}
@@ -72,14 +72,14 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
                   />
                 </div>
               ) : (
-                <div className="flex flex-row justify-between items-center w-full">
-                  <div className="p-1 flex flex-row justify-start items-center gap-2 text-sm">
-                    <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
+                <div className="flex flex-row items-center justify-between w-full">
+                  <div className="flex flex-row items-center justify-start gap-2 p-1 text-sm">
+                    <div className="flex items-center justify-center px-3 py-1 rounded-md bg-slate-500">
                       <p className=" text-PrimaryTextColor">{getSubFromVt(newVt.backing).sub_account_id}</p>
                     </div>
                     <p className="text-left">{getSubFromVt(newVt.backing).name}</p>
                   </div>
-                  <div className="flex flex-row justify-start items-center gap-2">
+                  <div className="flex flex-row items-center justify-start gap-2">
                     <AssetSymbol ft={getFtFromVt(newVt.backing)} />
                     <img src={getAssetLogo(getFtFromVt(newVt.backing).id)} className="w-5 h-5" alt="info-icon" />
                     <img
@@ -100,7 +100,7 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
             sideOffset={5}
             align="end"
           >
-            <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
+            <div className="flex flex-col items-start justify-start w-full gap-2 p-1">
               <CustomInput
                 prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
                 sizeInput={"small"}
@@ -124,19 +124,19 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
                     return (
                       <button
                         key={k}
-                        className="p-1 flex flex-row justify-between items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
+                        className="flex flex-row items-center justify-between w-full gap-2 p-1 text-sm hover:bg-HoverColorLight dark:hover:bg-HoverColor"
                         onClick={() => {
                           onSelectBacking(sub);
                         }}
                       >
-                        <div className="flex justify-center items-center gap-3">
-                          <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="flex items-center justify-center px-3 py-1 rounded-md bg-slate-500">
                             <p className=" text-PrimaryTextColor">{sub.sub_account_id}</p>
                           </div>
                           <p className="text-left">{sub.name}</p>
                         </div>
 
-                        <div className="flex flex-row justify-start items-center gap-2 pr-10">
+                        <div className="flex flex-row items-center justify-start gap-2 pr-10">
                           <AssetSymbol ft={getFtFromSub(sub.ft)} />
                           <img src={getAssetLogo(getFtFromSub(sub.ft).id)} className="w-5 h-5" alt="info-icon" />
                         </div>
@@ -148,39 +148,39 @@ const BackingSelector = ({ newVt, setNewVt, edit }: BackingSelectorProps) => {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      <Modal
+      <BasicModal
         open={modalOpen}
         width="w-[21rem]"
         padding="p-5"
         border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
       >
-        <div className="flex flex-col justify-start items-start w-full text-md">
-          <div className="flex flex-row justify-between items-center w-full mb-4">
+        <div className="flex flex-col items-start justify-start w-full text-md">
+          <div className="flex flex-row items-center justify-between w-full mb-4">
             <WarningIcon className="w-6 h-6" />
             <CloseIcon
-              className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+              className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
               onClick={() => {
                 setModalOpen(false);
               }}
             />
           </div>
-          <p className=" text-justify w-full mb-2">{t("change.backing.1")}</p>
+          <p className="w-full mb-2 text-justify ">{t("change.backing.1")}</p>
           <p className="mb-1">
             <span className="font-semibold">{selectVt?.name || t("It")}</span> {t("change.backing.2")}
           </p>
-          <div className="flex flex-row justify-start items-center gap-2">
-            <div className="flex justify-center items-center py-1 px-2 bg-slate-500 rounded-md">
-              <p className=" text-PrimaryTextColor text-sm">{selBacking.id}</p>
+          <div className="flex flex-row items-center justify-start gap-2">
+            <div className="flex items-center justify-center px-2 py-1 rounded-md bg-slate-500">
+              <p className="text-sm  text-PrimaryTextColor">{selBacking.id}</p>
             </div>
             <p>{selBacking.name}</p>
           </div>
-          <div className="w-full flex flex-row justify-end items-center mt-2">
+          <div className="flex flex-row items-center justify-end w-full mt-2">
             <CustomButton className="min-w-[5rem]" onClick={onConfirmChange} size={"small"}>
               <p>{t("yes")}</p>
             </CustomButton>
           </div>
         </div>
-      </Modal>
+      </BasicModal>
     </div>
   );
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {

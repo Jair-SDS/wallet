@@ -1,9 +1,9 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { CustomButton } from "@components/Button";
-import { CustomInput } from "@components/Input";
-import LoadingLoader from "@components/Loader";
+import { CustomButton } from "@components/button";
+import { CustomInput } from "@components/input";
+import { LoadingLoader } from "@components/loader";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";

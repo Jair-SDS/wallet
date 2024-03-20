@@ -1,7 +1,7 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,14 +11,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import { ThemeHook } from "@pages/hooks/themeHook";
-import { CustomCheck } from "@components/CheckBox";
-import { CustomButton } from "@components/Button";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCheck } from "@components/checkbox";
+import { CustomButton } from "@components/button";
+import { CustomCopy } from "@components/tooltip";
 import { getDecimalAmount, getHoleAmount, getPxlCode, shortAddress } from "@/utils";
 import dayjs from "dayjs";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
-import LoadingLoader from "@components/Loader";
+import { LoadingLoader } from "@components/loader";
 import BackingSelector from "./BackingSelector";
 import AccesBySelector from "./AccesBySelector";
 import AssetSymbol from "@components/AssetSymbol";

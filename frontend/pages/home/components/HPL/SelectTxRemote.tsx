@@ -7,7 +7,7 @@ import QRIcon from "@assets/svg/files/qr.svg";
 //
 import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
 import {
@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
 import { Principal } from "@dfinity/principal";
-import LoadingLoader from "@components/Loader";
+import { LoadingLoader } from "@components/loader";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;

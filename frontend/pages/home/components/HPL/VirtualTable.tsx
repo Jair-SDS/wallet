@@ -12,12 +12,12 @@ import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { FC, Fragment, useEffect, useState } from "react";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
-import Modal from "@components/Modal";
+import { BasicModal } from "@components/modal";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
 import { DrawerOption, DrawerOptionEnum } from "@/const";
 import AssetSymbol from "@components/AssetSymbol";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import DeleteVirtualModal from "./Modals/deleteVirtual";
 import ResetVirtualModal from "./Modals/resetVirtual";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
@@ -63,7 +63,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={() => {
                   onSort("ID");
                 }}
-                className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
+                className="flex flex-row items-center justify-between w-full gap-2 cursor-pointer"
               >
                 <p>{t("code")}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
@@ -80,7 +80,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={() => {
                   onSort("EXPIRATION");
                 }}
-                className="flex flex-row justify-between items-center gap-2 w-full cursor-pointer"
+                className="flex flex-row items-center justify-between w-full gap-2 cursor-pointer"
               >
                 <p>{t("expiration")}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
@@ -103,7 +103,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={handleVirtualAccountClick(vt.virt_sub_acc_id)}
               >
                 <td className={`${rowStyle(vt.expiration)}`}>
-                  <div className="flex flex-row justify-center items-center gap-1">
+                  <div className="flex flex-row items-center justify-center gap-1">
                     <p className="ml-[-0.4rem]">{vt.code}</p>{" "}
                     <CustomCopy size={"xSmall"} copyText={vt.code} className="opacity-60" />{" "}
                   </div>
@@ -116,7 +116,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                   {vt.name}
                 </td>
                 <td className={`${rowStyle(vt.expiration)}`}>
-                  <div className="flex flex-row w-full justify-center">
+                  <div className="flex flex-row justify-center w-full">
                     {" "}
                     <AssetSymbol
                       ft={getFtFromSub(selectSub?.ft || "0")}
@@ -127,7 +127,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getAccesByContactName(vt.accesBy)}</td>
                 <td className="py-2">
-                  <div className="relative flex justify-center items-center h-full">
+                  <div className="relative flex items-center justify-center h-full">
                     <DropdownMenu.Root
                       open={openMore === k}
                       onOpenChange={(e) => {
@@ -144,41 +144,41 @@ const VirtualTable: FC<VirtualTableProps> = ({
                           align="end"
                         >
                           <div
-                            className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
+                            className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md"
                             onClick={() => {
                               onEdit(vt);
                             }}
                           >
-                            <PencilIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
+                            <PencilIcon className="w-4 h-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
                             <p>{t("edit")}</p>
                           </div>
                           {vt.isMint && (
                             <div
-                              className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
+                              className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md"
                               onClick={() => {
                                 onMint(vt);
                               }}
                             >
-                              <MintIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
+                              <MintIcon className="w-4 h-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
                               <p>{t("mint")}</p>
                             </div>
                           )}
                           <div
-                            className="flex flex-row justify-start items-center gap-2 p-2 opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md cursor-pointer"
+                            className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md"
                             onClick={() => {
                               onReset(vt);
                             }}
                           >
-                            <ResetIcon className="w-4 h-4 fill-PrimaryTextColorLight dark:fill-PrimaryTextColor cursor-pointer" />
+                            <ResetIcon className="w-4 h-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
                             <p>{t("reset")}</p>
                           </div>
                           <div
-                            className="flex flex-row justify-start items-center gap-2 p-2 hover:bg-TextErrorColor/10 rounded-b-md cursor-pointer"
+                            className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer hover:bg-TextErrorColor/10 rounded-b-md"
                             onClick={() => {
                               onDelete(vt);
                             }}
                           >
-                            <TrashIcon className="w-4 h-4 fill-TextErrorColor cursor-pointer" />
+                            <TrashIcon className="w-4 h-4 cursor-pointer fill-TextErrorColor" />
                             <p className="text-TextErrorColor">{t("delete")}</p>
                           </div>
                         </DropdownMenu.Content>
@@ -191,7 +191,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
           })}
         </tbody>
       </table>
-      <Modal
+      <BasicModal
         open={deleteModal || resetModal}
         width="w-[22rem]"
         padding="p-5"
@@ -220,7 +220,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
         ) : (
           <div></div>
         )}
-      </Modal>
+      </BasicModal>
     </Fragment>
   );
 

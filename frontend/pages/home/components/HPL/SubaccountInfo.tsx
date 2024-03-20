@@ -2,7 +2,7 @@
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import { SubaccountInfoEnum } from "@/const";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 import { PropsWithChildren } from "react";

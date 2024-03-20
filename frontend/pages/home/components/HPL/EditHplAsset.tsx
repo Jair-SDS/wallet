@@ -1,15 +1,15 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { useHPL } from "@pages/hooks/hplHook";
 import { ChangeEvent, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, shortAddress } from "@/utils";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import AssetSymbol from "@components/AssetSymbol";
 
 interface EditHplAssetProps {

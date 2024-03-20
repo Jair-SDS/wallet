@@ -10,7 +10,7 @@ import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import CustomHoverCard from "@components/HoverCard";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
 import { useState } from "react";
 import { AssetHook } from "@pages/home/hooks/assetHook";

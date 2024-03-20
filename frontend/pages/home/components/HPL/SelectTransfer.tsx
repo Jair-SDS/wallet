@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChangeEvent, FC, useState } from "react";
 import { clsx } from "clsx";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import SelectTxRemote from "./SelectTxRemote";
 import { getDecimalAmount } from "@/utils";
 import AssetSymbol from "@components/AssetSymbol";

@@ -5,8 +5,8 @@ import QRIcon from "@assets/svg/files/qr.svg";
 //
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomInput } from "@components/Input";
-import { CustomButton } from "@components/Button";
+import { CustomInput } from "@components/input";
+import { CustomButton } from "@components/button";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 import QRscanner from "@pages/components/QRscanner";
 import { decodeIcrcAccount } from "@dfinity/ledger";

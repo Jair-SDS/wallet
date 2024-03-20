@@ -1,7 +1,7 @@
 import { FC, Fragment } from "react";
 import { getPxlCode } from "@/utils";
 import QRCode from "react-qr-code";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 
