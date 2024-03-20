@@ -7,11 +7,11 @@ import ChevronRightDarkIcon from "@assets/svg/files/chevron-right-dark-icon.svg"
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 import { Asset, HPLAsset } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import { CustomCheck } from "@components/CheckBox";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { useHPL } from "@pages/hooks/hplHook";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { ChangeEvent, useState } from "react";
+import { CustomCheck } from "@components/checkbox";
 
 interface AssetFilterProps {
   setAssetOpen: (open: boolean) => void;
@@ -36,14 +36,14 @@ export default function AssetFilter(props: AssetFilterProps) {
     >
       <DropdownMenu.Trigger asChild>
         <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-PrimaryColorLight dark:bg-SecondaryColor cursor-pointer">
-          <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex flex-row items-center justify-between w-full">
             {assetFilter.length === 0 ||
             (protocol === ProtocolTypeEnum.Enum.ICRC1 && assetFilter.length === assets.length) ||
             (protocol === ProtocolTypeEnum.Enum.HPL && assetFilter.length === hplFTs.length) ? (
               <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("all")}</p>
             ) : assetFilter.length === 1 ? (
               protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
-                <div className="flex flex-start justify-start items-center gap-2">
+                <div className="flex items-center justify-start gap-2 flex-start">
                   {getAssetIcon(
                     IconTypeEnum.Enum.FILTER,
                     assetFilter[0],
@@ -52,9 +52,9 @@ export default function AssetFilter(props: AssetFilterProps) {
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{assetFilter[0]}</p>
                 </div>
               ) : (
-                <div className="p-1 flex flex-row justify-start items-center w-full gap-2 text-sm">
+                <div className="flex flex-row items-center justify-start w-full gap-2 p-1 text-sm">
                   <img src={getAssetLogo(assetFilter[0])} className="w-8 h-8" alt="info-icon" />
-                  <div className="flex justify-center items-center py-1 px-3 bg-slate-500 rounded-md">
+                  <div className="flex items-center justify-center px-3 py-1 rounded-md bg-slate-500">
                     <p className=" text-PrimaryTextColor">{assetFilter[0]}</p>
                   </div>
                   <p>{`${getFtFromSub(assetFilter[0]).name !== "" ? getFtFromSub(assetFilter[0]).name : ""}${
@@ -114,7 +114,7 @@ export default function AssetFilter(props: AssetFilterProps) {
                     handleSelectAsset(asset);
                   }}
                 >
-                  <div className="flex flex-start justify-start items-center gap-2">
+                  <div className="flex items-center justify-start gap-2 flex-start">
                     {getAssetIcon(IconTypeEnum.Enum.FILTER, asset.tokenSymbol, asset.logo)}
                     <p>{asset.symbol}</p>
                   </div>
@@ -140,14 +140,14 @@ export default function AssetFilter(props: AssetFilterProps) {
                 return (
                   <div
                     key={k}
-                    className="p-1 flex flex-row justify-between items-center px-3 w-full text-sm hover:bg-HoverColorLight2 dark:hover:bg-HoverColor"
+                    className="flex flex-row items-center justify-between w-full p-1 px-3 text-sm hover:bg-HoverColorLight2 dark:hover:bg-HoverColor"
                     onClick={() => {
                       handleSelectFt(ft);
                     }}
                   >
-                    <div className="flex flex-row justify-start items-center gap-2">
+                    <div className="flex flex-row items-center justify-start gap-2">
                       <img src={getAssetLogo(ft.id)} className="w-6 h-6" alt="info-icon" />
-                      <div className="flex justify-center items-center  px-1 bg-slate-500 rounded-md">
+                      <div className="flex items-center justify-center px-1 rounded-md bg-slate-500">
                         <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
                       </div>
                       <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " - " : ""}${

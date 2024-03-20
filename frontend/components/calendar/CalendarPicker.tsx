@@ -3,7 +3,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker, DateTimePickerProps } from "@mui/x-date-pickers/DateTimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import { ThemeHook } from "@/pages/hooks/themeHook";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import dayjs from "dayjs";
 
 interface CalendarDatePickerProps extends DateTimePickerProps<dayjs.Dayjs> {
@@ -11,7 +11,7 @@ interface CalendarDatePickerProps extends DateTimePickerProps<dayjs.Dayjs> {
   onEnableChange: (enabled: boolean) => void;
 }
 
-export const CalendarPicker = (props: CalendarDatePickerProps) => {
+export default function CalendarPicker(props: CalendarDatePickerProps) {
   const {
     timezone = "system",
     format = "MM/DD/YY hh:mm:ss a",
@@ -63,7 +63,7 @@ export const CalendarPicker = (props: CalendarDatePickerProps) => {
     if (!disabled) return;
     onEnableChange(false);
   }
-};
+}
 
 function dateTimePickerStyles(theme: string) {
   return clsx("!cursor-pointer !w-full", theme === "light" ? "date-picker-light" : "date-picker");

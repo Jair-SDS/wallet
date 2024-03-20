@@ -1,9 +1,10 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import Modal from "@components/Modal";
-import { CustomCheck } from "@components/CheckBox";
-import { CustomButton } from "@components/Button";
+import { BasicModal } from "@components/modal";
+import { CustomInput } from "@components/input";
+import { CustomCheck } from "@components/checkbox";
+import { CustomButton } from "@components/button";
 import { useTranslation } from "react-i18next";
 import { checkHexString, getUSDfromToken, hexToNumber, hexToUint8Array, removeLeadingZeros } from "@/utils";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
@@ -13,8 +14,7 @@ import { useAppDispatch } from "@redux/Store";
 import { addSubAccount, setAcordeonAssetIdx } from "@redux/assets/AssetReducer";
 import bigInt from "big-integer";
 import { ChangeEvent, useState } from "react";
-import { IcrcLedgerCanister } from "@dfinity/ledger";
-import { CustomInput } from "@components/Input";
+import { IcrcLedgerCanister } from "@dfinity/ledger-icrc";
 import { db } from "@/database/db";
 
 interface DialogAddAssetProps {
@@ -54,7 +54,7 @@ const DialogAddAsset = ({
   const [loading, setLoading] = useState(false);
 
   return (
-    <Modal
+    <BasicModal
       width="w-[18rem]"
       padding="py-5 px-4"
       border="border border-BorderColorTwoLight dark:border-BorderColorTwo"
@@ -79,6 +79,7 @@ const DialogAddAsset = ({
           sizeComp="small"
           sizeInput="small"
           inputClass="!py-1"
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           onChange={onChangeName}
           onKeyUp={onKeyUp}
@@ -108,7 +109,7 @@ const DialogAddAsset = ({
           </CustomButton>
         </div>
       </div>
-    </Modal>
+    </BasicModal>
   );
 
   function onChangeName(e: ChangeEvent<HTMLInputElement>) {

@@ -1,7 +1,7 @@
+import { clsx } from "clsx";
 import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";
-import { CustomInput } from "@components/Input";
+import { CustomInput } from "@components/input";
 import { handleMnemonicAuthenticated } from "@redux/CheckAuth";
-import clsx from "clsx";
 import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as bip39 from "bip39";
@@ -34,6 +34,7 @@ export default function MnemonicInput({ phrase, setPhrase }: MnemonicInputProps)
       placeholder={t("login.mnemonic.expected")}
       value={phrase}
       onChange={onPhraseChange}
+      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus
       sufix={
         <div className="flex flex-row items-center justify-start gap-1">

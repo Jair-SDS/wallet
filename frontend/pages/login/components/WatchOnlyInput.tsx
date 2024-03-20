@@ -1,9 +1,9 @@
 import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";
 //
-import { CustomInput } from "@components/Input";
-import { decodeIcrcAccount } from "@dfinity/ledger";
+import { CustomInput } from "@components/input";
+import { decodeIcrcAccount } from "@dfinity/ledger-icrc";
 import { handlePrincipalAuthenticated } from "@redux/CheckAuth";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 
 interface WatchOnlyInputProps {
@@ -23,6 +23,7 @@ export default function WatchOnlyInput(props: WatchOnlyInputProps) {
       value={principalAddress}
       onChange={onPrincipalChange}
       border={watchOnlyLoginErr ? "error" : undefined}
+      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus
       sufix={<CheckIcon className={getCheckIconStyles(principalAddress, watchOnlyLoginErr)} />}
       onKeyDown={(e) => {

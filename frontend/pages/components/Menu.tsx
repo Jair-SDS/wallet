@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
@@ -43,7 +43,7 @@ const Menu = () => {
 
   return (
     <Fragment>
-      <div className="flex flex-row gap-3 justify-start items-center w-full pl-3">
+      <div className="flex flex-row items-center justify-start w-full gap-3 pl-3">
         {menuList.map(
           (menu, k) =>
             menu.show && (
@@ -52,7 +52,7 @@ const Menu = () => {
                 size={"small"}
                 intent={"noBG"}
                 border={"underline"}
-                className="flex flex-row justify-start items-center mb-4"
+                className="flex flex-row items-center justify-start mb-4"
                 onClick={() => {
                   handleMenuClic(menu.path);
                 }}

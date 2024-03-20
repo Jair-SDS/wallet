@@ -2,11 +2,11 @@
 import { ReactComponent as PlusIcon } from "@assets/svg/files/plus-icon.svg";
 //
 import { useTranslation } from "react-i18next";
-import { CustomInput } from "@components/Input";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
+import { IconButton } from "@components/button";
+import { CustomInput } from "@components/input";
 //
 import { IUseContactFilters } from "../hooks/useContactFilters";
-import { IconButton } from "@components/button";
 import AssetFilter from "./ICRC/AssetFilter";
 
 export default function ContactFilters(props: IUseContactFilters) {

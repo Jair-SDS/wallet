@@ -1,10 +1,11 @@
 /* eslint-disable no-undef */
-module.exports = {env: {
-        "node": true,
-        "commonjs": true,
-        "browser": true,
-        "es6": true
-       },
+module.exports = {
+  env: {
+    node: true,
+    commonjs: true,
+    browser: true,
+    es6: true,
+  },
   extends: [
     // By extending from a plugin config, we can get recommended rules without having to add them manually.
     "eslint:recommended",
@@ -47,7 +48,6 @@ module.exports = {env: {
     "no-console": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {

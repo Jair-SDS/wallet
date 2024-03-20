@@ -3,7 +3,7 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { Fragment, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomButton } from "@components/Button";
+import { CustomButton } from "@components/button";
 import { DrawerOption } from "@/const";
 import { resetSendStateAction } from "@redux/transaction/TransactionActions";
 
@@ -27,8 +27,8 @@ const DrawerAction = ({ drawerOption, setDrawerOption, setDrawerOpen, children, 
 
   return (
     <Fragment>
-      <div className="flex flex'row justify-between items-center w-full">
-        <div className="flex flex-row w-full justify-start items-center gap-4">
+      <div className="flex'row justify-between items-center w-full">
+        <div className="flex flex-row items-center justify-start w-full gap-4">
           {options?.map((dOpt, k) => {
             return (
               <CustomButton

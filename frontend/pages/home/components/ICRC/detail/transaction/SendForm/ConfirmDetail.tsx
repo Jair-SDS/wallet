@@ -1,4 +1,4 @@
-import Button from "@components/button/Button";
+import { BasicButton } from "@components/button";
 import SenderDetail from "./SenderDetail";
 import ReceiverDetail from "./ReceiverDetail";
 import TransactionAmount from "./TransactionAmount";
@@ -20,7 +20,7 @@ import { TransactionValidationErrorsEnum } from "@/@types/transactions";
 import { SendingStatusEnum } from "@/const";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { getSubAccountBalance, transferTokens, transferTokensFromAllowance } from "@pages/home/helpers/icrc";
-import LoadingLoader from "@components/Loader";
+import { LoadingLoader } from "@components/loader";
 import { toFullDecimal, toHoleBigInt } from "@/utils";
 
 interface ConfirmDetailProps {
@@ -38,7 +38,7 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
     amount,
     enableSend,
     transactionFee,
-    getSenderBalance,
+    getSenderMaxAmount,
     isSenderAllowance,
     senderPrincipal,
   } = useSend();
@@ -51,18 +51,18 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
       <div className="flex items-center justify-end mt-6">
         <p className="mr-4 text-md text-slate-color-error">{t(getError())}</p>
         {isLoading && <LoadingLoader color="dark:border-secondary-color-1-light border-black-color mr-2" />}
-        <Button className="w-1/6 mr-2 font-bold bg-secondary-color-2" onClick={OnBack}>
+        <BasicButton className="w-1/6 mr-2 font-bold bg-secondary-color-2" onClick={OnBack}>
           {t("back")}
-        </Button>
-        <Button className="w-1/6 font-bold bg-primary-color" onClick={handleTransaction}>
+        </BasicButton>
+        <BasicButton className="w-1/6 font-bold bg-primary-color" onClick={handleTransaction}>
           {t("next")}
-        </Button>
+        </BasicButton>
       </div>
     </div>
   );
 
   async function validateBalance() {
-    const balance = await getSenderBalance();
+    const balance = await getSenderMaxAmount();
     const bigintBalance = toHoleBigInt(balance || "0", Number(sender?.asset?.decimal));
     const bigintFee = toHoleBigInt(transactionFee || "0", Number(sender?.asset?.decimal));
     const bigintAmount = toHoleBigInt(amount || "0", Number(sender?.asset?.decimal));

@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { ThemeHook } from "@hooks/themeHook";
 import { AccountHook } from "@hooks/accountHook";
 import { ThemesEnum } from "@/const";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppSelector } from "@redux/Store";
 import Setings from "../Settings";
@@ -31,7 +31,7 @@ const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
   return (
     <Fragment>
       <div className="flex flex-row justify-between min-h-[4.5rem] w-full bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor ">
-        <div className="flex flex-row justify-start items-center pl-9 gap-24 text-md">
+        <div className="flex flex-row items-center justify-start gap-24 pl-9 text-md">
           {theme === ThemesEnum.enum.dark ? (
             <HplLogo className="max-w-[7rem] h-auto" />
           ) : (

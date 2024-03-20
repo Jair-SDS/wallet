@@ -132,6 +132,7 @@
   "err.principal": "Principal não é uma conta válida.",
   "err.back": "Por favor, tente novamente, erro desconhecido",
   "not.yet.available": "ainda não disponível",
+  "available": "disponível",
   "devs.only": "somente desenvolvedores",
   "err.qr.img": "Não foi possível detectar um QR válido para o upload da imagem",
   "hex.check": "Adicionar índice manualmenteks",

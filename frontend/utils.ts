@@ -24,7 +24,7 @@ import {
   IcrcTokenMetadataResponse,
   IcrcAccount,
   encodeIcrcAccount,
-} from "@dfinity/ledger";
+} from "@dfinity/ledger-icrc";
 import {
   OperationStatusEnum,
   OperationTypeEnum,
@@ -32,8 +32,8 @@ import {
   TransactionType,
   SpecialTxTypeEnum,
 } from "./const";
-import { Account, Transaction as T } from "@dfinity/ledger/dist/candid/icrc1_index";
 import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
+import { Account, Transaction as IcrcTransaction } from "@dfinity/ledger-icrc/dist/candid/icrc_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
@@ -262,7 +262,17 @@ export const hexToUint8Array = (hex: string) => {
   } else return new Uint8Array(32);
 };
 
-export const subUint8ArrayToHex = (sub: Uint8Array | undefined) => {
+export const hexadecimalToUint8Array = (hexadecimalSubAccount: string): [] | [Uint8Array | number[]] => {
+  if (hexadecimalSubAccount.length === 0) return [];
+  else return [hexToUint8Array(hexadecimalSubAccount)];
+};
+
+/**
+ * INFO: Uint8Array | number[]; was added, Unit8Array was removed from @dfinity/ledger-icrc. Remove when @dfinity/ledger will be replaced by @dfinity/ledger-icrc entirely on HPL.
+ * Reference: https://github.com/dfinity/ic-js/blob/bf808fef5e3dbe4c3662abe8b350a04ba684619d/packages/ledger-icrc/candid/icrc_ledger.d.ts#L161
+ * TODO: confirm no breaking changes on @dfinity/ledger-icrc adding
+ */
+export const subUint8ArrayToHex = (sub: Uint8Array | number[] | undefined) => {
   if (sub) {
     const hex = removeLeadingZeros(Buffer.from(sub).toString("hex"));
     if (hex === "") return "0";
@@ -390,7 +400,7 @@ export const formatIcpTransaccion = (
 };
 
 export const formatckBTCTransaccion = (
-  ckBTCTransaction: T,
+  ckBTCTransaction: IcrcTransaction,
   id: bigint,
   principal: string,
   symbol: string,
@@ -401,8 +411,19 @@ export const formatckBTCTransaccion = (
   const trans = { status: OperationStatusEnum.Enum.COMPLETED, kind: kind } as Transaction;
   // Check Tx type ["transfer", "mint", "burn"]
   if (kind === SpecialTxTypeEnum.Enum.mint)
+    /**
+     * INFO: memo type modified from [] | [Uint8Array] to [] | [Uint8Array | number[]] on ledger-icrc
+     * References:
+     * - https://forum.dfinity.org/t/breaking-changes-in-ledger-icrc-icp-javascript-libraries/23465
+     * - https://github.com/dfinity/ic-js/blob/bf808fef5e3dbe4c3662abe8b350a04ba684619d/packages/ledger-icrc/candid/icrc_ledger.d.ts#L148
+     */
     mint.forEach(
-      (operation: { to: Account; memo: [] | [Uint8Array]; created_at_time: [] | [bigint]; amount: bigint }) => {
+      (operation: {
+        to: Account;
+        memo: [] | [Uint8Array | number[]];
+        created_at_time: [] | [bigint];
+        amount: bigint;
+      }) => {
         // Get Tx data from Mint record
         const value = operation.amount;
         const amount = value.toString();
@@ -434,7 +455,18 @@ export const formatckBTCTransaccion = (
   else if (kind === SpecialTxTypeEnum.Enum.burn)
     burn.forEach(
       // Get Tx data from Burn record
-      (operation: { from: Account; memo: [] | [Uint8Array]; created_at_time: [] | [bigint]; amount: bigint }) => {
+      /**
+       * INFO: memo type modified from [] | [Uint8Array] to [] | [Uint8Array | number[]] on ledger-icrc
+       * References:
+       * - https://forum.dfinity.org/t/breaking-changes-in-ledger-icrc-icp-javascript-libraries/23465
+       * - https://github.com/dfinity/ic-js/blob/bf808fef5e3dbe4c3662abe8b350a04ba684619d/packages/ledger-icrc/candid/icrc_ledger.d.ts#L148
+       */
+      (operation: {
+        from: Account;
+        memo: [] | [Uint8Array | number[]];
+        created_at_time: [] | [bigint];
+        amount: bigint;
+      }) => {
         const value = operation.amount;
         const amount = value.toString();
         trans.from = (operation.from.owner as Principal).toString();

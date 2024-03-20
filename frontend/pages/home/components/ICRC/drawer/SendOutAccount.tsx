@@ -4,8 +4,9 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 import QRIcon from "@assets/svg/files/qr.svg";
 import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
 //
-import { CustomButton } from "@components/Button";
-import { IcrcAccount, decodeIcrcAccount, encodeIcrcAccount } from "@dfinity/ledger";
+import { CustomButton } from "@components/button";
+import { CustomInput } from "@components/input";
+import { IcrcAccount, decodeIcrcAccount, encodeIcrcAccount } from "@dfinity/ledger-icrc";
 import { Principal } from "@dfinity/principal";
 import { getICRC1Acc, shortAddress, subUint8ArrayToHex, getFirstNFrom, hexToUint8Array, checkHexString } from "@/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -13,7 +14,6 @@ import { Contact, SubAccountContact } from "@redux/models/ContactsModels";
 import { Asset, SubAccount } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { ChangeEvent } from "react";
-import { CustomInput } from "@components/Input";
 import { useAppSelector } from "@redux/Store";
 
 interface SendOutAccountProps {

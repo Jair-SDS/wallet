@@ -1,70 +1,21 @@
-import { TAllowance } from "@/@types/allowance";
 import {
   CheckAllowanceParams,
-  GetBalanceParams,
   HasAssetAllowanceParams,
   HasSubAccountsParams,
-  TransferTokensParams,
-  TransferFromAllowanceParams,
   SupportedStandardEnum,
-  TransactionFeeParams,
-  SupportedStandard,
 } from "@/@types/icrc";
 import { hexToUint8Array, toFullDecimal, toHoleBigInt } from "@/utils";
-import { Actor, HttpAgent } from "@dfinity/agent";
-import { ApproveParams, IcrcLedgerCanister, TransferFromParams } from "@dfinity/ledger";
+import { Actor } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 import store from "@redux/Store";
 import { AssetContact } from "@redux/models/ContactsModels";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
 //
 import { _SERVICE as LedgerActor } from "@candid/icrcLedger/icrcLedgerService";
 import { idlFactory as LedgerFactory } from "@candid/icrcLedger/icrcLedgerCandid.did";
-
-function getCanister(assetAddress: string) {
-  const agent = store.getState().auth.userAgent;
-  const canisterId = Principal.fromText(assetAddress);
-  const canister = IcrcLedgerCanister.create({
-    agent,
-    canisterId,
-  });
-  return canister;
-}
-
-export async function getTransactionFee(params: TransactionFeeParams) {
-  try {
-    const { assetAddress, assetDecimal } = params;
-
-    const canister = getCanister(assetAddress);
-    const result = await canister.transactionFee({});
-    return toFullDecimal(result, Number(assetDecimal));
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-interface ICRCSupportedStandardsParams {
-  assetAddress: string;
-  agent: HttpAgent;
-}
-
-export async function getICRCSupportedStandards(params: ICRCSupportedStandardsParams): Promise<SupportedStandard[]> {
-  try {
-    const { assetAddress, agent } = params;
-    const canisterId = Principal.fromText(assetAddress);
-    const ledgerActor = Actor.createActor<LedgerActor>(LedgerFactory, {
-      agent,
-      canisterId,
-    });
-    const response = await ledgerActor.icrc1_supported_standards();
-    return response.map((standard) => standard.name as SupportedStandard);
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+import dayjs from "dayjs";
+import { ApproveParams } from "@dfinity/ledger-icrc";
+import { getCanister } from "./getIcrcCanister";
+import { TAllowance } from "@/@types/allowance";
 
 function calculateExpirationAsBigInt(
   expirationString: string | undefined,
@@ -84,59 +35,6 @@ function calculateExpirationAsBigInt(
   } catch (error) {
     console.error(error);
     return undefined;
-  }
-}
-
-export async function transferTokens(params: TransferTokensParams) {
-  const { receiverPrincipal, transferAmount, assetAddress, decimal, fromSubAccount, toSubAccount } = params;
-  const canister = getCanister(assetAddress);
-  const amount = toHoleBigInt(transferAmount, Number(decimal));
-
-  await canister.transfer({
-    to: {
-      owner: Principal.fromText(receiverPrincipal),
-      subaccount: [hexToUint8Array(toSubAccount)],
-    },
-    amount,
-    from_subaccount: hexToUint8Array(fromSubAccount),
-  });
-}
-
-export async function transferTokensFromAllowance(params: TransferFromAllowanceParams) {
-  const { receiverPrincipal, senderPrincipal, assetAddress, transferAmount, decimal, toSubAccount, fromSubAccount } =
-    params;
-
-  const canister = getCanister(assetAddress);
-
-  const transferParams: TransferFromParams = {
-    from: {
-      owner: Principal.fromText(senderPrincipal),
-      subaccount: [hexToUint8Array(fromSubAccount)],
-    },
-    to: {
-      owner: Principal.fromText(receiverPrincipal),
-      subaccount: [hexToUint8Array(toSubAccount)],
-    },
-    amount: toHoleBigInt(transferAmount, Number(decimal)),
-  };
-
-  await canister.transferFrom(transferParams);
-}
-
-export async function getSubAccountBalance(params: GetBalanceParams) {
-  try {
-    const { principal, subAccount, assetAddress } = params;
-    const canister = getCanister(assetAddress);
-    const sessionPrincipal = store.getState().auth.userPrincipal;
-
-    const balance = await canister.balance({
-      owner: principal ? Principal.fromText(principal) : sessionPrincipal,
-      subaccount: hexToUint8Array(subAccount),
-    });
-    return balance;
-  } catch (error) {
-    console.error(error);
-    return 0;
   }
 }
 
@@ -179,6 +77,7 @@ export async function submitAllowanceApproval(
   }
 }
 
+// TODO: IcrcLedgerCanister.allowance from @dfinity/ledger-icrc perform call instead of query to get the allowance, remove this function once the issue is resolved in the ledger-icrc package
 export async function getAllowanceDetails(params: CheckAllowanceParams) {
   try {
     const { spenderPrincipal, spenderSubaccount, accountPrincipal, assetAddress, assetDecimal } = params;

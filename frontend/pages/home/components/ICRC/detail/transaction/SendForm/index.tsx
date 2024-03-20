@@ -8,13 +8,13 @@ import {
   setIsInspectDetailAction,
   setIsLoadingAction,
 } from "@redux/transaction/TransactionActions";
-import Button from "@components/button/Button";
+import { BasicButton } from "@components/button";
 import useSend from "@pages/home/hooks/useSend";
 import SenderAsset from "./SenderAsset";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@redux/Store";
-import { TransactionValidationErrorsEnum } from "@/@types/transactions";
-import LoadingLoader from "@components/Loader";
+import { TransactionValidationErrorsEnum, transactionErrors } from "@/@types/transactions";
+import { LoadingLoader } from "@components/loader";
 
 interface SendFormProps {
   setDrawerOpen(value: boolean): void;
@@ -35,12 +35,12 @@ export default function SendForm({ setDrawerOpen }: SendFormProps) {
       <div className="flex items-center justify-end mt-6">
         <p className="mr-4 text-sm text-slate-color-error">{t(getError())}</p>
         {isLoading && <LoadingLoader className="mr-4" />}
-        <Button className="min-w-[5rem] mr-2 font-bold bg-secondary-color-2 text-md" onClick={onCancel}>
+        <BasicButton className="min-w-[5rem] mr-2 font-bold bg-secondary-color-2 text-md" onClick={onCancel}>
           {t("cancel")}
-        </Button>
-        <Button className="min-w-[5rem] font-bold bg-primary-color text-md" onClick={onNext}>
+        </BasicButton>
+        <BasicButton className="min-w-[5rem] font-bold bg-primary-color text-md" onClick={onNext}>
           {t("next")}
-        </Button>
+        </BasicButton>
       </div>
     </div>
   );
@@ -87,23 +87,9 @@ export default function SendForm({ setDrawerOpen }: SendFormProps) {
   }
 
   function getError() {
-    switch (true) {
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.asset.empty"]):
-        return TransactionValidationErrorsEnum.Values["error.asset.empty"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.invalid.sender"]):
-        return TransactionValidationErrorsEnum.Values["error.invalid.sender"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.invalid.receiver"]):
-        return TransactionValidationErrorsEnum.Values["error.invalid.receiver"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.sender.empty"]):
-        return TransactionValidationErrorsEnum.Values["error.sender.empty"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.receiver.empty"]):
-        return TransactionValidationErrorsEnum.Values["error.receiver.empty"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.own.sender.not.allowed"]):
-        return TransactionValidationErrorsEnum.Values["error.own.sender.not.allowed"];
-      case errors?.includes(TransactionValidationErrorsEnum.Values["error.same.sender.receiver"]):
-        return TransactionValidationErrorsEnum.Values["error.same.sender.receiver"];
-      default:
-        return "";
-    }
+    if (!errors || !errors?.length) return "";
+    const error = transactionErrors[errors[0]];
+    if (error) return error;
+    return "";
   }
 }

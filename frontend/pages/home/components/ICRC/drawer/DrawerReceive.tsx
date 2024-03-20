@@ -1,10 +1,10 @@
 import { Fragment } from "react";
 import { GeneralHook } from "../../../hooks/generalHook";
-import { encodeIcrcAccount } from "@dfinity/ledger";
+import { encodeIcrcAccount } from "@dfinity/ledger-icrc";
 import { Principal } from "@dfinity/principal";
 import { hexToUint8Array } from "@/utils";
 import QRCode from "react-qr-code";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import { AccountHook } from "@pages/hooks/accountHook";
 
 const DrawerReceive = () => {

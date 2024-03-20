@@ -4,8 +4,7 @@ import { ReactComponent as DownBlueArrow } from "@assets/svg/files/down-blue-arr
 import UpAmountIcon from "@assets/svg/files/up-amount-icon.svg";
 import SendReceiveIcon from "@assets/svg/files/send_recaive_icon.svg";
 //
-import Modal from "@components/Modal";
-import { CustomCopy } from "@components/CopyTooltip";
+import { CustomCopy } from "@components/tooltip";
 import { getDecimalAmount } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum, SendingStatusEnum } from "@/const";
 import { useTranslation } from "react-i18next";
@@ -15,6 +14,7 @@ import { TransactionValidationErrorsEnum } from "@/@types/transactions";
 import { getElapsedSecond } from "@/utils/formatTime";
 import AssetSymbol from "@components/AssetSymbol";
 import { middleTruncation } from "@/utils/strings";
+import { BasicModal } from "@components/modal";
 
 interface DialogSendConfirmationProps {
   setDrawerOpen(value: boolean): void;
@@ -34,7 +34,7 @@ const DialogSendConfirmation = ({
   const { t } = useTranslation();
 
   return (
-    <Modal
+    <BasicModal
       open={modal}
       width="w-[22rem]"
       padding="py-3 px-1"
@@ -58,7 +58,7 @@ const DialogSendConfirmation = ({
           {(network === ProtocolTypeEnum.Enum.ICRC1 && getError()) !== "" && (
             <p className="mt-1 text-md text-slate-color-error">{getError()}</p>
           )}
-          <div className="flex flex-row items-start justify-center w-full gap-4 font-light opacity-80 text-sm mt-1">
+          <div className="flex flex-row items-start justify-center w-full gap-4 mt-1 text-sm font-light opacity-80">
             <p>
               {sendingStatus === SendingStatusEnum.enum.done || sendingStatus === SendingStatusEnum.enum.error
                 ? `Processing took ${getElapsedSecond(initTime, endTime)} seconds`
@@ -83,7 +83,7 @@ const DialogSendConfirmation = ({
           </div>
         ) : (
           <div className="flex flex-row items-center justify-around w-full gap-2 p-4 font-light opacity-50 text-md">
-            <div className="flex flex-col justify-start items-start ">
+            <div className="flex flex-col items-start justify-start ">
               <p>
                 {hplSender.subaccount
                   ? hplSender.subaccount.name
@@ -92,18 +92,18 @@ const DialogSendConfirmation = ({
                   : hplSender.code || ""}
               </p>
             </div>
-            <div className="flex flex-col justify-center items-center">
+            <div className="flex flex-col items-center justify-center">
               <DownBlueArrow className="w-6 h-6 -rotate-90" />
               <AssetSymbol
                 ft={hplFtTx}
                 sufix={
-                  <p className="dark:opacity-60 dark:text-RemoteAmount text-AmountRemote ml-2 font-light">
+                  <p className="ml-2 font-light dark:opacity-60 dark:text-RemoteAmount text-AmountRemote">
                     {`${getDecimalAmount(amount || 0, hplFtTx.decimal)}`}
                   </p>
                 }
               />
             </div>
-            <div className="flex flex-col justify-start items-end ">
+            <div className="flex flex-col items-end justify-start ">
               <p>
                 {hplReceiver.subaccount
                   ? hplReceiver.subaccount.name
@@ -115,7 +115,7 @@ const DialogSendConfirmation = ({
           </div>
         )}
       </div>
-    </Modal>
+    </BasicModal>
   );
 
   function onClose() {
