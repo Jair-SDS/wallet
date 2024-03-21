@@ -37,7 +37,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
 
   return (
     <Fragment>
-      <div className="flex flex-row justify-between items-center w-full mb-2 top-modal">
+      <div className="flex flex-row items-center justify-between w-full mb-2 top-modal">
         <p className="font-bold text-[1.15rem]">{t("hpl.settings")}</p>
         <CloseIcon
           className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
@@ -46,7 +46,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           }}
         />
       </div>
-      <p className="text-md mt-2">{t("hpl.settings.msg")}</p>
+      <p className="mt-2 text-md">{t("hpl.settings.msg")}</p>
       <div className="flex flex-col items-start w-full mt-3 mb-3 text-sm">
         <p className="opacity-60">{"Ledger Principal"}</p>
         <CustomInput
@@ -57,9 +57,10 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           compOutClass=""
           value={ledger.principal}
           onChange={onLedgerChange}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
         />
-        <p className="opacity-60 mt-4">{t("dictionary.principal")}</p>
+        <p className="mt-4 opacity-60">{t("dictionary.principal")}</p>
         <CustomInput
           sizeInput={"medium"}
           intent={"secondary"}
@@ -70,7 +71,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           onChange={onDictionaryChange}
         />
       </div>
-      <div className="flex flex-row justify-between items-center mt-4 gap-2 w-full">
+      <div className="flex flex-row items-center justify-between w-full gap-2 mt-4">
         <p className="text-sm text-TextErrorColor">{t(errMsg)}</p>
         <CustomButton className="min-w-[5rem]" onClick={onSave} size={"small"}>
           {loading ? <LoadingLoader className="mt-1" /> : <p>{t("save")}</p>}

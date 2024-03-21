@@ -57,12 +57,12 @@ const TxAccountInfo = ({
             } font-light`}
             sufix={
               txUser.subaccount ? (
-                <p className="opacity-70 ml-2 font-light">{`${getDecimalAmount(
+                <p className="ml-2 font-light opacity-70">{`${getDecimalAmount(
                   txUser.subaccount.amount,
                   getFtFromSub(ftId).decimal,
                 )}`}</p>
               ) : (
-                <p className="dark:opacity-60 dark:text-RemoteAmount text-AmountRemote ml-2 font-light">
+                <p className="ml-2 font-light dark:opacity-60 dark:text-RemoteAmount text-AmountRemote">
                   {`${getDecimalAmount(rmtAmount, getFtFromSub(ftId).decimal)}`}
                 </p>
               )
@@ -75,12 +75,13 @@ const TxAccountInfo = ({
           onChange={onAmountChange}
           sizeInput="medium"
           border={"secondary"}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={sent}
           sufix={
-            <div className="flex flex-row justify-start items-center gap-2  pr-6">
+            <div className="flex flex-row items-center justify-start gap-2 pr-6">
               {sent && (
                 <button
-                  className="flex justify-center items-center p-1 bg-RadioCheckColor rounded cursor-pointer"
+                  className="flex items-center justify-center p-1 rounded cursor-pointer bg-RadioCheckColor"
                   onClick={onMaxAmount}
                 >
                   <p className="text-sm text-PrimaryTextColor">{t("max")}</p>
@@ -98,10 +99,10 @@ const TxAccountInfo = ({
   return (
     <div className={`flex ${sent ? "flex-col" : "flex-col-reverse"} justify-start items-start w-full`}>
       {txUser.subaccount ? (
-        <div className="flex flex-row justify-start items-center w-full gap-5">
-          <div className="flex flex-col justify-start items-start gap-1">
-            <div className="flex flex-row justify-start items-center gap-2">
-              <div className="flex justify-center items-center  px-1 bg-slate-500 rounded">
+        <div className="flex flex-row items-center justify-start w-full gap-5">
+          <div className="flex flex-col items-start justify-start gap-1">
+            <div className="flex flex-row items-center justify-start gap-2">
+              <div className="flex items-center justify-center px-1 rounded bg-slate-500">
                 <p className=" text-PrimaryTextColor">{txUser.subaccount.sub_account_id}</p>
               </div>
               <p className="text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor">
@@ -112,16 +113,16 @@ const TxAccountInfo = ({
         </div>
       ) : (
         <div className="flex flex-col justify-start items-start w-full gap-0.5">
-          <div className="flex flex-row justify-between items-center w-full opacity-70">
+          <div className="flex flex-row items-center justify-between w-full opacity-70">
             <p>Principal</p>
             <p className="text-right">{shortAddress(txUser.principal, 12, 10)}</p>
           </div>
-          <div className="flex flex-row justify-between items-center w-full pb-3 ">
+          <div className="flex flex-row items-center justify-between w-full pb-3 ">
             <p className="opacity-70">{t("virtual")}</p>
             <p>{txUser.remote ? txUser.remote.code : txUser.code || ""}</p>
           </div>
           {txUser.remote && (
-            <div className="flex flex-row justify-between items-center w-full pt-3 border-t border-t-BorderColor/70">
+            <div className="flex flex-row items-center justify-between w-full pt-3 border-t border-t-BorderColor/70">
               <p>{txUser.remote.name}</p>
               <GreenCheck />
             </div>

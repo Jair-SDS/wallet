@@ -57,13 +57,13 @@ const HplSubaccountElem = ({
         {sub.sub_account_id === selectSub?.sub_account_id && (
           <div className="absolute left-0 bg-[#33b2ef] h-full w-1"></div>
         )}
-        <div className="flex flex-row justify-start w-full h-full text-md px-4">
-          <div className="flex flex-row justify-start items-center gap-3 w-full">
+        <div className="flex flex-row justify-start w-full h-full px-4 text-md">
+          <div className="flex flex-row items-center justify-start w-full gap-3">
             <img src={getAssetLogo(sub.ft)} className="min-w-[2rem] w-8 min-h-[2rem] h-8" alt="info-icon" />
-            <div className="flex flex-col justify-start items-start text-md w-full gap-1">
-              <div className="flex flex-row justify-between items-center w-full gap-2">
+            <div className="flex flex-col items-start justify-start w-full gap-1 text-md">
+              <div className="flex flex-row items-center justify-between w-full gap-2">
                 {editNameId === sub.sub_account_id ? (
-                  <div className="flex flex-row justify-start w-full items-center  gap-2">
+                  <div className="flex flex-row items-center justify-start w-full gap-2">
                     <CustomInput
                       intent={"primary"}
                       placeholder={""}
@@ -73,6 +73,7 @@ const HplSubaccountElem = ({
                       sizeInput="small"
                       inputClass="!py-1"
                       compOutClass="!w-full"
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus
                       onChange={onNameChange}
                       onKeyDown={(e) => {
@@ -80,13 +81,13 @@ const HplSubaccountElem = ({
                       }}
                     />
                     <div
-                      className="flex justify-center items-center w-7 h-6 bg-RadioCheckColor rounded cursor-pointer"
+                      className="flex items-center justify-center h-6 rounded cursor-pointer w-7 bg-RadioCheckColor"
                       onClick={onSave}
                     >
                       <img src={CheckIcon} className="w-3 h-3" alt="info-icon" />
                     </div>
                     <div
-                      className="flex justify-center items-center w-7 h-6 bg-LockColor rounded cursor-pointer"
+                      className="flex items-center justify-center h-6 rounded cursor-pointer w-7 bg-LockColor"
                       onClick={onCancel}
                     >
                       <img src={PlusIcon} className="w-6 h-6 rotate-45" alt="info-icon" />
@@ -94,10 +95,10 @@ const HplSubaccountElem = ({
                   </div>
                 ) : sub.name === "" ? (
                   <div
-                    className="flex justify-center items-center px-1 bg-slate-500 rounded "
+                    className="flex items-center justify-center px-1 rounded bg-slate-500 "
                     onDoubleClick={onDoubleClick}
                   >
-                    <p className="text-PrimaryTextColor text-md leading-4">{sub.sub_account_id}</p>
+                    <p className="leading-4 text-PrimaryTextColor text-md">{sub.sub_account_id}</p>
                   </div>
                 ) : (
                   <div className="p-0  text-left min-w-[10rem]" onDoubleClick={onDoubleClick}>
@@ -106,7 +107,7 @@ const HplSubaccountElem = ({
                 )}
 
                 {editNameId != sub.sub_account_id && (
-                  <div className="flex flex-row justify-start items-center">
+                  <div className="flex flex-row items-center justify-start">
                     <p
                       className={`${
                         sub.sub_account_id !== selectSub?.sub_account_id ? "opacity-60" : ""
@@ -121,7 +122,7 @@ const HplSubaccountElem = ({
                 )}
               </div>
 
-              <div className="flex flex-row justify-between items-center w-full gap-2">
+              <div className="flex flex-row items-center justify-between w-full gap-2">
                 <p className=" whitespace-nowrap">{`${t("remotes")}: ${sub.virtuals.length}`}</p>
                 <AssetSymbol
                   ft={getFtFromSub(sub.ft)}

@@ -22,8 +22,8 @@ export interface LedgerIngressAPI {
     [VirId],
     | { ok: { ft: bigint } }
     | {
-        err: { DeletedVirtualAccount: null } | { InvalidArguments: string };
-      }
+      err: { DeletedVirtualAccount: null } | { InvalidArguments: string };
+    }
   >;
   ftInfo: ActorMethod<
     [IdSelector],
@@ -46,15 +46,15 @@ export interface LedgerIngressAPI {
     [bigint, AccountType],
     | { ok: { first: SubId } }
     | {
-        err: { InvalidArguments: string } | { NoSpaceForPrincipal: null } | { NoSpaceForSubaccount: null };
-      }
+      err: { InvalidArguments: string } | { NoSpaceForPrincipal: null } | { NoSpaceForSubaccount: null };
+    }
   >;
   openVirtualAccount: ActorMethod<
     [AccountType, Principal, AccountState, SubId, Time],
     | { ok: { id: VirId } }
     | {
-        err: { InvalidArguments: string } | { NoSpaceForAccount: null };
-      }
+      err: { InvalidArguments: string } | { NoSpaceForAccount: null };
+    }
   >;
   remoteAccountInfo: ActorMethod<[RemoteSelector], Array<[RemoteId, AccountType]>>;
   state: ActorMethod<
@@ -100,8 +100,8 @@ export interface LedgerIngressAPI {
     ],
     | { ok: { ft: [bigint, bigint] } }
     | {
-        err: { DeletedVirtualAccount: null } | { InvalidArguments: string } | { InsufficientFunds: null };
-      }
+      err: { DeletedVirtualAccount: null } | { InvalidArguments: string } | { InsufficientFunds: null };
+    }
   >;
   virtualAccountInfo: ActorMethod<[IdSelector], Array<[VirId, [AccountType, Principal]]>>;
   feeRatio: ActorMethod<[], bigint>;
@@ -134,4 +134,4 @@ export type Time = bigint;
 export type TxOutput = { ftTransfer: { fee: bigint; amount: bigint } };
 export type TxResult = { failure: ProcessingError } | { success: TxOutput };
 export type VirId = bigint;
-export interface _SERVICE extends LedgerIngressAPI {}
+export interface _SERVICE extends LedgerIngressAPI { }

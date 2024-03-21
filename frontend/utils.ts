@@ -840,7 +840,7 @@ export const getLogoString = (ft: HPLAsset) => {
 };
 
 export const numToUint32Array = (num: number) => {
-  let arr = new Uint8Array(32);
+  const arr = new Uint8Array(32);
 
   for (let i = 31; i >= 0; i--) {
     arr[i] = num % 4294967296;

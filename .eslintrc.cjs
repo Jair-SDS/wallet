@@ -79,12 +79,16 @@ module.exports = {
     "no-duplicate-imports": "error",
     "react/jsx-key": "warn",
     "jsx-a11y/no-autofocus": "warn",
-    "@typescript-eslint/no-empty-interface": "warn",
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      {
+        allowSingleExtends: true,
+      },
+    ],
     "no-self-assign": "warn",
     "no-var": "warn",
     "react/no-unescaped-entities": "warn",
     "jsx-a11y/alt-text": "warn",
     "jsx-a11y/aria-role": "warn",
-    // Add your own rules here to override ones from the extended configs.
   },
 };
