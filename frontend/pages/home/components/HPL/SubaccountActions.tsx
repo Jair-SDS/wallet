@@ -23,7 +23,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
     <Fragment>
       <div className="flex flex-col justify-center items-start bg-SelectRowColor w-[17rem] h-full rounded-l-md p-4 text-[#ffff]">
         {selectSub ? (
-          <div className="flex flex-row justify-between items-center gap-3 w-full">
+          <div className="flex flex-row items-center justify-between w-full gap-3">
             <img src={getAssetLogo(selectSub.ft)} className="w-8 h-8" alt="info-icon" />
 
             <AssetSymbol
@@ -31,29 +31,29 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
               textClass="font-semibold text-xl text-[#ffff]"
               inBoxClass="text-[#ffff] "
               sufix={
-                <p className="font-semibold text-xl">
+                <p className="text-xl font-semibold">
                   {`${toFullDecimal(selectSub.amount, getFtFromSub(selectSub.ft).decimal, 8)}`}
                 </p>
               }
             />
           </div>
         ) : (
-          <p className="font-semibold text-lg">-</p>
+          <p className="text-lg font-semibold">-</p>
         )}
       </div>
       <div className="flex flex-row justify-around items-center h-full w-[calc(100%-17rem)] text-ThirdTextColorLight dark:text-ThirdTextColor">
-        <div className="flex flex-col justify-center items-center w-1/3 gap-1">
+        <div className="flex flex-col items-center justify-center w-1/3 gap-1">
           <div
-            className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
+            className="flex flex-row items-center justify-center rounded-md cursor-pointer w-7 h-7 bg-SelectRowColor"
             onClick={() => onActionClick(DrawerOptionEnum.Enum.SEND)}
           >
             <img src={ArrowTopRightIcon} className="w-3 h-3" alt="send-icon" />
           </div>
           <p className="text-md">{t("send")}</p>
         </div>
-        <div className="flex flex-col justify-center items-center w-1/3 gap-1">
+        <div className="flex flex-col items-center justify-center w-1/3 gap-1">
           <div
-            className="flex flex-row justify-center items-center w-7 h-7 bg-SelectRowColor rounded-md cursor-pointer"
+            className="flex flex-row items-center justify-center rounded-md cursor-pointer w-7 h-7 bg-SelectRowColor"
             onClick={() => onActionClick(DrawerOptionEnum.Enum.RECEIVE)}
           >
             <img src={ArrowBottomLeftIcon} className="w-3 h-3" alt="receive-icon" />

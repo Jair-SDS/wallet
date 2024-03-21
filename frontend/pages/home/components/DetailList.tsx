@@ -28,8 +28,8 @@ import ICRCTransactionsTable from "./ICRC/detail/transaction/TransactionsTable";
 import HPLSubaccountAction from "./HPL/SubaccountActions";
 
 const icrc1DrawerOptions = [
-  { name: "send", type: DrawerOptionEnum.Enum.SEND },
-  { name: "receive", type: DrawerOptionEnum.Enum.RECEIVE },
+  { name: "transfer", type: DrawerOptionEnum.Enum.SEND },
+  { name: "deposit", type: DrawerOptionEnum.Enum.RECEIVE },
 ];
 
 const hplDrawerOptions = [{ name: "exchange.link", type: DrawerOptionEnum.Enum.HPL_QR, disabled: true }];
@@ -147,7 +147,7 @@ const DetailList = () => {
             );
           case DrawerOptionEnum.Enum.HPL_QR:
             return (
-              <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor gap-5 w-full h-full pt-8 px-6">
+              <div className="flex flex-col items-center justify-start w-full h-full gap-5 px-6 pt-8 bg-PrimaryColorLight dark:bg-PrimaryColor">
                 <DrawerAction
                   options={hplDrawerOptions}
                   drawerOption={drawerOption}
