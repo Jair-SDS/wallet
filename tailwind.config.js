@@ -31,7 +31,7 @@ module.exports = {
       "7xl": "5rem",
     },
     screens: {
-      "defaults": "1475px",
+      defaults: "1475px",
     },
     colors: {
       PrimaryColor: "#1b183f",
@@ -93,11 +93,11 @@ module.exports = {
       ContactColor2: "#61A0BE",
       ContactColor3: "#5F8E88",
       RemoteAmount: "#7BD3FF",
-      HoverColorLight2:"#e0f3fc",
-      HoverColorLight3:"#E2E2E2",
-      AmountRemote:"#258CBF",
-      AssetSymbol:"#805E0C",
-      
+      HoverColorLight2: "#e0f3fc",
+      HoverColorLight3: "#E2E2E2",
+      AmountRemote: "#258CBF",
+      AssetSymbol: "#805E0C",
+
       TooltipBackground: "#1F2B55",
 
       // WARNING: These colors MUST be used in new feature, which are part of new design system provided.

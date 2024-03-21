@@ -5,5 +5,5 @@
   semi: true;
   singleQuote: false;
   printWidth: 120;
-  bracketSpacing: true
+  bracketSpacing: true;
 }
