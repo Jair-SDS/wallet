@@ -31,11 +31,12 @@ export const UseTransaction = () => {
   };
 
   const getSelectedSubaccountICPTx = async (founded: boolean) => {
-    const auxTx: Transaction[] = await getAllTransactionsICP(
-      selectedAccount?.sub_account_id || "",
-      true,
-      selectedAccount?.symbol === AssetSymbolEnum.Enum.OGY,
-    );
+    const auxTx: Transaction[] = await getAllTransactionsICP({
+      subaccount_index: selectedAccount?.sub_account_id || "",
+      loading: true,
+      isOGY: selectedAccount?.symbol === AssetSymbolEnum.Enum.OGY,
+    });
+
     !founded && addNewTxsToList(auxTx, selectedAsset, selectedAccount);
   };
 
@@ -55,7 +56,7 @@ export const UseTransaction = () => {
   useEffect(() => {
     if (selectedAsset) {
       const founded = txWorker.find((tx) => {
-        return selectedAccount?.symbol === tx.tokenSymbol && selectedAccount.sub_account_id === tx.subaccount;
+        return selectedAccount?.symbol === tx.tokenSymbol && selectedAccount?.sub_account_id === tx.subaccount;
       });
       if (founded) dispatch(setTransactions(founded.tx));
       else dispatch(setTransactions([]));

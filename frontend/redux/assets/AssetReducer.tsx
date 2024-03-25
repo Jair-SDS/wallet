@@ -22,9 +22,6 @@ import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
-import { localDb, rxDb } from "@/database/db";
-import store from "@redux/Store";
-import { setAssetFromLocalData, updateAllBalances } from "./AssetActions";
 import { ICRC1systemAssets } from "@/defaultTokens";
 
 const defaultValue = {} as any;
@@ -540,28 +537,10 @@ const assetSlice = createSlice({
   },
 });
 
-const dbSubscriptionHandler = (x: any[]) => {
-  if (x.length > 0) {
-    store.dispatch(
-      assetSlice.actions.setReduxTokens(
-        x.sort((a: any, b: any) => {
-          return a.id_number - b.id_number;
-        }),
-      ),
-    );
-
-    if (store.getState().asset.initLoad) setAssetFromLocalData(x, store.getState().auth.authClient);
-
-    updateAllBalances(store.getState().auth.userAgent, x);
-  }
-};
-
-localDb().subscribeToAllTokens().subscribe(dbSubscriptionHandler);
-rxDb().subscribeToAllTokens().subscribe(dbSubscriptionHandler);
-
 export const {
   setStorageCodeA,
   setInitLoad,
+  setReduxTokens,
   clearDataAsset,
   setProtocol,
   setICRC1SystemAssets,

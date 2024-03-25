@@ -62,21 +62,29 @@ export const AssetHook = () => {
   const [hexChecked, setHexChecked] = useState<boolean>(false);
   const [ftsUsed, setFtsUsed] = useState<number>(0);
 
-  const reloadBallance = async (tkns?: Token[]) => {
+  const reloadBallance = async (updatedTokens?: Token[]) => {
     dispatch(setLoading(true));
-    await updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
+    updateAllBalances({
+      myAgent: userAgent,
+      tokens: updatedTokens ? updatedTokens : tokens.length > 0 ? tokens : defaultTokens,
+      basicSearch: false,
+      fromLogin: true,
+    });
+    await allowanceCacheRefresh();
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
-    const principal = store.getState().auth.userPrincipal.toText();
-    await allowanceCacheRefresh(principal);
     await contactCacheRefresh();
     dispatch(setLoading(false));
   };
 
   const reloadOnlyICRCBallance = async (tkns?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances(userAgent, tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens);
-    const principal = (await userAgent.getPrincipal()).toText();
-    allowanceCacheRefresh(principal);
+    updateAllBalances({
+      myAgent: userAgent,
+      tokens: tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens,
+      basicSearch: false,
+      fromLogin: true,
+    });
+    allowanceCacheRefresh();
     await contactCacheRefresh();
   };
 

@@ -1,5 +1,3 @@
-// svgs
-import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import AssetElement from "./ICRC/asset/AssetElement";
 import { Asset, HPLSubAccount } from "@redux/models/AccountModels";
@@ -7,7 +5,6 @@ import { ChangeEvent, Fragment, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AddAsset from "./ICRC/asset/AddAsset";
 import { DrawerHook } from "../hooks/drawerHook";
-import { useTranslation } from "react-i18next";
 import { AssetHook } from "../hooks/assetHook";
 import { UseAsset } from "../hooks/useAsset";
 import { ProtocolTypeEnum } from "@/const";
@@ -16,9 +13,11 @@ import AddSubaccount from "./HPL/AddSubaccount";
 import { useHPL } from "@pages/hooks/hplHook";
 import EditHplAsset from "./HPL/EditHplAsset";
 import Menu from "@pages/components/Menu";
+import { WorkerHook } from "@pages/hooks/workerHook";
+import SearchAsset from "./ICRC/asset/SearchAsset";
 
 const AssetsList = () => {
-  const { t } = useTranslation();
+  WorkerHook();
   UseAsset();
   const { assetOpen, setAssetOpen } = DrawerHook();
   const {
@@ -51,42 +50,15 @@ const AssetsList = () => {
       <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
         <Menu />
 
-        <div className="flex flex-row items-center justify-start w-full gap-3 pr-5 pl-3 mb-4">
-          <input
-            className="dark:bg-PrimaryColor bg-PrimaryColorLight text-PrimaryTextColorLight dark:text-PrimaryTextColor border-SearchInputBorderLight dark:border-SearchInputBorder w-full h-8 rounded-lg border-[1px] outline-none px-3 text-md"
-            type="text"
-            placeholder={t("search")}
-            value={protocol === ProtocolTypeEnum.Enum.HPL ? searchKeyHPL : searchKey}
-            onChange={setSearch}
-            spellCheck={false}
-            autoComplete="false"
-          />
-          <div
-            className="flex flex-row items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-SelectRowColor"
-            onClick={onAddAsset}
-          >
-            <img src={PlusIcon} alt="plus-icon" />
-          </div>
-        </div>
-        {protocol === ProtocolTypeEnum.Enum.HPL && (
-          <div className="flex flex-row justify-between items-center w-full pr-5 pl-4 mb-3 mt-2 text-PrimaryTextColorLight dark:text-PrimaryTextColor">
-            <div className="flex flex-row justify-start items-center gap-2">
-              <p className="text-md">{t("non.zero.balance")}</p>
-              <div
-                className={`flex flex-row w-9 h-4 rounded-full relative cursor-pointer items-center ${
-                  zeroBalance ? "bg-[#26A17B]" : "bg-[#7E7D91]"
-                }`}
-                onClick={handleFilterNonZeroBalances}
-              >
-                <div
-                  className={`w-3 h-3 rounded-full bg-white transition-spacing duration-300 ${
-                    zeroBalance ? "ml-5" : "ml-1"
-                  }`}
-                ></div>
-              </div>
-            </div>
-          </div>
-        )}
+        <SearchAsset
+          searchKey={protocol === ProtocolTypeEnum.Enum.HPL ? searchKeyHPL : searchKey}
+          setSearchKey={setSearch}
+          onAddAsset={onAddAsset}
+          protocol={protocol}
+          handleFilterNonZeroBalances={handleFilterNonZeroBalances}
+          zeroBalance={zeroBalance}
+        />
+
         <div
           className={`w-full ${
             protocol === ProtocolTypeEnum.Enum.HPL ? "max-h-[calc(100vh-16rem)]" : "max-h-[calc(100vh-13rem)]"
@@ -94,7 +66,6 @@ const AssetsList = () => {
         >
           {protocol === ProtocolTypeEnum.Enum.ICRC1 ? (
             <Accordion.Root
-              className=""
               type="multiple"
               defaultValue={[]}
               value={
@@ -110,8 +81,8 @@ const AssetsList = () => {
                 });
 
                 if (
-                  asset.name.toLowerCase().includes(mySearchKey) ||
-                  asset.symbol.toLowerCase().includes(mySearchKey) ||
+                  asset.name?.toLowerCase().includes(mySearchKey) ||
+                  asset.symbol?.toLowerCase().includes(mySearchKey) ||
                   includeInSub ||
                   searchKey.trim() === ""
                 )

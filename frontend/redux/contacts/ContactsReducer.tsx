@@ -1,8 +1,6 @@
 import { HplContact } from "@redux/models/AccountModels";
 import { Contact } from "@redux/models/ContactsModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { localDb, rxDb } from "@/database/db";
-import store from "@redux/Store";
 
 interface ContactsState {
   storageCode: string;
@@ -88,15 +86,6 @@ const setLocalHplContacts = (contacts: HplContact[], code: string) => {
     }),
   );
 };
-
-const dbSubscriptionHandler = (x: any[]) => {
-  if (x.length > 0) {
-    store.dispatch(contactsSlice.actions.setReduxContacts(x));
-  }
-};
-
-localDb().subscribeToAllContacts().subscribe(dbSubscriptionHandler);
-rxDb().subscribeToAllContacts().subscribe(dbSubscriptionHandler);
 
 export const {
   setStorageCode,

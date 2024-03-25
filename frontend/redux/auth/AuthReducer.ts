@@ -20,7 +20,7 @@ interface AuthState {
   disclaimer: boolean;
   hplLedger: string;
   hplDictionary: string;
-  dbLocation: string;
+  dbLocation: DB_Type;
   customDbCanisterId: string;
   userAgent: HttpAgent;
   userPrincipal: Principal;

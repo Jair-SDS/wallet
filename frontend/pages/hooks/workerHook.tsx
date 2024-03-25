@@ -1,9 +1,7 @@
 import { AssetSymbolEnum, WorkerTaskEnum } from "@/const";
-import { defaultTokens } from "@/defaultTokens";
 import { hexToUint8Array } from "@/utils";
 import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
-// import { AssetList, Metadata } from "@candid/metadata/service.did";
 import store, { useAppDispatch, useAppSelector } from "@redux/Store";
 import {
   getAllTransactionsICP,
@@ -28,11 +26,11 @@ export const WorkerHook = () => {
     assets.map((elementA: Asset) => {
       if (elementA.tokenSymbol === AssetSymbolEnum.Enum.ICP || elementA.tokenSymbol === AssetSymbolEnum.Enum.OGY) {
         elementA.subAccounts.map(async (elementS: SubAccount) => {
-          const transactionsICP = await getAllTransactionsICP(
-            elementS.sub_account_id,
-            false,
-            elementA.tokenSymbol === AssetSymbolEnum.Enum.OGY,
-          );
+          const transactionsICP = await getAllTransactionsICP({
+            subaccount_index: elementS.sub_account_id,
+            loading: false,
+            isOGY: elementA.tokenSymbol === AssetSymbolEnum.Enum.OGY,
+          });
 
           store.dispatch(
             setTxWorker({
@@ -75,13 +73,19 @@ export const WorkerHook = () => {
     dispatch(setLoading(true));
     const dbTokens = await db().getTokens();
     if (dbTokens) {
-      await updateAllBalances(userAgent, dbTokens);
+      await updateAllBalances({
+        myAgent: userAgent,
+        tokens: dbTokens,
+      });
     } else {
-      await updateAllBalances(userAgent, defaultTokens, true);
+      await updateAllBalances({
+        myAgent: userAgent,
+        tokens,
+        basicSearch: true,
+      });
     }
-    const myPrincipal = await userAgent.getPrincipal();
     await contactCacheRefresh();
-    await allowanceCacheRefresh(myPrincipal.toText());
+    await allowanceCacheRefresh();
 
     // HPL
     const nLocalHpl = {
@@ -89,7 +93,6 @@ export const WorkerHook = () => {
       nVirtualAccounts: store.getState().asset.nHpl.nVirtualAccounts || "0",
       nFtAssets: store.getState().asset.nHpl.nFtAssets || "0",
     };
-    console.log("updateHPLBalances-worker", hplContacts);
 
     await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, true, false, nLocalHpl);
 
