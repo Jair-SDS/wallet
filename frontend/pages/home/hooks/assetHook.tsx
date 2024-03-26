@@ -10,6 +10,7 @@ import {
   setHPLDictionary,
   setLoading,
   setProtocol,
+  setReduxTokens,
   setSelectedAccount,
   setSelectedAsset,
 } from "@redux/assets/AssetReducer";
@@ -64,7 +65,8 @@ export const AssetHook = () => {
 
   const reloadBallance = async (updatedTokens?: Token[]) => {
     dispatch(setLoading(true));
-    updateAllBalances({
+
+    const updatedAssets = await updateAllBalances({
       myAgent: userAgent,
       tokens: updatedTokens ? updatedTokens : tokens.length > 0 ? tokens : defaultTokens,
       basicSearch: false,
@@ -73,6 +75,8 @@ export const AssetHook = () => {
     await allowanceCacheRefresh();
     updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
     await contactCacheRefresh();
+
+    if (updatedAssets?.tokens) dispatch(setReduxTokens(updatedAssets.tokens));
     dispatch(setLoading(false));
   };
 
