@@ -5,7 +5,7 @@ import UpAmountIcon from "@assets/svg/files/up-amount-icon.svg";
 import SendReceiveIcon from "@assets/svg/files/send_recaive_icon.svg";
 //
 import { CustomCopy } from "@components/tooltip";
-import { getDecimalAmount } from "@/utils";
+import { getDecimalAmount, shortAddress } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum, SendingStatusEnum } from "@/const";
 import { useTranslation } from "react-i18next";
 import useSend from "@pages/home/hooks/useSend";
@@ -29,8 +29,19 @@ const DialogSendConfirmation = ({
   modal,
   network,
 }: DialogSendConfirmationProps) => {
-  const { receiverSubAccount, amount, sendingStatus, errors, initTime, endTime, hplSender, hplReceiver, hplFtTx } =
-    useSend();
+  const {
+    receiverSubAccount,
+    receiverPrincipal,
+    sender,
+    amount,
+    sendingStatus,
+    errors,
+    initTime,
+    endTime,
+    hplSender,
+    hplReceiver,
+    hplFtTx,
+  } = useSend();
   const { t } = useTranslation();
 
   return (
@@ -74,11 +85,20 @@ const DialogSendConfirmation = ({
               <p>{`${t("acc.subacc")}:`}</p>
               <p>{`${t("amount")}:`}</p>
             </div>
-            <div className="flex flex-row items-center justify-start gap-2">
+            <div className="flex flex-col items-start justify-start gap-2">
+              <div className="flex flex-row items-center justify-start gap-2">
+                <p>{shortAddress(receiverPrincipal || "", 12, 10)}</p>
+                <CustomCopy size={"small"} copyText={receiverPrincipal} />
+              </div>
+              <div className="flex flex-row items-center justify-start gap-2">
+                <p>
+                  {receiverSubAccount.length > 20 ? middleTruncation(receiverSubAccount, 10, 10) : receiverSubAccount}
+                </p>
+                <CustomCopy size={"small"} copyText={receiverSubAccount} />
+              </div>
               <p>
-                {receiverSubAccount.length > 20 ? middleTruncation(receiverSubAccount, 10, 10) : receiverSubAccount}
+                {amount} {sender?.asset?.symbol || ""}
               </p>
-              <CustomCopy size={"small"} copyText={receiverSubAccount} />
             </div>
           </div>
         ) : (
