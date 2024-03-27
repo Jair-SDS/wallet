@@ -93,7 +93,7 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
             >
               <p>{t("hpl.settings")}</p>
             </DropdownMenu.Item>
-            {isLoginPage ? (
+            {/* {isLoginPage && (
               <DropdownMenu.Item
                 className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
                 onSelect={() => {
@@ -102,7 +102,8 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
               >
                 <p>{t("database.location")}</p>
               </DropdownMenu.Item>
-            ) : (
+            )} */}
+            {!isLoginPage && (
               <DropdownMenu.Item
                 className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
                 onSelect={() => {
