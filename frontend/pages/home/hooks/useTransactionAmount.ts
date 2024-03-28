@@ -72,9 +72,30 @@ export default function useTransactionAmount() {
         const bigintFee = toHoleBigInt(transactionFee || "0", Number(sender?.asset?.decimal));
         const bigintTransactionAmount = toHoleBigInt(transactionAmount || "0", Number(sender?.asset?.decimal));
 
-        if (bigintTransactionAmount + bigintFee > allowanceBigintBalance) {
-          // INFO: allowance + fee is greater than the balance, show Max: 1.9 (available 0.1) where 1.9 is the allowance and 0.1 is the sub account balance
+        // INFO: allowance + fee is less than the balance, set Max: 1.9 where 1.9 is the allowance
+        transactionAmountWithoutFee = toFullDecimal(
+          bigintTransactionAmount - bigintFee,
+          Number(sender?.asset?.decimal),
+        );
 
+        // ----
+        const availableWithoutFee = allowanceBigintBalance - bigintFee;
+        const allowanceWithoutFee = bigintTransactionAmount - bigintFee;
+        // ----
+
+        if (availableWithoutFee >= allowanceWithoutFee) {
+          setMaxAmount({
+            transactionAmount,
+            transactionAmountWithoutFee,
+            transactionFee: transactionFee || "0",
+            showAvailable: false,
+            allowanceSubAccountBalance: allowanceSubaccountBalance,
+            isLoading: false,
+            isAmountFromMax: true,
+          });
+
+          setAmountAction(transactionAmountWithoutFee);
+        } else {
           const availableAmount =
             allowanceBigintBalance > bigintFee
               ? toFullDecimal(allowanceBigintBalance - bigintFee, Number(sender.asset.decimal))
@@ -82,29 +103,15 @@ export default function useTransactionAmount() {
 
           setMaxAmount({
             transactionAmount,
-            transactionAmountWithoutFee: transactionAmount,
+            transactionAmountWithoutFee,
             transactionFee: transactionFee || "0",
             showAvailable: true,
             allowanceSubAccountBalance: availableAmount,
             isLoading: false,
             isAmountFromMax: true,
           });
-          setAmountAction(transactionAmount);
-        } else {
-          // INFO: allowance + fee is less than the balance, set Max: 1.9 where 1.9 is the allowance
-          transactionAmountWithoutFee = toFullDecimal(bigintTransactionAmount, Number(sender?.asset?.decimal));
-
-          setMaxAmount({
-            transactionAmount,
-            transactionAmountWithoutFee: transactionAmount,
-            transactionFee: transactionFee || "0",
-            showAvailable: allowanceBigintBalance < bigintTransactionAmount,
-            allowanceSubAccountBalance: allowanceSubaccountBalance,
-            isLoading: false,
-            isAmountFromMax: true,
-          });
-
           setAmountAction(transactionAmountWithoutFee);
+
         }
       } else {
         transactionAmount = await getSenderMaxAmount();

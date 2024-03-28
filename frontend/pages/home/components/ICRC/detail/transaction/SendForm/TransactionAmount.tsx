@@ -48,7 +48,7 @@ export default function TransactionAmount() {
 
           {maxAmount.isAmountFromMax && !maxAmount.isLoading && maxAmount.showAvailable && (
             <p className="text-sm text-primary-color">
-              ({maxAmount.allowanceSubAccountBalance || "0.5"} {t("available")})
+              ({maxAmount.allowanceSubAccountBalance} {t("available")})
             </p>
           )}
         </div>
