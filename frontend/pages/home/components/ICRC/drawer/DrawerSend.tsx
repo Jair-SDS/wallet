@@ -1,34 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SendForm from "../detail/transaction/SendForm";
 import DialogSendConfirmation from "../detail/transaction/DialogSendConfirmation";
 import SenderInitializer from "../detail/transaction/SendForm/SenderInitializer";
 import SendFormConditionalRender from "../detail/transaction/SendForm/SendFormConditionalRender";
 import { ProtocolTypeEnum } from "@/const";
+import contactCacheRefresh from "@pages/contacts/helpers/contacts";
 
-interface DrawerSendProps {
-  setDrawerOpen(value: boolean): void;
-  drawerOpen: boolean;
-}
-
-function DrawerSend({ drawerOpen, setDrawerOpen }: DrawerSendProps) {
+function DrawerSend() {
   const [modal, showConfirmationModal] = useState(false);
 
-  if (!drawerOpen) return <></>;
+  useEffect(() => {
+    (async () => {
+      await contactCacheRefresh();
+    })();
+  }, []);
 
   return (
-    <>
+    <div className="px-8 mt-8 overflow-y-auto">
       <SenderInitializer>
         <SendFormConditionalRender showConfirmationModal={showConfirmationModal}>
-          <SendForm setDrawerOpen={setDrawerOpen} />
+          <SendForm />
         </SendFormConditionalRender>
       </SenderInitializer>
       <DialogSendConfirmation
         modal={modal}
-        setDrawerOpen={setDrawerOpen}
         showConfirmationModal={showConfirmationModal}
         network={ProtocolTypeEnum.Enum.ICRC1}
       />
-    </>
+    </div>
   );
 }
 

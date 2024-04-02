@@ -10,7 +10,7 @@ export default function ReceiverDetail() {
   const { t } = useTranslation();
   const { assets } = useAppSelector((state) => state.asset);
   const { receiver, sender } = useAppSelector((state) => state.transaction);
-  const { isReceiverOwnSubAccount } = useSend();
+  const { isReceiverOwnSubAccount, receiverSubAccount, getReceiverBalance } = useSend();
 
   const subAccountName = useMemo(() => receiver?.ownSubAccount?.name, []);
 
@@ -20,7 +20,8 @@ export default function ReceiverDetail() {
       (subAccount) => subAccount?.sub_account_id === receiver.ownSubAccount.sub_account_id,
     );
 
-    return toFullDecimal(latestSubAccount?.amount || "0", Number(latestAsset?.decimal)) || "0";
+    if (!latestSubAccount?.amount) return null;
+    return toFullDecimal(latestSubAccount.amount, Number(latestAsset?.decimal)) || "0";
   }, [assets, receiver, sender]);
 
   const title = useMemo(
@@ -48,8 +49,8 @@ export default function ReceiverDetail() {
       <p className="font-bold opacity-50 text-md text-start">{t("to")}</p>
       {isReceiverOwnSubAccount ? (
         <OwnSubAccountCard
-          subAccountName={subAccountName}
-          balance={balance}
+          subAccountName={subAccountName || receiverSubAccount || "-"}
+          balance={balance || getReceiverBalance() || "0"}
           assetLogo={sender?.asset?.logo || ""}
           assetSymbol={sender?.asset?.tokenSymbol || ""}
         />

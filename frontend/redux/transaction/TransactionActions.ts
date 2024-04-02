@@ -27,12 +27,14 @@ import {
   setHplReceiver,
   setHplFt,
   setFullErrors,
+  setTransactionDrawer,
 } from "./TransactionReducer";
 
 import { Asset, HPLAsset, HplTxUser, SubAccount } from "@redux/models/AccountModels";
 import {
   ContactSubAccount,
   NewContact,
+  TransactionDrawer,
   TransactionReceiverOption,
   TransactionScannerOption,
   TransactionSenderOption,
@@ -123,4 +125,7 @@ export function setHplReceiverTx(data: HplTxUser) {
 
 export function setHplFtTx(data: HPLAsset) {
   store.dispatch(setHplFt(data));
+}
+export function setTransactionDrawerAction(option: TransactionDrawer) {
+  store.dispatch(setTransactionDrawer(option));
 }

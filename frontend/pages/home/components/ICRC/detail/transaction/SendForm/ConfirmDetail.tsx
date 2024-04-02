@@ -55,7 +55,7 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
           {t("back")}
         </BasicButton>
         <BasicButton className="w-1/6 font-bold bg-primary-color" onClick={handleTransaction}>
-          {t("next")}
+          {t("submit")}
         </BasicButton>
       </div>
     </div>
@@ -69,7 +69,7 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
 
     const bigintMaxAmount = bigintSenderMaxAmountBalance - bigintFee;
 
-    if (bigintAmount > bigintMaxAmount) {
+    if (bigintAmount > bigintMaxAmount || bigintSenderMaxAmountBalance === BigInt(0)) {
       setErrorAction(TransactionValidationErrorsEnum.Values["error.not.enough.balance"]);
       return false;
     }
@@ -96,17 +96,24 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
     // INFO: the allowance sub account balance must cover the amount and the fee
     const isAvailableAmountEnough = bigintAmount <= balance - bigintFee;
 
+    if (allowanceGuaranteed === BigInt(0)) {
+      setErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
+      throw new Error(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
+    }
+
     if (!isAllowanceCoveringFee || !isAvailableAmountEnough) {
       setErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
       throw new Error("error.allowance.subaccount.not.enough");
     }
+
     removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
   }
 
   async function handleTransaction() {
     try {
+      setSendingStatusAction(SendingStatusEnum.Values.none);
       setInitTxTime(new Date());
-      setIsLoadingAction(true);
       const assetAddress = sender.asset.address;
       const decimal = sender.asset.decimal;
 
@@ -118,11 +125,13 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
 
       if (enableSend && !errors?.length) {
         if (assetAddress && decimal && senderSubAccount && receiverPrincipal && receiverSubAccount && amount) {
-          setSendingStatusAction(SendingStatusEnum.Values.sending);
-          showConfirmationModal(true);
-
           if (isSenderAllowance()) {
             await validateSubAccountBalance();
+
+            setSendingStatusAction(SendingStatusEnum.Values.sending);
+            showConfirmationModal(true);
+            setIsLoadingAction(true);
+
             await transferTokensFromAllowance({
               receiverPrincipal,
               senderPrincipal,
@@ -135,10 +144,10 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
             });
           } else {
             const isValid = await validateBalance();
-            if (!isValid) {
-              setIsLoadingAction(false);
-              return;
-            }
+            if (!isValid) return;
+            setSendingStatusAction(SendingStatusEnum.Values.sending);
+            showConfirmationModal(true);
+            setIsLoadingAction(true);
 
             await transferTokens({
               receiverPrincipal,
@@ -172,6 +181,10 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
     switch (true) {
       case errors?.includes(TransactionValidationErrorsEnum.Values["error.not.enough.balance"]):
         return TransactionValidationErrorsEnum.Values["error.not.enough.balance"];
+
+      case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]):
+        return TransactionValidationErrorsEnum.Values["error.allowance.not.exist"];
+
       default:
         return "";
     }

@@ -9,19 +9,19 @@ interface IDrawerProps {
   enableClose?: boolean;
 }
 
-export default function Drawer(props: IDrawerProps) {
+export default function BasicDrawer(props: IDrawerProps) {
   const { isDrawerOpen, onClose, children, title, enableClose = true } = props;
   return (
     <>
       <div className={getDrawerBlank(isDrawerOpen)} />
       <div className={getDrawerContainerStyle(isDrawerOpen)}>
         {title && onClose && (
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between px-8 mt-8 mb-8">
             <h1 className="text-xl font-bold text-PrimaryTextColorLight dark:text-PrimaryTextColor">{title}</h1>
             <CloseIcon onClick={() => onClose?.()} className={getCloseIconStyles(enableClose)} />
           </div>
         )}
-        {children}
+        {isDrawerOpen && children && children}
       </div>
     </>
   );
@@ -39,7 +39,6 @@ function getCloseIconStyles(enabled: boolean) {
 function getDrawerContainerStyle(isDrawerOpen: boolean) {
   return clsx(
     "fixed",
-    "px-8 py-4",
     "z-[1000]",
     "w-[28rem]",
     "h-screen",

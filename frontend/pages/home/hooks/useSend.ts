@@ -10,6 +10,7 @@ import { Asset } from "@redux/models/AccountModels";
 export default function useSend() {
   const [transactionFee, setTransactionFee] = useState<string>("0");
   const { userPrincipal } = useAppSelector((state) => state.auth);
+  const { contacts } = useAppSelector((state) => state.contacts);
   const { assets } = useAppSelector((state) => state.asset);
   const { sender, receiver, amount, sendingStatus, errors, initTime, endTime, hplSender, hplReceiver, hplFtTx } =
     useAppSelector((state) => state.transaction);
@@ -122,8 +123,23 @@ export default function useSend() {
 
       const principal = getSenderPrincipal();
       const subAccount = getSenderSubAccount();
+
       const assetAddress = sender?.asset?.address;
       const decimal = sender?.asset?.decimal;
+
+      const senderContact = contacts.find((contact) => contact.principal === principal);
+
+      if (senderContact) {
+        const contactAsset = senderContact.assets.find((asset) => asset.address === assetAddress);
+        if (contactAsset) {
+          const contactSubAccount = contactAsset.subaccounts.find(
+            (currentSubAccount) => currentSubAccount.sub_account_id === subAccount,
+          );
+          if (contactSubAccount && contactSubAccount.allowance?.allowance) {
+            return contactSubAccount.allowance.allowance;
+          }
+        }
+      }
 
       const response = await getAllowanceDetails({
         spenderSubaccount: subAccount,
@@ -137,6 +153,23 @@ export default function useSend() {
       console.warn("Error fetching sender balance:", error);
       return "0";
     }
+  }
+
+  function getReceiverBalance() {
+    if (isReceiverOwn()) {
+      const receiverSubAccount = getReceiverSubAccount();
+
+      const currentAsset = assets.find((asset) => asset?.tokenSymbol === sender?.asset?.tokenSymbol);
+      if (!currentAsset) return "0";
+
+      const currentSubAccount = currentAsset.subAccounts.find(
+        (subAccount) => subAccount?.sub_account_id === receiverSubAccount,
+      );
+      if (!currentSubAccount) return "0";
+
+      return toFullDecimal(currentSubAccount.amount || "0", Number(currentAsset?.decimal)) || "0";
+    }
+    return "0";
   }
 
   /**
@@ -164,7 +197,7 @@ export default function useSend() {
     const senderSubAccount = getSenderSubAccount();
     const receiverPrincipal = getReceiverPrincipal();
     const receiverSubAccount = getReceiverSubAccount();
-    return senderPrincipal === receiverPrincipal && senderSubAccount === receiverSubAccount;
+    return Boolean(senderPrincipal === receiverPrincipal && senderSubAccount === receiverSubAccount);
   }
 
   /**
@@ -298,6 +331,7 @@ export default function useSend() {
     isReceiverValid: getReceiverValid(),
     isReceiverOwnSubAccount: isReceiverOwn(),
     transactionFee,
+    getReceiverBalance,
     getSenderMaxAmount,
     isSenderAllowance,
     isSenderSameAsReceiver,

@@ -51,7 +51,7 @@ export const TokenHook = (asset: Asset | undefined) => {
         }),
         index: asset.index,
         id_number: asset.sort_index,
-        supportedStandards: [],
+        supportedStandards: asset.supportedStandards,
       });
       setErrToken("");
       setErrIndex("");

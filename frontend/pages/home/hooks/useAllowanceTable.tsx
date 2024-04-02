@@ -4,7 +4,6 @@ import { middleTruncation, toTitleCase } from "@/utils/strings";
 import { createColumnHelper } from "@tanstack/react-table";
 import { TAllowance, AllowancesTableColumnsEnum } from "@/@types/allowance";
 import { clsx } from "clsx";
-import { isDateExpired } from "@/utils/time";
 import { useTranslation } from "react-i18next";
 import ActionCard from "../components/ICRC/allowance/ActionCard";
 import { useMemo } from "react";
@@ -33,9 +32,9 @@ export default function useAllowanceTable() {
           </div>
         );
       },
-      header: ({ header }) => (
+      header: () => (
         <div className="flex items-center justify-center cursor-pointer">
-          <p className={titleHeaderStyles}>{toTitleCase(header.id)}</p> <SortIcon className={sortIconStyles} />
+          <p className={titleHeaderStyles}>{t("subAccount")}</p> <SortIcon className={sortIconStyles} />
         </div>
       ),
     }),
@@ -68,19 +67,14 @@ export default function useAllowanceTable() {
     }),
     columnHelper.accessor(AllowancesTableColumnsEnum.Values.amount, {
       cell: (info) => {
-        let isExpired = false;
         const allowance = info.row.original;
-
-        if (allowance?.expiration) {
-          isExpired = isDateExpired(allowance?.expiration);
-        }
-
+        const hidden = !allowance?.expiration && allowance.amount === "0";
         const assetSymbol = info.row.original.asset.tokenSymbol;
 
         return (
           <p className={getCellStyles()}>
-            {isExpired && "-"}
-            {!isExpired && info.getValue()} {!isExpired && assetSymbol}
+            {hidden && "-"}
+            {!hidden && info.getValue()} {!hidden && assetSymbol}
           </p>
         );
       },
@@ -92,16 +86,11 @@ export default function useAllowanceTable() {
     }),
     columnHelper.accessor(AllowancesTableColumnsEnum.Values.expiration, {
       cell: (info) => {
-        let isExpired = false;
-
-        const userDate = info.getValue() ? formatDateTime(info.getValue() || "") : t("no.expiration");
         const allowance = info.row.original;
+        const hidden = !allowance?.expiration && allowance.amount === "0";
+        const userDate = info.getValue() ? formatDateTime(info.getValue() || "") : t("no.expiration");
 
-        if (allowance?.expiration) {
-          isExpired = isDateExpired(allowance?.expiration);
-        }
-
-        return <p className={getCellStyles()}>{isExpired ? "-" : userDate}</p>;
+        return <p className={getCellStyles()}>{hidden ? "-" : userDate}</p>;
       },
       header: ({ header }) => (
         <div className="flex items-center justify-center cursor-pointer">

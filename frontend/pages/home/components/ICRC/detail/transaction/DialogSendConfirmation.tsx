@@ -9,26 +9,20 @@ import { getDecimalAmount, shortAddress } from "@/utils";
 import { ProtocolType, ProtocolTypeEnum, SendingStatusEnum } from "@/const";
 import { useTranslation } from "react-i18next";
 import useSend from "@pages/home/hooks/useSend";
-import { resetSendStateAction } from "@redux/transaction/TransactionActions";
-import { TransactionValidationErrorsEnum } from "@/@types/transactions";
+import { resetSendStateAction, setTransactionDrawerAction } from "@redux/transaction/TransactionActions";
+import { TransactionDrawer, TransactionValidationErrorsEnum } from "@/@types/transactions";
 import { getElapsedSecond } from "@/utils/formatTime";
 import AssetSymbol from "@components/AssetSymbol";
 import { middleTruncation } from "@/utils/strings";
 import { BasicModal } from "@components/modal";
 
 interface DialogSendConfirmationProps {
-  setDrawerOpen(value: boolean): void;
   showConfirmationModal(value: boolean): void;
   modal: boolean;
   network: ProtocolType;
 }
 
-const DialogSendConfirmation = ({
-  setDrawerOpen,
-  showConfirmationModal,
-  modal,
-  network,
-}: DialogSendConfirmationProps) => {
+const DialogSendConfirmation = ({ showConfirmationModal, modal, network }: DialogSendConfirmationProps) => {
   const {
     receiverSubAccount,
     receiverPrincipal,
@@ -139,7 +133,7 @@ const DialogSendConfirmation = ({
   );
 
   function onClose() {
-    setDrawerOpen(false);
+    setTransactionDrawerAction(TransactionDrawer.NONE);
     showConfirmationModal(false);
     resetSendStateAction();
   }
@@ -149,7 +143,7 @@ const DialogSendConfirmation = ({
       case SendingStatusEnum.enum.sending:
         return t("sending");
       case SendingStatusEnum.enum.done:
-        return t("sending.successful");
+        return t("transfer.successful");
       case SendingStatusEnum.enum.error:
         return t("sending.failed");
       default:
@@ -161,6 +155,10 @@ const DialogSendConfirmation = ({
     switch (true) {
       case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]):
         return t(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
+
+      case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]):
+        return t(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
+
       default:
         return "";
     }

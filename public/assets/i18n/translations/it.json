@@ -54,6 +54,7 @@
   "wallet": "Portafoglio",
   "pull": "Pull",
   "amount": "Importo",
+  "amount.received": "Importo ricevuto",
   "asset": "Risorsa",
   "assets": "Risorse",
   "select": "Selezionare",
@@ -150,6 +151,7 @@
   "already.used.index": "Indice già utilizzato",
   "icrc.account": "Conto del ICRC",
   "sending.successful": "Invio Riuscito",
+  "transfer.successful": "Trasferimento Riuscito",
   "sending.failed": "Transazione fallita",
   "no.enought.balance": "Nessun saldo sufficiente per inviare asset",
   "adding.asset": "Controllo dei saldi del nuovo Asset",
@@ -271,6 +273,7 @@
   "error.invalid.amount": "L'importo non è valido",
   "error.not.enough.balance": "Saldo insufficiente",
   "error.allowance.subaccount.not.enough": "Saldo della subaccount dell'autorizzazione insufficiente",
+  "error.allowance.not.exist": "L'autorizzazione non esiste",
 
   "error.invalid.asset": "Elemento non valido",
   "error.invalid.expiration": "Scadenza non valida",

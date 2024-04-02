@@ -1,6 +1,7 @@
 import {
   ContactSubAccount,
   NewContact,
+  TransactionDrawer,
   TransactionReceiverOption,
   TransactionReceiverOptionEnum,
   TransactionScannerOption,
@@ -42,6 +43,7 @@ export const initialTransactionState = {
     vIdx: "",
   },
   hplFtTx: {},
+  transactionDrawer: TransactionDrawer.NONE,
 } as TransactionState;
 
 const name = "transaction";
@@ -50,6 +52,9 @@ const transactionSlice = createSlice({
   name,
   initialState: initialTransactionState,
   reducers: {
+    setTransactionDrawer(state: TransactionState, action: PayloadAction<TransactionDrawer>) {
+      state.transactionDrawer = action.payload;
+    },
     setSenderAsset(state: TransactionState, action: PayloadAction<Asset>) {
       state.sender.asset = action.payload;
       state.sender.subAccount = {} as SubAccount;
@@ -195,6 +200,7 @@ export const {
   setHplSender,
   setHplReceiver,
   setHplFt,
+  setTransactionDrawer,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

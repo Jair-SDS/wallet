@@ -52,6 +52,7 @@
   "wallet": "Carteira",
   "pull": "Puxar",
   "amount": "Quantidade",
+  "amount.received": "Quantidade Recebida",
   "asset": "Ativo",
   "assets": "Ativos",
   "select": "Selecione",
@@ -148,6 +149,7 @@
   "already.used.index": "Índice já utilizado",
   "icrc.account": "Contya ICRC",
   "sending.successful": "Enviando com Sucesso",
+  "transfer.successful": "Transferência bem-sucedida",
   "sending.failed": "Falha na transação",
   "no.enought.balance": "Nessun saldo sufficiente per inviare asset",
   "adding.asset": "Verificando saldos de novos ativos",
@@ -269,6 +271,7 @@
   "error.invalid.receiver": "Destinatario non valido",
   "error.not.enough.balance": "Saldo insuficiente",
   "error.allowance.subaccount.not.enough": "Saldo da subconta da autorização insuficiente",
+  "error.allowance.not.exist": "Permissão não existe",
 
   "error.invalid.asset": "Recurso inválido",
   "error.invalid.expiration": "Expiração inválida",

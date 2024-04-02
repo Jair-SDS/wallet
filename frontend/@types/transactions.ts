@@ -130,6 +130,14 @@ export interface SenderState {
  * @property {Date} initTime - The timestamp when the transaction was initiated.
  * @property {Date} endTime - The timestamp when the transaction was completed (or last updated).
  */
+
+export enum TransactionDrawer {
+  SEND = "SEND",
+  RECEIVE = "RECEIVE",
+  INSPECT = "INSPECT",
+  NONE = "NONE",
+}
+
 export interface TransactionState {
   scannerActiveOption: TransactionScannerOption;
   isLoading: boolean;
@@ -146,6 +154,7 @@ export interface TransactionState {
   hplSender: HplTxUser;
   hplReceiver: HplTxUser;
   hplFtTx: HPLAsset;
+  transactionDrawer: TransactionDrawer;
 }
 
 export interface KeyValidationErrors {
@@ -172,6 +181,7 @@ export const TransactionValidationErrorsEnum = z.enum([
   "error.invalid.amount",
   "error.not.enough.balance",
   "error.allowance.subaccount.not.enough",
+  "error.allowance.not.exist",
 ]);
 export type TransactionValidationErrorsType = z.infer<typeof TransactionValidationErrorsEnum>;
 
