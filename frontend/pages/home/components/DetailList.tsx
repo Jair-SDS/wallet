@@ -1,14 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { DrawerHook } from "../hooks/drawerHook";
-import { UseTransaction } from "../hooks/useTransaction";
-import {
-  DrawerOption,
-  DrawerOptionEnum,
-  ICRCSubaccountInfo,
-  ICRCSubaccountInfoEnum,
-  ProtocolType,
-  ProtocolTypeEnum,
-} from "@/const";
+import { DrawerOption, DrawerOptionEnum, ICRCSubaccountInfo, ICRCSubaccountInfoEnum, ProtocolTypeEnum } from "@/const";
 import { AssetHook } from "../hooks/assetHook";
 import SubaccountInfo from "./HPL/SubaccountInfo";
 import DrawerVirtual from "./HPL/DrawerVirtual";
@@ -18,21 +10,13 @@ import HPLDrawerReceive from "./HPL/HPLDrawerReceive";
 import { useHPL } from "@pages/hooks/hplHook";
 import ICRCSubaccountAction from "./ICRC/detail/SubaccountAction";
 import ICRCSubInfo from "./ICRC/detail/subaccountTableInfo";
-import DrawerTransaction from "./ICRC/detail/transaction/Transaction";
 import DrawerAction from "./ICRC/drawer/DrawerAction";
-import DrawerSend from "./ICRC/drawer/DrawerSend";
-import DrawerReceive from "./ICRC/drawer/DrawerReceive";
 import AllowanceList from "./ICRC/allowance/AllowanceList";
 import AddAllowanceDrawer from "./ICRC/allowance/AddAllowanceDrawer";
 import SendReceiveDrawer from "./ICRC/detail/transaction/SendReceiveDrawer";
 import TransactionInspectDrawer from "./ICRC/detail/transaction/TransactionInpectDrawer";
 import ICRCTransactionsTable from "./ICRC/detail/transaction/TransactionsTable";
 import HPLSubaccountAction from "./HPL/SubaccountActions";
-
-const icrc1DrawerOptions = [
-  { name: "transfer", type: DrawerOptionEnum.Enum.SEND },
-  { name: "deposit", type: DrawerOptionEnum.Enum.RECEIVE },
-];
 
 const hplDrawerOptions = [{ name: "exchange.link", type: DrawerOptionEnum.Enum.HPL_QR, disabled: true }];
 
@@ -41,7 +25,6 @@ const DetailList = () => {
   const { selectSub } = useHPL(false);
   const { drawerOption, setDrawerOption, drawerOpen, setDrawerOpen } = DrawerHook();
   const [subInfoType, setSubInfoType] = useState<ICRCSubaccountInfo>(ICRCSubaccountInfoEnum.Enum.TRANSACTIONS);
-  const { selectedTransaction } = UseTransaction();
 
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
 

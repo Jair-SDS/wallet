@@ -75,7 +75,6 @@ const TxSummary = ({
   hplClient,
   onClose,
   reloadHPLBallance,
-  setDrawerOpen,
   ingressActor,
 }: TxSummaryProps) => {
   const { t } = useTranslation();
@@ -142,7 +141,6 @@ const TxSummary = ({
       </div>
       <DialogSendConfirmation
         modal={sendDialog}
-        setDrawerOpen={setDrawerOpen}
         showConfirmationModal={onCloseTxDialog}
         network={ProtocolTypeEnum.Enum.HPL}
       />
