@@ -208,17 +208,3 @@ const assetStyle = (k: number, assets: Asset[]) =>
       true,
     ["rounded-b-lg"]: k === assets.length - 1,
   });
-
-const triggerContainerStyles = clsx(
-  "flex flex-row justify-start items-center cursor-pointer",
-  "border border-BorderColorLight dark:border-BorderColor",
-  "rounded px-2 py-1 w-[10rem] h-[2.5rem]",
-  "bg-SecondaryColorLight dark:bg-SecondaryColor",
-);
-
-const contentContainerStyles = clsx(
-  "text-md bg-PrimaryColorLight w-[10rem]",
-  "rounded-lg dark:bg-SecondaryColor scroll-y-light z-[999]",
-  "max-h-80 text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight",
-  "dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor/20",
-);

@@ -4,7 +4,6 @@ import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
 import QRIcon from "@assets/svg/files/qr-white.svg";
 //
 import { DrawerOption, DrawerOptionEnum } from "@/const";
-import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
 import { toFullDecimal } from "@/utils";
