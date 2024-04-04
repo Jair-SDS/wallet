@@ -1,11 +1,10 @@
-import { IconTypeEnum, ProtocolTypeEnum, ThemesEnum } from "@/const";
-import { ThemeHook } from "@pages/hooks/themeHook";
+import { IconTypeEnum, ProtocolTypeEnum } from "@/const";
+import { getAssetIcon } from "@/utils/icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
-import ChevronRightIcon from "@assets/svg/files/chevron-right-icon.svg";
-import ChevronRightDarkIcon from "@assets/svg/files/chevron-right-dark-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 import { Asset, HPLAsset } from "@redux/models/AccountModels";
+import { ReactComponent as DropIcon } from "@assets/svg/files/chevron-right-icon.svg";
 import { clsx } from "clsx";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { useHPL } from "@pages/hooks/hplHook";
@@ -22,8 +21,7 @@ interface AssetFilterProps {
 
 export default function AssetFilter(props: AssetFilterProps) {
   const { t } = useTranslation();
-  const { theme } = ThemeHook();
-  const { assets, getAssetIcon, hplFTs, protocol } = GeneralHook();
+  const { assets, hplFTs, protocol } = GeneralHook();
   const { getAssetLogo, getFtFromSub } = useHPL(false);
   const { setAssetOpen, assetFilter, assetOpen, setAssetFilter } = props;
   const [assetSearch, setAssetSearch] = useState("");
@@ -35,7 +33,7 @@ export default function AssetFilter(props: AssetFilterProps) {
       }}
     >
       <DropdownMenu.Trigger asChild>
-        <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-PrimaryColorLight dark:bg-SecondaryColor cursor-pointer">
+        <div className="flex flex-row justify-start items-center border border-BorderColorLight dark:border-BorderColor rounded px-2 py-1 w-[14rem] h-[2.5rem] bg-SecondaryColorLight  dark:bg-SecondaryColor cursor-pointer">
           <div className="flex flex-row items-center justify-between w-full">
             {assetFilter.length === 0 ||
             (protocol === ProtocolTypeEnum.Enum.ICRC1 && assetFilter.length === assets.length) ||
@@ -67,11 +65,8 @@ export default function AssetFilter(props: AssetFilterProps) {
                 "selections",
               )}`}</p>
             )}
-            <img
-              src={theme === ThemesEnum.enum.dark ? ChevronRightIcon : ChevronRightDarkIcon}
-              className={`${assetOpen ? "-rotate-90 transition-transform" : "rotate-0 transition-transform"} ml-1`}
-              alt="chevron-icon"
-            />
+
+            <DropIcon className={`fill-gray-color-4 ${assetOpen ? "-rotate-90" : ""}`} />
           </div>
         </div>
       </DropdownMenu.Trigger>
@@ -96,11 +91,11 @@ export default function AssetFilter(props: AssetFilterProps) {
           )}
           <div
             onClick={handleSelectAll}
-            className="flex flex-row items-center justify-between w-full px-3 py-2 rounded-t-lg hover:bg-HoverColorLight hover:dark:bg-HoverColor"
+            className="flex flex-row items-center justify-between w-full px-3 py-2 rounded-t-lg hover:bg-secondary-color-1-light hover:dark:bg-HoverColor"
           >
             <p>{t("selected.all")}</p>
             <CustomCheck
-              className="border-BorderColorLight dark:border-BorderColor"
+              className="border-secondary-color-2-light dark:border-BorderColor"
               checked={assetFilter.length === assets.length}
             />
           </div>
@@ -209,7 +204,21 @@ export default function AssetFilter(props: AssetFilterProps) {
 
 const assetStyle = (k: number, assets: Asset[]) =>
   clsx({
-    ["flex flex-row justify-between items-center px-3 py-2 w-full hover:bg-HoverColorLight hover:dark:bg-HoverColor"]:
+    ["flex flex-row justify-between items-center px-3 py-2 w-full hover:bg-secondary-color-1-light hover:dark:bg-HoverColor"]:
       true,
     ["rounded-b-lg"]: k === assets.length - 1,
   });
+
+const triggerContainerStyles = clsx(
+  "flex flex-row justify-start items-center cursor-pointer",
+  "border border-BorderColorLight dark:border-BorderColor",
+  "rounded px-2 py-1 w-[10rem] h-[2.5rem]",
+  "bg-SecondaryColorLight dark:bg-SecondaryColor",
+);
+
+const contentContainerStyles = clsx(
+  "text-md bg-PrimaryColorLight w-[10rem]",
+  "rounded-lg dark:bg-SecondaryColor scroll-y-light z-[999]",
+  "max-h-80 text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight",
+  "dark:shadow-BorderColorTwo border border-BorderColorLight dark:border-BorderColor/20",
+);

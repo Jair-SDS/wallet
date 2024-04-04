@@ -17,11 +17,12 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@redux/Store";
 import { Token } from "@redux/models/TokenModels";
 import { CustomCopy } from "@components/tooltip";
-import { addSubAccount, removeSubAcc, setSubAccountName } from "@redux/assets/AssetReducer";
+import { addSubAccount, setSubAccountName } from "@redux/assets/AssetReducer";
 import { BasicModal } from "@components/modal";
 import { CustomButton } from "@components/button";
 import bigInt from "big-integer";
 import { db } from "@/database/db";
+import { LoadingLoader } from "@components/loader";
 
 interface AccountElementProps {
   asset: Asset;
@@ -67,6 +68,7 @@ const AccountElement = ({
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [nameError, setNameError] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   return (
     <Fragment>
@@ -171,7 +173,7 @@ const AccountElement = ({
 
           <div className="flex flex-row items-start justify-end w-full ">
             <CustomButton className="min-w-[5rem]" onClick={onConfirm} size={"small"}>
-              <p>{t("yes")}</p>
+              {loadingDelete ? <LoadingLoader /> : <p>{t("yes")}</p>}
             </CustomButton>
           </div>
         </div>
@@ -230,6 +232,7 @@ const AccountElement = ({
   }
 
   async function onConfirm() {
+    setLoadingDelete(true);
     const token = tokens[Number(tokenIndex)];
     const subAccounts = token.subAccounts
       .map((sa) => (sa.numb !== subAccount.sub_account_id ? sa : null!))
@@ -240,8 +243,10 @@ const AccountElement = ({
       subAccounts: subAccounts,
     });
 
-    dispatch(removeSubAcc(tokenIndex, subaccountId));
-    setDeleteModal(false);
+    setTimeout(() => {
+      setDeleteModal(false);
+      setLoadingDelete(false);
+    }, 2500);
   }
 
   function onDoubleClick() {

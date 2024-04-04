@@ -40,6 +40,7 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
     transactionFee,
     getSenderMaxAmount,
     isSenderAllowance,
+    getAllowanceAmount,
     senderPrincipal,
   } = useSend();
 
@@ -79,6 +80,10 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
   }
 
   async function validateSubAccountBalance() {
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.enough"]);
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
+
     const balance = await getSubAccountBalance({
       assetAddress: sender?.asset?.address,
       assetDecimal: sender?.asset?.decimal,
@@ -86,7 +91,7 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
       subAccount: senderSubAccount,
     });
 
-    const allowanceGuaranteed = toHoleBigInt(await getSenderMaxAmount(), Number(sender?.asset?.decimal));
+    const allowanceGuaranteed = toHoleBigInt(await getAllowanceAmount(), Number(sender?.asset?.decimal));
 
     const bigintFee = toHoleBigInt(transactionFee || "0", Number(sender?.asset?.decimal));
     const bigintAmount = toHoleBigInt(amount || "0", Number(sender?.asset?.decimal));
@@ -101,13 +106,19 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
       throw new Error(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
     }
 
+    if (allowanceGuaranteed < bigintAmount) {
+      setErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.enough"]);
+      throw new Error(TransactionValidationErrorsEnum.Values["error.allowance.not.enough"]);
+    }
+
     if (!isAllowanceCoveringFee || !isAvailableAmountEnough) {
       setErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
       throw new Error("error.allowance.subaccount.not.enough");
     }
 
-    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
     removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]);
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.not.enough"]);
+    removeErrorAction(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]);
   }
 
   async function handleTransaction() {
@@ -123,7 +134,8 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
       }
       removeErrorAction(TransactionValidationErrorsEnum.Values["error.invalid.amount"]);
 
-      if (enableSend && !errors?.length) {
+      // INFO: enabled verify all the fields were filled
+      if (enableSend) {
         if (assetAddress && decimal && senderSubAccount && receiverPrincipal && receiverSubAccount && amount) {
           if (isSenderAllowance()) {
             await validateSubAccountBalance();
@@ -185,6 +197,11 @@ export default function ConfirmDetail({ showConfirmationModal }: ConfirmDetailPr
       case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.not.exist"]):
         return TransactionValidationErrorsEnum.Values["error.allowance.not.exist"];
 
+      case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.not.enough"]):
+        return TransactionValidationErrorsEnum.Values["error.allowance.not.enough"];
+
+      case errors?.includes(TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"]):
+        return TransactionValidationErrorsEnum.Values["error.allowance.subaccount.not.enough"];
       default:
         return "";
     }
