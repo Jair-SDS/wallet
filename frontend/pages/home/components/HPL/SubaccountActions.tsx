@@ -20,7 +20,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
   const { t } = useTranslation();
 
   return (
-    <Fragment>
+    <div className="flex flex-row justify-between items-center w-full h-[4.75rem] bg-TransactionHeaderColorLight dark:bg-TransactionHeaderColor rounded-md">
       <div className="flex flex-col justify-center items-start bg-SelectRowColor w-[17rem] h-full rounded-l-md p-4 text-[#ffff]">
         {selectSub ? (
           <div className="flex flex-row items-center justify-between w-full gap-3">
@@ -76,7 +76,7 @@ const HPLSubaccountAction = ({ enableReceiveAction, onActionClick }: HPLSubaccou
           <p className="text-md">{t("exchange")}</p>
         </div>
       </div>
-    </Fragment>
+    </div>
   );
 };
 
