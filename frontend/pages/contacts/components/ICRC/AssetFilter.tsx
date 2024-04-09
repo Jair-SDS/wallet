@@ -45,7 +45,7 @@ export default function AssetFilter(props: AssetFilterProps) {
                   {getAssetIcon(
                     IconTypeEnum.Enum.FILTER,
                     assetFilter[0],
-                    assets.find((ast) => ast.tokenSymbol === assetFilter[0])?.logo,
+                    assets.find((ast) => ast.symbol === assetFilter[0])?.logo,
                   )}
                   <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{assetFilter[0]}</p>
                 </div>
@@ -116,7 +116,7 @@ export default function AssetFilter(props: AssetFilterProps) {
 
                   <CustomCheck
                     className="border-BorderColorLight dark:border-BorderColor"
-                    checked={assetFilter.includes(asset.tokenSymbol)}
+                    checked={assetFilter.includes(asset.symbol)}
                   />
                 </div>
               );
@@ -172,7 +172,7 @@ export default function AssetFilter(props: AssetFilterProps) {
     else {
       if (protocol === ProtocolTypeEnum.Enum.ICRC1) {
         symbols = assets.map((ast) => {
-          return ast.tokenSymbol;
+          return ast.symbol;
         });
       } else {
         symbols = hplFTs.map((ft) => {
@@ -184,10 +184,10 @@ export default function AssetFilter(props: AssetFilterProps) {
   }
 
   function handleSelectAsset(asset: Asset) {
-    if (assetFilter.includes(asset.tokenSymbol)) {
-      const auxSymbols = assetFilter.filter((currentAsset) => currentAsset !== asset.tokenSymbol);
+    if (assetFilter.includes(asset.symbol)) {
+      const auxSymbols = assetFilter.filter((currentAsset) => currentAsset !== asset.symbol);
       setAssetFilter(auxSymbols);
-    } else setAssetFilter([...assetFilter, asset.tokenSymbol]);
+    } else setAssetFilter([...assetFilter, asset.symbol]);
   }
 
   function handleSelectFt(ft: HPLAsset) {
