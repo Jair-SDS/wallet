@@ -176,6 +176,7 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
       await updateAllBalances({ myAgent: userAgent, tokens: [...tokens, tknSave] });
       setAssetOpen(false);
       showModal(false);
+      setManual(false);
       setNewToken({
         address: "",
         symbol: "",

@@ -420,6 +420,7 @@ const AddAssetManual = ({
       });
       setAssetInfo(undefined);
       setAssetOpen(false);
+      setManual(false);
     } else if (await onTest(false)) addAssetToData();
   }
 };
