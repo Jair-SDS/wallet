@@ -170,7 +170,6 @@ export default function AssetFilter(props: AssetFilterProps) {
     )
       setAssetFilter([]);
     else {
-<<<<<<< HEAD
       if (protocol === ProtocolTypeEnum.Enum.ICRC1) {
         symbols = assets.map((ast) => {
           return ast.symbol;
@@ -180,11 +179,6 @@ export default function AssetFilter(props: AssetFilterProps) {
           return ft.id;
         });
       }
-=======
-      const symbols = assets.map((currentAsset) => {
-        return currentAsset.symbol;
-      });
->>>>>>> icrc1-new-features
       setAssetFilter(symbols);
     }
   }
