@@ -1,7 +1,7 @@
 import { db } from "@/database/db";
 import contactCacheRefresh from "@pages/contacts/helpers/contactCacheRefresh";
 import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
-import { updateAllBalances } from "@redux/assets/AssetActions";
+import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
 import { setAppDataRefreshing, setLastDataRefresh } from "@redux/common/CommonReducer";
 import store from "@redux/Store";
 import dayjs from "dayjs";
@@ -21,6 +21,13 @@ export default async function reloadBallance() {
 
     await allowanceCacheRefresh();
     await contactCacheRefresh();
+
+    await updateHPLBalances(
+      store.getState().asset.ingressActor,
+      store.getState().asset.ownersActor,
+      store.getState().contacts.hplContacts,
+      store.getState().auth.authClient,
+    );
 
     store.dispatch(setLastDataRefresh(dayjs().toISOString()));
     store.dispatch(setAppDataRefreshing(false));
