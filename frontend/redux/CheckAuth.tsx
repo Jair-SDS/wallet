@@ -26,7 +26,6 @@ import {
   setIngressActor,
   setOwnersActor,
   setStorageCodeA,
-  setLoading,
   setInitLoad,
   setICRC1SystemAssets,
   setMintActor,
@@ -49,6 +48,7 @@ import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 import { DB_Type, db } from "@/database/db";
+import { setTransactions } from "./transaction/TransactionReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -127,16 +127,22 @@ export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
   handleLoginApp(identity);
 };
 
+/**
+ * Initialize the essential data after successful login
+ * - Set the user agent, principal, and authenticated status
+ * - Initialize the data for new user or set the last cached data
+ * - Refresh the cached data in a background process after success login
+ */
 export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean, fixedPrincipal?: Principal) => {
-  store.dispatch(setLoading(true));
   const opt: AuthNetwork | null = db().getNetworkType();
+
   if (opt === null && !fromSeed && !fixedPrincipal) {
     logout();
     return;
   }
 
-  // INFO: setAuthenticated will stop the authLoading
   store.dispatch(setAuthLoading(true));
+
   const myAgent = new HttpAgent({
     identity: authIdentity,
     host: HTTP_AGENT_HOST,
@@ -248,8 +254,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   const snsTokens = await getSNSTokens(myAgent);
   store.dispatch(setICRC1SystemAssets(snsTokens));
   store.dispatch(setAuthenticated(true, false, !!fixedPrincipal, identityPrincipalStr.toLocaleLowerCase()));
-
-  store.dispatch(setLoading(false));
   store.dispatch(setInitLoad(false));
 };
 
@@ -274,4 +278,5 @@ export const logout = async () => {
   store.dispatch({
     type: "USER_LOGGED_OUT",
   });
+  store.dispatch(setTransactions([]));
 };

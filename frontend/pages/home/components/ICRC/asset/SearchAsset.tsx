@@ -1,13 +1,13 @@
 // svgs
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
-import { ChangeEvent } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react/jsx-runtime";
 
 interface SearchAssetProps {
   searchKey: string;
-  setSearchKey(e: ChangeEvent<HTMLInputElement>): void;
+  setSearchKey: Dispatch<SetStateAction<string>>;
   onAddAsset(): void;
   protocol: ProtocolType;
   handleFilterNonZeroBalances: any;
@@ -27,7 +27,7 @@ export default function SearchAsset(props: SearchAssetProps) {
           placeholder={t("search")}
           value={searchKey}
           onChange={(e) => {
-            setSearchKey(e);
+            setSearchKey(e.target.value);
           }}
           autoComplete="false"
           spellCheck={false}

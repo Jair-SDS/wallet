@@ -1,33 +1,14 @@
-// svg
-import GenericTokenIcon from "@/assets/svg/files/dafaultICRC1.svg";
-//
 import { Asset, SubAccount, Transaction } from "@redux/models/AccountModels";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import {
-  setAccounts,
-  setAssets,
-  setSelectedAccount,
-  setSelectedAsset,
-  setSelectedTransaction,
-  setTransactions,
-} from "@redux/assets/AssetReducer";
-import { IconType, IconTypeEnum, symbolIconDict } from "@/const";
+import { setAccounts, setAssets, setSelectedAccount, setSelectedAsset } from "@redux/assets/AssetReducer";
+import { setSelectedTransaction, setTransactions } from "@redux/transaction/TransactionReducer";
 
 export const GeneralHook = () => {
   const dispatch = useAppDispatch();
+  const { transactions, selectedTransaction } = useAppSelector((state) => state.transaction);
 
-  const {
-    ICPSubaccounts,
-    protocol,
-    assets,
-    hplFTs,
-    accounts,
-    transactions,
-    selectedAsset,
-    selectedAccount,
-    selectedTransaction,
-    subaccounts,
-  } = useAppSelector((state) => state.asset);
+  const { ICPSubaccounts, protocol, assets, hplFTs, accounts, selectedAsset, selectedAccount, subaccounts } =
+    useAppSelector((state) => state.asset);
   const { userAgent, userPrincipal } = useAppSelector((state) => state.auth);
   const changeAssets = (value: Array<Asset>) => dispatch(setAssets(value));
   const changeAccounts = (value: Array<SubAccount>) => dispatch(setAccounts(value));
@@ -35,25 +16,6 @@ export const GeneralHook = () => {
   const changeSelectedAsset = (value: Asset) => dispatch(setSelectedAsset(value));
   const changeSelectedAccount = (value: SubAccount | undefined) => dispatch(setSelectedAccount(value));
   const changeSelectedTransaction = (value: Transaction | undefined) => dispatch(setSelectedTransaction(value));
-
-  const getAssetIcon = (type: IconType, symbol?: string, logo?: string) => {
-    const size = type === IconTypeEnum.Enum.FILTER ? "w-6 h-6" : IconTypeEnum.Enum.ASSET ? "w-8 h-8" : "w-10 h-10";
-    return (
-      <img
-        className={size}
-        src={
-          logo && logo !== ""
-            ? logo
-            : symbol
-            ? symbolIconDict[symbol]
-              ? symbolIconDict[symbol]
-              : GenericTokenIcon
-            : GenericTokenIcon
-        }
-        alt=""
-      />
-    );
-  };
 
   const getTotalAsset = (asset: Asset) => {
     let total = 0;
@@ -126,7 +88,6 @@ export const GeneralHook = () => {
     changeSelectedTransaction,
     asciiHex,
     //
-    getAssetIcon,
     getTotalAsset,
     checkAssetAdded,
     // HPL

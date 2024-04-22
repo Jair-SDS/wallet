@@ -3,11 +3,10 @@ import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { BasicModal } from "@components/modal";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { useTranslation } from "react-i18next";
-import { Token } from "@redux/models/TokenModels";
 import { CustomButton } from "@components/button";
-import { AssetHook } from "@pages/home/hooks/assetHook";
+import { db } from "@/database/db";
+import { useAppSelector } from "@redux/Store";
 
 interface DeleteAssetModalPropr {
   open: boolean;
@@ -17,9 +16,9 @@ interface DeleteAssetModalPropr {
 
 const DeleteAssetModal = ({ open, setOpen, asset }: DeleteAssetModalPropr) => {
   const { t } = useTranslation();
-  const { authClient } = AccountHook();
-  const { tokens, deleteAsset } = AssetHook();
-  const { name, symbol, address } = asset;
+  const { name, address, tokenSymbol } = asset;
+
+  const { contacts } = useAppSelector((state) => state.contacts);
 
   return (
     <BasicModal
@@ -53,23 +52,14 @@ const DeleteAssetModal = ({ open, setOpen, asset }: DeleteAssetModalPropr) => {
     </BasicModal>
   );
 
-  function handleConfirmButton() {
-    const auxTokens = tokens.filter((tkn) => tkn.symbol !== symbol);
-    saveInLocalStorage(auxTokens);
-    deleteAsset(symbol, address);
+  async function handleConfirmButton() {
+    await db().deleteAsset(address, { sync: true }).then();
+    const updatedContacts = contacts.map((cntc) => {
+      const updatedAssets = cntc.assets.filter((ast) => ast.tokenSymbol !== tokenSymbol);
+      return { ...cntc, assets: updatedAssets };
+    });
+    await db().updateContacts(updatedContacts, { sync: true }).then();
     setOpen(false);
-  }
-
-  function saveInLocalStorage(tokens: Token[]) {
-    localStorage.setItem(
-      authClient,
-      JSON.stringify({
-        from: "II",
-        tokens: tokens.sort((a, b) => {
-          return a.id_number - b.id_number;
-        }),
-      }),
-    );
   }
 };
 

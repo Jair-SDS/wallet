@@ -24,6 +24,17 @@ const contactsSlice = createSlice({
     setReduxContacts(state, action: PayloadAction<Contact[]>) {
       state.contacts = action.payload;
     },
+    addReduxContact(state, action: PayloadAction<Contact>) {
+      state.contacts.push(action.payload);
+    },
+    updateReduxContact(state, action: PayloadAction<Contact>) {
+      const index = state.contacts.findIndex((contact) => contact.principal === action.payload.principal);
+      if (index !== -1) state.contacts[index] = action.payload;
+      if (index === -1) console.warn("Contact not found");
+    },
+    deleteReduxContact(state, action: PayloadAction<string>) {
+      state.contacts = state.contacts.filter((contact) => contact.principal !== action.payload);
+    },
     clearDataContacts(state) {
       state.contacts = [];
       state.hplContacts = [];
@@ -89,6 +100,9 @@ const setLocalHplContacts = (contacts: HplContact[], code: string) => {
 
 export const {
   setStorageCode,
+  addReduxContact,
+  updateReduxContact,
+  deleteReduxContact,
   setReduxContacts,
   clearDataContacts,
   setHplContacts,

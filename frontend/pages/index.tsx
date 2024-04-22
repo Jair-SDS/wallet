@@ -1,15 +1,13 @@
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import Login from "./login";
 import LayoutComponent from "./components/LayoutComponent";
 import history from "./history";
 import { useAppSelector } from "@redux/Store";
-import { ThemeHook } from "./hooks/themeHook";
-import { DbLocationHook } from "./hooks/dbLocationHook";
 import Loader from "./components/Loader";
-import { RoutingPathEnum, ThemesEnum } from "@/const";
+import { RoutingPathEnum } from "@/const";
 import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
-import { db, DB_Type } from "@/database/db";
+import WorkersWrapper from "@/wrappers/WorkersWrapper";
 
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
@@ -17,48 +15,27 @@ const Assets = lazy(() => import("./assets"));
 
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
-  const { changeTheme } = ThemeHook();
-  const { changeDbLocation } = DbLocationHook();
 
-  useEffect(() => {
-    const theme = db().getTheme();
-    if (
-      theme === ThemesEnum.enum.dark ||
-      (theme === null && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.add(ThemesEnum.enum.dark);
-      db().setTheme(ThemesEnum.enum.dark);
-      changeTheme(ThemesEnum.enum.dark);
-    } else {
-      document.documentElement.classList.remove(ThemesEnum.enum.dark);
-      db().setTheme(ThemesEnum.enum.light);
-      changeTheme(ThemesEnum.enum.light);
-    }
-
-    // Default to LOCAL dbLocation if has not been set yet
-    !db().getDbLocation() && db().setDbLocation(DB_Type.LOCAL);
-    changeDbLocation(db().getDbLocation() || DB_Type.LOCAL);
-  }, []);
-
-  return authLoading ? (
-    <Loader></Loader>
-  ) : (
+  if (authLoading) return <Loader />;
+  return (
     <>
       {blur && <div className="fixed w-full h-full bg-black/50 z-[900]"></div>}
       <Router history={history}>
         {!superAdmin && authenticated && (
-          <LayoutComponent isLoginPage={false}>
-            <Switch>
-              <PrivateRoute
-                exact
-                path="/"
-                authenticated={authenticated}
-                allowByRole={true}
-                Component={getComponentAuth()}
-              />
-              <Redirect to="/" />
-            </Switch>
-          </LayoutComponent>
+          <WorkersWrapper>
+            <LayoutComponent isLoginPage={false}>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/"
+                  authenticated={authenticated}
+                  allowByRole={true}
+                  Component={getComponentAuth()}
+                />
+                <Redirect to="/" />
+              </Switch>
+            </LayoutComponent>
+          </WorkersWrapper>
         )}
         {!superAdmin && !authenticated && (
           <Switch>

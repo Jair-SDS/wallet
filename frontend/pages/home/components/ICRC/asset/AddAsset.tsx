@@ -1,38 +1,37 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
-import { Fragment, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { GeneralHook } from "../../../hooks/generalHook";
 import { AccountDefaultEnum, AddingAssetsEnum, TokenNetworkEnum } from "@/const";
 import { TokenHook } from "../../../hooks/tokenHook";
 import { Asset } from "@redux/models/AccountModels";
-import { Token } from "@redux/models/TokenModels";
 import { useAppDispatch } from "@redux/Store";
 import AddAssetManual from "./AddAssetManual";
-import { setAcordeonAssetIdx, setSelectedAsset } from "@redux/assets/AssetReducer";
+import { setAccordionAssetIdx, setSelectedAsset } from "@redux/assets/AssetReducer";
 import AddAssetAutomatic from "./AddAssetAutomatic";
 import DialogAssetConfirmation from "./DialogAssetConfirmation";
 import { db } from "@/database/db";
-import { updateAllBalances } from "@redux/assets/AssetActions";
+import { getAssetDetails } from "@pages/home/helpers/icrc";
+import { BasicDrawer } from "@components/drawer";
 
 interface AddAssetsProps {
-  setAssetOpen(value: boolean): void;
+  setAssetOpen: Dispatch<SetStateAction<boolean>>;
   assetOpen: boolean;
   asset: Asset | undefined;
   setAssetInfo(value: Asset | undefined): void;
-  tokens: Token[];
   assets: Asset[];
-  acordeonIdx: string[];
+  accordionIndex: string[];
 }
 
-const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets, acordeonIdx }: AddAssetsProps) => {
+const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, assets, accordionIndex }: AddAssetsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { checkAssetAdded, userAgent } = GeneralHook();
+  const { checkAssetAdded } = GeneralHook();
   const {
-    newToken,
-    setNewToken,
+    newAsset,
+    setNewAsset,
     validToken,
     setValidToken,
     validIndex,
@@ -64,8 +63,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
   }, [assetOpen, manual]);
 
   return (
-    <Fragment>
-      <div className="flex flex-col items-center justify-start w-full h-full px-6 pt-8 bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
+    <BasicDrawer isDrawerOpen={assetOpen}>
+      <div className="px-8 mt-4 overflow-y-auto text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
         <div className="flex flex-row items-center justify-between w-full mb-5">
           <p className="text-lg font-bold">{asset ? t("edit.asset") : t("add.asset")}</p>
           <CloseIcon
@@ -85,11 +84,11 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
             setValidToken={setValidToken}
             validIndex={validIndex}
             setValidIndex={setValidIndex}
-            newToken={newToken}
-            setNewToken={setNewToken}
+            newAsset={newAsset}
+            setNewAsset={setNewAsset}
             asset={asset}
             setAssetOpen={setAssetOpen}
-            tokens={tokens}
+            assets={assets}
             addAssetToData={addAssetToData}
             setAssetInfo={setAssetInfo}
           ></AddAssetManual>
@@ -99,8 +98,8 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
             networkTOpen={networkTOpen}
             setNetwork={setNetwork}
             network={network}
-            setNewToken={setNewToken}
-            newToken={newToken}
+            setNewAsset={setNewAsset}
+            newAsset={newAsset}
             setAssetTOpen={setAssetTOpen}
             addAssetToData={addAssetToData}
             assetTOpen={assetTOpen}
@@ -118,21 +117,21 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
           modal={modal}
           showModal={showModal}
           setAssetOpen={setAssetOpen}
-          newToken={newToken}
-          setNewToken={setNewToken}
+          newAsset={newAsset}
+          setNewAsset={setNewAsset}
           setNetwork={setNetwork}
           addStatus={addStatus}
           setManual={setManual}
         ></DialogAssetConfirmation>
       )}
-    </Fragment>
+    </BasicDrawer>
   );
 
   function onClose() {
     addToAcordeonIdx();
     setAssetOpen(false);
     setNetwork(TokenNetworkEnum.enum["ICRC-1"]);
-    setNewToken({
+    setNewAsset({
       address: "",
       symbol: "",
       name: "",
@@ -140,10 +139,20 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
       tokenName: "",
       decimal: "",
       shortDecimal: "",
-      fee: "0",
-      subAccounts: [{ numb: "0x0", name: AccountDefaultEnum.Values.Default, amount: "0", currency_amount: "0" }],
+      subAccounts: [
+        {
+          sub_account_id: "0x0",
+          name: AccountDefaultEnum.Values.Default,
+          amount: "0",
+          currency_amount: "0",
+          address: "",
+          decimal: 0,
+          symbol: "",
+          transaction_fee: "",
+        },
+      ],
       index: "",
-      id_number: 999,
+      sortIndex: 999,
       supportedStandards: [],
     });
     setManual(false);
@@ -151,33 +160,39 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
   }
 
   async function addAssetToData() {
-    if (checkAssetAdded(newToken.address)) {
+    if (checkAssetAdded(newAsset.address)) {
       setErrToken(t("adding.asset.already.imported"));
       setValidToken(false);
     } else {
-      const idxSorting =
-        tokens.length > 0
-          ? [...tokens].sort((a, b) => {
-              return b.id_number - a.id_number;
-            })
-          : [];
-      const idx = (idxSorting.length > 0 ? idxSorting[0]?.id_number : 0) + 1;
-      const tknSave = {
-        ...newToken,
-        id_number: idx,
-        subAccounts: [{ numb: "0x0", name: AccountDefaultEnum.Values.Default, amount: "0", currency_amount: "0" }],
-      };
       setAddStatus(AddingAssetsEnum.enum.adding);
       showModal(true);
-      await db().addToken(tknSave);
-      dispatch(setSelectedAsset(tknSave));
-      dispatch(setAcordeonAssetIdx([tknSave.symbol]));
 
-      await updateAllBalances({ myAgent: userAgent, tokens: [...tokens, tknSave] });
+      const idxSorting = assets.length > 0 ? [...assets].sort((a, b) => b.sortIndex - a.sortIndex) : [];
+      const idx = (idxSorting.length > 0 ? idxSorting[0]?.sortIndex : 0) + 1;
+
+      const updatedAsset = await getAssetDetails({
+        canisterId: newAsset.address,
+        includeDefault: true,
+        customName: newAsset.name,
+        customSymbol: newAsset.symbol,
+        supportedStandard: newAsset.supportedStandards,
+        sortIndex: idx,
+      });
+
+      const tknSave: Asset = {
+        ...newAsset,
+        ...updatedAsset,
+        sortIndex: idx,
+      };
+
+      await db().addAsset(tknSave, { sync: true });
+      dispatch(setSelectedAsset(tknSave));
+      dispatch(setAccordionAssetIdx([tknSave.symbol]));
+
       setAssetOpen(false);
       showModal(false);
       setManual(false);
-      setNewToken({
+      setNewAsset({
         address: "",
         symbol: "",
         name: "",
@@ -185,18 +200,28 @@ const AddAsset = ({ setAssetOpen, assetOpen, asset, setAssetInfo, tokens, assets
         tokenSymbol: "",
         decimal: "",
         shortDecimal: "",
-        fee: "0",
-        subAccounts: [{ numb: "0x0", name: AccountDefaultEnum.Values.Default, amount: "0", currency_amount: "0" }],
+        subAccounts: [
+          {
+            sub_account_id: "0x0",
+            name: AccountDefaultEnum.Values.Default,
+            amount: "0",
+            currency_amount: "0",
+            address: "",
+            decimal: 0,
+            symbol: "",
+            transaction_fee: "",
+          },
+        ],
         index: "",
-        id_number: 999,
+        sortIndex: 999,
         supportedStandards: [],
       });
     }
   }
 
   function addToAcordeonIdx() {
-    if (!acordeonIdx.includes(asset?.tokenSymbol || "")) {
-      dispatch(setAcordeonAssetIdx([...acordeonIdx, asset?.tokenSymbol || ""]));
+    if (!accordionIndex.includes(asset?.tokenSymbol || "")) {
+      dispatch(setAccordionAssetIdx([...accordionIndex, asset?.tokenSymbol || ""]));
     }
   }
 };

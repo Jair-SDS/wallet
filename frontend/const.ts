@@ -1,12 +1,13 @@
 // svg
 import IcIcon from "@/assets/img/icp.png";
-import EthereumIcon from "@/assets/svg/files/ethereum-icon.svg";
-import BitcoinIcon from "@/assets/svg/files/bitcoin-icon.svg";
+import ckETHIcon from "@/assets/svg/files/ckETH.svg";
+import ckBTCIcon from "@/assets/svg/files/ckbtc.svg";
 import GoldTokenIcon from "@/assets/svg/files/gldt_icon.svg";
 import OrigynIcon from "@/assets/svg/files/ogy_icon.svg";
 import { z } from "zod";
-import { Token } from "@redux/models/TokenModels";
 import { ICRC1systemAssets } from "./defaultTokens";
+import { Asset } from "@redux/models/AccountModels";
+import { SupportedStandardEnum } from "./@types/icrc";
 
 // Enums
 export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS"]);
@@ -86,16 +87,16 @@ export type HplTransactions = z.infer<typeof HplTransactionsEnum>;
 export const HplTransactionsTypeEnum = z.enum(["from", "to"]);
 export type HplTransactionsType = z.infer<typeof HplTransactionsTypeEnum>;
 
-export const DIP20systemAssets: Array<Token> = [];
-export const EXTsystemAssets: Array<Token> = [];
-export const systemAssets: { [key: string]: Array<Token> } = {
-  "ICRC-1": ICRC1systemAssets,
+export const DIP20systemAssets: Array<Asset> = [];
+export const EXTsystemAssets: Array<Asset> = [];
+export const systemAssets: { [key: string]: Array<Asset> } = {
+  [SupportedStandardEnum.Values["ICRC-1"]]: ICRC1systemAssets,
 };
 
 export const symbolIconDict: { [key: string]: string } = {
-  BTC: BitcoinIcon,
   ICP: IcIcon,
-  ETH: EthereumIcon,
+  ckBTC: ckBTCIcon,
+  ckETH: ckETHIcon,
   GLDT: GoldTokenIcon,
   OGY: OrigynIcon,
 };

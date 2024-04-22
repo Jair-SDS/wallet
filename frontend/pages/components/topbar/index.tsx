@@ -12,19 +12,21 @@ import { ThemeHook } from "@hooks/themeHook";
 import { AccountHook } from "@hooks/accountHook";
 import { ThemesEnum } from "@/const";
 import { CustomCopy } from "@components/tooltip";
-import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppSelector } from "@redux/Store";
 import Setings from "../Settings";
 import { useSiweIdentity } from "ic-use-siwe-identity";
 import { useAccount } from "wagmi";
 import Pill from "./Pill";
+import getTotalAmountInCurrency from "@pages/helpers/getTotalAmountInCurrency";
+import reloadBallance from "@pages/helpers/reloadBalance";
 
 const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
   const { t } = useTranslation();
   const { watchOnlyMode } = useAppSelector((state) => state.auth);
+  const { assets } = useAppSelector((state) => state.asset);
+  const { isAppDataFreshing } = useAppSelector((state) => state.common);
   const { theme } = ThemeHook();
   const { authClient } = AccountHook();
-  const { getTotalAmountInCurrency, reloadBallance, assetLoading } = AssetHook();
 
   const { identity, clear: clearSiweIdentity } = useSiweIdentity();
   const { address } = useAccount();
@@ -44,7 +46,7 @@ const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
               <CustomCopy size={"small"} copyText={authClient} />
               <RefreshIcon
                 className={`h-4 w-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor ${
-                  assetLoading ? "do-spin" : ""
+                  isAppDataFreshing ? "do-spin" : ""
                 }`}
                 onClick={handleReloadButton}
               />
@@ -67,8 +69,8 @@ const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
     </Fragment>
   );
 
-  function handleReloadButton() {
-    reloadBallance();
+  async function handleReloadButton() {
+    await reloadBallance(assets);
   }
 };
 export default TopBarComponent;

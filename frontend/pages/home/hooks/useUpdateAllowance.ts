@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import useAllowanceDrawer from "./useAllowanceDrawer";
-import { validateUpdateAllowance } from "../validators/allowance";
+import { validateUpdateAllowance } from "../helpers/allowanceValidators";
 import { updateSubAccountBalance } from "@redux/assets/AssetReducer";
 import {
   removeAllowanceErrorAction,
@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { refreshAllowance } from "../helpers/refreshAllowance";
 // eslint-disable-next-line import/named
 import { throttle } from "lodash";
+import { removeZeroesFromAmount } from "@/utils";
 
 export function useUpdateAllowance() {
   const dispatch = useAppDispatch();
@@ -35,23 +36,30 @@ export function useUpdateAllowance() {
   const mutationFn = useCallback(async () => {
     setIsLoadingAllowanceAction(true);
     setFullAllowanceErrorsAction([]);
-    const asset = assets.find((asset) => asset.tokenSymbol === allowance.asset.tokenSymbol) as Asset;
+
+    const fullAllowance: TAllowance = {
+      ...allowance,
+      amount: removeZeroesFromAmount(allowance.amount || "0"),
+    };
+
+    const asset = assets.find((asset) => asset.tokenSymbol === fullAllowance.asset.tokenSymbol) as Asset;
+
     const existingAllowance = allowances.find(
       (currentAllowance) =>
-        currentAllowance.spender === allowance.spender &&
-        currentAllowance.subAccountId === allowance.subAccountId &&
-        currentAllowance.asset.tokenSymbol === allowance.asset.tokenSymbol,
+        currentAllowance.spender === fullAllowance.spender &&
+        currentAllowance.subAccountId === fullAllowance.subAccountId &&
+        currentAllowance.asset.tokenSymbol === fullAllowance.asset.tokenSymbol,
     );
 
     if (existingAllowance) {
       if (
-        !dayjs(allowance.expiration).isSame(dayjs(existingAllowance.expiration)) ||
-        allowance.amount !== existingAllowance.amount
+        !dayjs(fullAllowance.expiration).isSame(dayjs(existingAllowance.expiration)) ||
+        fullAllowance.amount !== existingAllowance.amount
       ) {
-        validateUpdateAllowance(allowance, asset);
-        const params = createApproveAllowanceParams(allowance);
-        await submitAllowanceApproval(params, allowance.asset.address);
-        await refreshAllowance(allowance);
+        validateUpdateAllowance(fullAllowance, asset);
+        const params = createApproveAllowanceParams(fullAllowance);
+        await submitAllowanceApproval(params, fullAllowance.asset.address);
+        await refreshAllowance(fullAllowance);
       }
     }
   }, [allowance]);

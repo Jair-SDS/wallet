@@ -1,7 +1,7 @@
-import { IWalletDatabase } from "@/database/i-wallet-database";
+import { DatabaseOptions, IWalletDatabase } from "@/database/i-wallet-database";
 import { createRxDatabase, RxCollection, RxDocument, RxDatabase, addRxPlugin } from "rxdb";
 import DBSchemas from "./schemas.json";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, from, map, Observable, Subject, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable } from "rxjs";
 import { extractValueFromArray, setupReplication } from "./helpers";
 import { defaultTokens } from "@/defaultTokens";
 // rxdb plugins
@@ -14,21 +14,32 @@ import { RxReplicationState } from "rxdb/plugins/replication";
 import { AnonymousIdentity, HttpAgent, Identity } from "@dfinity/agent";
 import { createActor } from "@/candid/database";
 // types
-import { Token } from "@redux/models/TokenModels";
 import { Contact } from "@redux/models/ContactsModels";
 import { TAllowance } from "@/@types/allowance";
 import { SupportedStandardEnum } from "@/@types/icrc";
 import {
-  TokenDocument as TokenRxdbDocument,
+  AssetDocument as AssetRxdbDocument,
   ContactDocument as ContactRxdbDocument,
   AllowanceDocument as AllowanceRxdbDocument,
 } from "@/candid/database/db.did";
+import { Asset } from "@redux/models/AccountModels";
+import store from "@redux/Store";
+import { setAssets } from "@redux/assets/AssetReducer";
+import {
+  addReduxContact,
+  deleteReduxContact,
+  setReduxContacts,
+  updateReduxContact,
+} from "@redux/contacts/ContactsReducer";
+import {
+  addReduxAllowance,
+  deleteReduxAllowance,
+  setReduxAllowances,
+  updateReduxAllowance,
+} from "@redux/allowance/AllowanceReducer";
 
-// Enables data updates, deletions, and replacements within collections
 addRxPlugin(RxDBUpdatePlugin);
-// Facilitates schema evolution for future-proof databases
 addRxPlugin(RxDBMigrationPlugin);
-// Might be useful for debugging and development (disable for production)
 addRxPlugin(RxDBDevModePlugin);
 
 export class RxdbDatabase extends IWalletDatabase {
@@ -43,13 +54,12 @@ export class RxdbDatabase extends IWalletDatabase {
 
   private principalId = "";
   private identity: Identity = new AnonymousIdentity();
-  private identityChanged$: Subject<void> = new Subject<void>();
   private readonly agent = new HttpAgent({ identity: this.identity, host: import.meta.env.VITE_DB_CANISTER_HOST });
   private replicaCanister: any;
 
-  private _tokens!: RxCollection<TokenRxdbDocument> | null;
-  private tokensReplicationState?: RxReplicationState<any, any>;
-  private tokensPullInterval?: any;
+  private _assets!: RxCollection<AssetRxdbDocument> | null;
+  private assetsReplicationState?: RxReplicationState<any, any>;
+  private assetsPullInterval?: any;
   private _contacts!: RxCollection<ContactRxdbDocument> | null;
   private contactsReplicationState?: RxReplicationState<any, any>;
   private contactsPullInterval?: any;
@@ -57,16 +67,16 @@ export class RxdbDatabase extends IWalletDatabase {
   private allowancesReplicationState?: RxReplicationState<any, any>;
   private allowancesPullInterval?: any;
 
-  private pullingTokens$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private pushingTokens$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pullingContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pullingAllowances$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingAllowances$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  protected get tokens(): Promise<RxCollection<TokenRxdbDocument> | null> {
-    if (this._tokens) return Promise.resolve(this._tokens);
-    return this.init().then(() => this._tokens);
+  protected get assets(): Promise<RxCollection<AssetRxdbDocument> | null> {
+    if (this._assets) return Promise.resolve(this._assets);
+    return this.init().then(() => this._assets);
   }
 
   protected get contacts(): Promise<RxCollection<ContactRxdbDocument> | null> {
@@ -100,18 +110,18 @@ export class RxdbDatabase extends IWalletDatabase {
         eventReduce: true,
       });
 
-      const { tokens, contacts, allowances } = await db.addCollections(DBSchemas);
+      const { assets, contacts, allowances } = await db.addCollections(DBSchemas);
 
-      const tokensReplication = await setupReplication<TokenRxdbDocument, string>(
-        tokens,
-        `tokens-${this.principalId}`,
+      const assetsReplication = await setupReplication<AssetRxdbDocument, string>(
+        assets,
+        `assets-${this.principalId}`,
         "address",
-        (items) => this._tokensPushHandler(items),
-        (minTimestamp, lastId, batchSize) => this._tokensPullHandler(minTimestamp, lastId, batchSize),
+        (items) => this._assetsPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._assetsPullHandler(minTimestamp, lastId, batchSize),
       );
 
-      [this.tokensReplicationState, this.tokensPullInterval, this.pushingTokens$, this.pullingTokens$] =
-        tokensReplication;
+      [this.assetsReplicationState, this.assetsPullInterval, this.pushingAssets$, this.pullingAssets$] =
+        assetsReplication;
 
       const contactsReplication = await setupReplication<ContactRxdbDocument, string>(
         contacts,
@@ -135,7 +145,7 @@ export class RxdbDatabase extends IWalletDatabase {
       [this.allowancesReplicationState, this.allowancesPullInterval, this.pushingAllowances$, this.pullingAllowances$] =
         allowancesReplication;
 
-      this._tokens = tokens;
+      this._assets = assets;
       this._contacts = contacts;
       this._allowances = allowances;
     } catch (e) {
@@ -163,72 +173,103 @@ export class RxdbDatabase extends IWalletDatabase {
       });
       await this.init();
       await this._doesRecordByPrincipalExist();
+      await this._assetStateSync();
+      await this._contactStateSync();
+      await this._allowanceStateSync();
     }
-
-    this.identityChanged$.next();
   }
 
-  // INFO: TOKENS
   /**
-   * Get a Token object by its ID.
-   * @param address Address ID of a Token object
-   * @returns Token object or NULL if not found
+   * Get a Asset object by its ID.
+   * @param address Address ID of a Asset object
+   * @returns Asset object or NULL if not found
    */
-  async getToken(address: string): Promise<Token | null> {
+  async getAsset(address: string): Promise<Asset | null> {
     try {
-      const doc = await (await this.tokens)?.findOne(address).exec();
-      return (doc && this._mapTokenDoc(doc)) || null;
+      const doc = await (await this.assets)?.findOne(address).exec();
+      return (doc && this._mapAssetDoc(doc)) || null;
     } catch (e) {
-      console.error("RxDb GetToken:", e);
+      console.error("RxDb GetAsset:", e);
       return null;
     }
   }
 
   /**
-   * Get all Token objects from the active agent.
-   * @returns Array of found Token objects or an empty
-   * array if no Token objects were found
+   * Get all Asset objects from the active agent.
+   * @returns Array of found Asset objects or an empty
+   * array if no Asset objects were found
    */
-  async getTokens(): Promise<Token[]> {
+  async getAssets(): Promise<Asset[]> {
     try {
-      const documents = await (await this.tokens)?.find().exec();
-      return (documents && documents.map(this._mapTokenDoc)) || [];
+      const documents = await (await this.assets)?.find().exec();
+      return (documents && documents.map(this._mapAssetDoc)) || [];
     } catch (e) {
-      console.error("RxDb GetTokens:", e);
+      console.error("RxDb GetAssets:", e);
       return [];
     }
   }
+  /**
+   * Sync the Asset state with the Redux store.
+   * @param newAssets Array of Asset objects
+   */
+  private async _assetStateSync(newAssets?: Asset[]): Promise<void> {
+    const documents = await (await this.assets)?.find().exec();
+    const result = (documents && documents.map(this._mapAssetDoc)) || [];
+    const assets = newAssets || result || [];
+    store.dispatch(setAssets(assets));
+  }
 
   /**
-   * Add a new Token object to the list of Token objects
+   * Add a new Asset object to the list of Asset objects
    * current active agent has.
-   * @param token Token object to be added
+   * @param asset Asset object to be added
    */
-  async addToken(token: Token): Promise<void> {
+  async addAsset(asset: Asset, options?: DatabaseOptions): Promise<void> {
     try {
       await (
-        await this.tokens
+        await this.assets
       )?.insert({
-        ...token,
-        logo: extractValueFromArray(token.logo),
-        index: extractValueFromArray(token.index),
+        ...asset,
+        logo: extractValueFromArray(asset.logo),
+        index: extractValueFromArray(asset.index),
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) await this._assetStateSync();
     } catch (e) {
-      console.error("RxDb AddToken:", e);
+      console.error("RxDb AddAsset:", e);
+    }
+  }
+
+  async updateAssets(newAssets: Asset[], options?: DatabaseOptions): Promise<void> {
+    try {
+      await (
+        await this.assets
+      )?.bulkUpsert(
+        newAssets.map((a) => ({
+          ...a,
+          logo: extractValueFromArray(a.logo),
+          index: extractValueFromArray(a.index),
+          deleted: false,
+          updatedAt: Date.now(),
+        })),
+      );
+      if (options?.sync) await this._assetStateSync();
+    } catch (e) {
+      console.error("RxDb UpdateAssets:", e);
     }
   }
 
   /**
-   * Find a Token object by its ID and replace it with
-   * another Token object with the date of update.
-   * @param address Address ID of a Token object
-   * @param newDoc Token object
+   * Find a Asset object by its ID and replace it with
+   * another Asset object with the date of update.
+   * @param address Address ID of a Asset object
+   * @param newDoc Asset object
    */
-  async updateToken(address: string, newDoc: Token): Promise<void> {
+  async updateAsset(address: string, newDoc: Asset, options?: DatabaseOptions): Promise<void> {
     try {
-      const document = await (await this.tokens)?.findOne(address).exec();
+      const document = await (await this.assets)?.findOne(address).exec();
       await document?.patch({
         ...newDoc,
         logo: extractValueFromArray(newDoc.logo),
@@ -236,25 +277,28 @@ export class RxdbDatabase extends IWalletDatabase {
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) await this._assetStateSync();
     } catch (e) {
-      console.error("RxDb UpdateToken:", e);
+      console.error("RxDb UpdateAsset:", e);
     }
   }
 
   /**
-   * Find and remove a Token object by its ID.
-   * @param address Address ID of a Token object
+   * Find and remove a Asset object by its ID.
+   * @param address Address ID of a Asset object
    */
-  async deleteToken(address: string): Promise<void> {
+  async deleteAsset(address: string, options?: DatabaseOptions): Promise<void> {
     try {
-      const document = await (await this.tokens)?.findOne(address).exec();
-      document?.remove();
+      const document = await (await this.assets)?.findOne(address).exec();
+      await document?.remove();
+
+      if (options?.sync) await this._assetStateSync();
     } catch (e) {
-      console.error("RxDb DeleteToken", e);
+      console.error("RxDb DeleteAsset", e);
     }
   }
 
-  // INFO: CONTACTS
   /**
    * Find a Contact object by its Principal ID.
    * @param principal Princial ID
@@ -268,6 +312,13 @@ export class RxdbDatabase extends IWalletDatabase {
       console.error("RxDb GetContact", e);
       return null;
     }
+  }
+
+  async _contactStateSync(newContacts?: Contact[]): Promise<void> {
+    const documents = await (await this.contacts)?.find().exec();
+    const result = (documents && documents.map(this._mapContactDoc)) || [];
+    const contacts = newContacts || result || [];
+    store.dispatch(setReduxContacts(contacts));
   }
 
   /**
@@ -290,14 +341,16 @@ export class RxdbDatabase extends IWalletDatabase {
    * current active agent has.
    * @param contact Contact object to be added
    */
-  async addContact(contact: Contact): Promise<void> {
+  async addContact(contact: Contact, options?: DatabaseOptions): Promise<void> {
     try {
+      const databaseContact = this._getStorableContact(contact);
+
       await (
         await this.contacts
       )?.insert({
-        ...contact,
-        accountIdentier: extractValueFromArray(contact.accountIdentier),
-        assets: contact.assets.map((a) => ({
+        ...databaseContact,
+        accountIdentier: extractValueFromArray(databaseContact.accountIdentier),
+        assets: databaseContact.assets.map((a) => ({
           ...a,
           logo: extractValueFromArray(a.logo),
           subaccounts: a.subaccounts.map((sa) => ({
@@ -308,6 +361,8 @@ export class RxdbDatabase extends IWalletDatabase {
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) store.dispatch(addReduxContact(contact));
     } catch (e) {
       console.error("RxDb AddContact", e);
     }
@@ -319,13 +374,15 @@ export class RxdbDatabase extends IWalletDatabase {
    * @param principal Principal ID
    * @param newDoc Contact object
    */
-  async updateContact(principal: string, newDoc: Contact): Promise<void> {
+  async updateContact(principal: string, newDoc: Contact, options?: DatabaseOptions): Promise<void> {
     try {
+      const databaseContact = this._getStorableContact(newDoc);
       const document = await (await this.contacts)?.findOne(principal).exec();
+
       document?.patch({
-        ...newDoc,
-        accountIdentier: extractValueFromArray(newDoc.accountIdentier),
-        assets: newDoc.assets.map((a) => ({
+        ...databaseContact,
+        accountIdentier: extractValueFromArray(databaseContact.accountIdentier),
+        assets: databaseContact.assets.map((a) => ({
           ...a,
           logo: extractValueFromArray(a.logo),
           subaccounts: a.subaccounts.map((sa) => ({
@@ -336,6 +393,8 @@ export class RxdbDatabase extends IWalletDatabase {
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) store.dispatch(updateReduxContact(newDoc));
     } catch (e) {
       console.error("RxDb UpdateContact", e);
     }
@@ -347,10 +406,12 @@ export class RxdbDatabase extends IWalletDatabase {
    */
   async updateContacts(newDocs: Contact[]): Promise<void> {
     try {
+      const databaseContacts = newDocs.map((contact) => this._getStorableContact(contact));
+
       await (
         await this.contacts
       )?.bulkUpsert(
-        newDocs.map((doc) => ({
+        databaseContacts.map((doc) => ({
           ...doc,
           accountIdentier: extractValueFromArray(doc.accountIdentier),
           assets: doc.assets.map((a) => ({
@@ -365,6 +426,8 @@ export class RxdbDatabase extends IWalletDatabase {
           updatedAt: Date.now(),
         })),
       );
+
+      store.dispatch(setReduxContacts(newDocs));
     } catch (e) {
       console.error("RxDb UpdateContacts", e);
     }
@@ -374,16 +437,30 @@ export class RxdbDatabase extends IWalletDatabase {
    * Find and remove a Contact object by its Principal ID.
    * @param principal Principal ID
    */
-  async deleteContact(principal: string): Promise<void> {
+  async deleteContact(principal: string, options?: DatabaseOptions): Promise<void> {
     try {
       const document = await (await this.contacts)?.findOne(principal).exec();
-      document?.remove();
+      await document?.remove();
+      if (options?.sync) store.dispatch(deleteReduxContact(principal));
     } catch (e) {
       console.error("RxDb DeleteContact", e);
     }
   }
 
-  // INFO: ALLOWANCES
+  private _getStorableContact(contact: Contact): Contact {
+    return {
+      ...contact,
+      assets: contact.assets.map((asset) => ({
+        ...asset,
+        subaccounts: asset.subaccounts.map((subaccount) => {
+          // eslint-disable-next-line
+          const { allowance, ...rest } = subaccount;
+          return { ...rest };
+        }),
+      })),
+    };
+  }
+
   /**
    * Find a Allowance object.
    * @param id Primary Key
@@ -397,6 +474,13 @@ export class RxdbDatabase extends IWalletDatabase {
       console.error("RxDb GetAllowance", e);
       return null;
     }
+  }
+
+  private async _allowanceStateSync(newAllowances?: TAllowance[]): Promise<void> {
+    const documents = await (await this.allowances)?.find().exec();
+    const result = (documents && documents.map(this._mapAllowanceDoc)) || [];
+    const allowances = newAllowances || result || [];
+    store.dispatch(setReduxAllowances(allowances));
   }
 
   /**
@@ -419,20 +503,23 @@ export class RxdbDatabase extends IWalletDatabase {
    * current active agent has.
    * @param allowance Allowance object to be added
    */
-  async addAllowance(allowance: TAllowance): Promise<void> {
+  async addAllowance(allowance: TAllowance, options?: DatabaseOptions): Promise<void> {
+    const databaseAllowance = this._getStorableAllowance(allowance);
+
     try {
       await (
         await this.allowances
       )?.insert({
-        ...allowance,
-        expiration: extractValueFromArray(allowance.expiration),
+        ...databaseAllowance,
         asset: {
-          ...allowance.asset,
-          logo: extractValueFromArray(allowance.asset?.logo),
+          ...databaseAllowance.asset,
+          logo: extractValueFromArray(databaseAllowance.asset?.logo),
         },
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) store.dispatch(addReduxAllowance(allowance));
     } catch (e) {
       console.error("RxDb AddAllowance", e);
     }
@@ -444,19 +531,22 @@ export class RxdbDatabase extends IWalletDatabase {
    * @param id Primary Key
    * @param newDoc Allowance object
    */
-  async updateAllowance(id: string, newDoc: TAllowance): Promise<void> {
+  async updateAllowance(id: string, newDoc: TAllowance, options?: DatabaseOptions): Promise<void> {
     try {
+      const databaseAllowance = this._getStorableAllowance(newDoc);
       const document = await (await this.allowances)?.findOne(id).exec();
+
       document?.patch({
-        ...newDoc,
-        expiration: extractValueFromArray(newDoc.expiration),
+        ...databaseAllowance,
         asset: {
-          ...newDoc.asset,
-          logo: extractValueFromArray(newDoc.asset?.logo),
+          ...databaseAllowance.asset,
+          logo: extractValueFromArray(databaseAllowance.asset?.logo),
         },
         deleted: false,
         updatedAt: Date.now(),
       });
+
+      if (options?.sync) store.dispatch(updateReduxAllowance(newDoc));
     } catch (e) {
       console.error("RxDb UpdateAllowance", e);
     }
@@ -466,14 +556,15 @@ export class RxdbDatabase extends IWalletDatabase {
    * Update Allowances in bulk.
    * @param newDocs Array of Allowance objects
    */
-  async updateAllowances(newDocs: TAllowance[]): Promise<void> {
+  async updateAllowances(newDocs: TAllowance[], options?: DatabaseOptions): Promise<void> {
     try {
+      const databaseAllowances = newDocs.map((allowance) => this._getStorableAllowance(allowance));
+
       await (
         await this.allowances
       )?.bulkUpsert(
-        newDocs.map((doc) => ({
+        databaseAllowances.map((doc) => ({
           ...doc,
-          expiration: extractValueFromArray(doc.expiration),
           asset: {
             ...doc.asset,
             logo: extractValueFromArray(doc.asset?.logo),
@@ -482,6 +573,8 @@ export class RxdbDatabase extends IWalletDatabase {
           updatedAt: Date.now(),
         })),
       );
+
+      if (options?.sync) store.dispatch(setReduxAllowances(newDocs));
     } catch (e) {
       console.error("RxDb UpdateAllowances", e);
     }
@@ -491,63 +584,29 @@ export class RxdbDatabase extends IWalletDatabase {
    * Find and remove a Allowance object.
    * @param id Primary Key
    */
-  async deleteAllowance(id: string): Promise<void> {
+  async deleteAllowance(id: string, options?: DatabaseOptions): Promise<void> {
     try {
       const document = await (await this.allowances)?.findOne(id).exec();
-      document?.remove();
+      await document?.remove();
+
+      if (options?.sync) store.dispatch(deleteReduxAllowance(id));
     } catch (e) {
       console.error("RxDb DeleteAllowance", e);
     }
   }
 
-  // INFO: SUBSCRIPTIONS
-  /**
-   * Observable that trigger after
-   * a new Identity has been set.
-   * @returns Array of Contact objects from current
-   * active agent
-   */
-  subscribeToAllContacts(): Observable<Contact[]> {
-    return this.identityChanged$.pipe(
-      switchMap(() => from(this.contacts)),
-      switchMap((collection) => collection?.find().$ || []),
-      map((x: any) => x.map(this._mapContactDoc)),
-    );
-  }
-
-  /**
-   * Observable that triggers after a new Identity has been set.
-   * @returns Array of Token objects from current
-   * active agent
-   */
-  subscribeToAllTokens(): Observable<Token[]> {
-    return this.identityChanged$.pipe(
-      switchMap(() => from(this.tokens)),
-      switchMap((collection) => collection?.find().$ || []),
-      map((x: any) => x.map(this._mapTokenDoc)),
-    );
-  }
-
-  /**
-   * Subscribable Observable that trigger after
-   * a new Identity has been set.
-   * @returns Array of Allowances objects from current
-   * active agent
-   */
-  subscribeToAllAllowances(): Observable<TAllowance[]> {
-    return this.identityChanged$.pipe(
-      switchMap(() => from(this.allowances)),
-      switchMap((collection) => collection?.find().$ || []),
-      map((x: any) => x.map(this._mapAllowanceDoc)),
-    );
+  private _getStorableAllowance(allowance: TAllowance): Pick<TAllowance, "id" | "asset" | "subAccountId" | "spender"> {
+    // eslint-disable-next-line
+    const { amount, expiration, ...rest } = allowance;
+    return { ...rest };
   }
 
   /**
    * Obserbable that triggers after documents were pulled from the DB.
-   * @returns Array of Tokens and Contacts objects pulled from the DB
+   * @returns Array of Assets and Contacts objects pulled from the DB
    */
   subscribeOnPulling(): Observable<boolean> {
-    return combineLatest([this.pullingTokens$, this.pullingContacts$, this.pullingAllowances$]).pipe(
+    return combineLatest([this.pullingAssets$, this.pullingContacts$, this.pullingAllowances$]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
     );
@@ -555,17 +614,16 @@ export class RxdbDatabase extends IWalletDatabase {
 
   /**
    * Observable that triggers after documents where pushed to the DB.
-   * @returns Array of Tokens and Contacts objects just pushed
+   * @returns Array of Assets and Contacts objects just pushed
    * to the DB
    */
   subscribeOnPushing(): Observable<boolean> {
-    return combineLatest([this.pushingTokens$, this.pushingContacts$, this.pushingAllowances$]).pipe(
+    return combineLatest([this.pushingAssets$, this.pushingContacts$, this.pushingAllowances$]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
     );
   }
 
-  // INFO: HELPERS
   private _mapContactDoc(doc: RxDocument<ContactRxdbDocument>): Contact {
     return {
       name: doc.name,
@@ -588,22 +646,26 @@ export class RxdbDatabase extends IWalletDatabase {
     };
   }
 
-  private _mapTokenDoc(doc: RxDocument<TokenRxdbDocument>): Token {
+  private _mapAssetDoc(doc: RxDocument<AssetRxdbDocument>): Asset {
     return {
       name: doc.name,
-      id_number: doc.id_number,
+      sortIndex: doc.sortIndex,
       address: doc.address,
       logo: doc.logo,
       decimal: doc.decimal,
       symbol: doc.symbol,
       index: doc.index,
       subAccounts: doc.subAccounts.map((sa) => ({
-        numb: sa.numb,
+        numb: sa.sub_account_id,
         name: sa.name,
         amount: sa.amount,
         currency_amount: sa.currency_amount,
+        address: sa.address,
+        decimal: sa.decimal,
+        sub_account_id: sa.sub_account_id,
+        symbol: sa.symbol,
+        transaction_fee: sa.transaction_fee,
       })),
-      fee: doc.fee,
       tokenName: doc.tokenName,
       tokenSymbol: doc.tokenSymbol,
       shortDecimal: doc.shortDecimal,
@@ -615,9 +677,7 @@ export class RxdbDatabase extends IWalletDatabase {
     return {
       id: doc.id,
       subAccountId: doc.subAccountId,
-      amount: doc.amount,
       spender: doc.spender,
-      expiration: doc.expiration,
       asset: {
         logo: doc.asset.logo,
         name: doc.asset.name,
@@ -632,9 +692,9 @@ export class RxdbDatabase extends IWalletDatabase {
   }
 
   private _invalidateDb(): void {
-    if (this.tokensPullInterval !== undefined) {
-      clearInterval(this.tokensPullInterval);
-      this.tokensPullInterval = undefined;
+    if (this.assetsPullInterval !== undefined) {
+      clearInterval(this.assetsPullInterval);
+      this.assetsPullInterval = undefined;
     }
     if (this.contactsPullInterval !== undefined) {
       clearInterval(this.contactsPullInterval);
@@ -644,9 +704,9 @@ export class RxdbDatabase extends IWalletDatabase {
       clearInterval(this.allowancesPullInterval);
       this.allowancesPullInterval = undefined;
     }
-    if (this.tokensReplicationState) {
-      this.tokensReplicationState.cancel().then();
-      this.tokensReplicationState = undefined;
+    if (this.assetsReplicationState) {
+      this.assetsReplicationState.cancel().then();
+      this.assetsReplicationState = undefined;
     }
     if (this.contactsReplicationState) {
       this.contactsReplicationState.cancel().then();
@@ -656,42 +716,42 @@ export class RxdbDatabase extends IWalletDatabase {
       this.allowancesReplicationState.cancel().then();
       this.allowancesReplicationState = undefined;
     }
-    this._tokens = null!;
+    this._assets = null!;
     this._contacts = null!;
     this._allowances = null!;
   }
 
-  private async _tokensPushHandler(items: any[]): Promise<TokenRxdbDocument[]> {
+  private async _assetsPushHandler(items: any[]): Promise<AssetRxdbDocument[]> {
     const arg = items.map(
       (x) =>
         ({
           ...x,
-          id_number: x.id_number,
+          sortIndex: x.sortIndex,
           updatedAt: Math.floor(Date.now() / 1000),
           logo: extractValueFromArray(x.logo),
           index: extractValueFromArray(x.index),
-        } as TokenRxdbDocument),
+        } as AssetRxdbDocument),
     );
 
-    await this.replicaCanister?.pushTokens(arg);
+    await this.replicaCanister?.pushAssets(arg);
 
     return arg;
   }
 
-  private async _tokensPullHandler(
+  private async _assetsPullHandler(
     minTimestamp: number,
     lastId: string | null,
     batchSize: number,
-  ): Promise<TokenRxdbDocument[]> {
-    const raw = (await this.replicaCanister?.pullTokens(
+  ): Promise<AssetRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullAssets(
       minTimestamp,
       lastId ? [lastId] : [],
       BigInt(batchSize),
-    )) as TokenRxdbDocument[];
+    )) as AssetRxdbDocument[];
 
     return raw.map((x) => ({
       ...x,
-      id_number: Number(x.id_number),
+      sortIndex: Number(x.sortIndex),
     }));
   }
 
@@ -768,14 +828,14 @@ export class RxdbDatabase extends IWalletDatabase {
   }
 
   private async _doesRecordByPrincipalExist() {
-    // Look for entry record by current prinicpal ID
+    // Look for entry record by current principal ID
     const exist: boolean = await this.replicaCanister?.doesStorageExist();
 
     // If does not exist it means that this is a brand new account
     if (!exist) {
       try {
         await (
-          await this.tokens
+          await this.assets
         )?.bulkInsert(
           defaultTokens.map((dT) => ({
             ...dT,

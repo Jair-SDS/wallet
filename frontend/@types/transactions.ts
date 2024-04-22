@@ -1,5 +1,5 @@
 import { SendingStatus } from "@/const";
-import { Asset, HPLAsset, HplTxUser, SubAccount } from "@redux/models/AccountModels";
+import { Asset, HPLAsset, HplTxUser, SubAccount, Transaction, TransactionList } from "@redux/models/AccountModels";
 import { z } from "zod";
 
 export const ContactSubAccountSchema = z.object({
@@ -140,6 +140,7 @@ export enum TransactionDrawer {
 
 export interface TransactionState {
   scannerActiveOption: TransactionScannerOption;
+  transactions: Array<Transaction>;
   isLoading: boolean;
   isInspectTransference: boolean;
   sendingStatus: SendingStatus;
@@ -155,6 +156,9 @@ export interface TransactionState {
   hplReceiver: HplTxUser;
   hplFtTx: HPLAsset;
   transactionDrawer: TransactionDrawer;
+  selectedTransaction: Transaction | undefined;
+  txLoad: boolean;
+  txWorker: Array<TransactionList>;
 }
 
 export interface KeyValidationErrors {

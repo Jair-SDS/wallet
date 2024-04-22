@@ -1,6 +1,5 @@
 import { ProtocolType, ProtocolTypeEnum } from "@/const";
 import { AssetHook } from "@pages/home/hooks/assetHook";
-import { WorkerHook } from "@pages/hooks/workerHook";
 import { useAppSelector } from "@redux/Store";
 
 interface TabNetworkProps {
@@ -8,7 +7,6 @@ interface TabNetworkProps {
 }
 
 const TabNetwork = ({ children }: TabNetworkProps) => {
-  WorkerHook();
   const { protocol, setProtocolType } = AssetHook();
   const { watchOnlyMode } = useAppSelector((state) => state.auth);
 

@@ -16,7 +16,6 @@ import {
   setHPLSubAccounts,
   setHPLSubsData,
   setHPLVTsData,
-  setLoading,
   setOwnerId,
 } from "@redux/assets/AssetReducer";
 import {
@@ -188,14 +187,12 @@ export const useHPL = (open: boolean) => {
   }, [zeroBalance, searchKeyHPL, subaccounts]);
 
   const reloadHPLBallance = async (updateInfo?: boolean) => {
-    dispatch(setLoading(true));
     const { subs } = await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient, false, updateInfo);
     if (selectSub) {
       const auxSub = subs.find((sub) => sub.sub_account_id === selectSub.sub_account_id);
       setSelSub(auxSub);
       setSelVt(undefined);
     }
-    dispatch(setLoading(false));
   };
 
   const getFtFromSub = (sub: string) => {

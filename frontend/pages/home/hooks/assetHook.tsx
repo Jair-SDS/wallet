@@ -1,42 +1,33 @@
 import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
-import { defaultTokens } from "@/defaultTokens";
-import contactCacheRefresh from "@pages/contacts/helpers/contacts";
+import { getFtsFormated, parseFungibleToken } from "@/utils";
+import { Actor } from "@dfinity/agent";
 import store, { useAppDispatch, useAppSelector } from "@redux/Store";
-import { updateAllBalances, updateHPLBalances } from "@redux/assets/AssetActions";
+import { updateHPLBalances } from "@redux/assets/AssetActions";
 import {
-  removeToken,
-  setAcordeonAssetIdx,
+  setAccordionAssetIdx,
   setHPLAssets,
   setHPLDictionary,
-  setLoading,
   setProtocol,
-  setReduxTokens,
   setSelectedAccount,
   setSelectedAsset,
 } from "@redux/assets/AssetReducer";
+import { Asset, ResQueryState, SubAccount } from "@redux/models/AccountModels";
+import { FungibleTokenLocal } from "@redux/models/TokenModels";
+import { useEffect, useState } from "react";
 import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
-import { Asset, ResQueryState, SubAccount } from "@redux/models/AccountModels";
-import { FungibleTokenLocal, Token } from "@redux/models/TokenModels";
-import { useEffect, useState } from "react";
-import { allowanceCacheRefresh } from "../helpers/allowanceCache";
-import { db } from "@/database/db";
-import { getFtsFormated, parseFungibleToken } from "@/utils";
-import { Actor } from "@dfinity/agent";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
   const {
     protocol,
-    tokens,
     assets,
-    assetLoading,
+    subaccounts,
     selectedAsset,
     selectedAccount,
-    acordeonIdx,
+    accordionIndex,
     tokensMarket,
-    subaccounts,
     dictionaryHplFTs,
     ingressActor,
     ownersActor,
@@ -44,17 +35,10 @@ export const AssetHook = () => {
   } = useAppSelector((state) => state.asset);
   const { userAgent, authClient } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
-  const deleteAsset = (symb: string, address: string) => {
-    dispatch(removeToken(symb));
-    db().deleteToken(address).then();
-  };
+  const { isAppDataFreshing } = useAppSelector((state) => state.common);
 
   const [searchKey, setSearchKey] = useState("");
-  const setAcordeonIdx = (assetIdx: string[]) => dispatch(setAcordeonAssetIdx(assetIdx));
-  const setProtocolType = (prot: ProtocolType) => {
-    dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
-    dispatch(setProtocol(prot));
-  };
+  const setAcordeonIdx = (assetIdx: string[]) => dispatch(setAccordionAssetIdx(assetIdx));
   const [assetInfo, setAssetInfo] = useState<Asset | undefined>();
 
   const [editNameId, setEditNameId] = useState("");
@@ -62,35 +46,6 @@ export const AssetHook = () => {
   const [newSub, setNewSub] = useState<SubAccount | undefined>();
   const [hexChecked, setHexChecked] = useState<boolean>(false);
   const [ftsUsed, setFtsUsed] = useState<number>(0);
-
-  const reloadBallance = async (updatedTokens?: Token[]) => {
-    dispatch(setLoading(true));
-
-    const updatedAssets = await updateAllBalances({
-      myAgent: userAgent,
-      tokens: updatedTokens ? updatedTokens : tokens.length > 0 ? tokens : defaultTokens,
-      basicSearch: false,
-      fromLogin: true,
-    });
-    await allowanceCacheRefresh();
-    updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
-    await contactCacheRefresh();
-
-    if (updatedAssets?.tokens) dispatch(setReduxTokens(updatedAssets.tokens));
-    dispatch(setLoading(false));
-  };
-
-  const reloadOnlyICRCBallance = async (tkns?: Token[]) => {
-    dispatch(setLoading(true));
-    updateAllBalances({
-      myAgent: userAgent,
-      tokens: tkns ? tkns : tokens.length > 0 ? tokens : defaultTokens,
-      basicSearch: false,
-      fromLogin: true,
-    });
-    allowanceCacheRefresh();
-    await contactCacheRefresh();
-  };
 
   const reloadOnlyHPLBallance = async () => {
     await updateHPLBalances(ingressActor, ownersActor, hplContacts, authClient);
@@ -141,18 +96,9 @@ export const AssetHook = () => {
     store.dispatch(setHPLAssets(auxFT));
   };
 
-  const getTotalAmountInCurrency = () => {
-    let amount = 0;
-    assets.map((tk) => {
-      const market = tokensMarket.find((tm) => tm.symbol === tk.tokenSymbol);
-      let assetTotal = BigInt(0);
-      tk.subAccounts.map((sa) => {
-        assetTotal = assetTotal + BigInt(sa.amount);
-      });
-      amount =
-        amount + (market ? (Number(assetTotal.toString()) * market.price) / Math.pow(10, Number(tk.decimal)) : 0);
-    });
-    return Math.round(amount * 100) / 100;
+  const setProtocolType = (prot: ProtocolType) => {
+    dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
+    dispatch(setProtocol(prot));
   };
 
   useEffect(() => {
@@ -169,7 +115,7 @@ export const AssetHook = () => {
       if (auxAssets.length > 0) {
         const auxAccordion: string[] = [];
         auxAssets.map((ast) => {
-          if (acordeonIdx.includes(ast.tokenSymbol)) auxAccordion.push(ast.tokenSymbol);
+          if (accordionIndex.includes(ast.tokenSymbol)) auxAccordion.push(ast.tokenSymbol);
         });
         setAcordeonIdx(auxAccordion);
 
@@ -178,8 +124,6 @@ export const AssetHook = () => {
           dispatch(setSelectedAsset(auxAssets[0]));
           auxAssets[0].subAccounts.length > 0 && dispatch(setSelectedAccount(auxAssets[0].subAccounts[0]));
         }
-      } else {
-        setAcordeonIdx([]);
       }
     }
   }, [searchKey]);
@@ -199,19 +143,15 @@ export const AssetHook = () => {
 
   return {
     protocol,
-    setProtocolType,
-    reloadBallance,
-    reloadOnlyICRCBallance,
     reloadOnlyHPLBallance,
     searchKey,
     setSearchKey,
     // ICRC1
-    tokens,
     assets,
-    assetLoading,
+    isAppDataFreshing,
     selectedAsset,
     selectedAccount,
-    acordeonIdx,
+    accordionIndex,
     setAcordeonIdx,
     assetInfo,
     setAssetInfo,
@@ -224,9 +164,8 @@ export const AssetHook = () => {
     setNewSub,
     hexChecked,
     setHexChecked,
-    getTotalAmountInCurrency,
-    deleteAsset,
     // HPL
+    setProtocolType,
     subaccounts,
     dictionaryHplFTs,
     hplFTsData,

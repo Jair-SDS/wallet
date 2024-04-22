@@ -267,11 +267,6 @@ export const hexadecimalToUint8Array = (hexadecimalSubAccount: string): [] | [Ui
   else return [hexToUint8Array(hexadecimalSubAccount)];
 };
 
-/**
- * INFO: Uint8Array | number[]; was added, Unit8Array was removed from @dfinity/ledger-icrc. Remove when @dfinity/ledger will be replaced by @dfinity/ledger-icrc entirely on HPL.
- * Reference: https://github.com/dfinity/ic-js/blob/bf808fef5e3dbe4c3662abe8b350a04ba684619d/packages/ledger-icrc/candid/icrc_ledger.d.ts#L161
- * TODO: confirm no breaking changes on @dfinity/ledger-icrc adding
- */
 export const subUint8ArrayToHex = (sub: Uint8Array | number[] | undefined) => {
   if (sub) {
     const hex = removeLeadingZeros(Buffer.from(sub).toString("hex"));
@@ -411,12 +406,6 @@ export const formatckBTCTransaccion = (
   const trans = { status: OperationStatusEnum.Enum.COMPLETED, kind: kind } as Transaction;
   // Check Tx type ["transfer", "mint", "burn"]
   if (kind === SpecialTxTypeEnum.Enum.mint)
-    /**
-     * INFO: memo type modified from [] | [Uint8Array] to [] | [Uint8Array | number[]] on ledger-icrc
-     * References:
-     * - https://forum.dfinity.org/t/breaking-changes-in-ledger-icrc-icp-javascript-libraries/23465
-     * - https://github.com/dfinity/ic-js/blob/bf808fef5e3dbe4c3662abe8b350a04ba684619d/packages/ledger-icrc/candid/icrc_ledger.d.ts#L148
-     */
     mint.forEach(
       (operation: {
         to: Account;
@@ -849,3 +838,25 @@ export const numToUint32Array = (num: number) => {
 
   return arr;
 };
+/**
+ * Remove leading and trailing zeroes from a string representing an amount.
+ * 000000.23 -> 0.23
+ * 000000.2300 -> 0.23
+ * 0.230000000 -> 0.23
+ *
+ * @param amount
+ * @returns
+ */
+export function removeZeroesFromAmount(amount: string) {
+  if (amount === "0") return "0";
+  if (amount === "0.") return "0";
+
+  const parts = amount.split(".");
+  const whole = parts[0].replace(/^0+/, "");
+  const decimals = parts[1].replace(/0+$/, "");
+
+  if (whole === "" && decimals === "") return "0";
+  else if (whole === "") return `0.${decimals}`;
+  else if (decimals === "") return whole;
+  else return `${whole}.${decimals}`;
+}

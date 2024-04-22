@@ -17,44 +17,61 @@ import { useAppSelector } from "@redux/Store";
 export default function useContactTable() {
   const { protocol } = useAppSelector((state) => state.asset);
   const [isPending, setIsPending] = useState(false);
+  const { contacts } = useAppSelector((state) => state.contacts);
 
-  const updateContact = async (editedContact: Contact, pastPrincipal: string) =>
-    await db().updateContact(pastPrincipal, editedContact);
+  const updateContact = async (editedContact: Contact, pastPrincipal: string) => {
+    await db().updateContact(pastPrincipal, editedContact, { sync: true });
+  };
 
   const addAsset = async (asset: AssetContact[], pastPrincipal: string) => {
-    const contact = await db().getContact(pastPrincipal);
+    const contact = contacts.find((contact) => contact.principal === pastPrincipal);
     contact &&
-      (await db().updateContact(pastPrincipal, {
-        ...contact,
-        assets: [...contact.assets, ...asset],
-      }));
+      (await db().updateContact(
+        pastPrincipal,
+        {
+          ...contact,
+          assets: [...contact.assets, ...asset],
+        },
+        { sync: true },
+      ));
   };
 
-  const removeCntct = async (principal: string) => await db().deleteContact(principal);
+  const removeCntct = async (principal: string) => await db().deleteContact(principal, { sync: true });
+
   const removeAsset = async (principal: string, tokenSymbol: string) => {
-    const contact = await db().getContact(principal);
+    const contact = contacts.find((contact) => contact.principal === principal);
+
     contact &&
-      (await db().updateContact(principal, {
-        ...contact,
-        assets: contact.assets.filter((asst) => asst.tokenSymbol !== tokenSymbol),
-      }));
+      (await db().updateContact(
+        principal,
+        {
+          ...contact,
+          assets: contact.assets.filter((asst) => asst.tokenSymbol !== tokenSymbol),
+        },
+        { sync: true },
+      ));
   };
   const removeSubacc = async (principal: string, tokenSymbol: string, subIndex: string) => {
-    const contact = await db().getContact(principal);
+    const contact = contacts.find((contact) => contact.principal === principal);
+
     contact &&
-      (await db().updateContact(principal, {
-        ...contact,
-        assets: contact.assets.map((asset) => {
-          if (asset.tokenSymbol !== tokenSymbol) {
-            return asset;
-          } else {
-            return {
-              ...asset,
-              subaccounts: asset.subaccounts.filter((subAccount) => subAccount.subaccount_index !== subIndex),
-            };
-          }
-        }),
-      }));
+      (await db().updateContact(
+        principal,
+        {
+          ...contact,
+          assets: contact.assets.map((asset) => {
+            if (asset.tokenSymbol !== tokenSymbol) {
+              return asset;
+            } else {
+              return {
+                ...asset,
+                subaccounts: asset.subaccounts.filter((subAccount) => subAccount.subaccount_index !== subIndex),
+              };
+            }
+          }),
+        },
+        { sync: true },
+      ));
   };
 
   const editCntctSubacc = async (
@@ -65,38 +82,43 @@ export default function useContactTable() {
     newIndex: string,
     allowance: { allowance: string; expires_at: string },
   ) => {
-    const contact = await db().getContact(principal);
+    const contact = contacts.find((contact) => contact.principal === principal);
+
     contact &&
-      (await db().updateContact(principal, {
-        ...contact,
-        assets: contact.assets.map((asset) => {
-          if (asset.tokenSymbol !== tokenSymbol) {
-            return asset;
-          } else {
-            return {
-              ...asset,
-              subaccounts: asset.subaccounts
-                .map((subAccount) => {
-                  if (subAccount.subaccount_index !== subIndex) return subAccount;
-                  else {
-                    return {
-                      name: newName,
-                      subaccount_index: newIndex,
-                      sub_account_id: `0x${newIndex}`,
-                      allowance: allowance,
-                    };
-                  }
-                })
-                .sort(
-                  (a, b) =>
-                    hexToNumber(`0x${a.subaccount_index}`)?.compare(
-                      hexToNumber(`0x${b.subaccount_index}`) || bigInt(0),
-                    ) || 0,
-                ),
-            };
-          }
-        }),
-      }));
+      (await db().updateContact(
+        principal,
+        {
+          ...contact,
+          assets: contact.assets.map((asset) => {
+            if (asset.tokenSymbol !== tokenSymbol) {
+              return asset;
+            } else {
+              return {
+                ...asset,
+                subaccounts: asset.subaccounts
+                  .map((subAccount) => {
+                    if (subAccount.subaccount_index !== subIndex) return subAccount;
+                    else {
+                      return {
+                        name: newName,
+                        subaccount_index: newIndex,
+                        sub_account_id: `0x${newIndex}`,
+                        allowance: allowance,
+                      };
+                    }
+                  })
+                  .sort(
+                    (a, b) =>
+                      hexToNumber(`0x${a.subaccount_index}`)?.compare(
+                        hexToNumber(`0x${b.subaccount_index}`) || bigInt(0),
+                      ) || 0,
+                  ),
+              };
+            }
+          }),
+        },
+        { sync: true },
+      ));
   };
 
   const addCntctSubacc = async (
@@ -107,34 +129,39 @@ export default function useContactTable() {
     subAccountId: string,
     allowance: { allowance: string; expires_at: string },
   ) => {
-    const contact = await db().getContact(principal);
+    const contact = contacts.find((contact) => contact.principal === principal);
+
     contact &&
-      (await db().updateContact(principal, {
-        ...contact,
-        assets: contact.assets.map((asset) => {
-          if (asset.tokenSymbol !== tokenSymbol) {
-            return asset;
-          } else {
-            return {
-              ...asset,
-              subaccounts: [
-                ...asset.subaccounts,
-                {
-                  name: newName,
-                  subaccount_index: newIndex,
-                  sub_account_id: subAccountId,
-                  allowance: allowance,
-                },
-              ].sort(
-                (a, b) =>
-                  hexToNumber(`0x${a.subaccount_index}`)?.compare(
-                    hexToNumber(`0x${b.subaccount_index}`) || bigInt(0),
-                  ) || 0,
-              ),
-            };
-          }
-        }),
-      }));
+      (await db().updateContact(
+        principal,
+        {
+          ...contact,
+          assets: contact.assets.map((asset) => {
+            if (asset.tokenSymbol !== tokenSymbol) {
+              return asset;
+            } else {
+              return {
+                ...asset,
+                subaccounts: [
+                  ...asset.subaccounts,
+                  {
+                    name: newName,
+                    subaccount_index: newIndex,
+                    sub_account_id: subAccountId,
+                    allowance: allowance,
+                  },
+                ].sort(
+                  (a, b) =>
+                    hexToNumber(`0x${a.subaccount_index}`)?.compare(
+                      hexToNumber(`0x${b.subaccount_index}`) || bigInt(0),
+                    ) || 0,
+                ),
+              };
+            }
+          }),
+        },
+        { sync: true },
+      ));
   };
 
   const [deleteModal, setDeleteModal] = useState(false);

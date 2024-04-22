@@ -8,12 +8,13 @@ import { toFullDecimal } from "@/utils";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { FC, Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import { getAssetIcon } from "@/utils/icons";
 interface ICRCSubaccountActionProps {
   onActionClick(value: DrawerOption): void;
 }
 
 const ICRCSubaccountAction: FC<ICRCSubaccountActionProps> = ({ onActionClick }) => {
-  const { getAssetIcon, selectedAsset, selectedAccount } = GeneralHook();
+  const { selectedAsset, selectedAccount } = GeneralHook();
   const { t } = useTranslation();
 
   return (
