@@ -23,7 +23,6 @@ import reloadBallance from "@pages/helpers/reloadBalance";
 const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
   const { t } = useTranslation();
   const { watchOnlyMode } = useAppSelector((state) => state.auth);
-  const { assets } = useAppSelector((state) => state.asset);
   const { isAppDataFreshing } = useAppSelector((state) => state.common);
   const { theme } = ThemeHook();
   const { authClient } = AccountHook();
@@ -70,7 +69,7 @@ const TopBarComponent = ({ isLoginPage }: { isLoginPage: boolean }) => {
   );
 
   async function handleReloadButton() {
-    await reloadBallance(assets);
+    await reloadBallance();
   }
 };
 export default TopBarComponent;
