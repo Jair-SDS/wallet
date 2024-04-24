@@ -29,9 +29,10 @@ import {
   setInitLoad,
   setICRC1SystemAssets,
   setMintActor,
+  setProtocol,
 } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
-import { AuthNetworkTypeEnum, RoutingPathEnum } from "@/const";
+import { AuthNetworkTypeEnum, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
 import { Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
 import { clearDataContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
@@ -109,6 +110,7 @@ export const handlePrincipalAuthenticated = async (principalAddress: string) => 
     db().setDbLocation(DB_Type.LOCAL);
     const authClient = await AuthClient.create();
     const principal = Principal.fromText(principalAddress);
+    store.dispatch(setProtocol(ProtocolTypeEnum.Enum.ICRC1));
     handleLoginApp(authClient.getIdentity(), false, principal);
   } catch {
     return;
