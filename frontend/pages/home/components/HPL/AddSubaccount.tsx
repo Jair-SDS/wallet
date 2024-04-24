@@ -213,9 +213,11 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
       setLoading(true);
       if (selAsset && newHplSub.name.trim() !== "") {
         try {
-          const res: { ok: { first: bigint } } = (await ingressActor.openAccounts(BigInt(1), {
-            ft: BigInt(selAsset.id),
-          })) as any;
+          const res: { ok: { first: bigint } } = (await ingressActor.openAccounts([
+            {
+              ft: BigInt(selAsset.id),
+            },
+          ])) as any;
           const newS = { id: res.ok.first.toString(), name: newHplSub.name.trim(), ftId: selAsset.id };
           addSub(newS);
           const auxSubs = [...hplSubsData, newS];
@@ -228,7 +230,9 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
           onClose();
           setLoading(false);
         } catch (e) {
-          setAddSubErr("server.error");
+          console.log("e", e);
+
+          setAddSubErr(t("server.error"));
           setLoading(false);
         }
       } else {

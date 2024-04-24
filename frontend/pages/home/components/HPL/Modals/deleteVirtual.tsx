@@ -60,7 +60,7 @@ const DeleteVirtualModal = ({
     setLoading(true);
     if (selectVt) {
       try {
-        await ingressActor.deleteVirtualAccount(BigInt(selectVt.virt_sub_acc_id));
+        await ingressActor.deleteVirtualAccounts([BigInt(selectVt.virt_sub_acc_id)]);
         const auxVts = hplVTsData.filter((vt) => vt.id != selectVt.virt_sub_acc_id);
         localStorage.setItem(
           "hplVT-" + authClient,

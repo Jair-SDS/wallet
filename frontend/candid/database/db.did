@@ -107,7 +107,7 @@ type HplVirtualDocument = record {
   name : text;
   ftId : text;
   accesBy : text;
-  isMint : text;
+  isMint : bool;
   updatedAt : nat32;
 };
 

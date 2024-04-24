@@ -36,9 +36,10 @@ import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { Account, Transaction as IcrcTransaction } from "@dfinity/ledger-icrc/dist/candid/icrc_index";
 import { isNullish, uint8ArrayToHexString, bigEndianCrc32, encodeBase32 } from "@dfinity/utils";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
-import { AccountState, AccountType, AssetId, FtSupply, RemoteId, SubId, Time, VirId } from "@candid/HPL/service.did";
+import { AssetId, Expiration } from "@candid/HPL/service.did";
 import { FungibleToken } from "@candid/Dictionary/dictService.did";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
+import { AccountType, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 
 export const MILI_PER_SECOND = 1000000;
 
@@ -684,7 +685,7 @@ export const formatHPLSubaccounts = (
 };
 
 export const getFtsFormated = (
-  ftSupplies: Array<[AssetId, FtSupply]>,
+  ftSupplies: Array<[AssetId, bigint]>,
   ftsData: HPLAssetData[],
   dictFT: FungibleTokenLocal[],
   adminAccountState: Array<[bigint, { ft: bigint }]>,
@@ -711,7 +712,7 @@ export const getFtsFormated = (
   return auxFT;
 };
 
-export const formatAccountInfo = (accInfo: Array<[SubId, AccountType]>, accLocal: HPLSubData[]) => {
+export const formatAccountInfo = (accInfo: Array<[bigint, AccountType]>, accLocal: HPLSubData[]) => {
   return accInfo.map((acc) => {
     const found = accLocal.find((accL) => accL.id === acc[0].toString());
     const accData: HPLSubData = {
@@ -781,8 +782,8 @@ export const getUpdatedFts = (dictFT: FungibleToken[], fts: HPLAsset[]) => {
 };
 
 export const formatHplRemotes = (
-  info: Array<[RemoteId, AccountType]>,
-  state: Array<[RemoteId, [AccountState, Time]]>,
+  info: Array<[[Principal, bigint], { ft: AssetId }]>,
+  state: Array<[[Principal, bigint], [{ ft: bigint }, Expiration]]>,
   principal?: string,
 ) => {
   const auxRemotes: HplRemote[] = [];
@@ -854,7 +855,7 @@ export function removeZeroesFromAmount(amount: string) {
   if (!amount.includes(".")) {
     if (!amount.startsWith("0")) return amount;
     return amount.replace(/^0+/, "");
-  };
+  }
 
   const parts = amount.split(".");
   const whole = parts[0].replace(/^0+/, "");

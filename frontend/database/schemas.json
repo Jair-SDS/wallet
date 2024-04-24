@@ -138,5 +138,88 @@
       },
       "required": ["subAccountId", "asset", "spender"]
     }
+  },
+  "hplSubAccount": {
+    "schema": {
+      "type": "object",
+      "version": 0,
+      "primaryKey": "id",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "ftId": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "name", "ftId"]
+    }
+  },
+  "hplVirtual": {
+    "schema": {
+      "type": "object",
+      "version": 0,
+      "primaryKey": "id",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "ftId": { "type": "string", "maxLength": 100 },
+        "accesBy": { "type": "string", "maxLength": 100 },
+        "isMint": { "type": "boolean", "maxLength": 100 }
+      },
+      "required": ["id", "name", "ftId", "accesBy", "isMint"]
+    }
+  },
+  "hplAsset": {
+    "schema": {
+      "type": "object",
+      "version": 0,
+      "primaryKey": "id",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "symbol": { "type": "string", "maxLength": 100 },
+        "controller": { "type": "string", "maxLength": 100 },
+        "decimals": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 300 }
+      },
+      "required": ["id", "name", "symbol", "controller", "decimals", "description"]
+    }
+  },
+  "hplCount": {
+    "schema": {
+      "type": "object",
+      "version": 0,
+      "primaryKey": "principal",
+      "properties": {
+        "nFtAssets": { "type": "string", "maxLength": 100 },
+        "nVirtualAccounts": { "type": "string", "maxLength": 100 },
+        "nAccounts": { "type": "string", "maxLength": 100 },
+        "principal": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["nFtAssets", "nVirtualAccounts", "nAccounts", "principal"]
+    }
+  },
+  "hplContact": {
+    "schema": {
+      "type": "object",
+      "version": 0,
+      "primaryKey": "principal",
+      "properties": {
+        "principal": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "remotes": {
+          "type": "record",
+          "properties": {
+            "name": { "type": "string", "maxLength": 100 },
+            "index": { "type": "string", "maxLength": 100 },
+            "status": { "type": "string", "maxLength": 100 },
+            "expired": { "type": "string", "maxLength": 100 },
+            "amount": { "type": "string", "maxLength": 100 },
+            "ftIndex": { "type": "string", "maxLength": 100 },
+            "code": { "type": "string", "maxLength": 100 }
+          },
+          "required": ["name", "index", "status", "expired", "amount", "ftIndex", "code"]
+        }
+      },
+      "required": ["principal", "name", "remotes"]
+    }
   }
 }

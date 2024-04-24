@@ -4,7 +4,7 @@ import { TAllowance } from "@/@types/allowance";
 import { Identity } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 import { defaultTokens } from "@/defaultTokens";
-import { Asset } from "@redux/models/AccountModels";
+import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 import store from "@redux/Store";
 import { setAssets } from "@redux/assets/AssetReducer";
 
@@ -33,6 +33,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private principalId = "";
+  private hplLedger = "";
 
   /**
    * Initialize all necessary external system and
@@ -298,6 +299,75 @@ export class LocalStorageDatabase extends IWalletDatabase {
     if (options?.sync) store.dispatch(deleteReduxAllowance(id));
   }
 
+  // HPL
+
+  /**
+   * Get all HPL Asset objects from the active agent.
+   * @returns Array of found HPL Asset objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplAssets(): Promise<HPLAssetData[]> {
+    return this._getHplAssets();
+  }
+
+  async updateHplAssets(assets: HPLAssetData[]): Promise<void> {
+    this._setHplAssets(assets);
+  }
+
+  /**
+   * Get all HPL subaccount objects from the active agent.
+   * @returns Array of found HPL subaccount objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplSubaccounts(): Promise<HPLSubData[]> {
+    return this._getHplSubAccounts();
+  }
+
+  async updateHplSubaccounts(subs: HPLSubData[]): Promise<void> {
+    this._setHplSubAccounts(subs);
+  }
+
+  /**
+   * Get all HPL Virtual objects from the active agent.
+   * @returns Array of found HPL Virtual objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplVirtuals(): Promise<HPLVirtualData[]> {
+    return this._getHplVirtuals();
+  }
+
+  async updateHplVirtuals(vts: HPLVirtualData[]): Promise<void> {
+    this._setHplVirtuals(vts);
+  }
+
+  /**
+   * Get all HPL Count objects from the active agent.
+   * @returns Array of found HPL Count objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplCounts(): Promise<nHplData[]> {
+    return this._getHplCounts();
+  }
+
+  async updateHplCounts(nData: nHplData[]): Promise<void> {
+    this._setHplCounts(nData);
+  }
+
+  /**
+   * Get all HPL Contact objects from the active agent.
+   * @returns Array of found HPL Contact objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplContacts(): Promise<HplContact[]> {
+    return this._getHplContacts();
+  }
+
+  async updateHplContacts(contacts: HplContact[]): Promise<void> {
+    this._setHplContacts(contacts);
+  }
+
+  // Private Functions
+
   private _getStorableAllowance(allowance: TAllowance): Pick<TAllowance, "id" | "asset" | "subAccountId" | "spender"> {
     // eslint-disable-next-line
     const { amount, expiration, ...rest } = allowance;
@@ -330,6 +400,53 @@ export class LocalStorageDatabase extends IWalletDatabase {
 
   private _setAllowances(allowances: Pick<TAllowance, "id" | "asset" | "subAccountId" | "spender">[]) {
     localStorage.setItem(`allowances-${this.principalId}`, JSON.stringify(allowances));
+  }
+
+  private _getHplSubAccounts(): HPLSubData[] {
+    const subaccountsData = JSON.parse(localStorage.getItem(`hplSUB-${this.principalId}-${this.hplLedger}`) || "null");
+    return subaccountsData || [];
+  }
+
+  private _setHplSubAccounts(allSubaccounts: HPLSubData[]) {
+    localStorage.setItem(`hplSUB-${this.principalId}-${this.hplLedger}`, JSON.stringify(allSubaccounts));
+  }
+
+  private _getHplVirtuals(): HPLVirtualData[] {
+    const subaccountsData = JSON.parse(localStorage.getItem(`hplVT-${this.principalId}-${this.hplLedger}`) || "null");
+    return subaccountsData || [];
+  }
+
+  private _setHplVirtuals(allVirtuals: HPLVirtualData[]) {
+    localStorage.setItem(`hplVT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allVirtuals));
+  }
+
+  private _getHplAssets(): HPLAssetData[] {
+    const subaccountsData = JSON.parse(localStorage.getItem(`hplFT-${this.principalId}-${this.hplLedger}`) || "null");
+    return subaccountsData || [];
+  }
+
+  private _setHplAssets(allFts: HPLAssetData[]) {
+    localStorage.setItem(`hplFT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allFts));
+  }
+
+  private _getHplCounts(): nHplData[] {
+    const subaccountsData = JSON.parse(localStorage.getItem(`nhpl-${this.principalId}-${this.hplLedger}`) || "null");
+    return subaccountsData || [];
+  }
+
+  private _setHplCounts(allHplData: nHplData[]) {
+    localStorage.setItem(`nhpl-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplData));
+  }
+
+  private _getHplContacts(): HplContact[] {
+    const subaccountsData = JSON.parse(
+      localStorage.getItem(`hpl-contacts-${this.principalId}-${this.hplLedger}`) || "null",
+    );
+    return subaccountsData || [];
+  }
+
+  private _setHplContacts(allHplContacts: HplContact[]) {
+    localStorage.setItem(`hpl-contacts-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplContacts));
   }
 
   /**

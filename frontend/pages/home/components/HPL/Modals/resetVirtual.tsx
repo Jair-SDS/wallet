@@ -52,11 +52,16 @@ const ResetVirtualModal = ({
     setLoading(true);
     if (selectVt) {
       try {
-        await ingressActor.updateVirtualAccount(BigInt(selectVt.virt_sub_acc_id), {
-          backingAccount: [BigInt(selectVt.backing)],
-          state: [{ ft_set: BigInt(0) }],
-          expiration: [BigInt(selectVt.expiration * 1000000)],
-        });
+        await ingressActor.updateVirtualAccounts([
+          [
+            BigInt(selectVt.virt_sub_acc_id),
+            {
+              backingAccount: [BigInt(selectVt.backing)],
+              state: [{ ft_set: BigInt(0) }],
+              expiration: [BigInt(selectVt.expiration * 1000000)],
+            },
+          ],
+        ]);
         await reloadHPLBallance(true);
         setResetModal(false);
         setSelVt(undefined);

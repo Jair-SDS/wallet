@@ -214,11 +214,16 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           changeOnlyName = true;
         if (!changeOnlyName)
           try {
-            await ingressActor.updateVirtualAccount(BigInt(newVt.virt_sub_acc_id), {
-              backingAccount: [BigInt(newVt.backing)],
-              state: [{ ft_set: amnt }],
-              expiration: [BigInt(newVt.expiration * 1000000)],
-            });
+            await ingressActor.updateVirtualAccounts([
+              [
+                BigInt(newVt.virt_sub_acc_id),
+                {
+                  backingAccount: [BigInt(newVt.backing)],
+                  state: [{ ft_set: amnt }],
+                  expiration: [BigInt(newVt.expiration * 1000000)],
+                },
+              ],
+            ]);
           } catch (e) {
             console.log("updateVT-err:", e);
             setErrMsg(t("err.back"));
@@ -238,13 +243,15 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       } else {
         try {
           const isFirstVt = hplVTsData.length === 0;
-          const res = (await ingressActor.openVirtualAccount(
-            { ft: BigInt(getFtFromVt(newVt.backing).id) },
-            Principal.fromText(newVt.accesBy),
-            { ft: amnt },
-            BigInt(newVt.backing),
-            BigInt(newVt.expiration * 1000000),
-          )) as any;
+          const res = (await ingressActor.openVirtualAccounts([
+            [
+              { ft: BigInt(getFtFromVt(newVt.backing).id) },
+              Principal.fromText(newVt.accesBy),
+              { ft: amnt },
+              BigInt(newVt.backing),
+              BigInt(newVt.expiration * 1000000),
+            ],
+          ])) as any;
 
           const mintActor = Actor.createActor<HplMintActor>(HplMintIDLFactory, {
             agent: userAgent,

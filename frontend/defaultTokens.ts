@@ -128,4 +128,4 @@ export const defaultTokens: Asset[] = [
   },
 ];
 
-export const defaultHplLedgers = ["qx66-eyaaa-aaaap-aaona-cai"];
+export const defaultHplLedgers = ["rqx66-eyaaa-aaaap-aaona-cai"];
