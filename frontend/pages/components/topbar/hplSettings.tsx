@@ -1,6 +1,8 @@
 // svgs
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
+import ChevIcon from "@assets/svg/files/chev-icon.svg";
 //
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomButton } from "@components/button";
 import { CustomInput } from "@components/input";
 import { LoadingLoader } from "@components/loader";
@@ -18,6 +20,7 @@ import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { useHPL } from "@pages/hooks/hplHook";
 import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import { defaultHplLedgers } from "@/defaultTokens";
 
 interface HplSettingsModalProps {
   setOpen(value: string): void;
@@ -34,6 +37,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const [errMsg, setErrMsg] = useState("");
   const [ledger, setLeder] = useState({ principal: hplLedger, err: false });
   const [dictionary, setDictionary] = useState({ principal: hplDictionary, err: false });
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <Fragment>
@@ -59,7 +63,48 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           onChange={onLedgerChange}
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
+          sufix={
+            <DropdownMenu.Root
+              open={modalOpen}
+              onOpenChange={() => {
+                setModalOpen(!modalOpen);
+              }}
+            >
+              <DropdownMenu.Trigger asChild>
+                <img
+                  src={ChevIcon}
+                  style={{ width: "2rem", height: "2rem" }}
+                  alt="chevron-icon"
+                  className={`${modalOpen ? "rotate-90" : ""}`}
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="text-md w-[29rem]  bg-PrimaryColorLight rounded-lg dark:bg-PrimaryColor z-[2100] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo dark:border-BorderColor border"
+                  sideOffset={5}
+                  align="end"
+                  alignOffset={-5}
+                >
+                  {defaultHplLedgers.map((ledger, k) => {
+                    return (
+                      <DropdownMenu.Item key={k}>
+                        <button
+                          className="flex justify-start p-2 w-full  cursor-pointer hover:dark:bg-ThirdColor rounded-lg"
+                          onClick={() => {
+                            onLedgerSelect(ledger);
+                          }}
+                        >
+                          <p>{ledger}</p>
+                        </button>
+                      </DropdownMenu.Item>
+                    );
+                  })}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          }
         />
+
         <p className="mt-4 opacity-60">{t("dictionary.principal")}</p>
         <CustomInput
           sizeInput={"medium"}
@@ -79,6 +124,11 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
       </div>
     </Fragment>
   );
+
+  function onLedgerSelect(ledger: string) {
+    setLeder({ principal: ledger, err: false });
+  }
+
   function onLedgerChange(e: ChangeEvent<HTMLInputElement>) {
     try {
       Principal.fromText(e.target.value.trim());

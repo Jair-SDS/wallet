@@ -127,3 +127,5 @@ export const defaultTokens: Asset[] = [
     supportedStandards,
   },
 ];
+
+export const defaultHplLedgers = ["qx66-eyaaa-aaaap-aaona-cai"];

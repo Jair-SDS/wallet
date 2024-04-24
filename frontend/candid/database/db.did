@@ -1,93 +1,146 @@
-type WalletDatabase = 
- service {
-   doesStorageExist: () -> (bool) query;
-   dump: () ->
-    (vec
+type WalletDatabase = service {
+  doesStorageExist : () -> (bool) query;
+  dump : () -> (
+    vec record {
+      principal;
       record {
-        principal;
-        record {
-          vec opt AssetDocument;
-          vec opt ContactDocument;
-          vec opt AllowanceDocument;
-        };
-      }) query;
-   pullAllowances: (nat32, opt text, nat) -> (vec AllowanceDocument) query;
-   pullAssets: (nat32, opt text, nat) -> (vec AssetDocument) query;
-   pullContacts: (nat32, opt text, nat) -> (vec ContactDocument) query;
-   pushAllowances: (vec AllowanceDocument) -> (vec AllowanceDocument);
-   pushAssets: (vec AssetDocument) -> (vec AssetDocument);
-   pushContacts: (vec ContactDocument) -> (vec ContactDocument);
- };
-type ContactDocument = 
- record {
-   accountIdentier: text;
-   assets:
-    vec
-     record {
-       address: text;
-       decimal: text;
-       logo: text;
-       shortDecimal: text;
-       subaccounts:
-        vec record {
-              name: text;
-              sub_account_id: text;
-              subaccount_index: text;
-            };
-       supportedStandards: vec text;
-       symbol: text;
-       tokenSymbol: text;
-     };
-   deleted: bool;
-   name: text;
-   "principal": text;
-   updatedAt: nat32;
- };
-type AssetDocument = 
- record {
-   address: text;
-   decimal: text;
-   deleted: bool;
-   index: text;
-   logo: text;
-   name: text;
-   shortDecimal: text;
-   sortIndex: nat32;
-   subAccounts:
-    vec
-     record {
-       address: text;
-       amount: text;
-       currency_amount: text;
-       decimal: nat32;
-       name: text;
-       sub_account_id: text;
-       symbol: text;
-       transaction_fee: text;
-     };
-   supportedStandards: vec text;
-   symbol: text;
-   tokenName: text;
-   tokenSymbol: text;
-   updatedAt: nat32;
- };
-type AllowanceDocument = 
- record {
-   asset:
-    record {
-      address: text;
-      decimal: text;
-      logo: text;
-      name: text;
-      supportedStandards: vec text;
-      symbol: text;
-      tokenName: text;
-      tokenSymbol: text;
+        vec opt AssetDocument;
+        vec opt ContactDocument;
+        vec opt AllowanceDocument;
+        vec opt HplSubAccountDocument;
+        vec opt HplVirtualDocument;
+        vec opt HplAssetDocument;
+        vec opt HplCountDocument;
+        vec opt HplContactDocument;
+      };
+    }
+  ) query;
+  pullAllowances : (nat32, opt text, nat) -> (vec AllowanceDocument) query;
+  pullAssets : (nat32, opt text, nat) -> (vec AssetDocument) query;
+  pullContacts : (nat32, opt text, nat) -> (vec ContactDocument) query;
+  pullHplSubaccounts : (nat32, opt text, nat) -> (vec HplSubAccountDocument) query;
+  pullHplVirtuals : (nat32, opt text, nat) -> (vec HplVirtualDocument) query;
+  pullHplAssets : (nat32, opt text, nat) -> (vec HplAssetDocument) query;
+  pullHplCount : (nat32, opt text, nat) -> (vec HplCountDocument) query;
+  pullHplContacts : (nat32, opt text, nat) -> (vec HplContactDocument) query;
+  pushAllowances : (vec AllowanceDocument) -> (vec AllowanceDocument);
+  pushAssets : (vec AssetDocument) -> (vec AssetDocument);
+  pushContacts : (vec ContactDocument) -> (vec ContactDocument);
+  pushHplSubaccounts : (vec HplSubAccountDocument) -> (vec HplSubAccountDocument);
+  pushHplVirtuals : (vec HplVirtualDocument) -> (vec HplVirtualDocument);
+  pushHplAssets : (vec HplAssetDocument) -> (vec HplAssetDocument);
+  pushHplCount : (vec HplCountDocument) -> (vec HplCountDocument);
+  pushHplContacts : (vec HplContactDocument) -> (vec HplContactDocument);
+};
+type ContactDocument = record {
+  accountIdentier : text;
+  assets : vec record {
+    address : text;
+    decimal : text;
+    logo : text;
+    shortDecimal : text;
+    subaccounts : vec record {
+      name : text;
+      sub_account_id : text;
+      subaccount_index : text;
     };
-   deleted: bool;
-   id: text;
-   spender: text;
-   subAccountId: text;
-   updatedAt: nat32;
- };
-service : () -> WalletDatabase
+    supportedStandards : vec text;
+    symbol : text;
+    tokenSymbol : text;
+  };
+  deleted : bool;
+  name : text;
+  "principal" : text;
+  updatedAt : nat32;
+};
+type AssetDocument = record {
+  address : text;
+  decimal : text;
+  deleted : bool;
+  index : text;
+  logo : text;
+  name : text;
+  shortDecimal : text;
+  sortIndex : nat32;
+  subAccounts : vec record {
+    address : text;
+    amount : text;
+    currency_amount : text;
+    decimal : nat32;
+    name : text;
+    sub_account_id : text;
+    symbol : text;
+    transaction_fee : text;
+  };
+  supportedStandards : vec text;
+  symbol : text;
+  tokenName : text;
+  tokenSymbol : text;
+  updatedAt : nat32;
+};
+type AllowanceDocument = record {
+  asset : record {
+    address : text;
+    decimal : text;
+    logo : text;
+    name : text;
+    supportedStandards : vec text;
+    symbol : text;
+    tokenName : text;
+    tokenSymbol : text;
+  };
+  deleted : bool;
+  id : text;
+  spender : text;
+  subAccountId : text;
+  updatedAt : nat32;
+};
+type HplSubAccountDocument = record {
+  id : text;
+  name : text;
+  ftId : text;
+  updatedAt : nat32;
+};
+
+type HplVirtualDocument = record {
+  id : text;
+  name : text;
+  ftId : text;
+  accesBy : text;
+  isMint : text;
+  updatedAt : nat32;
+};
+
+type HplAssetDocument = record {
+  id : text;
+  name : text;
+  symbol : text;
+  controller : text;
+  decimals : text;
+  description : text;
+  updatedAt : nat32;
+};
+
+type HplCountDocument = record {
+  nFtAssets : text;
+  nVirtualAccounts : text;
+  nAccounts : text;
+  updatedAt : nat32;
+  "principal" : text;
+};
+
+type HplContactDocument = record {
+  "principal" : text;
+  name : text;
+  remotes : vec record {
+    name : text;
+    index : text;
+    status : text;
+    expired : text;
+    amount : text;
+    ftIndex : text;
+    code : text;
+  };
+  updatedAt : nat32;
+};
+service : () -> WalletDatabase;
