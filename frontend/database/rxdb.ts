@@ -21,8 +21,13 @@ import {
   AssetDocument as AssetRxdbDocument,
   ContactDocument as ContactRxdbDocument,
   AllowanceDocument as AllowanceRxdbDocument,
+  HplSubAccountDocument as HplSubAccountRxdbDocument,
+  HplVirtualDocument as HplVirtualRxdbDocument,
+  HplAssetDocument as HplAssetRxdbDocument,
+  HplCountDocument as HplCountRxdbDocument,
+  HplContactDocument as HplContactRxdbDocument,
 } from "@/candid/database/db.did";
-import { Asset } from "@redux/models/AccountModels";
+import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 import store from "@redux/Store";
 import { setAssets } from "@redux/assets/AssetReducer";
 import {
@@ -37,6 +42,7 @@ import {
   setReduxAllowances,
   updateReduxAllowance,
 } from "@redux/allowance/AllowanceReducer";
+import { Principal } from "@dfinity/principal";
 
 addRxPlugin(RxDBUpdatePlugin);
 addRxPlugin(RxDBMigrationPlugin);
@@ -53,6 +59,7 @@ export class RxdbDatabase extends IWalletDatabase {
   }
 
   private principalId = "";
+  private hplLedger = "rqx66-eyaaa-aaaap-aaona-cai";
   private identity: Identity = new AnonymousIdentity();
   private readonly agent = new HttpAgent({ identity: this.identity, host: import.meta.env.VITE_DB_CANISTER_HOST });
   private replicaCanister: any;
@@ -66,6 +73,22 @@ export class RxdbDatabase extends IWalletDatabase {
   private _allowances!: RxCollection<AllowanceRxdbDocument> | null;
   private allowancesReplicationState?: RxReplicationState<any, any>;
   private allowancesPullInterval?: any;
+  // HPL
+  private _hplSubaccounts!: RxCollection<HplSubAccountRxdbDocument> | null;
+  private hplSubaccountsReplicationState?: RxReplicationState<any, any>;
+  private hplSubaccountsPullInterval?: any;
+  private _hplVirtuals!: RxCollection<HplVirtualRxdbDocument> | null;
+  private hplVirtualsReplicationState?: RxReplicationState<any, any>;
+  private hplVirtualsPullInterval?: any;
+  private _hplAssets!: RxCollection<HplAssetRxdbDocument> | null;
+  private hplAssetsReplicationState?: RxReplicationState<any, any>;
+  private hplAssetsPullInterval?: any;
+  private _hplCount!: RxCollection<HplCountRxdbDocument> | null;
+  private hplCountReplicationState?: RxReplicationState<any, any>;
+  private hplCountPullInterval?: any;
+  private _hplContacts!: RxCollection<HplContactRxdbDocument> | null;
+  private hplContactsReplicationState?: RxReplicationState<any, any>;
+  private hplContactsPullInterval?: any;
 
   private pullingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -73,6 +96,17 @@ export class RxdbDatabase extends IWalletDatabase {
   private pushingContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pullingAllowances$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingAllowances$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  // HPL
+  private pullingHplSubaccounts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingHplSubaccounts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingHplVirtuals$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingHplVirtuals$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingHplAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingHplAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingHplCount$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingHplCount$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingHplContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingHplContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   protected get assets(): Promise<RxCollection<AssetRxdbDocument> | null> {
     if (this._assets) return Promise.resolve(this._assets);
@@ -87,6 +121,31 @@ export class RxdbDatabase extends IWalletDatabase {
   protected get allowances(): Promise<RxCollection<AllowanceRxdbDocument> | null> {
     if (this._allowances) return Promise.resolve(this._allowances);
     return this.init().then(() => this._allowances);
+  }
+
+  protected get hplSubaccounts(): Promise<RxCollection<HplSubAccountRxdbDocument> | null> {
+    if (this._hplSubaccounts) return Promise.resolve(this._hplSubaccounts);
+    return this.init().then(() => this._hplSubaccounts);
+  }
+
+  protected get hplVirtuals(): Promise<RxCollection<HplVirtualRxdbDocument> | null> {
+    if (this._hplVirtuals) return Promise.resolve(this._hplVirtuals);
+    return this.init().then(() => this._hplVirtuals);
+  }
+
+  protected get hplAssets(): Promise<RxCollection<HplAssetRxdbDocument> | null> {
+    if (this._hplAssets) return Promise.resolve(this._hplAssets);
+    return this.init().then(() => this._hplAssets);
+  }
+
+  protected get hplCounts(): Promise<RxCollection<HplCountRxdbDocument> | null> {
+    if (this._hplCount) return Promise.resolve(this._hplCount);
+    return this.init().then(() => this._hplCount);
+  }
+
+  protected get hplContacts(): Promise<RxCollection<HplContactRxdbDocument> | null> {
+    if (this._hplContacts) return Promise.resolve(this._hplContacts);
+    return this.init().then(() => this._hplContacts);
   }
 
   /**
@@ -110,7 +169,8 @@ export class RxdbDatabase extends IWalletDatabase {
         eventReduce: true,
       });
 
-      const { assets, contacts, allowances } = await db.addCollections(DBSchemas);
+      const { assets, contacts, allowances, hplSubAccounts, hplVirtuals, hplAssets, hplCounts, hplContacts } =
+        await db.addCollections(DBSchemas);
 
       const assetsReplication = await setupReplication<AssetRxdbDocument, string>(
         assets,
@@ -145,9 +205,81 @@ export class RxdbDatabase extends IWalletDatabase {
       [this.allowancesReplicationState, this.allowancesPullInterval, this.pushingAllowances$, this.pullingAllowances$] =
         allowancesReplication;
 
+      const hplSubaccountsReplication = await setupReplication<HplSubAccountRxdbDocument, string>(
+        hplSubAccounts,
+        `hplSUB-${this.principalId}`,
+        "id",
+        (items) => this._hplSubaccountsPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._hplSubaccountsPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [
+        this.hplSubaccountsReplicationState,
+        this.hplSubaccountsPullInterval,
+        this.pushingHplSubaccounts$,
+        this.pullingHplSubaccounts$,
+      ] = hplSubaccountsReplication;
+
+      const hplVirtualsReplication = await setupReplication<HplVirtualRxdbDocument, string>(
+        hplVirtuals,
+        `hplVT-${this.principalId}`,
+        "id",
+        (items) => this._hplVirtualsPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._hplVirtualsPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [
+        this.hplVirtualsReplicationState,
+        this.hplVirtualsPullInterval,
+        this.pushingHplVirtuals$,
+        this.pullingHplVirtuals$,
+      ] = hplVirtualsReplication;
+
+      const hplAssetsReplication = await setupReplication<HplAssetRxdbDocument, string>(
+        hplAssets,
+        `hplFT-${this.principalId}`,
+        "id",
+        (items) => this._hplAssetsPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._hplAssetsPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [this.hplAssetsReplicationState, this.hplAssetsPullInterval, this.pushingHplAssets$, this.pullingHplAssets$] =
+        hplAssetsReplication;
+
+      const hplCountReplication = await setupReplication<HplCountRxdbDocument, string>(
+        hplCounts,
+        `nHpl-${this.principalId}`,
+        "principal",
+        (items) => this._hplCountPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._hplCountPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [this.hplCountReplicationState, this.hplCountPullInterval, this.pushingHplCount$, this.pullingHplCount$] =
+        hplCountReplication;
+
+      const hplContactsReplication = await setupReplication<HplContactRxdbDocument, string>(
+        hplContacts,
+        `hpl-contacts-${this.principalId}`,
+        "principal",
+        (items) => this._hplContactsPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._hplContactsPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [
+        this.hplContactsReplicationState,
+        this.hplContactsPullInterval,
+        this.pushingHplContacts$,
+        this.pullingHplContacts$,
+      ] = hplContactsReplication;
+
       this._assets = assets;
       this._contacts = contacts;
       this._allowances = allowances;
+      this._hplSubaccounts = hplSubAccounts;
+      this._hplVirtuals = hplVirtuals;
+      this._hplAssets = hplAssets;
+      this._hplCount = hplCounts;
+      this._hplContacts = hplContacts;
     } catch (e) {
       console.error("RxDb Init:", e);
     }
@@ -160,11 +292,12 @@ export class RxdbDatabase extends IWalletDatabase {
    * @param principalId Principal ID
    * @param fixedPrincipal Watch-only login Principal ID
    */
-  async setIdentity(identity: Identity | null): Promise<void> {
+  async setIdentity(identity: Identity | null, fixedPrincipal?: Principal, hplLedgerCanister?: string): Promise<void> {
     this._invalidateDb();
     this.identity = identity || new AnonymousIdentity();
     this.agent.replaceIdentity(this.identity);
-    this.principalId = this.identity.getPrincipal().toString();
+    this.principalId = fixedPrincipal?.toString() || this.identity?.getPrincipal().toText() || "";
+    this.hplLedger = hplLedgerCanister || "rqx66-eyaaa-aaaap-aaona-cai";
 
     // Don't allow watch-only mode to use the DB
     if (!this.identity.getPrincipal().isAnonymous()) {
@@ -177,6 +310,14 @@ export class RxdbDatabase extends IWalletDatabase {
       await this._contactStateSync();
       await this._allowanceStateSync();
     }
+  }
+
+  /**
+   * Set Hpl Ledger canister
+   * @param hplLedgerCanister string
+   */
+  async setHplLedger(hplLedgerCanister: string): Promise<void> {
+    this.hplLedger = hplLedgerCanister || "rqx66-eyaaa-aaaap-aaona-cai";
   }
 
   /**
@@ -602,11 +743,370 @@ export class RxdbDatabase extends IWalletDatabase {
   }
 
   /**
+   * Get all Hpl Subaccount objects from the active agent.
+   * @returns Array of found Hpl Subaccount objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplSubaccounts(): Promise<HPLSubData[]> {
+    try {
+      const documents = await (await this.hplSubaccounts)?.find().exec();
+      return (documents && documents.map(this._mapHplSubaccount)) || [];
+    } catch (e) {
+      console.error("RxDb GetHplSubaccounts:", e);
+      return [];
+    }
+  }
+
+  /**
+   * Set a Hpl Subaccount objects to
+   * current active agent has.
+   * @param newSubs HPLSubData array to be seted
+   */
+  async updateHplSubaccounts(newSubs: HPLSubData[]): Promise<void> {
+    try {
+      await (
+        await this.hplSubaccounts
+      )?.bulkUpsert(
+        newSubs.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplSubaccounts:", e);
+    }
+  }
+
+  /**
+   * Set a Hpl Subaccount objects by Ledger to
+   * current active agent has.
+   * @param newSubs HPLSubData array to be seted
+   */
+  async updateHplSubaccountsByLedger(newSubs: HPLSubData[]): Promise<void> {
+    try {
+      const documents = (await (await this.hplSubaccounts)?.find().exec()) || [];
+      const subs =
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc.ledger !== this.hplLedger;
+            })
+            .map(this._mapHplSubaccount)) ||
+        [];
+
+      await (
+        await this.hplSubaccounts
+      )?.bulkUpsert(
+        [...newSubs, ...subs].map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplSubaccounts:", e);
+    }
+  }
+
+  /**
+   * Get all Hpl Virtual objects from the active agent.
+   * @returns Array of found Hpl Virtual objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplVirtuals(): Promise<HPLVirtualData[]> {
+    try {
+      const documents = await (await this.hplVirtuals)?.find().exec();
+      return (documents && documents.map(this._mapHplVirtual)) || [];
+    } catch (e) {
+      console.error("RxDb GetHplVirtuals:", e);
+      return [];
+    }
+  }
+
+  /**
+   * Set a Hpl Virtual objects by Ledger to
+   * current active agent has.
+   * @param newVts HPLVirtualData array to be seted
+   */
+  async updateHplVirtuals(newVts: HPLVirtualData[]): Promise<void> {
+    try {
+      await (
+        await this.hplVirtuals
+      )?.bulkUpsert(
+        newVts.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplVirtuals:", e);
+    }
+  }
+
+  /**
+   * Set a Hpl Virtual objects by Ledger to
+   * current active agent has.
+   * @param newVts HPLVirtualData array to be seted
+   */
+  async updateHplVirtualsByLedger(newVts: HPLVirtualData[]): Promise<void> {
+    try {
+      const documents = await (await this.hplVirtuals)?.find().exec();
+      const virtuals =
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc.ledger !== this.hplLedger;
+            })
+            .map(this._mapHplVirtual)) ||
+        [];
+      await (
+        await this.hplVirtuals
+      )?.bulkUpsert(
+        [...virtuals, ...newVts].map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplVirtuals:", e);
+    }
+  }
+
+  /**
+   * Get all Hpl Assets objects from the active agent.
+   * @returns Array of found Hpl Assets objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplAssets(): Promise<HPLAssetData[]> {
+    try {
+      const documents = await (await this.hplAssets)?.find().exec();
+      return (documents && documents.map(this._mapHplAsset)) || [];
+    } catch (e) {
+      console.error("RxDb GetHplAssets:", e);
+      return [];
+    }
+  }
+
+  /**
+   * Set a Hpl Assets objects to
+   * current active agent has.
+   * @param newFTs HPLAssetData array to be seted
+   */
+  async updateHplAssets(newFTs: HPLAssetData[]): Promise<void> {
+    try {
+      await (
+        await this.hplAssets
+      )?.bulkUpsert(
+        newFTs.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplAssets:", e);
+    }
+  }
+
+  /**
+   * Set a Hpl Assets objects by Ledger to
+   * current active agent has.
+   * @param newFTs HPLAssetData array to be seted
+   */
+  async updateHplAssetsByLedger(newFTs: HPLAssetData[]): Promise<void> {
+    try {
+      const documents = await (await this.hplAssets)?.find().exec();
+      const assets =
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc.ledger !== this.hplLedger;
+            })
+            .map(this._mapHplAsset)) ||
+        [];
+      await (
+        await this.hplAssets
+      )?.bulkUpsert(
+        [...assets, ...newFTs].map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplAssets:", e);
+    }
+  }
+
+  /**
+   * Get all Hpl Count objects from the active agent.
+   * @returns Array of found Hpl Count objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplCount(): Promise<nHplData[]> {
+    try {
+      const documents = await (await this.hplCounts)?.find().exec();
+      return (documents && documents.map(this._mapHplCount)) || [];
+    } catch (e) {
+      console.error("RxDb GetHplCount:", e);
+      return [];
+    }
+  }
+
+  /**
+   * Set a Hpl Count objects to
+   * current active agent has.
+   * @param newCounts nHplData array to be seted
+   */
+  async updateHplCount(newCounts: nHplData[]): Promise<void> {
+    try {
+      await (
+        await this.hplCounts
+      )?.bulkUpsert(
+        newCounts.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+          principal: this.principalId,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplCount:", e);
+    }
+  }
+
+  /**
+   * Set a Hpl Count objects by Ledger to
+   * current active agent has.
+   * @param newCounts nHplData array to be seted
+   */
+  async updateHplCountByLedger(newCounts: nHplData[]): Promise<void> {
+    try {
+      const documents = await (await this.hplCounts)?.find().exec();
+      const count =
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc.ledger !== this.hplLedger;
+            })
+            .map(this._mapHplCount)) ||
+        [];
+      await (
+        await this.hplCounts
+      )?.bulkUpsert(
+        [...count, ...newCounts].map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+          principal: this.principalId,
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplCount:", e);
+    }
+  }
+
+  /**
+   * Get all Hpl Contact objects from the active agent.
+   * @returns Array of found Hpl Contact objects or an empty
+   * array if no Asset objects were found
+   */
+  async getHplContacts(): Promise<HplContact[]> {
+    try {
+      const documents = await (await this.hplContacts)?.find().exec();
+      return (documents && documents.map(this._mapHplContact)) || [];
+    } catch (e) {
+      console.error("RxDb GetHplContacts:", e);
+      return [];
+    }
+  }
+
+  /**
+   * Set a Hpl Contact objects to
+   * current active agent has.
+   * @param newContacts HplContact array to be seted
+   */
+  async updateHplContacts(newContacts: HplContact[]): Promise<void> {
+    try {
+      await (
+        await this.hplContacts
+      )?.bulkUpsert(
+        newContacts.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+          remotes: a.remotes.map((rmt) => ({
+            ...rmt,
+            expired: rmt.expired.toString(),
+          })),
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplContacts:", e);
+    }
+  }
+
+  /**
+   * Set a Hpl Contact objects by Ledger to
+   * current active agent has.
+   * @param newContacts HplContact array to be seted
+   */
+  async updateHplContactsByLedger(newContacts: HplContact[]): Promise<void> {
+    try {
+      const documents = await (await this.hplContacts)?.find().exec();
+      const contacts =
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc.ledger !== this.hplLedger;
+            })
+            .map(this._mapHplContact)) ||
+        [];
+      await (
+        await this.hplContacts
+      )?.bulkUpsert(
+        [...contacts, ...newContacts].map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+          ledger: this.hplLedger,
+          remotes: a.remotes.map((rmt) => ({
+            ...rmt,
+            expired: rmt.expired.toString(),
+          })),
+        })),
+      );
+    } catch (e) {
+      console.error("RxDb UpdateHplContacts:", e);
+    }
+  }
+  /**
    * Obserbable that triggers after documents were pulled from the DB.
    * @returns Array of Assets and Contacts objects pulled from the DB
    */
   subscribeOnPulling(): Observable<boolean> {
-    return combineLatest([this.pullingAssets$, this.pullingContacts$, this.pullingAllowances$]).pipe(
+    return combineLatest([
+      this.pullingAssets$,
+      this.pullingContacts$,
+      this.pullingAllowances$,
+      this.pullingHplSubaccounts$,
+      this.pullingHplVirtuals$,
+      this.pullingHplAssets$,
+      this.pullingHplCount$,
+      this.pullingHplContacts$,
+    ]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
     );
@@ -618,7 +1118,16 @@ export class RxdbDatabase extends IWalletDatabase {
    * to the DB
    */
   subscribeOnPushing(): Observable<boolean> {
-    return combineLatest([this.pushingAssets$, this.pushingContacts$, this.pushingAllowances$]).pipe(
+    return combineLatest([
+      this.pushingAssets$,
+      this.pushingContacts$,
+      this.pushingAllowances$,
+      this.pushingHplSubaccounts$,
+      this.pushingHplVirtuals$,
+      this.pushingHplAssets$,
+      this.pushingHplCount$,
+      this.pushingHplContacts$,
+    ]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
     );
@@ -691,6 +1200,61 @@ export class RxdbDatabase extends IWalletDatabase {
     };
   }
 
+  private _mapHplSubaccount(doc: RxDocument<HplSubAccountRxdbDocument>): HPLSubData {
+    return {
+      id: doc.id,
+      name: doc.name,
+      ftId: doc.ftId,
+    };
+  }
+
+  private _mapHplVirtual(doc: RxDocument<HplVirtualRxdbDocument>): HPLVirtualData {
+    return {
+      id: doc.id,
+      name: doc.name,
+      ftId: doc.ftId,
+      accesBy: doc.accesBy,
+      isMint: doc.isMint,
+    };
+  }
+
+  private _mapHplAsset(doc: RxDocument<HplAssetRxdbDocument>): HPLAssetData {
+    return {
+      id: doc.id,
+      name: doc.name,
+      symbol: doc.symbol,
+      controller: doc.controller,
+      decimals: doc.decimals,
+      description: doc.description,
+    };
+  }
+
+  private _mapHplCount(doc: RxDocument<HplCountRxdbDocument>): nHplData {
+    return {
+      nFtAssets: doc.nFtAssets,
+      nVirtualAccounts: doc.nVirtualAccounts,
+      nAccounts: doc.nAccounts,
+    };
+  }
+
+  private _mapHplContact(doc: RxDocument<HplContactRxdbDocument>): HplContact {
+    return {
+      principal: doc.principal,
+      name: doc.name,
+      remotes: doc.remotes.map((cntc) => {
+        return {
+          name: cntc.name,
+          index: cntc.index,
+          status: cntc.status,
+          expired: Number(cntc.expired),
+          amount: cntc.amount,
+          ftIndex: cntc.ftIndex,
+          code: cntc.code,
+        };
+      }),
+    };
+  }
+
   private _invalidateDb(): void {
     if (this.assetsPullInterval !== undefined) {
       clearInterval(this.assetsPullInterval);
@@ -704,6 +1268,27 @@ export class RxdbDatabase extends IWalletDatabase {
       clearInterval(this.allowancesPullInterval);
       this.allowancesPullInterval = undefined;
     }
+    if (this.hplSubaccountsPullInterval !== undefined) {
+      clearInterval(this.hplSubaccountsPullInterval);
+      this.hplSubaccountsPullInterval = undefined;
+    }
+    if (this.hplVirtualsPullInterval !== undefined) {
+      clearInterval(this.hplVirtualsPullInterval);
+      this.hplVirtualsPullInterval = undefined;
+    }
+    if (this.hplAssetsPullInterval !== undefined) {
+      clearInterval(this.hplAssetsPullInterval);
+      this.hplAssetsPullInterval = undefined;
+    }
+    if (this.hplCountPullInterval !== undefined) {
+      clearInterval(this.hplCountPullInterval);
+      this.hplCountPullInterval = undefined;
+    }
+    if (this.hplContactsPullInterval !== undefined) {
+      clearInterval(this.hplContactsPullInterval);
+      this.hplContactsPullInterval = undefined;
+    }
+    //
     if (this.assetsReplicationState) {
       this.assetsReplicationState.cancel().then();
       this.assetsReplicationState = undefined;
@@ -716,9 +1301,34 @@ export class RxdbDatabase extends IWalletDatabase {
       this.allowancesReplicationState.cancel().then();
       this.allowancesReplicationState = undefined;
     }
+    if (this.hplSubaccountsReplicationState) {
+      this.hplSubaccountsReplicationState.cancel().then();
+      this.hplSubaccountsReplicationState = undefined;
+    }
+    if (this.hplVirtualsReplicationState) {
+      this.hplVirtualsReplicationState.cancel().then();
+      this.hplVirtualsReplicationState = undefined;
+    }
+    if (this.hplAssetsReplicationState) {
+      this.hplAssetsReplicationState.cancel().then();
+      this.hplAssetsReplicationState = undefined;
+    }
+    if (this.hplCountReplicationState) {
+      this.hplCountReplicationState.cancel().then();
+      this.hplCountReplicationState = undefined;
+    }
+    if (this.hplContactsReplicationState) {
+      this.hplContactsReplicationState.cancel().then();
+      this.hplContactsReplicationState = undefined;
+    }
     this._assets = null!;
     this._contacts = null!;
     this._allowances = null!;
+    this._hplSubaccounts = null!;
+    this._hplVirtuals = null!;
+    this._hplAssets = null!;
+    this._hplCount = null!;
+    this._hplContacts = null!;
   }
 
   private async _assetsPushHandler(items: any[]): Promise<AssetRxdbDocument[]> {
@@ -823,6 +1433,136 @@ export class RxdbDatabase extends IWalletDatabase {
       lastId ? [lastId] : [],
       BigInt(batchSize),
     )) as AllowanceRxdbDocument[];
+
+    return raw;
+  }
+
+  private async _hplSubaccountsPushHandler(items: any): Promise<HplSubAccountRxdbDocument[]> {
+    const arg = items.map((x: any) => ({
+      ...x,
+      updatedAt: Math.floor(Date.now() / 1000),
+      ledger: this.hplLedger,
+    }));
+
+    await this.replicaCanister?.pushHplSubaccounts(arg);
+
+    return arg;
+  }
+
+  private async _hplSubaccountsPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<HplSubAccountRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullHplSubaccounts(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as HplSubAccountRxdbDocument[];
+
+    return raw;
+  }
+
+  private async _hplVirtualsPushHandler(items: any): Promise<HplVirtualRxdbDocument[]> {
+    const arg = items.map((x: any) => ({
+      ...x,
+      updatedAt: Math.floor(Date.now() / 1000),
+      ledger: this.hplLedger,
+    }));
+
+    await this.replicaCanister?.pushHplVirtuals(arg);
+
+    return arg;
+  }
+
+  private async _hplVirtualsPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<HplVirtualRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullHplVirtuals(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as HplVirtualRxdbDocument[];
+
+    return raw;
+  }
+
+  private async _hplAssetsPushHandler(items: any): Promise<HplAssetRxdbDocument[]> {
+    const arg = items.map((x: any) => ({
+      ...x,
+      updatedAt: Math.floor(Date.now() / 1000),
+      ledger: this.hplLedger,
+    }));
+
+    await this.replicaCanister?.pushHplAssets(arg);
+
+    return arg;
+  }
+
+  private async _hplAssetsPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<HplAssetRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullHplAssets(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as HplAssetRxdbDocument[];
+
+    return raw;
+  }
+
+  private async _hplCountPushHandler(items: any): Promise<HplCountRxdbDocument[]> {
+    const arg = items.map((x: any) => ({
+      ...x,
+      updatedAt: Math.floor(Date.now() / 1000),
+      ledger: this.hplLedger,
+    }));
+
+    await this.replicaCanister?.pushHplCount(arg);
+
+    return arg;
+  }
+
+  private async _hplCountPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<HplCountRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullHplCount(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as HplCountRxdbDocument[];
+
+    return raw;
+  }
+
+  private async _hplContactsPushHandler(items: any): Promise<HplContactRxdbDocument[]> {
+    const arg = items.map((x: any) => ({
+      ...x,
+      updatedAt: Math.floor(Date.now() / 1000),
+      ledger: this.hplLedger,
+    }));
+
+    await this.replicaCanister?.pushHplContacts(arg);
+
+    return arg;
+  }
+
+  private async _hplContactsPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<HplContactRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullHplContacts(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as HplContactRxdbDocument[];
 
     return raw;
   }

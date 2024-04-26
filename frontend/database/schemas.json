@@ -139,7 +139,7 @@
       "required": ["subAccountId", "asset", "spender"]
     }
   },
-  "hplSubAccount": {
+  "hplSubAccounts": {
     "schema": {
       "type": "object",
       "version": 0,
@@ -152,7 +152,7 @@
       "required": ["id", "name", "ftId"]
     }
   },
-  "hplVirtual": {
+  "hplVirtuals": {
     "schema": {
       "type": "object",
       "version": 0,
@@ -167,7 +167,7 @@
       "required": ["id", "name", "ftId", "accesBy", "isMint"]
     }
   },
-  "hplAsset": {
+  "hplAssets": {
     "schema": {
       "type": "object",
       "version": 0,
@@ -183,7 +183,7 @@
       "required": ["id", "name", "symbol", "controller", "decimals", "description"]
     }
   },
-  "hplCount": {
+  "hplCounts": {
     "schema": {
       "type": "object",
       "version": 0,
@@ -197,7 +197,7 @@
       "required": ["nFtAssets", "nVirtualAccounts", "nAccounts", "principal"]
     }
   },
-  "hplContact": {
+  "hplContacts": {
     "schema": {
       "type": "object",
       "version": 0,

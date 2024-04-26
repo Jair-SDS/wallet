@@ -134,7 +134,17 @@ export abstract class IWalletDatabase {
    * @param identity Identity object
    * @param fixedPrincipal Watch-only login Principal ID
    */
-  abstract setIdentity(identity: Identity | null, fixedPrincipal?: Principal): Promise<void>;
+  abstract setIdentity(
+    identity: Identity | null,
+    fixedPrincipal?: Principal,
+    hplLedgerCanister?: string,
+  ): Promise<void>;
+
+  /**
+   * Set Hpl Ledger canister
+   * @param hplLedgerCanister string
+   */
+  abstract setHplLedger(hplLedgerCanister: string): Promise<void>;
 
   /**
    * Get a Asset object by its ID.

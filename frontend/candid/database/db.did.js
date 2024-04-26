@@ -69,20 +69,25 @@ export const idlFactory = ({ IDL }) => {
     "spender" : IDL.Text,
   });
   const HplSubAccountDocument = IDL.Record({
+    "deleted" : IDL.Bool,
     "id" : IDL.Text,
     "ftId" : IDL.Text,
     "name" : IDL.Text,
+    "ledger" : IDL.Text,
     "updatedAt" : IDL.Nat32,
   });
   const HplVirtualDocument = IDL.Record({
+    "deleted" : IDL.Bool,
     "id" : IDL.Text,
     "ftId" : IDL.Text,
     "name" : IDL.Text,
-    "isMint" : IDL.Text,
+    "isMint" : IDL.Bool,
     "updatedAt" : IDL.Nat32,
     "accesBy" : IDL.Text,
+    "ledger" : IDL.Text,
   });
   const HplAssetDocument = IDL.Record({
+    "deleted" : IDL.Bool,
     "id" : IDL.Text,
     "controller" : IDL.Text,
     "decimals" : IDL.Text,
@@ -90,15 +95,19 @@ export const idlFactory = ({ IDL }) => {
     "description" : IDL.Text,
     "updatedAt" : IDL.Nat32,
     "symbol" : IDL.Text,
+    "ledger" : IDL.Text,
   });
   const HplCountDocument = IDL.Record({
+    "deleted" : IDL.Bool,
     "nAccounts" : IDL.Text,
     "principal" : IDL.Text,
     "nVirtualAccounts" : IDL.Text,
     "updatedAt" : IDL.Nat32,
     "nFtAssets" : IDL.Text,
+    "ledger" : IDL.Text,
   });
   const HplContactDocument = IDL.Record({
+    "deleted" : IDL.Bool,
     "principal" : IDL.Text,
     "name" : IDL.Text,
     "updatedAt" : IDL.Nat32,
@@ -113,6 +122,7 @@ export const idlFactory = ({ IDL }) => {
         "amount" : IDL.Text,
       })
     ),
+    "ledger" : IDL.Text,
   });
   const WalletDatabase = IDL.Service({
     "doesStorageExist" : IDL.Func([], [IDL.Bool], ["query"]),

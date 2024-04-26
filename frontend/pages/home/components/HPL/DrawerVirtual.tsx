@@ -266,7 +266,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
 
           saveInLocalstorage(
             {
-              id: res.ok.id.toString(),
+              id: res.ok.first.toString(),
               name: newVt.name,
               ftId: getFtFromVt(newVt.backing).id,
               accesBy: newVt.accesBy,
@@ -277,6 +277,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             isFirstVt,
           );
         } catch (e) {
+          console.log("addVT-err:", e);
           setErrMsg(t("err.back"));
         }
       }

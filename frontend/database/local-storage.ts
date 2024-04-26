@@ -33,7 +33,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private principalId = "";
-  private hplLedger = "";
+  private hplLedger = "rqx66-eyaaa-aaaap-aaona-cai";
 
   /**
    * Initialize all necessary external system and
@@ -48,14 +48,24 @@ export class LocalStorageDatabase extends IWalletDatabase {
    * as current active agent.
    * @param identity Identity object
    * @param fixedPrincipal Watch-only login Principal ID
+   * @param hplLedgerCanister string
    */
-  async setIdentity(identity: Identity | null, fixedPrincipal?: Principal): Promise<void> {
+  async setIdentity(identity: Identity | null, fixedPrincipal?: Principal, hplLedgerCanister?: string): Promise<void> {
     this.principalId = fixedPrincipal?.toString() || identity?.getPrincipal().toText() || "";
+    this.hplLedger = hplLedgerCanister || "rqx66-eyaaa-aaaap-aaona-cai";
     this._doesRecordByPrincipalExist();
     //
     this._assetStateSync();
     this._contactStateSync();
     this._allowanceStateSync();
+  }
+
+  /**
+   * Set Hpl Ledger canister
+   * @param hplLedgerCanister string
+   */
+  async setHplLedger(hplLedgerCanister: string): Promise<void> {
+    this.hplLedger = hplLedgerCanister || "rqx66-eyaaa-aaaap-aaona-cai";
   }
 
   /**

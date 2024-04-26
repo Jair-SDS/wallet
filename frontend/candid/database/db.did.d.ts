@@ -65,6 +65,7 @@ export interface ContactDocument {
   accountIdentier: string;
 }
 export interface HplAssetDocument {
+  deleted: boolean;
   id: string;
   controller: string;
   decimals: string;
@@ -72,8 +73,10 @@ export interface HplAssetDocument {
   description: string;
   updatedAt: number;
   symbol: string;
+  ledger: string;
 }
 export interface HplContactDocument {
+  deleted: boolean;
   principal: string;
   name: string;
   updatedAt: number;
@@ -86,27 +89,34 @@ export interface HplContactDocument {
     index: string;
     amount: string;
   }>;
+  ledger: string;
 }
 export interface HplCountDocument {
+  deleted: boolean;
   nAccounts: string;
   principal: string;
   nVirtualAccounts: string;
   updatedAt: number;
   nFtAssets: string;
+  ledger: string;
 }
 export interface HplSubAccountDocument {
+  deleted: boolean;
   id: string;
   ftId: string;
   name: string;
   updatedAt: number;
+  ledger: string;
 }
 export interface HplVirtualDocument {
+  deleted: boolean;
   id: string;
   ftId: string;
   name: string;
-  isMint: string;
+  isMint: boolean;
   updatedAt: number;
   accesBy: string;
+  ledger: string;
 }
 export interface WalletDatabase {
   doesStorageExist: ActorMethod<[], boolean>;

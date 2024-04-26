@@ -99,7 +99,9 @@ type HplSubAccountDocument = record {
   id : text;
   name : text;
   ftId : text;
+  ledger : text;
   updatedAt : nat32;
+  deleted : bool;
 };
 
 type HplVirtualDocument = record {
@@ -109,6 +111,8 @@ type HplVirtualDocument = record {
   accesBy : text;
   isMint : bool;
   updatedAt : nat32;
+  ledger : text;
+  deleted : bool;
 };
 
 type HplAssetDocument = record {
@@ -119,6 +123,8 @@ type HplAssetDocument = record {
   decimals : text;
   description : text;
   updatedAt : nat32;
+  ledger : text;
+  deleted : bool;
 };
 
 type HplCountDocument = record {
@@ -127,6 +133,8 @@ type HplCountDocument = record {
   nAccounts : text;
   updatedAt : nat32;
   "principal" : text;
+  ledger : text;
+  deleted : bool;
 };
 
 type HplContactDocument = record {
@@ -142,5 +150,7 @@ type HplContactDocument = record {
     code : text;
   };
   updatedAt : nat32;
+  ledger : text;
+  deleted : bool;
 };
 service : () -> WalletDatabase;

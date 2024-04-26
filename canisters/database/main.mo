@@ -85,7 +85,9 @@ actor class WalletDatabase() {
     id : Text;
     name : Text;
     ftId : Text;
+    ledger : Text;
     updatedAt : Nat32;
+    deleted : Bool;
   };
 
   type HplVirtualDocument_v0 = {
@@ -93,8 +95,10 @@ actor class WalletDatabase() {
     name : Text;
     ftId : Text;
     accesBy : Text;
-    isMint : Text;
+    isMint : Bool;
     updatedAt : Nat32;
+    ledger : Text;
+    deleted : Bool;
   };
 
   type HplAssetDocument_v0 = {
@@ -105,6 +109,8 @@ actor class WalletDatabase() {
     decimals : Text;
     description : Text;
     updatedAt : Nat32;
+    ledger : Text;
+    deleted : Bool;
   };
 
   type HplCountDocument_v0 = {
@@ -113,6 +119,8 @@ actor class WalletDatabase() {
     nAccounts : Text;
     updatedAt : Nat32;
     principal : Text;
+    ledger : Text;
+    deleted : Bool;
   };
 
   type HplContactDocument_v0 = {
@@ -128,6 +136,8 @@ actor class WalletDatabase() {
       code : Text;
     }];
     updatedAt : Nat32;
+    ledger : Text;
+    deleted : Bool;
   };
 
   stable var storage_v0 : StableStorage<AssetDocument_v0, ContactDocument_v0, AllowanceDocument_v0, HplSubAccountDocument_v0, HplVirtualDocument_v0, HplAssetDocument_v0, HplCountDocument_v0, HplContactDocument_v0> = null;
