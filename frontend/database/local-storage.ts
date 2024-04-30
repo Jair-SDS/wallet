@@ -324,6 +324,10 @@ export class LocalStorageDatabase extends IWalletDatabase {
     this._setHplAssets(assets);
   }
 
+  async updateHplAssetsByLedger(assets: HPLAssetData[]): Promise<void> {
+    this._setHplAssets(assets);
+  }
+
   /**
    * Get all HPL subaccount objects from the active agent.
    * @returns Array of found HPL subaccount objects or an empty
@@ -334,6 +338,10 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   async updateHplSubaccounts(subs: HPLSubData[]): Promise<void> {
+    this._setHplSubAccounts(subs);
+  }
+
+  async updateHplSubaccountsByLedger(subs: HPLSubData[]): Promise<void> {
     this._setHplSubAccounts(subs);
   }
 
@@ -350,16 +358,24 @@ export class LocalStorageDatabase extends IWalletDatabase {
     this._setHplVirtuals(vts);
   }
 
+  async updateHplVirtualsByLedger(vts: HPLVirtualData[]): Promise<void> {
+    this._setHplVirtuals(vts);
+  }
+
   /**
    * Get all HPL Count objects from the active agent.
    * @returns Array of found HPL Count objects or an empty
    * array if no Asset objects were found
    */
-  async getHplCounts(): Promise<nHplData[]> {
+  async getHplCount(): Promise<nHplData[]> {
     return this._getHplCounts();
   }
 
-  async updateHplCounts(nData: nHplData[]): Promise<void> {
+  async updateHplCount(nData: nHplData[]): Promise<void> {
+    this._setHplCounts(nData);
+  }
+
+  async updateHplCountByLedger(nData: nHplData[]): Promise<void> {
     this._setHplCounts(nData);
   }
 
@@ -373,6 +389,10 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   async updateHplContacts(contacts: HplContact[]): Promise<void> {
+    this._setHplContacts(contacts);
+  }
+
+  async updateHplContactsByLedger(contacts: HplContact[]): Promise<void> {
     this._setHplContacts(contacts);
   }
 

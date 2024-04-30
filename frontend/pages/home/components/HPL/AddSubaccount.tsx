@@ -12,8 +12,8 @@ import { clsx } from "clsx";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { CustomButton } from "@components/button";
 import { LoadingLoader } from "@components/loader";
-import { AccountHook } from "@pages/hooks/accountHook";
 import AssetSymbol from "@components/AssetSymbol";
+import { db } from "@/database/db";
 
 interface AddSubaccountProps {
   setAssetOpen(value: boolean): void;
@@ -23,7 +23,6 @@ interface AddSubaccountProps {
 
 const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => {
   const { t } = useTranslation();
-  const { authClient } = AccountHook();
   const {
     ingressActor,
     hplFTs,
@@ -221,13 +220,14 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
           const newS = { id: res.ok.first.toString(), name: newHplSub.name.trim(), ftId: selAsset.id };
           addSub(newS);
           const auxSubs = [...hplSubsData, newS];
-          localStorage.setItem(
-            "hplSUB-" + authClient,
-            JSON.stringify({
-              sub: auxSubs,
-            }),
-          );
-          onClose();
+          // localStorage.setItem(
+          //   "hplSUB-" + authClient,
+          //   JSON.stringify({
+          //     sub: auxSubs,
+          //   }),
+          // );
+
+          await db().updateHplSubaccountsByLedger(auxSubs);
           setLoading(false);
         } catch (e) {
           console.log("e", e);

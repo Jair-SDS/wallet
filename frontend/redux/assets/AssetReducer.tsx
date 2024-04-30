@@ -22,6 +22,7 @@ import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { ICRC1systemAssets } from "@/defaultTokens";
+import { db } from "@/database/db";
 
 const defaultValue = {} as any;
 interface AssetState {
@@ -247,7 +248,8 @@ const assetSlice = createSlice({
       });
       const newCount = { ...state.nHpl, nAccounts: (BigInt(state.nHpl.nAccounts) + BigInt(1)).toString() };
       state.nHpl = newCount;
-      localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
+      // localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
+      db().updateHplCountByLedger([newCount]);
     },
     editHPLSub: {
       reducer(
@@ -296,7 +298,8 @@ const assetSlice = createSlice({
           nVirtualAccounts: (BigInt(state.nHpl.nVirtualAccounts) + BigInt(1)).toString(),
         };
         state.nHpl = newCount;
-        localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
+        // localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
+        db().updateHplCountByLedger([newCount]);
         if (newSelSub) state.selectSub = newSelSub;
       },
       prepare(vt: HPLVirtualSubAcc, vtLocal: HPLVirtualData, subId: string) {

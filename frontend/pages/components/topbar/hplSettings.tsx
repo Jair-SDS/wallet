@@ -17,10 +17,10 @@ import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setFeeConstant, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/assets/AssetReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
-import { useHPL } from "@pages/hooks/hplHook";
 import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { defaultHplLedgers } from "@/defaultTokens";
+import { db } from "@/database/db";
 
 interface HplSettingsModalProps {
   setOpen(value: string): void;
@@ -32,7 +32,6 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
   const { ownersActor } = useAppSelector((state) => state.asset);
   const { reloadDictFts } = AssetHook();
-  const { hplContacts } = useHPL(false);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [ledger, setLeder] = useState({ principal: hplLedger, err: false });
@@ -156,6 +155,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             agent: userAgent,
             canisterId: ledger.principal,
           });
+          await db().setHplLedger(ledger.principal);
           dispatch(setIngressActor(hplActor));
           const client = new HPLClient(ledger.principal, "ic");
           dispatch(setHPLClient(client));
@@ -166,7 +166,8 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             console.log("feeConstant-err", e);
           }
           localStorage.setItem("hpl-led-pric-" + authClient, ledger.principal);
-          await updateHPLBalances(hplActor, ownersActor, hplContacts, authClient, false, false);
+          const contacts = await db().getHplContacts();
+          await updateHPLBalances(hplActor, ownersActor, contacts, authClient, false, true);
         } catch (e) {
           setLeder((prev) => {
             return { ...prev, err: true };

@@ -7,10 +7,10 @@ import { HPLAsset, HPLSubAccount, HPLSubData } from "@redux/models/AccountModels
 import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/input";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, getDisplayNameFromFt, getFirstNChars } from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
+import { db } from "@/database/db";
 
 interface HplSubaccountElemProps {
   sub: HPLSubAccount;
@@ -29,7 +29,6 @@ const HplSubaccountElem = ({
   setAssetOpen,
   setEditNameId,
 }: HplSubaccountElemProps) => {
-  const { authClient } = AccountHook();
   const {
     hplFTs,
     hplSubsData,
@@ -152,22 +151,27 @@ const HplSubaccountElem = ({
     // setNameError(false);
   }
 
-  function onSave() {
+  async function onSave() {
     const auxSub = hplSubsData.find((sb) => sb.id === sub.sub_account_id);
     const auxSubData: HPLSubData[] = [];
     if (auxSub) {
-      hplSubsData.map((sb) => {
-        if (sb.id === sub.sub_account_id) {
-          auxSubData.push({ ...sb, name: editSubName.trim() });
-        } else auxSubData.push(sb);
-      });
-      localStorage.setItem(
-        "hplSUB-" + authClient,
-        JSON.stringify({
-          sub: auxSubData,
-        }),
-      );
-      editSelSub({ ...sub, name: editSubName.trim() }, auxSubData);
+      try {
+        hplSubsData.map((sb) => {
+          if (sb.id === sub.sub_account_id) {
+            auxSubData.push({ ...sb, name: editSubName.trim() });
+          } else auxSubData.push(sb);
+        });
+        // localStorage.setItem(
+        //   "hplSUB-" + authClient,
+        //   JSON.stringify({
+        //     sub: auxSubData,
+        //   }),
+        // );
+        await db().updateHplSubaccountsByLedger(auxSubData);
+        editSelSub({ ...sub, name: editSubName.trim() }, auxSubData);
+      } catch (error) {
+        console.error(error);
+      }
     }
     onCancel();
   }

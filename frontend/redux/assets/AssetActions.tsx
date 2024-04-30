@@ -42,6 +42,7 @@ import { getICRCSupportedStandards } from "@pages/home/helpers/icrc";
 
 import { refreshAssetBalances } from "@/utils/assets";
 import { setTransactions } from "@redux/transaction/TransactionReducer";
+import { db } from "@/database/db";
 
 /**
  * This function updates the balances for all provided assets and their subaccounts, based on the market price and the account balance.
@@ -161,7 +162,8 @@ export const updateHPLBalances = async (
       console.log("err-nHpl", e);
     }
 
-    localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
+    // localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
+    await db().updateHplCountByLedger([nData]);
     store.dispatch(setnHpl(nData));
   }
 
@@ -238,23 +240,26 @@ export const updateHPLBalances = async (
     let ftData = store.getState().asset.hplFTsData;
     if (ftInfo && ftInfo.length > 0) {
       ftData = formatFtInfo(ftInfo, ftData);
-      localStorage.setItem(
-        "hplFT-" + principal,
-        JSON.stringify({
-          ft: ftData,
-        }),
-      );
+      // localStorage.setItem(
+      //   "hplFT-" + principal,
+      //   JSON.stringify({
+      //     ft: ftData,
+      //   }),
+      // );
+
+      await db().updateHplAssetsByLedger(ftData);
       store.dispatch(setHPLAssetsData(ftData));
     }
     let subData = store.getState().asset.hplSubsData;
     if (subAccInfo && subAccInfo.length > 0) {
       subData = formatAccountInfo(subAccInfo, subData);
-      localStorage.setItem(
-        "hplSUB-" + principal,
-        JSON.stringify({
-          sub: subData,
-        }),
-      );
+      // localStorage.setItem(
+      //   "hplSUB-" + principal,
+      //   JSON.stringify({
+      //     sub: subData,
+      //   }),
+      // );
+      await db().updateHplSubaccountsByLedger(subData);
       store.dispatch(setHPLSubsData(subData));
     }
 
@@ -297,12 +302,14 @@ export const updateHPLBalances = async (
       });
 
       vtData = formatVirtualAccountInfo(vtInfo, vtData, finalMints);
-      localStorage.setItem(
-        "hplVT-" + principal,
-        JSON.stringify({
-          vt: vtData,
-        }),
-      );
+      // localStorage.setItem(
+      //   "hplVT-" + principal,
+      //   JSON.stringify({
+      //     vt: vtData,
+      //   }),
+      // );
+
+      await db().updateHplVirtualsByLedger(vtData);
       store.dispatch(setHPLVTsData(vtData));
     }
 

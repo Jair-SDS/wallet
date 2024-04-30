@@ -1,3 +1,4 @@
+import { db } from "@/database/db";
 import { HplContact } from "@redux/models/AccountModels";
 import { Contact } from "@redux/models/ContactsModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
@@ -50,7 +51,7 @@ const contactsSlice = createSlice({
         const auxContacts = state.hplContacts.filter((cnts) => cnts.principal !== action.payload.principal);
 
         state.hplContacts = auxContacts;
-        setLocalHplContacts(auxContacts, state.storageCode);
+        setLocalHplContacts(auxContacts);
       },
       prepare(principal: string) {
         return {
@@ -74,7 +75,7 @@ const contactsSlice = createSlice({
         });
 
         state.hplContacts = auxContacts;
-        setLocalHplContacts(auxContacts, state.storageCode);
+        setLocalHplContacts(auxContacts);
       },
       prepare(principal: string, index: string) {
         return {
@@ -84,18 +85,13 @@ const contactsSlice = createSlice({
     },
     setHplContacts(state, action: PayloadAction<HplContact[]>) {
       state.hplContacts = action.payload;
-      setLocalHplContacts(action.payload, state.storageCode);
+      setLocalHplContacts(action.payload);
     },
   },
 });
 
-const setLocalHplContacts = (contacts: HplContact[], code: string) => {
-  localStorage.setItem(
-    "hpl-" + code,
-    JSON.stringify({
-      contacts: contacts,
-    }),
-  );
+const setLocalHplContacts = (contacts: HplContact[]) => {
+  db().updateHplContactsByLedger(contacts);
 };
 
 export const {

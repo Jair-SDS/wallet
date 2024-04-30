@@ -6,7 +6,7 @@ import { Principal } from "@dfinity/principal";
 import { DB_Type } from "./db";
 import { LocalStorageKeyEnum } from "@/@types/localstorage";
 import { Themes } from "@/const";
-import { Asset } from "@redux/models/AccountModels";
+import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 
 export interface DatabaseOptions {
   /**
@@ -268,4 +268,34 @@ export abstract class IWalletDatabase {
    * @param id Primary Key
    */
   abstract deleteAllowance(id: string, options?: DatabaseOptions): Promise<void>;
+
+  abstract getHplAssets(): Promise<HPLAssetData[]>;
+
+  abstract updateHplAssets(assets: HPLAssetData[]): Promise<void>;
+
+  abstract updateHplAssetsByLedger(assets: HPLAssetData[]): Promise<void>;
+
+  abstract getHplSubaccounts(): Promise<HPLSubData[]>;
+
+  abstract updateHplSubaccounts(subs: HPLSubData[]): Promise<void>;
+
+  abstract updateHplSubaccountsByLedger(subs: HPLSubData[]): Promise<void>;
+
+  abstract getHplVirtuals(): Promise<HPLVirtualData[]>;
+
+  abstract updateHplVirtuals(vts: HPLVirtualData[]): Promise<void>;
+
+  abstract updateHplVirtualsByLedger(vts: HPLVirtualData[]): Promise<void>;
+
+  abstract getHplCount(): Promise<nHplData[]>;
+
+  abstract updateHplCount(nData: nHplData[]): Promise<void>;
+
+  abstract updateHplCountByLedger(nData: nHplData[]): Promise<void>;
+
+  abstract getHplContacts(): Promise<HplContact[]>;
+
+  abstract updateHplContacts(contacts: HplContact[]): Promise<void>;
+
+  abstract updateHplContactsByLedger(contacts: HplContact[]): Promise<void>;
 }

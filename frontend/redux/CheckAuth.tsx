@@ -44,7 +44,7 @@ import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
-import { HPLAssetData, HplContact } from "./models/AccountModels";
+import { HPLAssetData, HPLSubData, HPLVirtualData, HplContact } from "./models/AccountModels";
 import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
@@ -154,6 +154,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   const myPrincipal = fixedPrincipal || (await myAgent.getPrincipal());
   const identityPrincipalStr = fixedPrincipal?.toString() || authIdentity.getPrincipal().toString();
 
+  await db().setIdentity(authIdentity, fixedPrincipal);
+
   // HPL ACTOR
   const hplLedPrin = localStorage.getItem("hpl-led-pric-" + identityPrincipalStr) || "rqx66-eyaaa-aaaap-aaona-cai";
   if (hplLedPrin !== "rqx66-eyaaa-aaaap-aaona-cai") {
@@ -172,10 +174,17 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
 
   if (!fixedPrincipal) {
     // HPL FT
-    const hplFTsData = localStorage.getItem("hplFT-" + identityPrincipalStr);
+    let hplFTsData: HPLAssetData[] | null = null;
+    try {
+      hplFTsData = await db().getHplAssets();
+      console.log("getHplAssets", hplFTsData);
+    } catch (error) {
+      console.error("dbFtData:", error);
+    }
+    // const hplFTsData = localStorage.getItem("hplFT-" + identityPrincipalStr);
     if (hplFTsData != null) {
-      const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
-      store.dispatch(setHPLAssetsData(hplFTsDataJson));
+      // const hplFTsDataJson = JSON.parse(hplFTsData).ft as HPLAssetData[];
+      store.dispatch(setHPLAssetsData(hplFTsData));
     }
     // HPL DICTIONARY
     const hplDictPrin = localStorage.getItem("hpl-dict-pric-" + identityPrincipalStr) || "lpwlq-2iaaa-aaaap-ab2vq-cai";
@@ -195,27 +204,38 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
       }
     }
     // HPL SUBACCOUNTS
-    const hplSubsData = localStorage.getItem("hplSUB-" + identityPrincipalStr);
+    // const hplSubsData = localStorage.getItem("hplSUB-" + identityPrincipalStr);
+    let hplSubsData: HPLSubData[] | null = null;
+    try {
+      hplSubsData = await db().getHplSubaccounts();
+      console.log("getHplSubaccounts", hplSubsData);
+    } catch (error) {
+      console.error("dbSubData:", error);
+    }
     if (hplSubsData != null) {
-      const hplSubsDataJson = JSON.parse(hplSubsData);
-      store.dispatch(setHPLSubsData(hplSubsDataJson.sub));
+      // const hplSubsDataJson = JSON.parse(hplSubsData);
+      store.dispatch(setHPLSubsData(hplSubsData));
     }
     // HPL VIRTUALS
-    const hplVTsData = localStorage.getItem("hplVT-" + identityPrincipalStr);
+    let hplVTsData: HPLVirtualData[] | null = null;
+    try {
+      hplVTsData = await db().getHplVirtuals();
+      console.log("getHplVirtuals", hplVTsData);
+    } catch (error) {
+      console.error("dbVtData:", error);
+    }
     if (hplVTsData != null) {
-      const hplVTsDataJson = JSON.parse(hplVTsData);
-      store.dispatch(setHPLVTsData(hplVTsDataJson.vt));
+      // const hplVTsDataJson = JSON.parse(hplVTsData);
+      store.dispatch(setHPLVTsData(hplVTsData));
     }
     // HPL CONTACTS
-    let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
-    const hplContactsData = localStorage.getItem("hpl-contacts-" + identityPrincipalStr);
-    if (hplContactsData != null) {
-      try {
-        hplContactsDataJson = JSON.parse(hplContactsData);
-      } catch (e) {
-        console.log("hplContactsDataJson-err", e);
-        //
-      }
+    let hplContactsData: HplContact[] | null = null;
+    // let hplContactsDataJson: { contacts: HplContact[] } = { contacts: [] };
+    // const hplContactsData = localStorage.getItem("hpl-contacts-" + identityPrincipalStr);
+    try {
+      hplContactsData = await db().getHplContacts();
+    } catch (error) {
+      console.error("dbHplCntcData:", error);
     }
     // HPL OWNERS
     const ownerActor = Actor.createActor<OwnersActor>(OwnersIDLFactory, {
@@ -233,14 +253,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
 
     // HPL TOKENS
     const forceUpdate = hplFTsData === null || hplSubsData === null || hplVTsData === null;
-    await updateHPLBalances(
-      ingressActor,
-      ownerActor,
-      hplContactsDataJson.contacts,
-      identityPrincipalStr,
-      false,
-      forceUpdate,
-    );
+    await updateHPLBalances(ingressActor, ownerActor, hplContactsData || [], identityPrincipalStr, false, forceUpdate);
     try {
       const feeConstant = await ingressActor.feeRatio();
       store.dispatch(setFeeConstant(Number(feeConstant.toString())));
@@ -250,8 +263,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   }
 
   dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myPrincipal);
-
-  await db().setIdentity(authIdentity, fixedPrincipal);
 
   const snsTokens = await getSNSTokens(myAgent);
   store.dispatch(setICRC1SystemAssets(snsTokens));

@@ -5,7 +5,7 @@ import { LoadingLoader } from "@components/loader";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
-import { AccountHook } from "@pages/hooks/accountHook";
+import { db } from "@/database/db";
 
 interface DeleteVirtualModalProps {
   selectVt: HPLVirtualSubAcc | undefined;
@@ -27,7 +27,6 @@ const DeleteVirtualModal = ({
   setErrMsg,
 }: DeleteVirtualModalProps) => {
   const { t } = useTranslation();
-  const { authClient } = AccountHook();
   const { ingressActor, hplVTsData, reloadHPLBallance } = useHPL(false);
   return (
     <div className="flex flex-col justify-start items-start w-full gap-4 text-md">
@@ -62,12 +61,13 @@ const DeleteVirtualModal = ({
       try {
         await ingressActor.deleteVirtualAccounts([BigInt(selectVt.virt_sub_acc_id)]);
         const auxVts = hplVTsData.filter((vt) => vt.id != selectVt.virt_sub_acc_id);
-        localStorage.setItem(
-          "hplVT-" + authClient,
-          JSON.stringify({
-            vt: auxVts,
-          }),
-        );
+        // localStorage.setItem(
+        //   "hplVT-" + authClient,
+        //   JSON.stringify({
+        //     vt: auxVts,
+        //   }),
+        // );
+        await db().updateHplVirtualsByLedger(auxVts);
         await reloadHPLBallance(true);
         setDeleteModal(false);
         setSelVt(undefined);

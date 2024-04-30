@@ -25,6 +25,7 @@ import AssetSymbol from "@components/AssetSymbol";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { Actor } from "@dfinity/agent";
+import { db } from "@/database/db";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -325,12 +326,13 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       auxVts = [...hplVTsData, vt];
     }
 
-    localStorage.setItem(
-      "hplVT-" + authClient,
-      JSON.stringify({
-        vt: auxVts,
-      }),
-    );
+    // localStorage.setItem(
+    //   "hplVT-" + authClient,
+    //   JSON.stringify({
+    //     vt: auxVts,
+    //   }),
+    // );
+    await db().updateHplVirtualsByLedger(auxVts);
     const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
     if (edit) {
       editVtData(auxVts);

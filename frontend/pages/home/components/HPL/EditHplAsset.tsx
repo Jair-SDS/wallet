@@ -7,10 +7,10 @@ import { ChangeEvent, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/button";
 import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
-import { AccountHook } from "@pages/hooks/accountHook";
 import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/tooltip";
 import AssetSymbol from "@components/AssetSymbol";
+import { db } from "@/database/db";
 
 interface EditHplAssetProps {
   setAssetOpen(value: boolean): void;
@@ -21,7 +21,6 @@ interface EditHplAssetProps {
 
 const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAssetProps) => {
   const { t } = useTranslation();
-  const { authClient } = AccountHook();
   const { addSubErr, editSelAsset, hplFTsData, getAssetLogo } = useHPL(open);
   return (
     <Fragment>
@@ -155,12 +154,13 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
       });
     }
     if (auxFtsdata.length > 0) {
-      localStorage.setItem(
-        "hplFT-" + authClient,
-        JSON.stringify({
-          ft: auxFtsdata,
-        }),
-      );
+      // localStorage.setItem(
+      //   "hplFT-" + authClient,
+      //   JSON.stringify({
+      //     ft: auxFtsdata,
+      //   }),
+      // );
+      await db().updateHplAssetsByLedger(auxFtsdata);
 
       editSelAsset(useDict ? { ...editedFt, name: "", symbol: "" } : editedFt, auxFtsdata);
     }

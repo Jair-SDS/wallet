@@ -74,19 +74,19 @@ export class RxdbDatabase extends IWalletDatabase {
   private allowancesReplicationState?: RxReplicationState<any, any>;
   private allowancesPullInterval?: any;
   // HPL
-  private _hplSubaccounts!: RxCollection<HplSubAccountRxdbDocument> | null;
+  private _hplsubaccounts!: RxCollection<HplSubAccountRxdbDocument> | null;
   private hplSubaccountsReplicationState?: RxReplicationState<any, any>;
   private hplSubaccountsPullInterval?: any;
-  private _hplVirtuals!: RxCollection<HplVirtualRxdbDocument> | null;
+  private _hplvirtuals!: RxCollection<HplVirtualRxdbDocument> | null;
   private hplVirtualsReplicationState?: RxReplicationState<any, any>;
   private hplVirtualsPullInterval?: any;
-  private _hplAssets!: RxCollection<HplAssetRxdbDocument> | null;
+  private _hplassets!: RxCollection<HplAssetRxdbDocument> | null;
   private hplAssetsReplicationState?: RxReplicationState<any, any>;
   private hplAssetsPullInterval?: any;
-  private _hplCount!: RxCollection<HplCountRxdbDocument> | null;
+  private _hplcount!: RxCollection<HplCountRxdbDocument> | null;
   private hplCountReplicationState?: RxReplicationState<any, any>;
   private hplCountPullInterval?: any;
-  private _hplContacts!: RxCollection<HplContactRxdbDocument> | null;
+  private _hplcontacts!: RxCollection<HplContactRxdbDocument> | null;
   private hplContactsReplicationState?: RxReplicationState<any, any>;
   private hplContactsPullInterval?: any;
 
@@ -124,28 +124,28 @@ export class RxdbDatabase extends IWalletDatabase {
   }
 
   protected get hplSubaccounts(): Promise<RxCollection<HplSubAccountRxdbDocument> | null> {
-    if (this._hplSubaccounts) return Promise.resolve(this._hplSubaccounts);
-    return this.init().then(() => this._hplSubaccounts);
+    if (this._hplsubaccounts) return Promise.resolve(this._hplsubaccounts);
+    return this.init().then(() => this._hplsubaccounts);
   }
 
   protected get hplVirtuals(): Promise<RxCollection<HplVirtualRxdbDocument> | null> {
-    if (this._hplVirtuals) return Promise.resolve(this._hplVirtuals);
-    return this.init().then(() => this._hplVirtuals);
+    if (this._hplvirtuals) return Promise.resolve(this._hplvirtuals);
+    return this.init().then(() => this._hplvirtuals);
   }
 
   protected get hplAssets(): Promise<RxCollection<HplAssetRxdbDocument> | null> {
-    if (this._hplAssets) return Promise.resolve(this._hplAssets);
-    return this.init().then(() => this._hplAssets);
+    if (this._hplassets) return Promise.resolve(this._hplassets);
+    return this.init().then(() => this._hplassets);
   }
 
   protected get hplCounts(): Promise<RxCollection<HplCountRxdbDocument> | null> {
-    if (this._hplCount) return Promise.resolve(this._hplCount);
-    return this.init().then(() => this._hplCount);
+    if (this._hplcount) return Promise.resolve(this._hplcount);
+    return this.init().then(() => this._hplcount);
   }
 
   protected get hplContacts(): Promise<RxCollection<HplContactRxdbDocument> | null> {
-    if (this._hplContacts) return Promise.resolve(this._hplContacts);
-    return this.init().then(() => this._hplContacts);
+    if (this._hplcontacts) return Promise.resolve(this._hplcontacts);
+    return this.init().then(() => this._hplcontacts);
   }
 
   /**
@@ -169,7 +169,7 @@ export class RxdbDatabase extends IWalletDatabase {
         eventReduce: true,
       });
 
-      const { assets, contacts, allowances, hplSubAccounts, hplVirtuals, hplAssets, hplCounts, hplContacts } =
+      const { assets, contacts, allowances, hplsubaccounts, hplvirtuals, hplassets, hplcounts, hplcontacts } =
         await db.addCollections(DBSchemas);
 
       const assetsReplication = await setupReplication<AssetRxdbDocument, string>(
@@ -206,7 +206,7 @@ export class RxdbDatabase extends IWalletDatabase {
         allowancesReplication;
 
       const hplSubaccountsReplication = await setupReplication<HplSubAccountRxdbDocument, string>(
-        hplSubAccounts,
+        hplsubaccounts,
         `hplSUB-${this.principalId}`,
         "id",
         (items) => this._hplSubaccountsPushHandler(items),
@@ -221,7 +221,7 @@ export class RxdbDatabase extends IWalletDatabase {
       ] = hplSubaccountsReplication;
 
       const hplVirtualsReplication = await setupReplication<HplVirtualRxdbDocument, string>(
-        hplVirtuals,
+        hplvirtuals,
         `hplVT-${this.principalId}`,
         "id",
         (items) => this._hplVirtualsPushHandler(items),
@@ -236,7 +236,7 @@ export class RxdbDatabase extends IWalletDatabase {
       ] = hplVirtualsReplication;
 
       const hplAssetsReplication = await setupReplication<HplAssetRxdbDocument, string>(
-        hplAssets,
+        hplassets,
         `hplFT-${this.principalId}`,
         "id",
         (items) => this._hplAssetsPushHandler(items),
@@ -247,7 +247,7 @@ export class RxdbDatabase extends IWalletDatabase {
         hplAssetsReplication;
 
       const hplCountReplication = await setupReplication<HplCountRxdbDocument, string>(
-        hplCounts,
+        hplcounts,
         `nHpl-${this.principalId}`,
         "principal",
         (items) => this._hplCountPushHandler(items),
@@ -258,7 +258,7 @@ export class RxdbDatabase extends IWalletDatabase {
         hplCountReplication;
 
       const hplContactsReplication = await setupReplication<HplContactRxdbDocument, string>(
-        hplContacts,
+        hplcontacts,
         `hpl-contacts-${this.principalId}`,
         "principal",
         (items) => this._hplContactsPushHandler(items),
@@ -275,11 +275,11 @@ export class RxdbDatabase extends IWalletDatabase {
       this._assets = assets;
       this._contacts = contacts;
       this._allowances = allowances;
-      this._hplSubaccounts = hplSubAccounts;
-      this._hplVirtuals = hplVirtuals;
-      this._hplAssets = hplAssets;
-      this._hplCount = hplCounts;
-      this._hplContacts = hplContacts;
+      this._hplsubaccounts = hplsubaccounts;
+      this._hplvirtuals = hplvirtuals;
+      this._hplassets = hplassets;
+      this._hplcount = hplcounts;
+      this._hplcontacts = hplcontacts;
     } catch (e) {
       console.error("RxDb Init:", e);
     }
@@ -750,7 +750,17 @@ export class RxdbDatabase extends IWalletDatabase {
   async getHplSubaccounts(): Promise<HPLSubData[]> {
     try {
       const documents = await (await this.hplSubaccounts)?.find().exec();
-      return (documents && documents.map(this._mapHplSubaccount)) || [];
+      console.log("getHplSubaccounts:", documents);
+
+      return (
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc._data.ledger === this.hplLedger;
+            })
+            .map(this._mapHplSubaccount)) ||
+        []
+      );
     } catch (e) {
       console.error("RxDb GetHplSubaccounts:", e);
       return [];
@@ -785,16 +795,20 @@ export class RxdbDatabase extends IWalletDatabase {
    * @param newSubs HPLSubData array to be seted
    */
   async updateHplSubaccountsByLedger(newSubs: HPLSubData[]): Promise<void> {
+    console.log("updateHplSubaccountsByLedger");
+
     try {
       const documents = (await (await this.hplSubaccounts)?.find().exec()) || [];
       const subs =
         (documents &&
           documents
             .filter((doc) => {
-              return doc.ledger !== this.hplLedger;
+              return doc._data.ledger !== this.hplLedger;
             })
             .map(this._mapHplSubaccount)) ||
         [];
+
+      console.log("mewdata:", [...newSubs, ...subs]);
 
       await (
         await this.hplSubaccounts
@@ -819,7 +833,15 @@ export class RxdbDatabase extends IWalletDatabase {
   async getHplVirtuals(): Promise<HPLVirtualData[]> {
     try {
       const documents = await (await this.hplVirtuals)?.find().exec();
-      return (documents && documents.map(this._mapHplVirtual)) || [];
+      return (
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc._data.ledger === this.hplLedger;
+            })
+            .map(this._mapHplVirtual)) ||
+        []
+      );
     } catch (e) {
       console.error("RxDb GetHplVirtuals:", e);
       return [];
@@ -860,7 +882,7 @@ export class RxdbDatabase extends IWalletDatabase {
         (documents &&
           documents
             .filter((doc) => {
-              return doc.ledger !== this.hplLedger;
+              return doc._data.ledger !== this.hplLedger;
             })
             .map(this._mapHplVirtual)) ||
         [];
@@ -887,7 +909,15 @@ export class RxdbDatabase extends IWalletDatabase {
   async getHplAssets(): Promise<HPLAssetData[]> {
     try {
       const documents = await (await this.hplAssets)?.find().exec();
-      return (documents && documents.map(this._mapHplAsset)) || [];
+      return (
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc._data.ledger === this.hplLedger;
+            })
+            .map(this._mapHplAsset)) ||
+        []
+      );
     } catch (e) {
       console.error("RxDb GetHplAssets:", e);
       return [];
@@ -928,7 +958,7 @@ export class RxdbDatabase extends IWalletDatabase {
         (documents &&
           documents
             .filter((doc) => {
-              return doc.ledger !== this.hplLedger;
+              return doc._data.ledger !== this.hplLedger;
             })
             .map(this._mapHplAsset)) ||
         [];
@@ -955,7 +985,15 @@ export class RxdbDatabase extends IWalletDatabase {
   async getHplCount(): Promise<nHplData[]> {
     try {
       const documents = await (await this.hplCounts)?.find().exec();
-      return (documents && documents.map(this._mapHplCount)) || [];
+      return (
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc._data.ledger === this.hplLedger;
+            })
+            .map(this._mapHplCount)) ||
+        []
+      );
     } catch (e) {
       console.error("RxDb GetHplCount:", e);
       return [];
@@ -997,7 +1035,7 @@ export class RxdbDatabase extends IWalletDatabase {
         (documents &&
           documents
             .filter((doc) => {
-              return doc.ledger !== this.hplLedger;
+              return doc._data.ledger !== this.hplLedger;
             })
             .map(this._mapHplCount)) ||
         [];
@@ -1025,7 +1063,15 @@ export class RxdbDatabase extends IWalletDatabase {
   async getHplContacts(): Promise<HplContact[]> {
     try {
       const documents = await (await this.hplContacts)?.find().exec();
-      return (documents && documents.map(this._mapHplContact)) || [];
+      return (
+        (documents &&
+          documents
+            .filter((doc) => {
+              return doc._data.ledger === this.hplLedger;
+            })
+            .map(this._mapHplContact)) ||
+        []
+      );
     } catch (e) {
       console.error("RxDb GetHplContacts:", e);
       return [];
@@ -1070,7 +1116,7 @@ export class RxdbDatabase extends IWalletDatabase {
         (documents &&
           documents
             .filter((doc) => {
-              return doc.ledger !== this.hplLedger;
+              return doc._data.ledger !== this.hplLedger;
             })
             .map(this._mapHplContact)) ||
         [];
@@ -1324,11 +1370,11 @@ export class RxdbDatabase extends IWalletDatabase {
     this._assets = null!;
     this._contacts = null!;
     this._allowances = null!;
-    this._hplSubaccounts = null!;
-    this._hplVirtuals = null!;
-    this._hplAssets = null!;
-    this._hplCount = null!;
-    this._hplContacts = null!;
+    this._hplsubaccounts = null!;
+    this._hplvirtuals = null!;
+    this._hplassets = null!;
+    this._hplcount = null!;
+    this._hplcontacts = null!;
   }
 
   private async _assetsPushHandler(items: any[]): Promise<AssetRxdbDocument[]> {
