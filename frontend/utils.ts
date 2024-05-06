@@ -647,8 +647,25 @@ export const formatHPLSubaccounts = (
   adminAccountState: Array<[bigint, { ft: bigint }]>,
   owner: string,
 ) => {
-  const auxSubaccounts: HPLSubAccount[] = [];
+  const auxFullVirtuals: HPLVirtualSubAcc[] = [];
 
+  stateData.virtualAccounts.map(async (va) => {
+    const vtData = hplData.vt.find((vt) => vt.id === va[0].toString());
+    const newCode = getPxlCode(owner, va[0].toString());
+    auxFullVirtuals.push({
+      name: vtData ? vtData.name : "",
+      virt_sub_acc_id: va[0].toString(),
+      amount: va[1][0].ft.toString(),
+      currency_amount: "0.00",
+      expiration: Math.trunc(Number(va[1][2].toString()) / 1000000),
+      accesBy: vtData ? vtData.accesBy : "",
+      backing: va[1][1].toString(),
+      code: newCode,
+      isMint: vtData ? vtData.isMint : false,
+    });
+  });
+
+  const auxSubaccounts: HPLSubAccount[] = [];
   stateData.accounts.map((sa) => {
     const subData = hplData.sub.find((sub) => sub.id === sa[0].toString());
     const auxVirtuals: HPLVirtualSubAcc[] = [];
@@ -681,7 +698,7 @@ export const formatHPLSubaccounts = (
     });
   });
   const auxFT: HPLAsset[] = getFtsFormated(stateData.ftSupplies, hplData.ft, dictFT, adminAccountState);
-  return { auxSubaccounts, auxFT };
+  return { auxSubaccounts, auxFT, auxFullVirtuals };
 };
 
 export const getFtsFormated = (

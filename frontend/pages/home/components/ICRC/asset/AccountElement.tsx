@@ -57,7 +57,8 @@ const AccountElement = ({
   const { selectedAsset, changeSelectedAsset, selectedAccount, changeSelectedAccount } = GeneralHook();
   const chechEqId = () => {
     return (
-      subAccount?.sub_account_id === selectedAccount?.sub_account_id && subAccount?.symbol === selectedAccount?.symbol
+      subAccount?.sub_account_id === selectedAccount?.sub_account_id &&
+      asset?.tokenSymbol === selectedAsset?.tokenSymbol
     );
   };
 

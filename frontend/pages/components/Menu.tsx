@@ -11,7 +11,7 @@ const Menu = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
-  const { assets, subaccounts, protocol, hplFTsData, ftsUsed } = AssetHook();
+  const { assets, subaccounts, exchangeLinks, protocol, hplFTsData, ftsUsed } = AssetHook();
   const { hplContacts, contacts } = useHplContacts();
 
   const menuList = [
@@ -29,6 +29,12 @@ const Menu = () => {
           ? `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`
           : `${subaccounts?.length !== 1 ? t("accounts") : t("account")} (${subaccounts?.length})`,
       show: true,
+    },
+    {
+      name: "Exchange Links",
+      path: RoutingPathEnum.Enum.LINKS,
+      label: `Exchange Links (${exchangeLinks?.length})`,
+      show: protocol === ProtocolTypeEnum.Enum.HPL,
     },
     {
       name: "Contacts",

@@ -26,6 +26,7 @@ import {
   setOwnerId,
   setAccordionAssetIdx,
   setAssets,
+  setHPLExchangeLinks,
 } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState } from "@redux/models/AccountModels";
@@ -333,7 +334,7 @@ export const updateHPLBalances = async (
       console.log("errState", e);
     }
 
-    const { auxSubaccounts, auxFT } = formatHPLSubaccounts(
+    const { auxSubaccounts, auxFT, auxFullVirtuals } = formatHPLSubaccounts(
       { ft: ftData, sub: subData, vt: vtData },
       ftDict,
       state,
@@ -341,6 +342,7 @@ export const updateHPLBalances = async (
       myOwnerId,
     );
     store.dispatch(setHPLSubAccounts(auxSubaccounts));
+    store.dispatch(setHPLExchangeLinks(auxFullVirtuals));
     store.dispatch(setHPLAssets(auxFT));
 
     const selectedSub = store.getState().asset.selectSub;

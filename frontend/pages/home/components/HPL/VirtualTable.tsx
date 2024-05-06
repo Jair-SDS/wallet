@@ -30,6 +30,7 @@ interface VirtualTableProps {
   setDrawerOption(value: DrawerOption): void;
   setSelectedVirtualAccount(value: string | null): void;
   selectedVirtualAccount: string | null;
+  fullLinks?: boolean;
 }
 
 const VirtualTable: FC<VirtualTableProps> = ({
@@ -37,10 +38,12 @@ const VirtualTable: FC<VirtualTableProps> = ({
   selectedVirtualAccount,
   setSelectedVirtualAccount,
   setDrawerOption,
+  fullLinks,
 }) => {
   const { t } = useTranslation();
   const { userAgent } = AccountHook();
-  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts, getFtFromVt } = useHPL(false);
+  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts, getFtFromVt, exchangeLinks } =
+    useHPL(false);
 
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -58,12 +61,12 @@ const VirtualTable: FC<VirtualTableProps> = ({
       <table className="w-full text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           <tr>
-            <th className="p-2 w-[14%]font-normal">
+            <th className="p-2 w-[14%] font-normal">
               <div
                 onClick={() => {
                   onSort("ID");
                 }}
-                className="flex flex-row items-center justify-between w-full gap-2 cursor-pointer"
+                className="flex flex-row items-center justify-center w-full gap-2 cursor-pointer"
               >
                 <p>{t("code")}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
@@ -80,7 +83,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 onClick={() => {
                   onSort("EXPIRATION");
                 }}
-                className="flex flex-row items-center justify-between w-full gap-2 cursor-pointer"
+                className="flex flex-row items-center justify-center w-full gap-2 cursor-pointer"
               >
                 <p>{t("expiration")}</p>
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
@@ -251,10 +254,20 @@ const VirtualTable: FC<VirtualTableProps> = ({
   }
 
   function getVirtualsSorted() {
+    let virtualsToShow: HPLVirtualSubAcc[] = [];
+
+    if (fullLinks) {
+      virtualsToShow = exchangeLinks;
+    } else if (selectSub) {
+      virtualsToShow = [...selectSub.virtuals];
+    } else {
+      return [];
+    }
+
     if (selectSub) {
       switch (sortVt.value) {
         case 1:
-          return [...selectSub.virtuals].sort((a, b) => {
+          return [...virtualsToShow].sort((a, b) => {
             if (sortVt.col === "ID") {
               return 1;
             } else {
@@ -264,7 +277,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
             }
           });
         case -1:
-          return [...selectSub.virtuals].sort((a, b) => {
+          return [...virtualsToShow].sort((a, b) => {
             if (sortVt.col === "ID") {
               return Number(b.virt_sub_acc_id) - Number(a.virt_sub_acc_id);
             } else {
@@ -274,7 +287,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
             }
           });
         default:
-          return selectSub.virtuals;
+          return virtualsToShow;
       }
     } else return [];
   }

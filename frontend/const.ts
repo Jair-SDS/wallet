@@ -10,7 +10,7 @@ import { Asset } from "@redux/models/AccountModels";
 import { SupportedStandardEnum } from "./@types/icrc";
 
 // Enums
-export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS"]);
+export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS", "LINKS"]);
 export type RoutingPath = z.infer<typeof RoutingPathEnum>;
 
 export const ProtocolTypeEnum = z.enum(["ICRC1", "HPL"]);

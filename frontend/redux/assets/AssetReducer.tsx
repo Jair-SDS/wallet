@@ -48,6 +48,7 @@ interface AssetState {
   ownersActor: ActorSubclass<OwnersActor>;
   mintActor: ActorSubclass<HplMintActor>;
   subaccounts: HPLSubAccount[];
+  exchangeLinks: HPLVirtualSubAcc[];
   hplFTs: HPLAsset[];
   hplFTsData: HPLAssetData[];
   dictionaryHplFTs: FungibleTokenLocal[];
@@ -84,6 +85,7 @@ const initialState: AssetState = {
   ownersActor: defaultValue,
   mintActor: defaultValue,
   subaccounts: [],
+  exchangeLinks: [],
   hplFTs: [],
   hplFTsData: [],
   dictionaryHplFTs: [],
@@ -184,6 +186,9 @@ const assetSlice = createSlice({
     },
     setHPLSubAccounts(state, action: PayloadAction<HPLSubAccount[]>) {
       state.subaccounts = action.payload;
+    },
+    setHPLExchangeLinks(state, action: PayloadAction<HPLVirtualSubAcc[]>) {
+      state.exchangeLinks = action.payload;
     },
     setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
       state.hplFTs = action.payload;
@@ -322,6 +327,7 @@ const assetSlice = createSlice({
       state.selectedTransaction = undefined;
       state.hplClient = defaultValue;
       state.subaccounts = [];
+      state.exchangeLinks = [];
       state.hplFTs = [];
       state.hplFTsData = [];
       state.dictionaryHplFTs = [];
@@ -359,6 +365,7 @@ export const {
   setFeeConstant,
   setAllAssetsView,
   setHPLSubAccounts,
+  setHPLExchangeLinks,
   setHPLAssets,
   setHPLDictionary,
   setHPLAssetsData,

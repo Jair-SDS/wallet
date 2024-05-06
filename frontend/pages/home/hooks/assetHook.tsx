@@ -24,6 +24,7 @@ export const AssetHook = () => {
     protocol,
     assets,
     subaccounts,
+    exchangeLinks,
     selectedAsset,
     selectedAccount,
     accordionIndex,
@@ -167,6 +168,7 @@ export const AssetHook = () => {
     // HPL
     setProtocolType,
     subaccounts,
+    exchangeLinks,
     dictionaryHplFTs,
     hplFTsData,
     ftsUsed,

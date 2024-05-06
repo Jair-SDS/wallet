@@ -12,6 +12,7 @@ import WorkersWrapper from "@/wrappers/WorkersWrapper";
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
 const Assets = lazy(() => import("./assets"));
+const ExchangeLinks = lazy(() => import("./links"));
 
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
@@ -55,6 +56,8 @@ const SwitchRoute = () => {
         return Home;
       case RoutingPathEnum.Enum.ASSETS:
         return Assets;
+      case RoutingPathEnum.Enum.LINKS:
+        return ExchangeLinks;
       default:
         return Home;
     }

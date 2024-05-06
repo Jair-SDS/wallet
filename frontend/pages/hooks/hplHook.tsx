@@ -45,6 +45,7 @@ export const useHPL = (open: boolean) => {
     ownersActor,
     nHpl,
     ownerId,
+    exchangeLinks,
   } = useAppSelector((state) => state.asset);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, hplDictionary } = useAppSelector((state) => state.auth);
@@ -336,6 +337,7 @@ export const useHPL = (open: boolean) => {
     ingressActor,
     subaccounts,
     hplFTs,
+    exchangeLinks,
     selAsset,
     ownersActor,
     setSelAsset,
