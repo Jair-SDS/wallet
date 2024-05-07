@@ -9,7 +9,7 @@ import { clsx } from "clsx";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/input";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { CustomCheck } from "@components/checkbox";
 
 interface AssetFilterProps {
@@ -25,6 +25,18 @@ export default function AssetFilter(props: AssetFilterProps) {
   const { getAssetLogo, getFtFromSub } = useHPL(false);
   const { setAssetOpen, assetFilter, assetOpen, setAssetFilter } = props;
   const [assetSearch, setAssetSearch] = useState("");
+  const [unicFt, setUnicFt] = useState<string>("");
+
+  useEffect(() => {
+    if (assetFilter.length === 1) {
+      const oneFt = getFtFromSub(assetFilter[0]);
+      setUnicFt(
+        `${oneFt?.symbol !== "" ? `[${oneFt?.symbol}]` : oneFt?.token_symbol !== "" ? `[${oneFt?.token_symbol}]` : ""}${
+          oneFt?.name !== "" ? `[${oneFt?.name}]` : oneFt?.token_name !== "" ? `[${oneFt?.token_name}]` : ""
+        }`.trim(),
+      );
+    }
+  }, [assetFilter]);
 
   return (
     <DropdownMenu.Root
@@ -52,12 +64,13 @@ export default function AssetFilter(props: AssetFilterProps) {
               ) : (
                 <div className="flex flex-row items-center justify-start w-full gap-2 p-1 text-sm">
                   <img src={getAssetLogo(assetFilter[0])} className="w-8 h-8" alt="info-icon" />
-                  <div className="flex items-center justify-center px-3 py-1 rounded-md bg-slate-500">
-                    <p className=" text-PrimaryTextColor">{assetFilter[0]}</p>
-                  </div>
-                  <p>{`${getFtFromSub(assetFilter[0]).name !== "" ? getFtFromSub(assetFilter[0]).name : ""}${
-                    getFtFromSub(assetFilter[0]).name !== "" && getFtFromSub(assetFilter[0]).symbol !== "" ? " / " : ""
-                  }${getFtFromSub(assetFilter[0]).symbol !== "" ? getFtFromSub(assetFilter[0]).symbol : ""}`}</p>
+                  {unicFt === "" ? (
+                    <div className="flex items-center justify-center px-3 py-1 rounded-md bg-slate-500">
+                      <p className=" text-PrimaryTextColor">{assetFilter[0]}</p>
+                    </div>
+                  ) : (
+                    <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{unicFt}</p>
+                  )}
                 </div>
               )
             ) : (
@@ -145,8 +158,8 @@ export default function AssetFilter(props: AssetFilterProps) {
                       <div className="flex items-center justify-center px-1 rounded-md bg-slate-500">
                         <p className=" text-PrimaryTextColor">{ft.id.toString()}</p>
                       </div>
-                      <p>{`${ft.name !== "" ? ft.name : ""}${ft.name !== "" && ft.symbol !== "" ? " - " : ""}${
-                        ft.symbol !== "" ? ft.symbol : ""
+                      <p>{`${ft.symbol !== "" ? ft.symbol : ft.token_symbol !== "" ? ft.token_symbol : ""}${
+                        ft.name !== "" ? ` [${ft.name}]` : ft.token_name !== "" ? ` [${ft.token_name}]` : ""
                       }`}</p>
                     </div>
 

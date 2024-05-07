@@ -7,7 +7,12 @@ import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@/const";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 
-const Menu = () => {
+interface MenuProps {
+  noMargin?: boolean;
+}
+
+const Menu = (props: MenuProps) => {
+  const { noMargin } = props;
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
@@ -49,7 +54,7 @@ const Menu = () => {
 
   return (
     <Fragment>
-      <div className="flex flex-row items-center justify-start w-full gap-3 pl-3">
+      <div className="flex flex-row items-center justify-start gap-3 pl-3">
         {menuList.map(
           (menu, k) =>
             menu.show && (
@@ -58,7 +63,7 @@ const Menu = () => {
                 size={"small"}
                 intent={"noBG"}
                 border={"underline"}
-                className="flex flex-row items-center justify-start mb-4"
+                className={`flex flex-row items-center justify-start ${noMargin ? "" : "mb-4"}`}
                 onClick={() => {
                   handleMenuClic(menu.path);
                 }}

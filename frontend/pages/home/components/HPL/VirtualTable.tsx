@@ -30,7 +30,7 @@ interface VirtualTableProps {
   setDrawerOption(value: DrawerOption): void;
   setSelectedVirtualAccount(value: string | null): void;
   selectedVirtualAccount: string | null;
-  fullLinks?: boolean;
+  fullLinks?: { filter: string[]; searchKey: string };
 }
 
 const VirtualTable: FC<VirtualTableProps> = ({
@@ -42,8 +42,18 @@ const VirtualTable: FC<VirtualTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const { userAgent } = AccountHook();
-  const { selectSub, sortVt, setSortVt, getFtFromSub, setSelVt, selectVt, hplContacts, getFtFromVt, exchangeLinks } =
-    useHPL(false);
+  const {
+    selectSub,
+    sortVt,
+    setSortVt,
+    getFtFromSub,
+    getSubFromVt,
+    setSelVt,
+    selectVt,
+    hplContacts,
+    getFtFromVt,
+    exchangeLinks,
+  } = useHPL(false);
 
   const [openMore, setOpenMore] = useState(-1);
   const [errMsg, setErrMsg] = useState("");
@@ -61,7 +71,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
       <table className="w-full text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           <tr>
-            <th className="p-2 w-[14%] font-normal">
+            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[14%]"}  font-normal`}>
               <div
                 onClick={() => {
                   onSort("ID");
@@ -72,13 +82,25 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
               </div>
             </th>
-            <th className="p-2 text-left w-[28%] font-normal">
-              <p>{`${t("name")} (${selectSub?.virtuals.length || 0})`}</p>
+            {fullLinks && (
+              <th className={`p-2 ${fullLinks ? "w-[14%] text-left" : "w-[15%]"} font-normal`}>
+                <p>{t("backing.account")}</p>
+              </th>
+            )}
+            <th className={`p-2  ${fullLinks ? "w-[14%] text-left" : "w-[28%]"}  font-normal`}>
+              <p>{`${t(fullLinks ? "description" : "name")} ${
+                !fullLinks ? `(${selectSub?.virtuals.length || 0})` : ""
+              } `}</p>
             </th>
-            <th className="p-2 w-[17%] font-normal">
+            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[17%]"}  font-normal`}>
               <p>{t("balance")}</p>
             </th>
-            <th className="p-2 w-[13%] font-normal">
+            {fullLinks && (
+              <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[17%]"}  font-normal`}>
+                <p>{t("asset")}</p>
+              </th>
+            )}
+            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[13%]"}  font-normal`}>
               <div
                 onClick={() => {
                   onSort("EXPIRATION");
@@ -89,10 +111,10 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
               </div>
             </th>
-            <th className="p-2 w-[20%] font-normal">
+            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[28%]"}  font-normal`}>
               <p>{t("access.by")}</p>
             </th>
-            <th className="p-2 w-[8%] font-normal">
+            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[8%]"}  font-normal`}>
               <p>{t("action")}</p>
             </th>
           </tr>
@@ -111,6 +133,20 @@ const VirtualTable: FC<VirtualTableProps> = ({
                     <CustomCopy size={"xSmall"} copyText={vt.code} className="opacity-60" />{" "}
                   </div>
                 </td>
+                {fullLinks && (
+                  <td
+                    className={`${rowStyle(
+                      vt.expiration,
+                    )} text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor px-2`}
+                  >
+                    <div className="flex flex-row justify-start items-center gap-1 w-full">
+                      <div className="px-1 bg-gray-color-4 rounded-[0.2rem] ">
+                        {getSubFromVt(vt.backing).sub_account_id}
+                      </div>
+                      <p>{getSubFromVt(vt.backing).name}</p>
+                    </div>
+                  </td>
+                )}
                 <td
                   className={`${rowStyle(
                     vt.expiration,
@@ -120,13 +156,23 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 </td>
                 <td className={`${rowStyle(vt.expiration)}`}>
                   <div className="flex flex-row justify-center w-full">
-                    {" "}
-                    <AssetSymbol
-                      ft={getFtFromSub(selectSub?.ft || "0")}
-                      sufix={<p>{`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)}`}</p>}
-                    />
+                    {fullLinks ? (
+                      <p>{`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)}`}</p>
+                    ) : (
+                      <AssetSymbol
+                        ft={getFtFromSub(selectSub?.ft || "0")}
+                        sufix={<p>{`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)}`}</p>}
+                      />
+                    )}
                   </div>
                 </td>
+                {fullLinks && (
+                  <td className={`${rowStyle(vt.expiration)}`}>
+                    <div className="flex flex-row justify-center w-full">
+                      <AssetSymbol ft={getFtFromSub(selectSub?.ft || "0")} />
+                    </div>
+                  </td>
+                )}
                 <td className={`${rowStyle(vt.expiration)}`}>{getExpiration(vt.expiration)}</td>
                 <td className={`${rowStyle(vt.expiration)}`}>{getAccesByContactName(vt.accesBy)}</td>
                 <td className="py-2">
@@ -257,7 +303,18 @@ const VirtualTable: FC<VirtualTableProps> = ({
     let virtualsToShow: HPLVirtualSubAcc[] = [];
 
     if (fullLinks) {
-      virtualsToShow = exchangeLinks;
+      virtualsToShow = exchangeLinks.filter((lnk) => {
+        const backing = getSubFromVt(lnk.backing);
+        const inList = fullLinks.filter.length === 0 || fullLinks.filter.includes(backing.ft);
+        const searchKey = fullLinks.searchKey.trim().toLowerCase();
+        const inSearch =
+          searchKey === "" ||
+          lnk.accesBy.toLowerCase().includes(searchKey) ||
+          lnk.name.toLowerCase().includes(searchKey) ||
+          backing.name.toLowerCase().includes(searchKey);
+
+        return inList && inSearch;
+      });
     } else if (selectSub) {
       virtualsToShow = [...selectSub.virtuals];
     } else {

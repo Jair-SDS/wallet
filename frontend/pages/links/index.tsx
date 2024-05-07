@@ -4,16 +4,26 @@ import VirtualTable from "@pages/home/components/HPL/VirtualTable";
 import { DrawerHook } from "@pages/home/hooks/drawerHook";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
+import ExchangeLinksFilters from "./components/LinksFilters";
 
 const ExchangeLinks = () => {
   const [selectedVirtualAccount, setSelectedVirtualAccount] = useState<string | null>(null);
   const { setDrawerOption, setDrawerOpen, drawerOpen } = DrawerHook();
+  const [assetFilter, setAssetFilter] = useState<string[]>([]);
+  const [searchKey, setSearchKey] = useState("");
 
   return (
     <Fragment>
       <div className="flex flex-col justify-start w-full h-full pt-6">
-        <div className="flex flex-row justify-between items-center w-full ">
-          <Menu />
+        <div className="flex flex-row justify-between items-center w-full mb-2 pr-3">
+          <Menu noMargin={true} />
+          <ExchangeLinksFilters
+            assetFilter={assetFilter}
+            setAssetFilter={setAssetFilter}
+            searchKey={searchKey}
+            setSearchKey={setSearchKey}
+            setDrawerOpen={setDrawerOpen}
+          />
         </div>
         <div className="flex px-3">
           <VirtualTable
@@ -21,7 +31,7 @@ const ExchangeLinks = () => {
             selectedVirtualAccount={selectedVirtualAccount}
             setDrawerOpen={setDrawerOpen}
             setDrawerOption={setDrawerOption}
-            fullLinks={true}
+            fullLinks={{ filter: assetFilter, searchKey: searchKey }}
           />
         </div>
       </div>
