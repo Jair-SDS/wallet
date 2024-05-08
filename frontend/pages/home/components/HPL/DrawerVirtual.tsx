@@ -46,6 +46,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     getFtFromVt,
     hplVTsData,
     editVtData,
+    editLink,
+    addLink,
     addVt,
     changeVtName,
     expiration,
@@ -337,9 +339,12 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
     if (edit) {
       editVtData(auxVts);
       changeVtName(selectSub?.sub_account_id || "", { ...newVt, amount: amnt.toString() });
+      editLink({ ...newVt, amount: amnt.toString() });
     } else {
       addVt(vt, { ...newVt, amount: amnt.toString(), code: getPxlCode(myOwnerId, vt.id) });
+      addLink({ ...newVt, amount: amnt.toString(), code: getPxlCode(myOwnerId, vt.id) });
     }
+
     onClose();
   }
 };

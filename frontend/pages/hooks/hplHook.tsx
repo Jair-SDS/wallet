@@ -7,9 +7,11 @@ import { Principal } from "@dfinity/principal";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import {
+  addHPLExchangeLink,
   addHplSub,
   addHplVt,
   editHPLAsset,
+  editHPLExchangeLink,
   editHPLSub,
   setHPLSelectedSub,
   setHPLSelectedVt,
@@ -137,6 +139,14 @@ export const useHPL = (open: boolean) => {
 
   const editVtData = (vtData: HPLVirtualData[]) => {
     dispatch(setHPLVTsData(vtData));
+  };
+
+  const editLink = (link: HPLVirtualSubAcc) => {
+    dispatch(editHPLExchangeLink(link));
+  };
+
+  const addLink = (link: HPLVirtualSubAcc) => {
+    dispatch(addHPLExchangeLink(link));
   };
 
   useEffect(() => {
@@ -338,6 +348,8 @@ export const useHPL = (open: boolean) => {
     subaccounts,
     hplFTs,
     exchangeLinks,
+    editLink,
+    addLink,
     selAsset,
     ownersActor,
     setSelAsset,

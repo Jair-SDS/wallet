@@ -190,6 +190,19 @@ const assetSlice = createSlice({
     setHPLExchangeLinks(state, action: PayloadAction<HPLVirtualSubAcc[]>) {
       state.exchangeLinks = action.payload;
     },
+    addHPLExchangeLink(state, action: PayloadAction<HPLVirtualSubAcc>) {
+      state.exchangeLinks.push(action.payload);
+    },
+    editHPLExchangeLink(state, action: PayloadAction<HPLVirtualSubAcc>) {
+      const auxLinks = state.exchangeLinks.map((lnk) => {
+        if (lnk.virt_sub_acc_id === action.payload.virt_sub_acc_id) {
+          return action.payload;
+        } else {
+          return lnk;
+        }
+      });
+      state.exchangeLinks = auxLinks;
+    },
     setHPLAssets(state, action: PayloadAction<HPLAsset[]>) {
       state.hplFTs = action.payload;
     },
@@ -366,6 +379,8 @@ export const {
   setAllAssetsView,
   setHPLSubAccounts,
   setHPLExchangeLinks,
+  addHPLExchangeLink,
+  editHPLExchangeLink,
   setHPLAssets,
   setHPLDictionary,
   setHPLAssetsData,

@@ -71,7 +71,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
       <table className="w-full text-PrimaryTextColorLight/60 dark:text-PrimaryTextColor/60 text-md">
         <thead className="border-b border-BorderColorTwoLight dark:border-BorderColorTwo bg-SecondaryColorLight dark:bg-SecondaryColor sticky top-0 z-[1]">
           <tr>
-            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[14%]"}  font-normal`}>
+            <th className={`p-2 ${fullLinks ? "w-[10%]" : "w-[14%]"}  font-normal`}>
               <div
                 onClick={() => {
                   onSort("ID");
@@ -83,16 +83,16 @@ const VirtualTable: FC<VirtualTableProps> = ({
               </div>
             </th>
             {fullLinks && (
-              <th className={`p-2 ${fullLinks ? "w-[14%] text-left" : "w-[15%]"} font-normal`}>
+              <th className={`p-2 ${fullLinks ? "w-[16%] text-left" : "w-[15%]"} font-normal`}>
                 <p>{t("backing.account")}</p>
               </th>
             )}
-            <th className={`p-2  ${fullLinks ? "w-[14%] text-left" : "w-[28%]"}  font-normal`}>
+            <th className={`p-2  ${fullLinks ? "w-[16%] text-left" : "w-[28%]"}  font-normal`}>
               <p>{`${t(fullLinks ? "description" : "name")} ${
                 !fullLinks ? `(${selectSub?.virtuals.length || 0})` : ""
               } `}</p>
             </th>
-            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[17%]"}  font-normal`}>
+            <th className={`p-2 ${fullLinks ? "w-[14%]" : "w-[17%]"}  font-normal`}>
               <p>{t("balance")}</p>
             </th>
             {fullLinks && (
@@ -100,7 +100,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <p>{t("asset")}</p>
               </th>
             )}
-            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[13%]"}  font-normal`}>
+            <th className={`p-2 ${fullLinks ? "w-[16%]" : "w-[13%]"}  font-normal`}>
               <div
                 onClick={() => {
                   onSort("EXPIRATION");
@@ -111,7 +111,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <SortIcon className=" fill-PrimaryTextColorLight/70 dark:fill-PrimaryTextColor/70" />
               </div>
             </th>
-            <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[28%]"}  font-normal`}>
+            <th className={`p-2 ${fullLinks ? "w-[14%]" : "w-[28%]"}  font-normal`}>
               <p>{t("access.by")}</p>
             </th>
             <th className={`p-2 ${fullLinks ? "w-[8%]" : "w-[8%]"}  font-normal`}>
@@ -157,7 +157,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <td className={`${rowStyle(vt.expiration)}`}>
                   <div className="flex flex-row justify-center w-full">
                     {fullLinks ? (
-                      <p>{`${getDecimalAmount(vt.amount, getFtFromSub(selectSub?.ft || "0").decimal)}`}</p>
+                      <p>{`${getDecimalAmount(vt.amount, getFtFromVt(vt?.virt_sub_acc_id || "0").decimal)}`}</p>
                     ) : (
                       <AssetSymbol
                         ft={getFtFromSub(selectSub?.ft || "0")}
@@ -169,7 +169,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 {fullLinks && (
                   <td className={`${rowStyle(vt.expiration)}`}>
                     <div className="flex flex-row justify-center w-full">
-                      <AssetSymbol ft={getFtFromSub(selectSub?.ft || "0")} />
+                      <AssetSymbol ft={getFtFromVt(vt?.virt_sub_acc_id || "0")} />
                     </div>
                   </td>
                 )}
