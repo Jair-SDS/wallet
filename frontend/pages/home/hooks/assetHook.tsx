@@ -1,6 +1,6 @@
 import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
 import { getFtsFormated, parseFungibleToken } from "@/utils";
-import { Actor } from "@dfinity/agent";
+import { Actor, HttpAgent } from "@dfinity/agent";
 import store, { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import {
@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { _SERVICE as DictionaryActor } from "@candid/Dictionary/dictService.did";
 import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandid.did";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
+import { AuthClient } from "@dfinity/auth-client";
+import { HTTP_AGENT_HOST } from "@redux/CheckAuth";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +36,7 @@ export const AssetHook = () => {
     ownersActor,
     hplFTsData,
   } = useAppSelector((state) => state.asset);
-  const { userAgent, authClient } = useAppSelector((state) => state.auth);
+  const { userAgent, authClient, route } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { isAppDataFreshing } = useAppSelector((state) => state.common);
 
@@ -55,8 +57,16 @@ export const AssetHook = () => {
   const reloadDictFts = async (dict?: string) => {
     let parsedFungibleTokens: FungibleTokenLocal[] = [];
     if (dict) {
+      let newAgent = userAgent;
+      if (route === RoutingPathEnum.Enum.LOGIN) {
+        const authClient = await AuthClient.create();
+        newAgent = new HttpAgent({
+          identity: authClient.getIdentity(),
+          host: HTTP_AGENT_HOST,
+        });
+      }
       const dictActor = Actor.createActor<DictionaryActor>(DictionaryIDLFactory, {
-        agent: userAgent,
+        agent: newAgent,
         canisterId: dict,
       });
       const dictFTs = await dictActor.allTokens();
@@ -65,36 +75,38 @@ export const AssetHook = () => {
     }
     dispatch(setHPLDictionary(parsedFungibleTokens));
 
-    const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
-    try {
-      const auxState = await ingressActor.state({
-        ftSupplies: [{ idRange: [BigInt(0), []] }],
-        virtualAccounts: [],
-        accounts: [],
-        remoteAccounts: [],
-      });
-      state.ftSupplies = auxState.ftSupplies;
-      state.virtualAccounts = auxState.virtualAccounts;
-      state.accounts = auxState.accounts;
-      state.remoteAccounts = auxState.remoteAccounts as any;
-    } catch (e) {
-      console.log("errState", e);
-    }
-    let adminAccountState: Array<[bigint, { ft: bigint }]> = [];
-    try {
-      const adminState = await ingressActor.adminState({
-        ftSupplies: [],
-        virtualAccounts: [],
-        accounts: [{ idRange: [BigInt(0), []] }],
-        remoteAccounts: [],
-      });
-      adminAccountState = adminState.accounts;
-    } catch (e) {
-      console.log("errState", e);
-    }
+    if (route !== RoutingPathEnum.Enum.LOGIN) {
+      const state: ResQueryState = { ftSupplies: [], virtualAccounts: [], accounts: [], remoteAccounts: [] };
+      try {
+        const auxState = await ingressActor.state({
+          ftSupplies: [{ idRange: [BigInt(0), []] }],
+          virtualAccounts: [],
+          accounts: [],
+          remoteAccounts: [],
+        });
+        state.ftSupplies = auxState.ftSupplies;
+        state.virtualAccounts = auxState.virtualAccounts;
+        state.accounts = auxState.accounts;
+        state.remoteAccounts = auxState.remoteAccounts as any;
+      } catch (e) {
+        console.log("errState", e);
+      }
+      let adminAccountState: Array<[bigint, { ft: bigint }]> = [];
+      try {
+        const adminState = await ingressActor.adminState({
+          ftSupplies: [],
+          virtualAccounts: [],
+          accounts: [{ idRange: [BigInt(0), []] }],
+          remoteAccounts: [],
+        });
+        adminAccountState = adminState.accounts;
+      } catch (e) {
+        console.log("errState", e);
+      }
 
-    const auxFT = getFtsFormated(state.ftSupplies, hplFTsData, parsedFungibleTokens, adminAccountState);
-    store.dispatch(setHPLAssets(auxFT));
+      const auxFT = getFtsFormated(state.ftSupplies, hplFTsData, parsedFungibleTokens, adminAccountState);
+      store.dispatch(setHPLAssets(auxFT));
+    }
   };
 
   const setProtocolType = (prot: ProtocolType) => {

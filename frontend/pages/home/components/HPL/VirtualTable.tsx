@@ -275,10 +275,12 @@ const VirtualTable: FC<VirtualTableProps> = ({
 
   function handleVirtualAccountClick(vId: string) {
     return () => {
-      if (selectedVirtualAccount === vId) {
-        setSelectedVirtualAccount(null);
-      } else {
-        setSelectedVirtualAccount(vId);
+      if (!fullLinks) {
+        if (selectedVirtualAccount === vId) {
+          setSelectedVirtualAccount(null);
+        } else {
+          setSelectedVirtualAccount(vId);
+        }
       }
     };
   }

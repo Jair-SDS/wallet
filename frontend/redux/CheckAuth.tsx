@@ -55,8 +55,8 @@ const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAM
   import.meta.env.VITE_APP_LOGO
 }#authorize`;
 
-const NETWORK_AUTHORIZE_PATH = "https://identity.ic0.app/#authorize";
-const HTTP_AGENT_HOST = "https://identity.ic0.app";
+export const NETWORK_AUTHORIZE_PATH = "https://identity.ic0.app/#authorize";
+export const HTTP_AGENT_HOST = "https://identity.ic0.app";
 
 export const handleAuthenticated = async (opt: AuthNetwork) => {
   const authClient = await AuthClient.create();
