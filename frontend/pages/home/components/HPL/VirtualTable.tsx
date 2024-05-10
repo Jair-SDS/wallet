@@ -121,6 +121,8 @@ const VirtualTable: FC<VirtualTableProps> = ({
         </thead>
         <tbody>
           {getVirtualsSorted().map((vt, k) => {
+            const sub = getSubFromVt(vt.backing);
+            const ft = getFtFromSub(sub.ft);
             return (
               <tr
                 className={getVirtualAccountClassNames(vt.virt_sub_acc_id === selectedVirtualAccount)}
@@ -140,10 +142,8 @@ const VirtualTable: FC<VirtualTableProps> = ({
                     )} text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor px-2`}
                   >
                     <div className="flex flex-row justify-start items-center gap-1 w-full">
-                      <div className="px-1 bg-gray-color-4 rounded-[0.2rem] ">
-                        {getSubFromVt(vt.backing).sub_account_id}
-                      </div>
-                      <p>{getSubFromVt(vt.backing).name}</p>
+                      <div className="px-1 bg-gray-color-4 rounded-[0.2rem] ">{sub.sub_account_id}</div>
+                      <p>{sub.name}</p>
                     </div>
                   </td>
                 )}
@@ -157,7 +157,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <td className={`${rowStyle(vt.expiration)}`}>
                   <div className="flex flex-row justify-center w-full">
                     {fullLinks ? (
-                      <p>{`${getDecimalAmount(vt.amount, getFtFromVt(vt?.virt_sub_acc_id || "0").decimal)}`}</p>
+                      <p>{`${getDecimalAmount(vt.amount, ft.decimal)}`}</p>
                     ) : (
                       <AssetSymbol
                         ft={getFtFromSub(selectSub?.ft || "0")}
@@ -169,7 +169,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 {fullLinks && (
                   <td className={`${rowStyle(vt.expiration)}`}>
                     <div className="flex flex-row justify-center w-full">
-                      <AssetSymbol ft={getFtFromVt(vt?.virt_sub_acc_id || "0")} />
+                      <AssetSymbol ft={ft} />
                     </div>
                   </td>
                 )}
