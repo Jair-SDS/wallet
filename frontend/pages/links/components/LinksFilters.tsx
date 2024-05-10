@@ -34,7 +34,6 @@ const ExchangeLinksFilters = (props: AssetFilterProps) => {
     const backings = exchangeLinks.map((lnk) => {
       return lnk.backing;
     });
-
     const ids = subaccounts.map((sa) => {
       if (backings.includes(sa.sub_account_id)) return sa.ft;
     });

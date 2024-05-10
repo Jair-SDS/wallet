@@ -1,6 +1,6 @@
 // svgs
 import SearchIcon from "@assets/svg/files/icon-search.svg";
-import SendUserIcon from "@assets/svg/files/send-user-icon.svg";
+import ChevIcon from "@assets/svg/files/chev-icon.svg";
 //
 import { CustomInput } from "@components/input";
 import { shortAddress } from "@/utils";
@@ -8,6 +8,8 @@ import { useHPL } from "@pages/hooks/hplHook";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { HPLVirtualSubAcc, HplContact } from "@redux/models/AccountModels";
 import { ChangeEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { BasicSwitch } from "@components/switch";
 
 interface AccesBySelectorProps {
   newVt: HPLVirtualSubAcc;
@@ -19,19 +21,34 @@ interface AccesBySelectorProps {
 
 const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr }: AccesBySelectorProps) => {
   const { hplContacts } = useHPL(false);
+  const { t } = useTranslation();
 
   const [searchKey, setSearchKey] = useState("");
   const [remotesOpen, setRemotesOpen] = useState(false);
-
+  const [isNew, setIsNew] = useState(false);
+  const [selContact, setSelContact] = useState<HplContact>();
   return (
-    <CustomInput
-      sizeInput={"small"}
-      intent={"secondary"}
-      compOutClass=""
-      value={newVt.accesBy}
-      onChange={onAccesChange}
-      border={accesErr ? "error" : undefined}
-      sufix={
+    <div className="flex flex-col justify-start items-start w-full gap-2">
+      <div className="flex flex-row justify-between items-center w-full">
+        <p className="opacity-60">
+          {t("access.by")} <span className="text-RadioCheckColor">*</span>
+        </p>
+        <div className="flex items-center justify-between w-3/6 px-2 py-1 rounded-md bg-PrimaryColorLight dark:bg-ThemeColorBack">
+          <p className="text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("contact.book")}</p>
+          <BasicSwitch checked={isNew} onChange={onContactBookChange} disabled={false} />
+          <p className="text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("new")}</p>
+        </div>
+      </div>
+      {isNew ? (
+        <CustomInput
+          sizeInput={"small"}
+          intent={"secondary"}
+          compOutClass=""
+          value={newVt.accesBy}
+          onChange={onAccesChange}
+          border={accesErr ? "error" : undefined}
+        />
+      ) : (
         <DropdownMenu.Root
           open={remotesOpen}
           onOpenChange={(e: boolean) => {
@@ -39,21 +56,39 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
           }}
         >
           <DropdownMenu.Trigger asChild>
-            <img
-              src={SendUserIcon}
-              style={{ width: "1.6rem", height: "1.6rem" }}
-              alt="chevron-icon"
-              className="cursor-pointer"
-            />
+            <div
+              className={`flex flex-row justify-between items-center w-full rounded-md border cursor-pointer p-2 ${
+                remotesOpen ? "border-SelectRowColor" : "border-gray-color-2"
+              }`}
+            >
+              {selContact ? (
+                <div className="flex flex-row justify-start items-center gap-3">
+                  <div className="flex justify-center items-center w-8 h-8 rounded-md bg-gray-color-4">
+                    <p className="text-PrimaryTextColor">{selContact.name[0].toUpperCase()}</p>
+                  </div>
+                  <div className="flex flex-col justify-start items-start text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-70">
+                    <p>{selContact.name}</p>
+                    <p>{shortAddress(selContact.principal, 6, 4)}</p>
+                  </div>
+                </div>
+              ) : (
+                <p>{t("select.contact")}</p>
+              )}
+              <img
+                src={ChevIcon}
+                style={{ width: "2rem", height: "2rem" }}
+                alt="chevron-icon"
+                className={`${remotesOpen ? "rotate-90" : ""}`}
+              />
+            </div>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className="text-lg bg-PrimaryColorLight w-[25rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo border border-SelectRowColor"
-              sideOffset={5}
-              alignOffset={-5}
+              className="text-lg bg-PrimaryColorLight w-[25rem] rounded-lg dark:bg-SecondaryColor z-[2000] text-PrimaryTextColorLight dark:text-PrimaryTextColor shadow-sm shadow-BorderColorTwoLight dark:shadow-BorderColorTwo"
+              sideOffset={1}
               align="end"
             >
-              <div className="flex flex-col justify-start items-start w-full p-1 gap-2">
+              <div className="flex flex-col justify-start items-start w-full gap-[1px]">
                 <CustomInput
                   prefix={<img src={SearchIcon} className="mx-2" alt="search-icon" />}
                   sizeInput={"small"}
@@ -63,7 +98,7 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
                   value={searchKey}
                   onChange={onSearchChange}
                 />
-                <div className="flex flex-col justify-start items-start w-full scroll-y-light max-h-[calc(100vh-30rem)]">
+                <div className="flex flex-col justify-start items-start w-full scroll-y-light max-h-[calc(100vh-30rem)] border border-BorderColorLight dark:border-BorderColor rounded">
                   {hplContacts
                     .filter((cntc) => {
                       return (
@@ -75,12 +110,20 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
                       return (
                         <div
                           key={k}
-                          className="p-1 flex flex-row justify-start items-center w-full cursor-pointer gap-2 text-sm text-PrimaryTextColorLight dark:text-PrimaryTextColor hover:bg-HoverColorLight/20 dark:hover:bg-HoverColor"
+                          className="p-1 flex flex-row justify-start items-center w-full rounded cursor-pointer gap-2 text-md text-PrimaryTextColorLight dark:text-PrimaryTextColor hover:bg-HoverColorLight/20 dark:hover:bg-HoverColor "
                           onClick={() => {
                             onSelectBacking(cntc);
                           }}
                         >
-                          <p className="">{`${cntc.name} - [${shortAddress(cntc.principal, 12, 10)}]`}</p>
+                          <div className="flex flex-row justify-start items-center gap-3">
+                            <div className="flex justify-center items-center w-8 h-8 rounded-md bg-gray-color-4">
+                              <p className="text-PrimaryTextColor">{cntc.name[0].toUpperCase()}</p>
+                            </div>
+                            <div className="flex flex-col justify-start items-start text-PrimaryTextColorLight dark:text-PrimaryTextColor opacity-70">
+                              <p>{cntc.name}</p>
+                              <p>{shortAddress(cntc.principal, 6, 4)}</p>
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
@@ -89,8 +132,8 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
-      }
-    />
+      )}
+    </div>
   );
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     setSearchKey(e.target.value);
@@ -98,6 +141,14 @@ const AccesBySelector = ({ newVt, setNewVt, onAccesChange, accesErr, setAccesErr
   function onSelectBacking(cntc: HplContact) {
     setNewVt({ ...newVt, accesBy: cntc.principal });
     setRemotesOpen(false);
+    setAccesErr(false);
+    setSelContact(cntc);
+  }
+  function onContactBookChange(checked: boolean) {
+    setIsNew(checked);
+    setSelContact(undefined);
+    setSearchKey("");
+    setNewVt({ ...newVt, accesBy: "" });
     setAccesErr(false);
   }
 };

@@ -76,6 +76,7 @@
   "select.remote": "Select Link",
   "non.zero.balance": "Hide zero balances",
   "sent.amount": "Amount sent",
+  "select.contact": "Select Contact",
   "receive.amount": "Amount received",
   "not.match.asset.id": "Asset ID not match between sender and receiver",
   "err.from": "Sender has no valid data",

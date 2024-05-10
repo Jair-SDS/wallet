@@ -111,7 +111,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       </div>
       <BackingSelector newVt={newVt} setNewVt={setNewVt} edit={selectVt ? true : false} />
       <div className="flex flex-col items-start w-full mt-3 mb-3">
-        <p className="opacity-60">{t("name")}</p>
+        <p className="opacity-60">{t("description")}</p>
         <CustomInput
           sizeInput={"small"}
           intent={"secondary"}
@@ -166,9 +166,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       </div>
       {!selectVt ? (
         <div className="flex flex-col items-start justify-start w-full mt-3 mb-3">
-          <p className="opacity-60">
-            {t("access.by")} <span className="text-RadioCheckColor">*</span>
-          </p>
           <AccesBySelector
             newVt={newVt}
             setNewVt={setNewVt}

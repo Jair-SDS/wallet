@@ -88,9 +88,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
               </th>
             )}
             <th className={`p-2  ${fullLinks ? "w-[16%] text-left" : "w-[28%]"}  font-normal`}>
-              <p>{`${t(fullLinks ? "description" : "name")} ${
-                !fullLinks ? `(${selectSub?.virtuals.length || 0})` : ""
-              } `}</p>
+              <p>{`${t("description")} ${!fullLinks ? `(${selectSub?.virtuals.length || 0})` : ""} `}</p>
             </th>
             <th className={`p-2 ${fullLinks ? "w-[14%]" : "w-[17%]"}  font-normal`}>
               <p>{t("balance")}</p>

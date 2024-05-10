@@ -77,6 +77,7 @@
   "select.remote": "Selecione Link",
   "non.zero.balance": "Ocultar saldo zero",
   "sent.amount": "Montante enviada",
+  "select.contact": "Selecione Contato",
   "receive.amount": "Montante recebido",
   "not.match.asset.id": "ID do ativo não corresponde entre remetente e destinatário",
   "err.from": "O remetente não possui dados válidos",

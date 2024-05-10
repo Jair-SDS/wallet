@@ -78,6 +78,7 @@
   "select.remote": "Seleziona Collegamento",
   "non.zero.balance": "Nascondi saldi zero",
   "sent.amount": "Importo inviato",
+  "select.contact": "Seleziona Contatto",
   "receive.amount": "Importo ricevuta",
   "not.match.asset.id": "L'ID risorsa non corrisponde tra mittente e destinatario",
   "err.from": "Il mittente non ha dati validi",
