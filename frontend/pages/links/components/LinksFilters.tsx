@@ -23,7 +23,7 @@ interface AssetFilterProps {
 
 const ExchangeLinksFilters = (props: AssetFilterProps) => {
   const { assetFilter, setAssetFilter, searchKey, setSearchKey, setDrawerOpen } = props;
-  const { getAssetLogo, getFtFromSub, hplFTs, subaccounts } = useHPL(false);
+  const { getAssetLogo, getFtFromSub, hplFTs, subaccounts, exchangeLinks } = useHPL(false);
   const [fts, setFts] = useState<HPLAsset[]>([]);
   const [unicFt, setUnicFt] = useState<string>("");
   const [assetOpen, setAssetOpen] = useState<boolean>(false);
@@ -31,14 +31,18 @@ const ExchangeLinksFilters = (props: AssetFilterProps) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const backings = exchangeLinks.map((lnk) => {
+      return lnk.backing;
+    });
+
     const ids = subaccounts.map((sa) => {
-      return sa.ft;
+      if (backings.includes(sa.sub_account_id)) return sa.ft;
     });
     const ftIds = hplFTs.filter((ft) => {
       return ids.includes(ft.id);
     });
     setFts(ftIds);
-  }, [hplFTs, subaccounts]);
+  }, [hplFTs, subaccounts, exchangeLinks]);
 
   useEffect(() => {
     if (assetFilter.length === 1) {
@@ -54,7 +58,7 @@ const ExchangeLinksFilters = (props: AssetFilterProps) => {
   return (
     <div className="flex flex-row justify-start items-center gap-3">
       <div className="flex flex-row justify-start items-center gap-1">
-        <p>{t("assets")}</p>
+        <p className="text-PrimaryTextColorLight dark:text-PrimaryTextColor">{t("assets")}</p>
         <DropdownMenu.Root
           onOpenChange={(e: boolean) => {
             setAssetOpen(e);
