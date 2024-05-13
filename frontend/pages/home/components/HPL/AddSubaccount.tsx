@@ -220,14 +220,10 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
           const newS = { id: res.ok.first.toString(), name: newHplSub.name.trim(), ftId: selAsset.id };
           addSub(newS);
           const auxSubs = [...hplSubsData, newS];
-          // localStorage.setItem(
-          //   "hplSUB-" + authClient,
-          //   JSON.stringify({
-          //     sub: auxSubs,
-          //   }),
-          // );
 
           await db().updateHplSubaccountsByLedger(auxSubs);
+
+          setAssetOpen(false);
           setLoading(false);
         } catch (e) {
           console.log("e", e);
