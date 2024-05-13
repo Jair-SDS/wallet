@@ -197,7 +197,7 @@ export const updateHPLBalances = async (
     }
   }
 
-  let vtData = store.getState().asset.hplVTsData;
+  let vtData = updateInfo ? await db().getHplVirtuals() : store.getState().asset.hplVTsData;
   let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
   if (
     nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) ||
@@ -238,7 +238,7 @@ export const updateHPLBalances = async (
 
   try {
     const ftDict = store.getState().asset.dictionaryHplFTs;
-    let ftData = store.getState().asset.hplFTsData;
+    let ftData = updateInfo ? await db().getHplAssets() : store.getState().asset.hplFTsData;
     if (ftInfo && ftInfo.length > 0) {
       ftData = formatFtInfo(ftInfo, ftData);
       // localStorage.setItem(
@@ -251,7 +251,7 @@ export const updateHPLBalances = async (
       await db().updateHplAssetsByLedger(ftData);
       store.dispatch(setHPLAssetsData(ftData));
     }
-    let subData = store.getState().asset.hplSubsData;
+    let subData = updateInfo ? await db().getHplSubaccounts() : store.getState().asset.hplSubsData;
     if (subAccInfo && subAccInfo.length > 0) {
       subData = formatAccountInfo(subAccInfo, subData);
       // localStorage.setItem(

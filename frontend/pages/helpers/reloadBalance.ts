@@ -27,6 +27,8 @@ export default async function reloadBallance() {
       store.getState().asset.ownersActor,
       store.getState().contacts.hplContacts,
       store.getState().auth.authClient,
+      false,
+      true,
     );
 
     store.dispatch(setLastDataRefresh(dayjs().toISOString()));
