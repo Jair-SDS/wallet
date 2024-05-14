@@ -87,7 +87,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                 <p>{t("backing.account")}</p>
               </th>
             )}
-            <th className={`p-2  ${fullLinks ? "w-[16%] text-left" : "w-[28%]"}  font-normal`}>
+            <th className={`p-2  ${fullLinks ? "w-[16%]" : "w-[28%]"} text-left font-normal`}>
               <p>{`${t("description")} ${!fullLinks ? `(${selectSub?.virtuals.length || 0})` : ""} `}</p>
             </th>
             <th className={`p-2 ${fullLinks ? "w-[14%]" : "w-[17%]"}  font-normal`}>
@@ -121,6 +121,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
           {getVirtualsSorted().map((vt, k) => {
             const sub = getSubFromVt(vt.backing);
             const ft = getFtFromSub(sub.ft);
+            const exp = vt.expiration !== 0 && dayjs(vt.expiration).isBefore(dayjs());
             return (
               <tr
                 className={getVirtualAccountClassNames(vt.virt_sub_acc_id === selectedVirtualAccount)}
@@ -210,15 +211,17 @@ const VirtualTable: FC<VirtualTableProps> = ({
                               <p>{t("mint")}</p>
                             </div>
                           )}
-                          <div
-                            className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md"
-                            onClick={() => {
-                              onReset(vt);
-                            }}
-                          >
-                            <ResetIcon className="w-4 h-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
-                            <p>{t("reset")}</p>
-                          </div>
+                          {!exp && (
+                            <div
+                              className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer opacity-70 hover:bg-HoverColorLight dark:hover:bg-HoverColor rounded-t-md"
+                              onClick={() => {
+                                onReset(vt);
+                              }}
+                            >
+                              <ResetIcon className="w-4 h-4 cursor-pointer fill-PrimaryTextColorLight dark:fill-PrimaryTextColor" />
+                              <p>{t("reset")}</p>
+                            </div>
+                          )}
                           <div
                             className="flex flex-row items-center justify-start gap-2 p-2 cursor-pointer hover:bg-TextErrorColor/10 rounded-b-md"
                             onClick={() => {

@@ -188,7 +188,7 @@ export const toHoleBigInt = (numb: string, decimal: number) => {
 
 export const validateAmount = (amnt: string, dec: number): boolean => {
   // Regular expression to match a valid number with at most 'dec' decimals
-  const regex = new RegExp(`^[0-9]+([.,][0-9]{0,${dec}})?$`);
+  const regex = new RegExp(dec === 0 ? "^[0-9]+$" : `^[0-9]+([.,][0-9]{0,${dec}})?$`);
   // Check if amount is a valid number
   if (!regex.test(amnt)) {
     return false;

@@ -174,12 +174,19 @@ export const useHPL = (open: boolean) => {
         if (vt.name.toLowerCase().includes(mySearch)) includeInSub = true;
       });
 
+      const ft = getFtFromSub(sub.ft);
       // search by currency name
-      const subAccountCurrencyName = getFtFromSub(sub.ft)?.name ?? null;
+      const subAccountCurrencyName = ft?.name ?? null;
       if (subAccountCurrencyName && partialMatch(subAccountCurrencyName, mySearch)) includeInSub = true;
       // search by currency symbol
-      const subAccountCurrencySymbol = getFtFromSub(sub.ft)?.symbol ?? null;
+      const subAccountCurrencySymbol = ft?.symbol ?? null;
       if (subAccountCurrencySymbol && partialMatch(subAccountCurrencySymbol, mySearch)) includeInSub = true;
+      // search by currency name
+      const subAccountCurrencyTokenName = ft?.token_name ?? null;
+      if (subAccountCurrencyTokenName && partialMatch(subAccountCurrencyTokenName, mySearch)) includeInSub = true;
+      // search by currency symbol
+      const subAccountCurrencyTokenSymbol = ft?.token_symbol ?? null;
+      if (subAccountCurrencyTokenSymbol && partialMatch(subAccountCurrencyTokenSymbol, mySearch)) includeInSub = true;
       // search by sub account id
       if (partialMatch(sub.sub_account_id, mySearch)) includeInSub = true;
 

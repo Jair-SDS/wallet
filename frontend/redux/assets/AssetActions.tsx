@@ -122,6 +122,7 @@ export const updateHPLBalances = async (
     nVirtualAccounts: string;
     nFtAssets: string;
   },
+  fromReload?: boolean,
 ) => {
   // Get amounts nAccounts, nVirtualAccounts, nFtAssets
   const nLocalHpl = {
@@ -248,7 +249,7 @@ export const updateHPLBalances = async (
       //   }),
       // );
 
-      await db().updateHplAssetsByLedger(ftData);
+      !fromReload && (await db().updateHplAssetsByLedger(ftData));
       store.dispatch(setHPLAssetsData(ftData));
     }
     let subData = updateInfo ? await db().getHplSubaccounts() : store.getState().asset.hplSubsData;
@@ -260,7 +261,7 @@ export const updateHPLBalances = async (
       //     sub: subData,
       //   }),
       // );
-      await db().updateHplSubaccountsByLedger(subData);
+      !fromReload && (await db().updateHplSubaccountsByLedger(subData));
       store.dispatch(setHPLSubsData(subData));
     }
 
@@ -310,7 +311,7 @@ export const updateHPLBalances = async (
       //   }),
       // );
 
-      await db().updateHplVirtualsByLedger(vtData);
+      !fromReload && (await db().updateHplVirtualsByLedger(vtData));
       store.dispatch(setHPLVTsData(vtData));
     }
 

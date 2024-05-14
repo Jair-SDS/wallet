@@ -29,7 +29,7 @@ export const useAssetList = () => {
       const index = dictionaryHplFTs.map((ft) => {
         return ft.assetId;
       });
-      auxAssetList = hplFTs.filter((ft) => index.includes(ft.id));
+      auxAssetList = hplFTs.filter((ft) => index.includes(ft.id) && ft.symbol.trim() === "" && ft.name.trim() === "");
     }
 
     const auxhplFTs = auxSearchKey

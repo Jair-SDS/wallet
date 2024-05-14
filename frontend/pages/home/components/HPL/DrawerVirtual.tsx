@@ -109,7 +109,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           onClick={onClose}
         />
       </div>
-      <BackingSelector newVt={newVt} setNewVt={setNewVt} edit={selectVt ? true : false} />
+      <BackingSelector openSlider={drawerOpen} newVt={newVt} setNewVt={setNewVt} edit={selectVt ? true : false} />
       <div className="flex flex-col items-start w-full mt-3 mb-3">
         <p className="opacity-60">{t("description")}</p>
         <CustomInput
@@ -130,7 +130,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           compOutClass=""
           value={newVt.amount}
           onChange={onBalanceChange}
-          sufix={<AssetSymbol ft={getFtFromVt(newVt.backing)} />}
+          sufix={<AssetSymbol ft={getFtFromVt(newVt.backing)} textClass="break-keep whitespace-nowrap" />}
         />
       </div>
       <div className="flex flex-col items-start justify-start mt-3 mb-3 w-full">
@@ -167,6 +167,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       {!selectVt ? (
         <div className="flex flex-col items-start justify-start w-full mt-3 mb-3">
           <AccesBySelector
+            openSlider={drawerOpen}
             newVt={newVt}
             setNewVt={setNewVt}
             onAccesChange={onAccesChange}

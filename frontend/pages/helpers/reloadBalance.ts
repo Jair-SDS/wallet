@@ -29,6 +29,8 @@ export default async function reloadBallance() {
       store.getState().auth.authClient,
       false,
       true,
+      undefined,
+      true,
     );
 
     store.dispatch(setLastDataRefresh(dayjs().toISOString()));
