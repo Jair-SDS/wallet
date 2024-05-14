@@ -74,7 +74,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
                   src={ChevIcon}
                   style={{ width: "2rem", height: "2rem" }}
                   alt="chevron-icon"
-                  className={`${modalOpen ? "rotate-90" : ""}`}
+                  className={`cursor-pointer ${modalOpen ? "rotate-90" : ""}`}
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>

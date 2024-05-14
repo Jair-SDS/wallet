@@ -141,7 +141,7 @@ const ExchangeLinksFilters = (props: AssetFilterProps) => {
           sizeInput={"small"}
           intent={"secondary"}
           placeholder=""
-          compOutClass=""
+          inputClass="!w-48"
           value={searchKey}
           onChange={onSearchChange}
         />
