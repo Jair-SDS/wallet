@@ -1,28 +1,31 @@
-import "./style.scss";
 // svgs
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 //
+import "./style.scss";
 import { Fragment } from "react";
-import AssetsList from "./components/AssetsList";
-import DetailList from "./components/DetailList";
+import AssetsList from "./components/ICRC/asset";
+import DetailList from "./components/ICRC/transaction";
 import { BasicModal } from "@components/modal";
-import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { CustomButton } from "@components/button";
+import { useTranslation } from "react-i18next";
 import { setDisclaimer } from "@redux/auth/AuthReducer";
+import { ProtocolTypeEnum } from "@common/const";
+import SubaccountList from "./components/HPL/SubAccountList";
+import SubaccountDetail from "./components/HPL/HplSubaccountDetail";
 
 const Home = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const { disclaimer } = useAppSelector((state) => state.auth);
-
+  const { protocol } = useAppSelector((state) => state.common);
+  const dispatch = useAppDispatch();
   return (
     <Fragment>
       <div className="flex flex-row w-full h-full">
-        <AssetsList></AssetsList>
-        <DetailList></DetailList>
+        {protocol === ProtocolTypeEnum.Enum.ICRC1 ? <AssetsList /> : <SubaccountList />}
+        {protocol === ProtocolTypeEnum.Enum.ICRC1 ? <DetailList /> : <SubaccountDetail />}
       </div>
-      <BasicModal open={disclaimer} width="w-[30rem]">
+      <BasicModal open={disclaimer} width="w-[30rem]" border="dark:border-2 dark:border-gray-color-6">
         <div className="flex flex-col items-start justify-start w-full gap-4">
           <div className="flex items-center justify-start gap-4 fle-row">
             <WarningIcon className="w-6 h-6" />

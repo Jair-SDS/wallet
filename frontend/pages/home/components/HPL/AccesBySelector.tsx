@@ -3,13 +3,13 @@ import SearchIcon from "@assets/svg/files/icon-search.svg";
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 //
 import { CustomInput } from "@components/input";
-import { shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { HPLVirtualSubAcc, HplContact } from "@redux/models/AccountModels";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BasicSwitch } from "@components/switch";
+import { shortAddress } from "@common/utils/icrc";
 
 interface AccesBySelectorProps {
   newVt: HPLVirtualSubAcc;

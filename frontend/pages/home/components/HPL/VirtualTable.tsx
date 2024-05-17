@@ -6,7 +6,6 @@ import { ReactComponent as MintIcon } from "@assets/svg/files/mint-icon.svg";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
-import { getDecimalAmount, shortAddress } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -15,7 +14,7 @@ import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { BasicModal } from "@components/modal";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
-import { DrawerOption, DrawerOptionEnum } from "@/const";
+import { DrawerOption, DrawerOptionEnum } from "@common/const";
 import AssetSymbol from "@components/AssetSymbol";
 import { CustomCopy } from "@components/tooltip";
 import DeleteVirtualModal from "./Modals/deleteVirtual";
@@ -24,6 +23,8 @@ import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { AccountHook } from "@pages/hooks/accountHook";
 import { Actor } from "@dfinity/agent";
+import { getDecimalAmount } from "@common/utils/number";
+import { shortAddress } from "@common/utils/icrc";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;

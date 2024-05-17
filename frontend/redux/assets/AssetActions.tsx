@@ -2,32 +2,9 @@
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent";
 import store from "@redux/Store";
 import { SnsToken } from "@redux/models/TokenModels";
-import { IcrcAccount, IcrcIndexCanister, IcrcTokenMetadataResponse } from "@dfinity/ledger-icrc";
-import {
-  formatIcpTransaccion,
-  getMetadataInfo,
-  formatckBTCTransaccion,
-  hexToUint8Array,
-  formatHPLSubaccounts,
-  formatFtInfo,
-  formatVirtualAccountInfo,
-  formatAccountInfo,
-} from "@/utils";
-import {
-  setTokenMarket,
-  setICPSubaccounts,
-  setHPLSubAccounts,
-  setHPLAssets,
-  setHPLSelectedSub,
-  setnHpl,
-  setHPLVTsData,
-  setHPLAssetsData,
-  setHPLSubsData,
-  setOwnerId,
-  setAccordionAssetIdx,
-  setAssets,
-  setHPLExchangeLinks,
-} from "./AssetReducer";
+import { IcrcTokenMetadataResponse } from "@dfinity/ledger-icrc";
+import { formatHPLSubaccounts, formatFtInfo, formatVirtualAccountInfo, formatAccountInfo } from "@common/utils/hpl";
+import { setTokenMarket, setICPSubaccounts, setAccordionAssetIdx, setAssets } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState } from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
@@ -37,13 +14,24 @@ import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
-import { getETHRate, getTokensFromMarket } from "@/utils/market";
-import { GetAllTransactionsICPParams, UpdateAllBalances } from "@/@types/assets";
-import { getICRCSupportedStandards } from "@pages/home/helpers/icrc";
-
-import { refreshAssetBalances } from "@/utils/assets";
-import { setTransactions } from "@redux/transaction/TransactionReducer";
+import { UpdateAllBalances } from "@/@types/assets";
 import { db } from "@/database/db";
+import { hexToUint8Array } from "@common/utils/hexadecimal";
+import { getMetadataInfo } from "@common/utils/icrc";
+import { getETHRate, getTokensFromMarket } from "@common/utils/market";
+import { refreshAssetBalances } from "@pages/home/helpers/assets";
+import { getICRCSupportedStandards } from "@common/libs/icrc";
+import {
+  setHPLAssets,
+  setHPLAssetsData,
+  setHPLExchangeLinks,
+  setHPLSelectedSub,
+  setHPLSubAccounts,
+  setHPLSubsData,
+  setHPLVTsData,
+  setOwnerId,
+  setnHpl,
+} from "@redux/hpl/HplReducer";
 
 /**
  * This function updates the balances for all provided assets and their subaccounts, based on the market price and the account balance.
@@ -130,7 +118,7 @@ export const updateHPLBalances = async (
     nVirtualAccounts: nLocalData ? nLocalData.nVirtualAccounts : "0",
     nFtAssets: nLocalData ? nLocalData.nFtAssets : "0",
   };
-  const nHpl = store.getState().asset.nHpl;
+  const nHpl = store.getState().hpl.nHpl;
   const nInfo = {
     nAccounts: BigInt(nLocalHpl.nAccounts || nHpl.nAccounts || 0),
     nVirtualAccounts: BigInt(nLocalHpl.nVirtualAccounts || nHpl.nVirtualAccounts || 0),
@@ -198,7 +186,7 @@ export const updateHPLBalances = async (
     }
   }
 
-  let vtData = updateInfo ? await db().getHplVirtuals() : store.getState().asset.hplVTsData;
+  let vtData = updateInfo ? await db().getHplVirtuals() : store.getState().hpl.hplVTsData;
   let vtInfo: Array<[VirId, [AccountType, Principal]]> | undefined = undefined;
   if (
     nInfo.nVirtualAccounts > BigInt(nLocalHpl.nVirtualAccounts) ||
@@ -238,8 +226,8 @@ export const updateHPLBalances = async (
   }
 
   try {
-    const ftDict = store.getState().asset.dictionaryHplFTs;
-    let ftData = updateInfo ? await db().getHplAssets() : store.getState().asset.hplFTsData;
+    const ftDict = store.getState().hpl.dictionaryHplFTs;
+    let ftData = updateInfo ? await db().getHplAssets() : store.getState().hpl.hplFTsData;
     if (ftInfo && ftInfo.length > 0) {
       ftData = formatFtInfo(ftInfo, ftData);
       // localStorage.setItem(
@@ -252,7 +240,7 @@ export const updateHPLBalances = async (
       !fromReload && (await db().updateHplAssetsByLedger(ftData));
       store.dispatch(setHPLAssetsData(ftData));
     }
-    let subData = updateInfo ? await db().getHplSubaccounts() : store.getState().asset.hplSubsData;
+    let subData = updateInfo ? await db().getHplSubaccounts() : store.getState().hpl.hplSubsData;
     if (subAccInfo && subAccInfo.length > 0) {
       subData = formatAccountInfo(subAccInfo, subData);
       // localStorage.setItem(
@@ -346,7 +334,7 @@ export const updateHPLBalances = async (
     store.dispatch(setHPLExchangeLinks(auxFullVirtuals));
     store.dispatch(setHPLAssets(auxFT));
 
-    const selectedSub = store.getState().asset.selectSub;
+    const selectedSub = store.getState().hpl.selectSub;
     if (selectedSub) {
       const sel = auxSubaccounts.find((sub) => sub.sub_account_id === selectedSub.sub_account_id);
       if (sel) store.dispatch(setHPLSelectedSub(sel));
@@ -388,106 +376,6 @@ export const updateHplRemotes = async (auxState: ResQueryState, contacts: HplCon
     console.log("errState-rem", e);
   }
 };
-
-export const getAllTransactionsICP = async (params: GetAllTransactionsICPParams) => {
-  const { subaccount_index, loading, isOGY } = params;
-
-  const myPrincipal = store.getState().auth.userPrincipal;
-  let subacc: SubAccountNNS | undefined = undefined;
-  try {
-    subacc = SubAccountNNS.fromBytes(hexToUint8Array(subaccount_index)) as SubAccountNNS;
-  } catch {
-    subacc = undefined;
-  }
-
-  const accountIdentifier = AccountIdentifier.fromPrincipal({
-    principal: myPrincipal,
-    subAccount: subacc,
-  });
-  try {
-    const response = await fetch(
-      `${isOGY ? import.meta.env.VITE_ROSETTA_URL_OGY : import.meta.env.VITE_ROSETTA_URL}/search/transactions`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          network_identifier: {
-            blockchain: isOGY ? import.meta.env.VITE_NET_ID_BLOCKCHAIN_OGY : import.meta.env.VITE_NET_ID_BLOCKCHAIN,
-            network: isOGY ? import.meta.env.VITE_NET_ID_NETWORK_OGY : import.meta.env.VITE_NET_ID_NETWORK,
-          },
-          account_identifier: {
-            address: accountIdentifier.toHex(),
-          },
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "*/*",
-        },
-      },
-    ).catch();
-    if (!response.ok) throw Error(`${response.statusText}`);
-    const { transactions } = await response.json();
-    const transactionsInfo = transactions.map(({ transaction, block_identifier }: any) =>
-      formatIcpTransaccion(accountIdentifier.toHex(), transaction, block_identifier.hash),
-    );
-
-    if (loading) {
-      store.dispatch(setTransactions(transactionsInfo));
-    } else {
-      return transactionsInfo;
-    }
-  } catch (error) {
-    if (!loading) {
-      return [];
-    }
-  }
-};
-
-export const getAllTransactionsICRC1 = async (
-  canister_id: any,
-  subaccount_index: Uint8Array,
-  loading: boolean,
-  assetSymbol: string,
-  canister: string,
-  subNumber?: string,
-) => {
-  try {
-    const myAgent = store.getState().auth.userAgent;
-    const myPrincipal = store.getState().auth.userPrincipal;
-    const canisterPrincipal = Principal.fromText(canister_id);
-
-    const { getTransactions: ICRC1_getTransactions } = IcrcIndexCanister.create({
-      agent: myAgent,
-      canisterId: canisterPrincipal,
-    });
-
-    const ICRC1getTransactions = await ICRC1_getTransactions({
-      account: {
-        owner: myPrincipal,
-        subaccount: subaccount_index,
-      } as IcrcAccount,
-      max_results: BigInt(100),
-    });
-
-    const transactionsInfo = ICRC1getTransactions.transactions.map(({ transaction, id }) =>
-      formatckBTCTransaccion(transaction, id, myPrincipal?.toString(), assetSymbol, canister, subNumber),
-    );
-
-    if (
-      loading &&
-      store.getState().asset.selectedAccount?.sub_account_id === subNumber &&
-      assetSymbol === store.getState().asset.selectedAsset?.tokenSymbol
-    ) {
-      store.dispatch(setTransactions(transactionsInfo));
-      return transactionsInfo;
-    } else {
-      return transactionsInfo;
-    }
-  } catch {
-    store.dispatch(setTransactions([]));
-    return [];
-  }
-};
-
 export const getSNSTokens = async (agent: HttpAgent): Promise<Asset[]> => {
   let tokens: SnsToken[] = [];
 
@@ -542,7 +430,7 @@ export const getSNSTokens = async (agent: HttpAgent): Promise<Asset[]> => {
               currency_amount: "0",
               transaction_fee: metadata.fee,
               decimal: 0,
-              symbol: "",
+              symbol: metadata.symbol,
             },
           ],
           supportedStandards: supportedStandards,

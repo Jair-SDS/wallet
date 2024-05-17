@@ -14,12 +14,12 @@ import { ChangeEvent, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Actor } from "@dfinity/agent";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { setFeeConstant, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/assets/AssetReducer";
+import { setFeeConstant, setHPLClient, setHPLDictionary, setIngressActor } from "@redux/hpl/HplReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
 import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
 import { AssetHook } from "@pages/home/hooks/assetHook";
-import { defaultHplLedgers } from "@/defaultTokens";
+import { defaultHplLedgers } from "@common/defaultTokens";
 import { db } from "@/database/db";
 
 interface HplSettingsModalProps {
@@ -30,7 +30,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { hplDictionary, hplLedger, userAgent, authClient } = AccountHook();
-  const { ownersActor } = useAppSelector((state) => state.asset);
+  const { ownersActor } = useAppSelector((state) => state.hpl);
   const { reloadDictFts } = AssetHook();
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");

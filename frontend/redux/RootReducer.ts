@@ -5,6 +5,7 @@ import contacts from "./contacts/ContactsReducer";
 import allowance from "./allowance/AllowanceReducer";
 import transaction from "./transaction/TransactionReducer";
 import common from "./common/CommonReducer";
+import hpl from "./hpl/HplReducer";
 
 const appReducer = combineReducers({
   common,
@@ -13,6 +14,7 @@ const appReducer = combineReducers({
   contacts,
   allowance,
   transaction,
+  hpl,
 });
 
 const RootReducer = (state: any, action: any) => {

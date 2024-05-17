@@ -1,9 +1,9 @@
 import { FC, Fragment } from "react";
-import { getPxlCode } from "@/utils";
 import QRCode from "react-qr-code";
 import { CustomCopy } from "@components/tooltip";
 import { useHPL } from "@pages/hooks/hplHook";
 import { useTranslation } from "react-i18next";
+import { getPxlCode } from "@common/utils/hpl";
 
 interface HPLDrawerReceive {
   virtualAccount: string | null;

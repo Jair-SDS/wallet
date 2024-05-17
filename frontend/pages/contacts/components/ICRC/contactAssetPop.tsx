@@ -1,5 +1,5 @@
 // svgsetassetsToAdd
-import { IconType, IconTypeEnum } from "@/const";
+import { IconType, IconTypeEnum } from "@/common/const";
 import { ReactComponent as PlusIcon } from "@assets/svg/files/plus.svg";
 //
 import { CustomButton } from "@components/button";
@@ -62,9 +62,7 @@ const ContactAssetPop = ({
               <div className="flex flex-col justify-start items-start  dark:bg-SecondaryColor rounded-lg w-40 border border-BorderColorLight/20 dark:border-BorderColor/20 shadow max-h-64 z-[2000]">
                 <div className="flex flex-col w-full scroll-y-light">
                   <div
-                    className={
-                      "flex flex-row justify-between items-center rounded-t-lg px-3 py-2 w-full hover:bg-secondary-color-1-light hover:dark:bg-HoverColor"
-                    }
+                    className="flex flex-row items-center justify-between w-full px-3 py-2 rounded-t-lg hover:bg-secondary-color-1-light hover:dark:bg-HoverColor"
                     onClick={handleSelectAll}
                   >
                     <p>{t("selected.all")}</p>

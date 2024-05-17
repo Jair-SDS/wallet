@@ -3,7 +3,7 @@
 import ChevIcon from "@assets/svg/files/chev-icon.svg";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
 //
-import { HplTransactions, HplTransactionsEnum, HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
+import { HplTransactions, HplTransactionsEnum, HplTransactionsType, HplTransactionsTypeEnum } from "@common/const";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import { HPLAsset, HPLSubAccount, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -12,9 +12,9 @@ import { ChangeEvent, FC, useState } from "react";
 import { clsx } from "clsx";
 import { CustomInput } from "@components/input";
 import SelectTxRemote from "./SelectTxRemote";
-import { getDecimalAmount } from "@/utils";
 import AssetSymbol from "@components/AssetSymbol";
 import { Principal } from "@dfinity/principal";
+import { getDecimalAmount } from "@common/utils/number";
 
 interface SelectTransferProps {
   select: HplTxUser;

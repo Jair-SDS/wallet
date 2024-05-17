@@ -3,6 +3,7 @@ import { RouteProps } from "react-router-dom";
 import "./style.scss";
 import TabNetwork from "./TabNetwork";
 import TopBarComponent from "./topbar";
+
 interface LayoutProps extends RouteProps {
   children: any;
   isLoginPage: boolean;

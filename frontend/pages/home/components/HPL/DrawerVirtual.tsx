@@ -14,7 +14,6 @@ import { ThemeHook } from "@pages/hooks/themeHook";
 import { CustomCheck } from "@components/checkbox";
 import { CustomButton } from "@components/button";
 import { CustomCopy } from "@components/tooltip";
-import { getDecimalAmount, getHoleAmount, getPxlCode, shortAddress } from "@/utils";
 import dayjs from "dayjs";
 import { Principal } from "@dfinity/principal";
 import { AccountHook } from "@pages/hooks/accountHook";
@@ -26,6 +25,10 @@ import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { Actor } from "@dfinity/agent";
 import { db } from "@/database/db";
+import { getDecimalAmount } from "@common/utils/number";
+import { shortAddress } from "@common/utils/icrc";
+import { getHoleAmount } from "@common/utils/amount";
+import { getPxlCode } from "@common/utils/hpl";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;

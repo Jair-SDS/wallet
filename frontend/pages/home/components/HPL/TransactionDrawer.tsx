@@ -2,7 +2,7 @@
 import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 //
 import { useHPLTx } from "@pages/home/hooks/hplTxHook";
-import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@/const";
+import { DrawerOption, HplTransactionsEnum, HplTransactionsTypeEnum } from "@common/const";
 import { FC, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SelectTransfer from "./SelectTransfer";
@@ -13,7 +13,7 @@ import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import { LoadingLoader } from "@components/loader";
 import TxSummary from "./TxSummary";
-import { getOwnerInfoFromPxl } from "@/utils";
+import { getOwnerInfoFromPxl } from "@common/utils/hpl";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;

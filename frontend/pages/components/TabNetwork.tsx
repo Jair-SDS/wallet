@@ -1,4 +1,4 @@
-import { ProtocolType, ProtocolTypeEnum } from "@/const";
+import { ProtocolType, ProtocolTypeEnum } from "@common/const";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppSelector } from "@redux/Store";
 

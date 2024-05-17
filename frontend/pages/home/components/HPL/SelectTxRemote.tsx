@@ -10,19 +10,14 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CustomInput } from "@components/input";
 import { HPLAsset, HplContact, HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { clsx } from "clsx";
-import {
-  checkPxlCode,
-  getContactColor,
-  getDecimalAmount,
-  getInitialFromName,
-  getOwnerInfoFromPxl,
-  shortPrincipals,
-} from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
-import { HplTransactionsType, HplTransactionsTypeEnum } from "@/const";
+import { HplTransactionsType, HplTransactionsTypeEnum } from "@common/const";
 import { Principal } from "@dfinity/principal";
 import { LoadingLoader } from "@components/loader";
+import { getContactColor, getInitialFromName, shortPrincipals } from "@common/utils/strings";
+import { getDecimalAmount } from "@common/utils/number";
+import { checkPxlCode, getOwnerInfoFromPxl } from "@common/utils/hpl";
 
 interface SelectTxRemoteProps {
   select: HplTxUser;

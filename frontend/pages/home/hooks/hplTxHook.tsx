@@ -1,10 +1,10 @@
-import { DrawerOption, DrawerOptionEnum, HplTransactionsEnum } from "@/const";
+import { DrawerOption, DrawerOptionEnum, HplTransactionsEnum } from "@common/const";
 import { useAppSelector } from "@redux/Store";
 import { HplRemote, HplTxUser } from "@redux/models/AccountModels";
 import { useEffect, useState } from "react";
 
 export const useHPLTx = (drawerOpen: boolean, drawerOpt: DrawerOption, locat: string) => {
-  const { hplClient, ingressActor, subaccounts, selectSub, ownersActor } = useAppSelector((state) => state.asset);
+  const { hplClient, ingressActor, subaccounts, selectSub, ownersActor } = useAppSelector((state) => state.hpl);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const defaultUser = {
     type: HplTransactionsEnum.Enum.SUBACCOUNT,

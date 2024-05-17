@@ -1,6 +1,5 @@
 // svgs
-import { DeleteContactTypeEnum } from "@/const";
-import { getDisplayNameFromFt } from "@/utils";
+import { DeleteContactTypeEnum } from "@common/const";
 import { ReactComponent as TrashIcon } from "@assets/svg/files/trash-icon.svg";
 import AssetSymbol from "@components/AssetSymbol";
 //
@@ -9,6 +8,7 @@ import { HplContact, HplRemote } from "@redux/models/AccountModels";
 import { NewContactSubAccount } from "@redux/models/ContactsModels";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { getDisplayNameFromFt } from "@common/utils/hpl";
 
 interface TableRemotesProps {
   cntc: HplContact;

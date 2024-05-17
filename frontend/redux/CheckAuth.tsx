@@ -5,6 +5,7 @@ import {
   clearDataAuth,
   setAuthLoading,
   setAuthenticated,
+  setDbLocation,
   setDebugMode,
   setHplDictionaryPrincipal,
   setHplLedgerPrincipal,
@@ -15,24 +16,9 @@ import {
 } from "./auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateHPLBalances, getSNSTokens } from "./assets/AssetActions";
-import {
-  clearDataAsset,
-  setFeeConstant,
-  setHPLAssetsData,
-  setHPLClient,
-  setHPLDictionary,
-  setHPLSubsData,
-  setHPLVTsData,
-  setIngressActor,
-  setOwnersActor,
-  setStorageCodeA,
-  setInitLoad,
-  setICRC1SystemAssets,
-  setMintActor,
-  setProtocol,
-} from "./assets/AssetReducer";
+import { clearDataAsset, setInitLoad, setICRC1SystemAssets } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
-import { AuthNetworkTypeEnum, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
+import { AuthNetworkTypeEnum, ProtocolTypeEnum, RoutingPathEnum } from "@/common/const";
 import { Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
 import { clearDataContacts, setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
@@ -45,11 +31,25 @@ import { idlFactory as OwnersIDLFactory } from "@candid/Owners/candid.did";
 import { _SERVICE as HplMintActor } from "@candid/HplMint/service.did";
 import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { HPLAssetData, HPLSubData, HPLVirtualData, HplContact } from "./models/AccountModels";
-import { parseFungibleToken } from "@/utils";
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
-import { DB_Type, db } from "@/database/db";
+import { db, DB_Type } from "@/database/db";
 import { setTransactions } from "./transaction/TransactionReducer";
+import { addWatchOnlySessionToLocal } from "@pages/helpers/watchOnlyStorage";
+import watchOnlyRefresh from "@pages/helpers/watchOnlyRefresh";
+import { setProtocol, setStorageCodeA } from "./common/CommonReducer";
+import {
+  setFeeConstant,
+  setHPLAssetsData,
+  setHPLClient,
+  setHPLDictionary,
+  setHPLSubsData,
+  setHPLVTsData,
+  setIngressActor,
+  setMintActor,
+  setOwnersActor,
+} from "./hpl/HplReducer";
+import { parseFungibleToken } from "@common/utils/hpl";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -82,6 +82,10 @@ export const handleAuthenticated = async (opt: AuthNetwork) => {
   });
 };
 
+export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
+  handleLoginApp(identity);
+};
+
 export const handleSeedAuthenticated = async (seed: string) => {
   if (seed.length > 32) return;
 
@@ -108,10 +112,13 @@ export const handleSeedAuthenticated = async (seed: string) => {
 export const handlePrincipalAuthenticated = async (principalAddress: string) => {
   try {
     db().setDbLocation(DB_Type.LOCAL);
+    store.dispatch(setDbLocation(DB_Type.LOCAL));
     const authClient = await AuthClient.create();
     const principal = Principal.fromText(principalAddress);
     store.dispatch(setProtocol(ProtocolTypeEnum.Enum.ICRC1));
-    handleLoginApp(authClient.getIdentity(), false, principal);
+    addWatchOnlySessionToLocal({ alias: "", principal: principalAddress });
+    watchOnlyRefresh();
+    await handleLoginApp(authClient.getIdentity(), false, principal);
   } catch {
     return;
   }
@@ -123,10 +130,6 @@ export const handleMnemonicAuthenticated = (phrase: string[]) => {
   };
   const secpIdentity = phraseToIdentity(phrase) as Identity;
   handleLoginApp(secpIdentity, true);
-};
-
-export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
-  handleLoginApp(identity);
 };
 
 /**
@@ -154,7 +157,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
   const myPrincipal = fixedPrincipal || (await myAgent.getPrincipal());
   const identityPrincipalStr = fixedPrincipal?.toString() || authIdentity.getPrincipal().toString();
 
-  await db().setIdentity(authIdentity, fixedPrincipal);
+  await db().setIdentity(authIdentity, myPrincipal);
 
   // HPL ACTOR
   const hplLedPrin = localStorage.getItem("hpl-led-pric-" + identityPrincipalStr) || "rqx66-eyaaa-aaaap-aaona-cai";
@@ -262,11 +265,11 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     }
   }
 
+  store.dispatch(setAuthenticated(true, false, !!fixedPrincipal, identityPrincipalStr.toLocaleLowerCase()));
   dispatchAuths(identityPrincipalStr.toLocaleLowerCase(), myPrincipal);
 
   const snsTokens = await getSNSTokens(myAgent);
   store.dispatch(setICRC1SystemAssets(snsTokens));
-  store.dispatch(setAuthenticated(true, false, !!fixedPrincipal, identityPrincipalStr.toLocaleLowerCase()));
   store.dispatch(setInitLoad(false));
 };
 

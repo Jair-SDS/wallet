@@ -3,10 +3,16 @@ import { Contact } from "@redux/models/ContactsModels";
 import { TAllowance } from "@/@types/allowance";
 import { Identity } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-import { defaultTokens } from "@/defaultTokens";
+import { defaultTokens } from "@/common/defaultTokens";
 import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 import store from "@redux/Store";
-import { setAssets } from "@redux/assets/AssetReducer";
+import {
+  addReduxAsset,
+  deleteReduxAsset,
+  setAccordionAssetIdx,
+  setAssets,
+  updateReduxAsset,
+} from "@redux/assets/AssetReducer";
 
 import {
   addReduxContact,
@@ -84,6 +90,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   private async _assetStateSync(newAssets?: Asset[]): Promise<void> {
     const assets = newAssets || this._getAssets();
     store.dispatch(setAssets(assets));
+    store.dispatch(setAccordionAssetIdx([assets[0].tokenSymbol]));
   }
 
   /**
@@ -103,13 +110,12 @@ export class LocalStorageDatabase extends IWalletDatabase {
   async addAsset(asset: Asset, options?: DatabaseOptions): Promise<void> {
     const assets = this._getAssets();
     this._setAssets([...assets, asset]);
-
-    if (options?.sync) this._assetStateSync();
+    if (options?.sync) store.dispatch(addReduxAsset(asset));
   }
 
   async updateAssets(assets: Asset[], options?: DatabaseOptions): Promise<void> {
     this._setAssets(assets);
-    if (options?.sync) this._assetStateSync();
+    if (options?.sync) store.dispatch(setAssets(assets));
   }
 
   /**
@@ -126,7 +132,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
         } else return tkn;
       }),
     );
-    if (options?.sync) this._assetStateSync();
+    if (options?.sync) store.dispatch(updateReduxAsset(newDoc));
   }
 
   /**
@@ -135,7 +141,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
    */
   async deleteAsset(address: string, options?: DatabaseOptions): Promise<void> {
     this._setAssets(this._getAssets().filter((tkn) => tkn.address !== address));
-    if (options?.sync) this._assetStateSync();
+    if (options?.sync) store.dispatch(deleteReduxAsset(address));
   }
 
   /**

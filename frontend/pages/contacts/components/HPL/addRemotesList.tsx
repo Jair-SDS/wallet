@@ -1,4 +1,4 @@
-import { getDisplayNameFromFt } from "@/utils";
+import { getDisplayNameFromFt } from "@common/utils/hpl";
 import AssetSymbol from "@components/AssetSymbol";
 import { CustomCheck } from "@components/checkbox";
 import { CustomInput } from "@components/input";

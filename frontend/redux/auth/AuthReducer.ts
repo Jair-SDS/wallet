@@ -1,9 +1,10 @@
 import { HttpAgent } from "@dfinity/agent";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Asset } from "@redux/models/AccountModels";
-import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@/const";
+import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@common/const";
 import { Principal } from "@dfinity/principal";
 import { DB_Type } from "@/database/db";
+import { WatchOnlyItem } from "@pages/login/components/WatchOnlyInput";
 
 const defaultValue: any = {};
 interface AuthState {
@@ -24,6 +25,7 @@ interface AuthState {
   customDbCanisterId: string;
   userAgent: HttpAgent;
   userPrincipal: Principal;
+  watchOnlyHistory: WatchOnlyItem[];
 }
 
 const initialState: AuthState = {
@@ -44,6 +46,7 @@ const initialState: AuthState = {
   customDbCanisterId: "",
   userAgent: defaultValue,
   userPrincipal: defaultValue,
+  watchOnlyHistory: [],
 };
 
 const authSlice = createSlice({
@@ -55,6 +58,9 @@ const authSlice = createSlice({
     },
     setAuth(state) {
       state.authLoading = false;
+    },
+    setReduxWatchOnlyHistory(state, action) {
+      state.watchOnlyHistory = action.payload;
     },
     setAuthLoading(state, action) {
       state.authLoading = action.payload;
@@ -149,6 +155,7 @@ export const {
   setCustomDbCanisterId,
   setUserAgent,
   setUserPrincipal,
+  setReduxWatchOnlyHistory,
 } = authSlice.actions;
 
 export default authSlice.reducer;

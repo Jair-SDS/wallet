@@ -1,53 +1,64 @@
-import { ReactComponent as CheckIcon } from "@assets/svg/files/edit-check.svg";
-//
-import { CustomInput } from "@components/input";
-import { decodeIcrcAccount } from "@dfinity/ledger-icrc";
 import { handlePrincipalAuthenticated } from "@redux/CheckAuth";
-import { clsx } from "clsx";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
+import { validatePrincipal } from "@/common/utils/definityIdentity";
+import WatchOnlyInputSuffix from "./WatchOnlyInputSuffix";
+import WatchOnlyRecordsPopover from "./WatchOnlyRecordsPopover";
+import { useAppSelector } from "@redux/Store";
 
-interface WatchOnlyInputProps {
-  principalAddress: string;
-  setPrincipalAddress: Dispatch<SetStateAction<string>>;
-}
+export default function WatchOnlyInput() {
+  const { watchOnlyHistory } = useAppSelector((state) => state.auth);
+  const [principalAddress, setPrincipalAddress] = useState("");
+  const watchOnlyInputRef = useRef<HTMLInputElement>(null);
+  const [historicalOpen, setHistoricalOpen] = useState(false);
 
-export default function WatchOnlyInput(props: WatchOnlyInputProps) {
-  const { principalAddress, setPrincipalAddress } = props;
-  const [watchOnlyLoginErr, setWatchOnlyLoginErr] = useState(false);
+  const alias = watchOnlyHistory.find((session) => session.principal === principalAddress)?.alias;
 
   return (
-    <CustomInput
-      sizeInput={"medium"}
-      intent={"secondary"}
-      compOutClass=""
-      value={principalAddress}
-      onChange={onPrincipalChange}
-      border={watchOnlyLoginErr ? "error" : undefined}
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus
-      sufix={<CheckIcon className={getCheckIconStyles(principalAddress, watchOnlyLoginErr)} />}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") handlePrincipalAuthenticated(principalAddress);
-      }}
-    />
+    <div className="relative w-full">
+      <div className="flex items-center justify-start border rounded bg-inherit border-gray-color-2 dark:border-gray-color-6">
+        {alias ? (
+          <p className="px-2 font-bold border-r-2 text-md border-gray-color-2 dark:border-gray-color-6 text-black-color dark:text-gray-color-8">
+            {alias}
+          </p>
+        ) : null}
+
+        <input
+          id="watch-only-input"
+          autoFocus
+          type="text"
+          className="w-full p-2 outline-none bg-inherit text-black-color dark:text-gray-color-8"
+          onChange={onPrincipalChange}
+          ref={watchOnlyInputRef}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handlePrincipalAuthenticated(principalAddress);
+          }}
+        />
+        <WatchOnlyInputSuffix
+          principalAddress={principalAddress}
+          watchOnlyLoginErr={!validatePrincipal(principalAddress)}
+          historicalOpen={historicalOpen}
+          onChevronClick={() => setHistoricalOpen((prev) => !prev)}
+        />
+      </div>
+      {historicalOpen && <WatchOnlyRecordsPopover onHistoricalSelectHandler={onHistoricalSelectHandler} />}
+    </div>
   );
 
-  function onPrincipalChange(e: ChangeEvent<HTMLInputElement>) {
-    setPrincipalAddress(e.target.value);
-    try {
-      decodeIcrcAccount(e.target.value);
-      setWatchOnlyLoginErr(false);
-    } catch {
-      setWatchOnlyLoginErr(true);
-    }
+  function onPrincipalChange(e: ChangeEvent<HTMLInputElement> | string) {
+    const principal = typeof e === "string" ? e.trim() : e.target.value.trim();
+    setPrincipalAddress(principal);
+  }
+
+  function onHistoricalSelectHandler(principal: string) {
+    setHistoricalOpen(false);
+    setPrincipalAddress(principal);
+    onPrincipalChange(principal);
+    if (watchOnlyInputRef.current) watchOnlyInputRef.current.value = principal;
+    document.getElementById("watch-only-input")?.focus();
   }
 }
 
-function getCheckIconStyles(principalAddress: string, watchOnlyLoginErr: boolean) {
-  return clsx(
-    "w-4 h-4 opacity-50 mr-2",
-    principalAddress.length > 0 && !watchOnlyLoginErr
-      ? "stroke-BorderSuccessColor"
-      : "stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor",
-  );
+export interface WatchOnlyItem {
+  principal: string;
+  alias?: string;
 }

@@ -7,10 +7,11 @@ import { ChangeEvent, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/button";
 import { HPLAsset, HPLAssetData } from "@redux/models/AccountModels";
-import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/tooltip";
 import AssetSymbol from "@components/AssetSymbol";
 import { db } from "@/database/db";
+import { shortAddress } from "@common/utils/icrc";
+import { getDecimalAmount } from "@common/utils/number";
 
 interface EditHplAssetProps {
   setAssetOpen(value: boolean): void;

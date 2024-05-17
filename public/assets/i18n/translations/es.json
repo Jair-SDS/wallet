@@ -14,6 +14,7 @@
   "allowance": "Asignación",
   "search": "Buscar",
   "max": "MAX",
+  "current": "Actual",
   "next": "Siguiente",
   "cancel": "Cancelar",
   "back": "Atras",
@@ -256,7 +257,9 @@
   "allowance.sure.remove": "¿Estás seguro de que quieres Eliminar?",
   "allowance.permanently.deleted": "Esta Asignación se eliminará permanentemente.",
   "allowance.edit.allowance": "Editar Asignación",
+  "allowance.search": "Buscar por Subcuenta o Gastador",
   "watchOnlyMode.title": "Modo Solo-Mirar",
+  "watchOnlyMode.delete.message": "¿Estás seguro de que deseas eliminar la cuenta?",
 
   "error.asset.empty": "El activo está vacío",
   "error.sender.empty": "El remitente está vacío",

@@ -3,7 +3,7 @@ import { createRxDatabase, RxCollection, RxDocument, RxDatabase, addRxPlugin } f
 import DBSchemas from "./schemas.json";
 import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable } from "rxjs";
 import { extractValueFromArray, setupReplication } from "./helpers";
-import { defaultTokens } from "@/defaultTokens";
+import { defaultTokens } from "@/common/defaultTokens";
 // rxdb plugins
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { RxDBMigrationPlugin } from "rxdb/plugins/migration";
@@ -29,7 +29,13 @@ import {
 } from "@/candid/database/db.did";
 import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 import store from "@redux/Store";
-import { setAssets } from "@redux/assets/AssetReducer";
+import {
+  addReduxAsset,
+  deleteReduxAsset,
+  setAccordionAssetIdx,
+  setAssets,
+  updateReduxAsset,
+} from "@redux/assets/AssetReducer";
 import {
   addReduxContact,
   deleteReduxContact,
@@ -358,6 +364,7 @@ export class RxdbDatabase extends IWalletDatabase {
     const result = (documents && documents.map(this._mapAssetDoc)) || [];
     const assets = newAssets || result || [];
     store.dispatch(setAssets(assets));
+    store.dispatch(setAccordionAssetIdx([assets[0].tokenSymbol]));
   }
 
   /**
@@ -377,7 +384,7 @@ export class RxdbDatabase extends IWalletDatabase {
         updatedAt: Date.now(),
       });
 
-      if (options?.sync) await this._assetStateSync();
+      if (options?.sync) store.dispatch(addReduxAsset(asset));
     } catch (e) {
       console.error("RxDb AddAsset:", e);
     }
@@ -419,7 +426,7 @@ export class RxdbDatabase extends IWalletDatabase {
         updatedAt: Date.now(),
       });
 
-      if (options?.sync) await this._assetStateSync();
+      if (options?.sync) store.dispatch(updateReduxAsset(newDoc));
     } catch (e) {
       console.error("RxDb UpdateAsset:", e);
     }
@@ -434,7 +441,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const document = await (await this.assets)?.findOne(address).exec();
       await document?.remove();
 
-      if (options?.sync) await this._assetStateSync();
+      if (options?.sync) store.dispatch(deleteReduxAsset(address));
     } catch (e) {
       console.error("RxDb DeleteAsset", e);
     }

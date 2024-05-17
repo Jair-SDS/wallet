@@ -9,10 +9,8 @@ import { CustomButton } from "@components/button";
 import { LoadingLoader } from "@components/loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
-import { getDecimalAmount, getHoleAmount, validateAmount } from "@/utils";
 import { useAppSelector } from "@redux/Store";
-import DialogSendConfirmation from "../ICRC/detail/transaction/DialogSendConfirmation";
-import { ProtocolTypeEnum, SendingStatusEnum } from "@/const";
+import { ProtocolTypeEnum, SendingStatusEnum } from "@common/const";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import {
   setAmountAction,
@@ -24,6 +22,9 @@ import {
   setSendingStatusAction,
 } from "@redux/transaction/TransactionActions";
 import { ActorSubclass } from "@dfinity/agent";
+import { getHoleAmount, validateAmount } from "@common/utils/amount";
+import { getDecimalAmount } from "@common/utils/number";
+import DialogSendConfirmation from "../ICRC/transaction/DialogSendConfirmation";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -81,7 +82,7 @@ const TxSummary = ({
   const [loading, setLoading] = useState(false);
   const [fee, setFee] = useState("0");
   const [sendDialog, showSendDialog] = useState(false);
-  const { feeConstant } = useAppSelector((state) => state.asset);
+  const { feeConstant } = useAppSelector((state) => state.hpl);
 
   return (
     <Fragment>

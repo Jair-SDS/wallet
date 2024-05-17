@@ -1,12 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { setAllAssetsView } from "@redux/assets/AssetReducer";
+import { setAllAssetsView } from "@redux/hpl/HplReducer";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useEffect, useState } from "react";
 
 export const useAssetList = () => {
   const dispatch = useAppDispatch();
 
-  const { dictionaryHplFTs, hplFTs, subaccounts, allAssetsView, hplVTsData } = useAppSelector((state) => state.asset);
+  const { dictionaryHplFTs, hplFTs, subaccounts, allAssetsView, hplVTsData } = useAppSelector((state) => state.hpl);
   const { hplContacts } = useAppSelector((state) => state.contacts);
 
   const [selAsset, setSelAsset] = useState<HPLAsset | undefined>();

@@ -3,11 +3,11 @@ import ArrowBottomLeftIcon from "@assets/svg/files/arrow-bottom-left-icon.svg";
 import ArrowTopRightIcon from "@assets/svg/files/arrow-top-right-icon.svg";
 import QRIcon from "@assets/svg/files/qr-white.svg";
 //
-import { DrawerOption, DrawerOptionEnum } from "@/const";
+import { DrawerOption, DrawerOptionEnum } from "@common/const";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
-import { toFullDecimal } from "@/utils";
 import AssetSymbol from "@components/AssetSymbol";
+import { toFullDecimal } from "@common/utils/amount";
 
 interface HPLSubaccountActionProps {
   onActionClick(value: DrawerOption): void;

@@ -1,6 +1,6 @@
 // svgs
-import { SubaccountInfo, SubaccountInfoEnum } from "@/const";
-import { getLogoString, validateAmount } from "@/utils";
+import { SubaccountInfo, SubaccountInfoEnum } from "@common/const";
+import { getLogoString } from "@common/utils/hpl";
 import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { Principal } from "@dfinity/principal";
 //
@@ -19,7 +19,7 @@ import {
   setHPLSubsData,
   setHPLVTsData,
   setOwnerId,
-} from "@redux/assets/AssetReducer";
+} from "@redux/hpl/HplReducer";
 import {
   HPLAsset,
   HPLAssetData,
@@ -30,11 +30,11 @@ import {
 } from "@redux/models/AccountModels";
 import dayjs from "dayjs";
 import { ChangeEvent, useEffect, useState } from "react";
+import { validateAmount } from "@common/utils/amount";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
   const {
-    protocol,
     subaccounts,
     hplFTs,
     selectSub,
@@ -48,7 +48,8 @@ export const useHPL = (open: boolean) => {
     nHpl,
     ownerId,
     exchangeLinks,
-  } = useAppSelector((state) => state.asset);
+  } = useAppSelector((state) => state.hpl);
+  const { protocol } = useAppSelector((state) => state.common);
   const { hplContacts } = useAppSelector((state) => state.contacts);
   const { authClient, hplDictionary } = useAppSelector((state) => state.auth);
   const [subsList, setSubsList] = useState<HPLSubAccount[]>([]);

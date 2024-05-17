@@ -11,8 +11,8 @@ import {
   TransactionState,
   TransactionValidationErrorsType,
 } from "@/@types/transactions";
-import { SendingStatusEnum, SendingStatus } from "@/const";
-import { Asset, HPLAsset, HplTxUser, SubAccount, TransactionList } from "@redux/models/AccountModels";
+import { SendingStatusEnum, SendingStatus } from "@common/const";
+import { Asset, HPLAsset, HplTxUser, SubAccount, Transaction, TransactionList } from "@redux/models/AccountModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export const initialTransactionState: TransactionState = {
@@ -52,11 +52,13 @@ export const initialTransactionState: TransactionState = {
   hplFtTx: {} as any,
   transactionDrawer: TransactionDrawer.NONE,
   selectedTransaction: undefined,
-  txLoad: false,
   amount: "",
   errors: [],
-  transactions: [],
-  txWorker: [],
+  list: {
+    transactions: [],
+    txWorker: [],
+    txLoad: false,
+  },
 };
 
 const name = "transaction";
@@ -182,33 +184,36 @@ const transactionSlice = createSlice({
       state.hplSender = initialTransactionState.hplSender;
       state.hplFtTx = initialTransactionState.hplFtTx;
     },
-    setTransactions(state, action) {
-      state.transactions = action.payload;
+    setTransactions(state: TransactionState, action: PayloadAction<Array<Transaction[]>>) {
+      state.list.transactions = action.payload;
     },
     // transactions
     setSelectedTransaction(state, action) {
       state.selectedTransaction = action.payload;
     },
-    setTxWorker(state, action) {
-      const txList = [...state.txWorker];
+    setTxWorker(state: TransactionState, action: PayloadAction<TransactionList[]>) {
+      state.list.txWorker = action.payload;
+    },
+    updateTxWorkerSubAccount(state: TransactionState, action: PayloadAction<TransactionList>) {
+      const { txWorker } = state.list;
+      const { tx, symbol, tokenSymbol, subaccount } = action.payload;
 
-      const idx = txList.findIndex((tx: TransactionList) => {
-        return tx.symbol === action.payload.symbol && tx.subaccount === action.payload.subaccount;
-      });
-      const auxTx = txList.find((tx: TransactionList) => {
-        return tx.symbol === action.payload.symbol && tx.subaccount === action.payload.subaccount;
-      });
+      const txWorkerIndex = txWorker.findIndex(
+        (worker) => worker.tokenSymbol === tokenSymbol && worker.subaccount === subaccount,
+      );
 
-      if (!auxTx) {
-        txList.push(action.payload);
+      if (txWorkerIndex !== -1) {
+        txWorker[txWorkerIndex].tx = tx;
       } else {
-        txList[idx] = action.payload;
+        txWorker.push({
+          tx,
+          symbol,
+          tokenSymbol,
+          subaccount,
+        });
       }
 
-      state.txWorker = txList;
-    },
-    addTxWorker(state, action: PayloadAction<TransactionList>) {
-      state.txWorker = [...state.txWorker, action.payload];
+      state.list.txWorker = txWorker;
     },
   },
 });
@@ -245,7 +250,7 @@ export const {
   setTransactionDrawer,
   setSelectedTransaction,
   setTxWorker,
-  addTxWorker,
+  updateTxWorkerSubAccount,
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

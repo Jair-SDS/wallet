@@ -1,117 +1,77 @@
-import { AssetSymbolEnum } from "@/const";
-import { hexToUint8Array } from "@/utils";
-import contactCacheRefresh from "@pages/contacts/helpers/contactCacheRefresh";
-import { allowanceCacheRefresh } from "@pages/home/helpers/allowanceCache";
-import { getAllTransactionsICP, getAllTransactionsICRC1, updateAllBalances } from "@redux/assets/AssetActions";
-import { setAppDataRefreshing, setLastDataRefresh } from "@redux/common/CommonReducer";
-import { Asset } from "@redux/models/AccountModels";
+import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
-import { setTxWorker } from "@redux/transaction/TransactionReducer";
-import dayjs from "dayjs";
-import { useEffect } from "react";
+import { setAppDataRefreshing } from "@redux/common/CommonReducer";
 import { db } from "@/database/db";
+import { getSNSTokens, updateAllBalances } from "@redux/assets/AssetActions";
+import { allowanceCacheRefresh } from "@pages/allowances/helpers/cache";
+import contactCacheRefresh from "@pages/contacts/helpers/contactCacheRefresh";
+import { setICRC1SystemAssets } from "@redux/assets/AssetReducer";
+import { transactionCacheRefresh } from "@pages/home/helpers/cache";
 
 const WORKER_INTERVAL = 10 * 60 * 1000; // 10 minutes
-const DATA_STALE_THRESHOLD = 9; // 9 minutes
 
+// INFO: This wrapper is reponsible of refresh and load the main data (transactions, allowances, assets, contacts and sns tokens)
 export default function WorkersWrapper({ children }: { children: React.ReactNode }) {
-  const { assets } = useAppSelector((state) => state.asset);
+  const { isAppDataFreshing } = useAppSelector((state) => state.common);
   const { userAgent } = useAppSelector((state) => state.auth);
-  const { isAppDataFreshing, lastDataRefresh } = useAppSelector((state) => state.common);
   const dispatch = useAppDispatch();
+  const { assets } = useAppSelector((state) => state.asset.list);
+  const initialFetch = useRef<boolean>(true);
 
-  async function fetchICPTransactions(asset: Asset) {
-    for (const subAccount of asset.subAccounts) {
-      const transactions = await getAllTransactionsICP({
-        subaccount_index: subAccount.sub_account_id,
-        loading: false,
-        isOGY: asset.tokenSymbol === AssetSymbolEnum.Enum.OGY,
-      });
+  async function loadInitialData() {
+    if (!initialFetch.current) return;
+    initialFetch.current = false;
 
-      dispatch(
-        setTxWorker({
-          tx: transactions,
-          symbol: asset.symbol,
-          tokenSymbol: asset.tokenSymbol,
-          subaccount: subAccount.sub_account_id,
-        }),
-      );
-    }
+    dispatch(setAppDataRefreshing(true));
+
+    const snsTokens = await getSNSTokens(userAgent);
+    dispatch(setICRC1SystemAssets(snsTokens));
+
+    const dbAssets = await db().getAssets();
+    await updateAllBalances({
+      fromLogin: true,
+      myAgent: userAgent,
+      assets: dbAssets,
+      basicSearch: false,
+    });
+
+    await transactionCacheRefresh(assets);
+    await allowanceCacheRefresh();
+    await contactCacheRefresh();
+
+    dispatch(setAppDataRefreshing(false));
   }
 
-  async function fetchICRC1Transactions(asset: Asset, selectedToken: Asset) {
-    for (const subAccount of asset.subAccounts) {
-      const transactions = await getAllTransactionsICRC1(
-        selectedToken.index || "",
-        hexToUint8Array(subAccount.sub_account_id || "0x0"),
-        false,
-        asset.tokenSymbol,
-        selectedToken.address,
-        subAccount.sub_account_id,
-      );
+  async function workerDataRefresh() {
+    if (!isAppDataFreshing) {
+      dispatch(setAppDataRefreshing(true));
 
-      dispatch(
-        setTxWorker({
-          tx: transactions,
-          symbol: asset.symbol,
-          tokenSymbol: asset.tokenSymbol,
-          subaccount: subAccount.sub_account_id,
-        }),
-      );
-    }
-  }
-
-  async function transactionCacheRefresh() {
-    try {
-      for (const asset of assets) {
-        if (asset.tokenSymbol === AssetSymbolEnum.Enum.ICP || asset.tokenSymbol === AssetSymbolEnum.Enum.OGY) {
-          await fetchICPTransactions(asset);
-        } else {
-          const selectedAsset = assets.find((currentAsset) => currentAsset.symbol === asset.symbol);
-          if (selectedAsset) {
-            await fetchICRC1Transactions(asset, selectedAsset);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error in transactionCacheRefresh worker", error);
-    }
-  }
-
-  async function dataRefresh() {
-    const auxAsset = await db().getAssets();
-    try {
+      const DBAssets = await db().getAssets();
       await updateAllBalances({
         myAgent: userAgent,
-        assets: auxAsset.length !== 0 ? auxAsset : [],
+        assets: DBAssets,
         basicSearch: false,
       });
-      await transactionCacheRefresh();
+
+      await transactionCacheRefresh(assets);
       await allowanceCacheRefresh();
       await contactCacheRefresh();
-    } catch (error) {
-      console.error("Error in dataRefresh worker", error);
+
+      dispatch(setAppDataRefreshing(false));
     }
   }
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const isDataStale = dayjs().diff(dayjs(lastDataRefresh), "minutes") >= DATA_STALE_THRESHOLD;
+    loadInitialData();
+  }, [isAppDataFreshing]);
 
-      if (isDataStale && !isAppDataFreshing) {
-        dispatch(setAppDataRefreshing(true));
-
-        dataRefresh().then(() => {
-          dispatch(setLastDataRefresh(dayjs().toISOString()));
-          dispatch(setAppDataRefreshing(false));
-        });
-      }
-    }, WORKER_INTERVAL);
+  useEffect(() => {
+    const timer = setInterval(() => workerDataRefresh(), WORKER_INTERVAL);
 
     return () => {
       clearInterval(timer);
     };
-  }, [lastDataRefresh, isAppDataFreshing]);
+  }, []);
 
   return <>{children}</>;
 }

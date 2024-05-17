@@ -1,16 +1,8 @@
-import { ProtocolType, ProtocolTypeEnum, RoutingPathEnum } from "@/const";
-import { getFtsFormated, parseFungibleToken } from "@/utils";
+import { ProtocolType, RoutingPathEnum } from "@common/const";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import store, { useAppDispatch, useAppSelector } from "@redux/Store";
 import { updateHPLBalances } from "@redux/assets/AssetActions";
-import {
-  setAccordionAssetIdx,
-  setHPLAssets,
-  setHPLDictionary,
-  setProtocol,
-  setSelectedAccount,
-  setSelectedAsset,
-} from "@redux/assets/AssetReducer";
+import { setAccordionAssetIdx } from "@redux/assets/AssetReducer";
 import { Asset, ResQueryState, SubAccount } from "@redux/models/AccountModels";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
 import { useEffect, useState } from "react";
@@ -19,26 +11,19 @@ import { idlFactory as DictionaryIDLFactory } from "@candid/Dictionary/dictCandi
 import { setRoutingPath } from "@redux/auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { HTTP_AGENT_HOST } from "@redux/CheckAuth";
+import { setHPLAssets, setHPLDictionary } from "@redux/hpl/HplReducer";
+import { setProtocol } from "@redux/common/CommonReducer";
+import { getFtsFormated, parseFungibleToken } from "@common/utils/hpl";
 
 export const AssetHook = () => {
   const dispatch = useAppDispatch();
-  const {
-    protocol,
-    assets,
-    subaccounts,
-    exchangeLinks,
-    selectedAsset,
-    selectedAccount,
-    accordionIndex,
-    tokensMarket,
-    dictionaryHplFTs,
-    ingressActor,
-    ownersActor,
-    hplFTsData,
-  } = useAppSelector((state) => state.asset);
+  const { subaccounts, exchangeLinks, dictionaryHplFTs, ingressActor, ownersActor, hplFTsData } = useAppSelector(
+    (state) => state.hpl,
+  );
+  const { list } = useAppSelector((state) => state.asset);
   const { userAgent, authClient, route } = useAppSelector((state) => state.auth);
   const { hplContacts } = useAppSelector((state) => state.contacts);
-  const { isAppDataFreshing } = useAppSelector((state) => state.common);
+  const { isAppDataFreshing, protocol } = useAppSelector((state) => state.common);
 
   const [searchKey, setSearchKey] = useState("");
   const setAcordeonIdx = (assetIdx: string[]) => dispatch(setAccordionAssetIdx(assetIdx));
@@ -115,33 +100,6 @@ export const AssetHook = () => {
   };
 
   useEffect(() => {
-    if (protocol === ProtocolTypeEnum.Enum.ICRC1) {
-      const auxAssets = assets.filter((asset) => {
-        let includeInSub = false;
-        asset.subAccounts.map((sa) => {
-          if (sa.name.toLowerCase().includes(searchKey.toLowerCase())) includeInSub = true;
-        });
-
-        return asset.name.toLowerCase().includes(searchKey.toLowerCase()) || includeInSub || searchKey === "";
-      });
-
-      if (auxAssets.length > 0) {
-        const auxAccordion: string[] = [];
-        auxAssets.map((ast) => {
-          if (accordionIndex.includes(ast.tokenSymbol)) auxAccordion.push(ast.tokenSymbol);
-        });
-        setAcordeonIdx(auxAccordion);
-
-        const isSelected = auxAssets.find((ast) => ast.tokenSymbol === selectedAsset?.tokenSymbol);
-        if (selectedAsset && !isSelected) {
-          dispatch(setSelectedAsset(auxAssets[0]));
-          auxAssets[0].subAccounts.length > 0 && dispatch(setSelectedAccount(auxAssets[0].subAccounts[0]));
-        }
-      }
-    }
-  }, [searchKey]);
-
-  useEffect(() => {
     let count = 0;
     const auxGroup = subaccounts.reduce((group, sub) => {
       group[sub.ft] = group[sub.ft] ?? [];
@@ -160,15 +118,10 @@ export const AssetHook = () => {
     searchKey,
     setSearchKey,
     // ICRC1
-    assets,
     isAppDataFreshing,
-    selectedAsset,
-    selectedAccount,
-    accordionIndex,
     setAcordeonIdx,
     assetInfo,
     setAssetInfo,
-    tokensMarket,
     editNameId,
     setEditNameId,
     name,
@@ -177,6 +130,7 @@ export const AssetHook = () => {
     setNewSub,
     hexChecked,
     setHexChecked,
+    list,
     // HPL
     setProtocolType,
     subaccounts,

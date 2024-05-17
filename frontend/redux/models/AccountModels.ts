@@ -1,4 +1,4 @@
-import { HplTransactionsEnum, OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/const";
+import { HplTransactionsEnum, OperationStatusEnum, OperationTypeEnum, TransactionTypeEnum } from "@/common/const";
 import {
   AccountState,
   AssetId,

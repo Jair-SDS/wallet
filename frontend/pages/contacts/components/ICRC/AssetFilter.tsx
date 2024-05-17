@@ -1,5 +1,5 @@
-import { IconTypeEnum, ProtocolTypeEnum } from "@/const";
-import { getAssetIcon } from "@/utils/icons";
+import { IconTypeEnum, ProtocolTypeEnum } from "@common/const";
+import { getAssetIcon } from "@common/utils/icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
 import SearchIcon from "@assets/svg/files/icon-search.svg";
@@ -11,6 +11,7 @@ import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/input";
 import { ChangeEvent, useEffect, useState } from "react";
 import { CustomCheck } from "@components/checkbox";
+import { useAppSelector } from "@redux/Store";
 
 interface AssetFilterProps {
   setAssetOpen: (open: boolean) => void;
@@ -21,8 +22,9 @@ interface AssetFilterProps {
 
 export default function AssetFilter(props: AssetFilterProps) {
   const { t } = useTranslation();
-  const { assets, hplFTs, protocol } = GeneralHook();
+  const { hplFTs, protocol } = GeneralHook();
   const { getAssetLogo, getFtFromSub } = useHPL(false);
+  const { assets } = useAppSelector((state) => state.asset.list);
   const { setAssetOpen, assetFilter, assetOpen, setAssetFilter } = props;
   const [assetSearch, setAssetSearch] = useState("");
   const [unicFt, setUnicFt] = useState<string>("");

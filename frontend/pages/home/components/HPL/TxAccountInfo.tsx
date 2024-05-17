@@ -4,13 +4,14 @@ import { ReactComponent as GreenCheck } from "@assets/svg/files/green_check.svg"
 import { HPLAsset, HplTxUser } from "@redux/models/AccountModels";
 import { ChangeEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { getDecimalAmount, shortAddress } from "@/utils";
 import { CustomInput } from "@components/input";
 import AssetSymbol from "@components/AssetSymbol";
-import { HplTransactionsEnum } from "@/const";
+import { HplTransactionsEnum } from "@common/const";
 import { Principal } from "@dfinity/principal";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { getDecimalAmount } from "@common/utils/number";
+import { shortAddress } from "@common/utils/icrc";
 
 interface TxAccountInfoProps {
   txUser: HplTxUser;

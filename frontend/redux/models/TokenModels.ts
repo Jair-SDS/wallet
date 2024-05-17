@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/const";
+import { AuthNetworkNameEnum, AuthNetworkTypeEnum } from "@/common/const";
 import { SimpleTransferStatusKey, TransferAccountReference } from "@research-ag/hpl-client";
 
 const TokenMarketInfo = z.object({

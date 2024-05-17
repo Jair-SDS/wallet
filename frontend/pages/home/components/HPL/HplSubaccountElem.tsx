@@ -7,10 +7,12 @@ import { HPLAsset, HPLSubAccount, HPLSubData } from "@redux/models/AccountModels
 import { ChangeEvent, Fragment } from "react";
 import { useHPL } from "@pages/hooks/hplHook";
 import { CustomInput } from "@components/input";
-import { getDecimalAmount, getDisplayNameFromFt, getFirstNChars } from "@/utils";
 import { useTranslation } from "react-i18next";
 import AssetSymbol from "@components/AssetSymbol";
 import { db } from "@/database/db";
+import { getFirstNChars } from "@common/utils/strings";
+import { getDisplayNameFromFt } from "@common/utils/hpl";
+import { getDecimalAmount } from "@common/utils/number";
 
 interface HplSubaccountElemProps {
   sub: HPLSubAccount;

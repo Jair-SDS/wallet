@@ -4,7 +4,6 @@ import { ReactComponent as VerifiedIcon } from "@assets/svg/files/verified-icon.
 import { ReactComponent as PencilIcon } from "@assets/svg/files/pencil.svg";
 import { ReactComponent as RefreshIcon } from "@/assets/svg/files/refresh-ccw.svg";
 //
-import { getDecimalAmount, getDisplayNameFromFt, shortPrincipals } from "@/utils";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HPLAsset } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
@@ -14,6 +13,9 @@ import { CustomCopy } from "@components/tooltip";
 import { FungibleTokenLocal } from "@redux/models/TokenModels";
 import { useState } from "react";
 import { AssetHook } from "@pages/home/hooks/assetHook";
+import { shortPrincipals } from "@common/utils/strings";
+import { getDecimalAmount } from "@common/utils/number";
+import { getDisplayNameFromFt } from "@common/utils/hpl";
 
 interface AssetListTableProps {
   assets: HPLAsset[];

@@ -2,8 +2,8 @@
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
 import { AssetContact, SubAccountContact } from "@redux/models/ContactsModels";
-import { IconTypeEnum } from "@/const";
-import { getAssetIcon } from "@/utils/icons";
+import { IconTypeEnum } from "@/common/const";
+import { getAssetIcon } from "@/common/utils/icons";
 
 interface ContactAssetElementProps {
   contAst: AssetContact;
@@ -25,7 +25,7 @@ const ContactAssetElement = ({
   setNewSubaccounts,
 }: ContactAssetElementProps) => {
   return (
-    <button
+    <div
       key={k}
       onClick={onClicAssetElem}
       className={`flex flex-row justify-between items-center w-full p-3 ${
@@ -55,7 +55,7 @@ const ContactAssetElement = ({
           </div>
         )}
       </div>
-    </button>
+    </div>
   );
 
   function onClicAssetElem() {

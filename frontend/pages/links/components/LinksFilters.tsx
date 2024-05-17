@@ -11,7 +11,7 @@ import { CustomCheck } from "@components/checkbox";
 import { ChangeEvent, useEffect, useState } from "react";
 import { CustomInput } from "@components/input";
 import { useAppDispatch } from "@redux/Store";
-import { setHPLSelectedVt } from "@redux/assets/AssetReducer";
+import { setHPLSelectedVt } from "@redux/hpl/HplReducer";
 
 interface AssetFilterProps {
   assetFilter: string[];

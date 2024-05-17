@@ -5,7 +5,7 @@ import { BasicModal } from "@components/modal";
 import AddContact from "./components/ICRC/AddContact";
 import ContactList from "./components/contactList";
 import { GeneralHook } from "@pages/home/hooks/generalHook";
-import { ProtocolTypeEnum } from "@/const";
+import { ProtocolTypeEnum } from "@common/const";
 import AddEditHplContact from "./components/HPL/addHplContact";
 
 const Contacts = () => {

@@ -1,4 +1,4 @@
-import { DeleteContactTypeEnum } from "@/const";
+import { DeleteContactTypeEnum } from "@common/const";
 import { ActorSubclass } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
@@ -7,15 +7,15 @@ import { HplContact, HplRemote } from "@redux/models/AccountModels";
 import { ContactErr } from "@redux/models/ContactsModels";
 import { useState } from "react";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
-import { formatHplRemotes } from "@/utils";
+import { formatHplRemotes } from "@common/utils/hpl";
 
 export const useHplContacts = () => {
   // reducer
 
   const dispatch = useAppDispatch();
   const { contacts, hplContacts, storageCode } = useAppSelector((state) => state.contacts);
-  const { ownersActor } = useAppSelector((state) => state.asset);
-  const { protocol } = useAppSelector((state) => state.asset);
+  const { ownersActor } = useAppSelector((state) => state.hpl);
+  const { protocol } = useAppSelector((state) => state.common);
 
   const saveHplContacts = (contacts: HplContact[]) => {
     dispatch(setHplContacts(contacts));

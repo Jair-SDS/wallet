@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import AuthMethodRender from "./AuthMethodRender";
 import Setings from "@pages/components/Settings";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function AuthMethods() {
   const { t } = useTranslation();
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full">
+      <LanguageSwitcher />
       <div className="flex flex-col items-center justify-center w-full h-full">
         <h2 className="text-[2rem] font-bold text-PrimaryTextColorLight dark:text-PrimaryTextColor">
           {t("login.title")}

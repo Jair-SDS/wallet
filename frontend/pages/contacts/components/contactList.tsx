@@ -1,12 +1,12 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { checkHexString } from "@/utils";
-import { DeleteContactTypeEnum, ProtocolTypeEnum } from "@/const";
+import { DeleteContactTypeEnum, ProtocolTypeEnum } from "@/common/const";
 import RemoveModal from "./removeModal";
 import TableContacts from "./ICRC/tableContacts";
 import TableHplContacts from "./HPL/tableHplContacts";
 import useContactTable from "../hooks/useContactTable";
 import { HplContact } from "@redux/models/AccountModels";
+import { checkHexString } from "@common/utils/hexadecimal";
 
 interface ContactListProps {
   searchKey: string;

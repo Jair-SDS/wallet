@@ -6,7 +6,6 @@ import { ReactComponent as CloseIcon } from "@assets/svg/files/close.svg";
 import { ReactComponent as ChevIcon } from "@assets/svg/files/chev-icon.svg";
 import PlusIcon from "@assets/svg/files/plus-icon.svg";
 //
-import { getContactColor, getInitialFromName, shortAddress } from "@/utils";
 import { CustomCopy } from "@components/tooltip";
 import { CustomInput } from "@components/input";
 import { HplContact } from "@redux/models/AccountModels";
@@ -15,7 +14,9 @@ import { useTranslation } from "react-i18next";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 import TableRemotes from "./tableRemotes";
 import { NewContactSubAccount } from "@redux/models/ContactsModels";
-import { DeleteContactTypeEnum } from "@/const";
+import { DeleteContactTypeEnum } from "@common/const";
+import { getContactColor, getInitialFromName } from "@common/utils/strings";
+import { shortAddress } from "@common/utils/icrc";
 
 interface TableHplContactsProps {
   setAddOpen(value: boolean): void;

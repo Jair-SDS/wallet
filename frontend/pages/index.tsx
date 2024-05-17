@@ -1,23 +1,25 @@
 import { lazy } from "react";
-import Login from "./login";
 import LayoutComponent from "./components/LayoutComponent";
 import history from "./history";
 import { useAppSelector } from "@redux/Store";
 import Loader from "./components/Loader";
-import { RoutingPathEnum } from "@/const";
 import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 import WorkersWrapper from "@/wrappers/WorkersWrapper";
+import { RoutingPathEnum } from "@common/const";
 
+const Login = lazy(() => import("./login"));
 const Home = lazy(() => import("./home"));
 const Contacts = lazy(() => import("./contacts"));
 const Assets = lazy(() => import("./assets"));
 const ExchangeLinks = lazy(() => import("./links"));
+const Allowances = lazy(() => import("./allowances"));
 
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
 
   if (authLoading) return <Loader />;
+
   return (
     <>
       {blur && <div className="fixed w-full h-full bg-black/50 z-[900]"></div>}
@@ -58,6 +60,8 @@ const SwitchRoute = () => {
         return Assets;
       case RoutingPathEnum.Enum.LINKS:
         return ExchangeLinks;
+      case RoutingPathEnum.Enum.ALLOWANCES:
+        return Allowances;
       default:
         return Home;
     }

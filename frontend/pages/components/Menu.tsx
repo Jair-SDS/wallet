@@ -4,7 +4,7 @@ import { CustomButton } from "@components/button";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import { setRoutingPath } from "@redux/auth/AuthReducer";
-import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@/const";
+import { ProtocolTypeEnum, RoutingPath, RoutingPathEnum } from "@common/const";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 
 interface MenuProps {
@@ -16,7 +16,8 @@ const Menu = (props: MenuProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
-  const { assets, subaccounts, exchangeLinks, protocol, hplFTsData, ftsUsed } = AssetHook();
+  const { list, subaccounts, exchangeLinks, protocol, hplFTsData, ftsUsed } = AssetHook();
+  const { allowances } = useAppSelector((state) => state.allowance.list);
   const { hplContacts, contacts } = useHplContacts();
 
   const menuList = [
@@ -31,7 +32,7 @@ const Menu = (props: MenuProps) => {
       path: RoutingPathEnum.Enum.HOME,
       label:
         protocol === ProtocolTypeEnum.Enum.ICRC1
-          ? `${assets?.length !== 1 ? t("assets") : t("asset")} (${assets?.length})`
+          ? `${list.assets?.length !== 1 ? t("assets") : t("asset")} (${list.assets?.length})`
           : `${subaccounts?.length !== 1 ? t("accounts") : t("account")} (${subaccounts?.length})`,
       show: true,
     },
@@ -42,11 +43,18 @@ const Menu = (props: MenuProps) => {
       show: protocol === ProtocolTypeEnum.Enum.HPL,
     },
     {
+      name: "Allowances",
+      path: "/allowances",
+      label: `${allowances?.length !== 1 ? t("allowance.allowances") : t("allowance.allowances")} (${
+        allowances?.length
+      })`,
+    },
+    {
       name: "Contacts",
       path: RoutingPathEnum.Enum.CONTACTS,
       label:
         protocol === ProtocolTypeEnum.Enum.ICRC1
-          ? `${assets?.length !== 1 ? t("contacts") : t("contact")} (${contacts?.length})`
+          ? `${list.assets?.length !== 1 ? t("contacts") : t("contact")} (${contacts?.length})`
           : `${hplContacts?.length !== 1 ? t("contacts") : t("contact")} (${hplContacts?.length})`,
       show: true,
     },
