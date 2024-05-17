@@ -32,7 +32,7 @@ export default function WorkersWrapper({ children }: { children: React.ReactNode
       fromLogin: true,
       myAgent: userAgent,
       assets: dbAssets,
-      basicSearch: false,
+      basicSearch: true,
     });
 
     await transactionCacheRefresh(assets);
@@ -50,7 +50,7 @@ export default function WorkersWrapper({ children }: { children: React.ReactNode
       await updateAllBalances({
         myAgent: userAgent,
         assets: DBAssets,
-        basicSearch: false,
+        basicSearch: true,
       });
 
       await transactionCacheRefresh(assets);
