@@ -84,3 +84,8 @@ export const getContactColor = (idx: number) => {
   else if (idx % 3 === 1) return "bg-ContactColor2";
   else return "bg-ContactColor3";
 };
+
+export const getPrincipalGroupsQty = (princ: string) => {
+  const groups = princ.split("-");
+  return groups.length;
+};

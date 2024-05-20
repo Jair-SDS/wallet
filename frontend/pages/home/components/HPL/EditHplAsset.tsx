@@ -155,12 +155,6 @@ const EditHplAsset = ({ setAssetOpen, open, setEditedFt, editedFt }: EditHplAsse
       });
     }
     if (auxFtsdata.length > 0) {
-      // localStorage.setItem(
-      //   "hplFT-" + authClient,
-      //   JSON.stringify({
-      //     ft: auxFtsdata,
-      //   }),
-      // );
       await db().updateHplAssetsByLedger(auxFtsdata);
 
       editSelAsset(useDict ? { ...editedFt, name: "", symbol: "" } : editedFt, auxFtsdata);

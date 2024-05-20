@@ -163,7 +163,6 @@ const hplAssetSlice = createSlice({
       });
       const newCount = { ...state.nHpl, nAccounts: (BigInt(state.nHpl.nAccounts) + BigInt(1)).toString() };
       state.nHpl = newCount;
-      // localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
       db().updateHplCountByLedger([newCount]);
     },
     editHPLSub: {
@@ -213,7 +212,6 @@ const hplAssetSlice = createSlice({
           nVirtualAccounts: (BigInt(state.nHpl.nVirtualAccounts) + BigInt(1)).toString(),
         };
         state.nHpl = newCount;
-        // localStorage.setItem("nhpl-" + state.storageCode, JSON.stringify(newCount));
         db().updateHplCountByLedger([newCount]);
         if (newSelSub) state.selectSub = newSelSub;
       },

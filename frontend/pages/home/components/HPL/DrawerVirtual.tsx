@@ -329,12 +329,6 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       auxVts = [...hplVTsData, vt];
     }
 
-    // localStorage.setItem(
-    //   "hplVT-" + authClient,
-    //   JSON.stringify({
-    //     vt: auxVts,
-    //   }),
-    // );
     await db().updateHplVirtualsByLedger(auxVts);
     const amnt = getHoleAmount(newVt.amount, getFtFromVt(newVt.backing).decimal, true) as bigint;
     if (edit) {

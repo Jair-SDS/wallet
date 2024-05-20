@@ -39,6 +39,7 @@ import {
   setOwnerId,
   setnHpl,
 } from "@redux/hpl/HplReducer";
+import { getPrincipalGroupsQty } from "@common/utils/strings";
 
 /**
  * This function updates the balances for all provided assets and their subaccounts, based on the market price and the account balance.
@@ -159,7 +160,6 @@ export const updateHPLBalances = async (
       console.log("err-nHpl", e);
     }
 
-    // localStorage.setItem("nhpl-" + principal, JSON.stringify(nData));
     await db().updateHplCountByLedger([nData]);
     store.dispatch(setnHpl(nData));
   }
@@ -237,25 +237,12 @@ export const updateHPLBalances = async (
     let ftData = updateInfo ? await db().getHplAssets() : store.getState().hpl.hplFTsData;
     if (ftInfo && ftInfo.length > 0) {
       ftData = formatFtInfo(ftInfo, ftData);
-      // localStorage.setItem(
-      //   "hplFT-" + principal,
-      //   JSON.stringify({
-      //     ft: ftData,
-      //   }),
-      // );
-
       !fromReload && (await db().updateHplAssetsByLedger(ftData));
       store.dispatch(setHPLAssetsData(ftData));
     }
     let subData = updateInfo ? await db().getHplSubaccounts() : store.getState().hpl.hplSubsData;
     if (subAccInfo && subAccInfo.length > 0) {
       subData = formatAccountInfo(subAccInfo, subData);
-      // localStorage.setItem(
-      //   "hplSUB-" + principal,
-      //   JSON.stringify({
-      //     sub: subData,
-      //   }),
-      // );
       !fromReload && (await db().updateHplSubaccountsByLedger(subData));
       store.dispatch(setHPLSubsData(subData));
     }
@@ -277,7 +264,10 @@ export const updateHPLBalances = async (
 
       const checkPrinc = await Promise.all(
         auxPric
-          .filter((item, index) => auxPric.indexOf(item) === index || !mintPrinc.includes(item))
+          .filter(
+            (item, index) =>
+              auxPric.indexOf(item) === index && getPrincipalGroupsQty(item) < 6 && !mintPrinc.includes(item),
+          )
           .map(async (vt) => {
             const canisterPrinc = vt;
             // HPL MINTER
@@ -305,12 +295,6 @@ export const updateHPLBalances = async (
       });
 
       vtData = formatVirtualAccountInfo(vtInfo, vtData, finalMints);
-      // localStorage.setItem(
-      //   "hplVT-" + principal,
-      //   JSON.stringify({
-      //     vt: vtData,
-      //   }),
-      // );
 
       !fromReload && (await db().updateHplVirtualsByLedger(vtData));
       store.dispatch(setHPLVTsData(vtData));

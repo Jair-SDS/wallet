@@ -163,12 +163,6 @@ const HplSubaccountElem = ({
             auxSubData.push({ ...sb, name: editSubName.trim() });
           } else auxSubData.push(sb);
         });
-        // localStorage.setItem(
-        //   "hplSUB-" + authClient,
-        //   JSON.stringify({
-        //     sub: auxSubData,
-        //   }),
-        // );
         await db().updateHplSubaccountsByLedger(auxSubData);
         editSelSub({ ...sub, name: editSubName.trim() }, auxSubData);
       } catch (error) {
