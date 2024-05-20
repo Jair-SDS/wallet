@@ -6,7 +6,14 @@ import { IcrcTokenMetadataResponse } from "@dfinity/ledger-icrc";
 import { formatHPLSubaccounts, formatFtInfo, formatVirtualAccountInfo, formatAccountInfo } from "@common/utils/hpl";
 import { setTokenMarket, setICPSubaccounts, setAccordionAssetIdx, setAssets } from "./AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
-import { Asset, HplContact, HplRemote, ICPSubAccount, ResQueryState } from "@redux/models/AccountModels";
+import {
+  Asset,
+  HPLVirtualData,
+  HplContact,
+  HplRemote,
+  ICPSubAccount,
+  ResQueryState,
+} from "@redux/models/AccountModels";
 import { Principal } from "@dfinity/principal";
 import { AccountType, AssetId, SubId, VirId } from "@research-ag/hpl-client/dist/candid/ledger";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
@@ -255,16 +262,22 @@ export const updateHPLBalances = async (
 
     const myAgent = store.getState().auth.userAgent;
 
-    const getMintPrinc = async () => {
+    const getMintPrinc = async (vtMintData: HPLVirtualData[]) => {
       if (!vtInfo) return [];
       const auxPric: string[] = [];
       vtInfo.map((vt) => {
         auxPric.push(vt[1][1].toText());
       });
 
+      const mintPrinc = vtMintData
+        .filter((vt) => vt.isMint)
+        .map((vt) => {
+          return vt.accesBy;
+        });
+
       const checkPrinc = await Promise.all(
         auxPric
-          .filter((item, index) => auxPric.indexOf(item) === index)
+          .filter((item, index) => auxPric.indexOf(item) === index || !mintPrinc.includes(item))
           .map(async (vt) => {
             const canisterPrinc = vt;
             // HPL MINTER
@@ -282,10 +295,10 @@ export const updateHPLBalances = async (
           }),
       );
 
-      return checkPrinc;
+      return [...mintPrinc, ...checkPrinc];
     };
     if (vtInfo && vtInfo.length > 0) {
-      const mintsAll = await getMintPrinc();
+      const mintsAll = await getMintPrinc(vtData);
       const finalMints: string[] = [];
       mintsAll.map((mnt) => {
         if (mnt) finalMints.push(mnt);
