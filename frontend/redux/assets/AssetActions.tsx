@@ -28,6 +28,7 @@ import { getMetadataInfo } from "@common/utils/icrc";
 import { getETHRate, getTokensFromMarket } from "@common/utils/market";
 import { refreshAssetBalances } from "@pages/home/helpers/assets";
 import { getICRCSupportedStandards } from "@common/libs/icrc";
+import logger from "@/common/utils/logger";
 import {
   setHPLAssets,
   setHPLAssetsData,
@@ -87,7 +88,8 @@ export const updateAllBalances: UpdateAllBalances = async (params) => {
 
       try {
         subacc = SubAccountNNS.fromBytes(hexToUint8Array(saICP.sub_account_id)) as SubAccountNNS;
-      } catch {
+      } catch (error) {
+        logger.debug(error);
         subacc = undefined;
       }
 
@@ -143,21 +145,21 @@ export const updateHPLBalances = async (
       nData.nAccounts = nAccounts.toString();
       nInfo.nAccounts = nAccounts;
     } catch (e) {
-      console.log("err-nHpl", e);
+      logger.debug("err-nHpl", e);
     }
     try {
       const nVirtualAccounts = await actor.nVirtualAccounts();
       nData.nVirtualAccounts = nVirtualAccounts.toString();
       nInfo.nVirtualAccounts = nVirtualAccounts;
     } catch (e) {
-      console.log("err-nHpl", e);
+      logger.debug("err-nHpl", e);
     }
     try {
       const nFtAssets = await actor.nFtAssets();
       nData.nFtAssets = nFtAssets.toString();
       nInfo.nFtAssets = nFtAssets;
     } catch (e) {
-      console.log("err-nHpl", e);
+      logger.debug("err-nHpl", e);
     }
 
     await db().updateHplCountByLedger([nData]);
@@ -169,7 +171,7 @@ export const updateHPLBalances = async (
     try {
       subAccInfo = await actor.accountInfo({ idRange: [BigInt(0), [nInfo.nAccounts - BigInt(1)]] });
     } catch (e) {
-      console.log("errAccountInfo", e);
+      logger.debug("errAccountInfo", e);
     }
   }
 
@@ -189,7 +191,7 @@ export const updateHPLBalances = async (
     try {
       ftInfo = await actor.ftInfo({ idRange: [BigInt(0), [nInfo.nFtAssets - BigInt(1)]] });
     } catch (e) {
-      console.log("errFtInfor", e);
+      logger.debug("errFtInfor", e);
     }
   }
 
@@ -202,7 +204,7 @@ export const updateHPLBalances = async (
     try {
       vtInfo = await actor.virtualAccountInfo({ idRange: [BigInt(0), [nInfo.nVirtualAccounts - BigInt(1)]] });
     } catch (e) {
-      console.log("errVirtualAccountInfo", e);
+      logger.debug("errVirtualAccountInfo", e);
     }
   }
 
@@ -229,7 +231,7 @@ export const updateHPLBalances = async (
     state.accounts = auxState.accounts;
     state.remoteAccounts = auxState.remoteAccounts as any;
   } catch (e) {
-    console.log("errState", e);
+    logger.debug("errState", e);
   }
 
   try {
@@ -278,7 +280,8 @@ export const updateHPLBalances = async (
             let isMint = false;
             try {
               isMint = await mintActor.isHplMinter();
-            } catch {
+            } catch (error) {
+              logger.debug(error);
               isMint = false;
             }
             if (isMint) return canisterPrinc;
@@ -317,7 +320,7 @@ export const updateHPLBalances = async (
       });
       adminAccountState = adminState.accounts;
     } catch (e) {
-      console.log("errState", e);
+      logger.debug("errState", e);
     }
 
     const { auxSubaccounts, auxFT, auxFullVirtuals } = formatHPLSubaccounts(
@@ -341,7 +344,7 @@ export const updateHPLBalances = async (
 
     return { subs: auxSubaccounts, fts: auxFT };
   } catch (e) {
-    console.log("err", e);
+    logger.debug("err", e);
   }
   return { subs: [], fts: [] };
 };
@@ -368,9 +371,9 @@ export const updateHplRemotes = async (auxState: ResQueryState, contacts: HplCon
 
     store.dispatch(setHplContacts(updatedContacts));
   } catch (e) {
-    console.log("contacts-catch", contacts);
+    logger.debug("contacts-catch", contacts);
     store.dispatch(setHplContacts(contacts));
-    console.log("errState-rem", e);
+    logger.debug("errState-rem", e);
   }
 };
 export const getSNSTokens = async (agent: HttpAgent): Promise<Asset[]> => {
@@ -387,7 +390,7 @@ export const getSNSTokens = async (agent: HttpAgent): Promise<Asset[]> => {
         break;
       }
     } catch (error) {
-      console.error("snses", error);
+      logger.debug("snses", error);
       break;
     }
   }

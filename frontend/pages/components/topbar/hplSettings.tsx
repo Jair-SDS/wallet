@@ -21,6 +21,7 @@ import { setHplDictionaryPrincipal } from "@redux/auth/AuthReducer";
 import { AssetHook } from "@pages/home/hooks/assetHook";
 import { defaultHplLedgers } from "@common/defaultTokens";
 import { db } from "@/database/db";
+import logger from "@/common/utils/logger";
 
 interface HplSettingsModalProps {
   setOpen(value: string): void;
@@ -88,7 +89,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
                     return (
                       <DropdownMenu.Item key={k}>
                         <button
-                          className="flex justify-start p-2 w-full  cursor-pointer hover:dark:bg-ThirdColor rounded-lg"
+                          className="flex justify-start w-full p-2 rounded-lg cursor-pointer hover:dark:bg-ThirdColor"
                           onClick={() => {
                             onLedgerSelect(ledger);
                           }}
@@ -132,7 +133,8 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
     try {
       Principal.fromText(e.target.value.trim());
       setLeder({ principal: e.target.value.trim(), err: false });
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       setLeder({ principal: e.target.value.trim(), err: true });
     }
     setErrMsg("");
@@ -141,7 +143,8 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
     try {
       Principal.fromText(e.target.value.trim());
       setDictionary({ principal: e.target.value.trim(), err: false });
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       setDictionary({ principal: e.target.value.trim(), err: e.target.value === "" ? false : true });
     }
     setErrMsg("");
@@ -162,8 +165,8 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           try {
             const feeConstant = await hplActor.feeRatio();
             dispatch(setFeeConstant(Number(feeConstant.toString())));
-          } catch (e) {
-            console.log("feeConstant-err", e);
+          } catch (error) {
+            logger.debug("feeConstant-err", error);
           }
           localStorage.setItem("hpl-led-pric-" + authClient, ledger.principal);
           const contacts = await db().getHplContacts();
@@ -174,7 +177,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
           });
           setErrMsg("hpl.ledger.principal.err");
           setLoading(false);
-          console.log("Ledger-prin-err:", e);
+          logger.debug("Ledger-prin-err:", e);
           return;
         }
 
@@ -190,7 +193,7 @@ const HplSettingsModal = ({ setOpen }: HplSettingsModalProps) => {
             });
             setErrMsg("hpl.dictionary.principal.err");
             setLoading(false);
-            console.log("Dict-prin-err:", e);
+            logger.debug("Dict-prin-err:", e);
             return;
           }
         else {

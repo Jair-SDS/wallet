@@ -8,6 +8,7 @@ import { ContactErr } from "@redux/models/ContactsModels";
 import { useState } from "react";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { formatHplRemotes } from "@common/utils/hpl";
+import logger from "@/common/utils/logger";
 
 export const useHplContacts = () => {
   // reducer
@@ -54,7 +55,8 @@ export const useHplContacts = () => {
     try {
       Principal.fromText(principal);
       return true;
-    } catch {
+    } catch (error) {
+      logger.debug("checkSubAccount: ", error);
       return false;
     }
   };
@@ -190,7 +192,8 @@ export const useHplContacts = () => {
           const ownerID = await getOwnerId(principal);
           setChainremotes(formatHplRemotes(remotesInfo, remoteState, ownerID));
         }
-      } catch (e) {
+      } catch (error) {
+        logger.debug(error);
         setNewContactErr("no.remotes.found");
       }
     }

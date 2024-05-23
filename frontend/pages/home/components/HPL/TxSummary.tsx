@@ -25,6 +25,7 @@ import { ActorSubclass } from "@dfinity/agent";
 import { getHoleAmount, validateAmount } from "@common/utils/amount";
 import { getDecimalAmount } from "@common/utils/number";
 import DialogSendConfirmation from "../ICRC/transaction/DialogSendConfirmation";
+import logger from "@/common/utils/logger";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -86,8 +87,8 @@ const TxSummary = ({
 
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
-        <p className="font-semibold mb-2 ">{t("from")}</p>
+      <div className="flex flex-col items-start justify-start w-full px-4 py-2 rounded bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+        <p className="mb-2 font-semibold ">{t("from")}</p>
         <TxAccountInfo
           txUser={from}
           getAssetLogo={getAssetLogo}
@@ -102,11 +103,11 @@ const TxSummary = ({
           ingressActor={ingressActor}
         />
       </div>
-      <div className="flex justify-center items-center w-full">
+      <div className="flex items-center justify-center w-full">
         <DownBlueArrow />
       </div>
-      <div className="flex flex-col justify-center items-center w-full my-2 px-4 py-1 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded">
-        <div className="flex flex-row justify-start items-center w-full gap-4">
+      <div className="flex flex-col items-center justify-center w-full px-4 py-1 my-2 rounded bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+        <div className="flex flex-row items-center justify-start w-full gap-4">
           <p>{t("fee")}:</p>
           <p className="flex flex-row gap-2">
             {`${fee} `}
@@ -114,8 +115,8 @@ const TxSummary = ({
           </p>
         </div>
       </div>
-      <div className="flex flex-col justify-start items-start w-full px-4 py-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 rounded mt-3">
-        <p className="font-semibold mb-2">{t("to")}</p>
+      <div className="flex flex-col items-start justify-start w-full px-4 py-2 mt-3 rounded bg-ThemeColorBackLight dark:bg-ThemeColorBack text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+        <p className="mb-2 font-semibold">{t("to")}</p>
         <TxAccountInfo
           txUser={to}
           getAssetLogo={getAssetLogo}
@@ -129,9 +130,9 @@ const TxSummary = ({
           ingressActor={ingressActor}
         />
       </div>
-      <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
-        <p className="text-sm text-TextErrorColor text-left">{t(errMsg)}</p>
-        <div className="flex flex-row justify-end items-center gap-2">
+      <div className="flex flex-row items-center justify-between w-full gap-4 mt-12">
+        <p className="text-sm text-left text-TextErrorColor">{t(errMsg)}</p>
+        <div className="flex flex-row items-center justify-end gap-2">
           <CustomButton className="min-w-[5rem]" onClick={onBack} size={"small"}>
             <p>{t("back")}</p>
           </CustomButton>
@@ -240,7 +241,7 @@ const TxSummary = ({
             }),
             catchError((e: any) => {
               handleError(e, (log: string) => {
-                console.log(log);
+                logger.debug(log);
               });
               return of(null);
             }),
@@ -256,7 +257,7 @@ const TxSummary = ({
         }
       }
     } catch (e) {
-      console.log("txErr: ", e);
+      logger.debug("txErr: ", e);
       setEndTxTime(new Date());
       setSendingStatusAction(SendingStatusEnum.Enum.error);
     }

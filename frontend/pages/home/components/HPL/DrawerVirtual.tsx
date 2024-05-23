@@ -29,6 +29,7 @@ import { getDecimalAmount } from "@common/utils/number";
 import { shortAddress } from "@common/utils/icrc";
 import { getHoleAmount } from "@common/utils/amount";
 import { getPxlCode } from "@common/utils/hpl";
+import logger from "@/common/utils/logger";
 
 interface DrawerVirtualProps {
   setDrawerOpen(value: boolean): void;
@@ -102,9 +103,9 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
   }, [drawerOpen, selectVt]);
 
   return (
-    <div className="flex flex-col justify-start items-start bg-PrimaryColorLight dark:bg-SideColor w-full h-full pt-8 text-md text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70 px-6">
-      <div className="flex flex-row justify-between items-center w-full mb-4">
-        <p className="font-semibold text-lg text-PrimaryTextColorLight dark:text-PrimaryTextColor">
+    <div className="flex flex-col items-start justify-start w-full h-full px-6 pt-8 bg-PrimaryColorLight dark:bg-SideColor text-md text-PrimaryTextColorLight/70 dark:text-PrimaryTextColor/70">
+      <div className="flex flex-row items-center justify-between w-full mb-4">
+        <p className="text-lg font-semibold text-PrimaryTextColorLight dark:text-PrimaryTextColor">
           {selectVt ? t("edit.virtual") : t("add.virtual")}
         </p>
         <CloseIcon
@@ -136,9 +137,9 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           sufix={<AssetSymbol ft={getFtFromVt(newVt.backing)} textClass="break-keep whitespace-nowrap" />}
         />
       </div>
-      <div className="flex flex-col items-start justify-start mt-3 mb-3 w-full">
+      <div className="flex flex-col items-start justify-start w-full mt-3 mb-3">
         <p className="opacity-60">{t("expiration")}</p>
-        <div className="flex flex-row justify-start items-center w-full gap-4">
+        <div className="flex flex-row items-center justify-start w-full gap-4">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div className="relative">
               <DateTimePicker
@@ -161,7 +162,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               )}
             </div>
           </LocalizationProvider>
-          <div className="p-0 flex flex-row gap-2 cursor-pointer" onClick={onChangeExpirationCheck}>
+          <div className="flex flex-row gap-2 p-0 cursor-pointer" onClick={onChangeExpirationCheck}>
             <CustomCheck className="border-BorderColorLight dark:border-BorderColor" checked={expiration} />
             <p className="text-md">{t("no.expiration")}</p>
           </div>
@@ -179,16 +180,16 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           />
         </div>
       ) : (
-        <div className="flex flex-row justify-between items-center w-full p-2 bg-ThemeColorBackLight dark:bg-ThemeColorBack rounded-md">
+        <div className="flex flex-row items-center justify-between w-full p-2 rounded-md bg-ThemeColorBackLight dark:bg-ThemeColorBack">
           <p className="opacity-60">{t("access.by")}</p>
-          <div className="flex flex-row justify-start items-center gap-2">
+          <div className="flex flex-row items-center justify-start gap-2">
             <p className="">{shortAddress(selectVt.accesBy, 6, 4)}</p>
             <CustomCopy size={"xSmall"} className="p-0" copyText={selectVt.accesBy} />
           </div>
         </div>
       )}
-      <div className="w-full flex flex-row justify-between items-center mt-12 gap-4">
-        <p className="text-sm text-TextErrorColor text-left">{errMsg}</p>
+      <div className="flex flex-row items-center justify-between w-full gap-4 mt-12">
+        <p className="text-sm text-left text-TextErrorColor">{errMsg}</p>
         <CustomButton className="min-w-[5rem]" onClick={onSave} size={"small"}>
           {loading ? <LoadingLoader className="mt-1" /> : <p>{t(selectVt ? "save" : "add")}</p>}
         </CustomButton>
@@ -229,7 +230,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
               ],
             ]);
           } catch (e) {
-            console.log("updateVT-err:", e);
+            logger.debug("updateVT-err:", e);
             setErrMsg(t("err.back"));
           }
         saveInLocalstorage(
@@ -265,6 +266,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
           try {
             isMint = await mintActor.isHplMinter();
           } catch (error) {
+            logger.error(error);
             isMint = false;
           }
 
@@ -281,7 +283,7 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
             isFirstVt,
           );
         } catch (e) {
-          console.log("addVT-err:", e);
+          logger.debug("addVT-err:", e);
           setErrMsg(t("err.back"));
         }
       }
@@ -298,7 +300,8 @@ const DrawerVirtual = ({ setDrawerOpen, drawerOpen }: DrawerVirtualProps) => {
       res = { err: true, errMsg: res.errMsg + " " + t("err.expiration") };
     try {
       Principal.fromText(vt.accesBy);
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       res = { err: true, errMsg: res.errMsg + " " + t("err.principal") };
     }
     return res;

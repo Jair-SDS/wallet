@@ -24,4 +24,4 @@ export default async function contactCacheRefresh() {
   } catch (error) {
     console.error(error);
   }
-};
+}

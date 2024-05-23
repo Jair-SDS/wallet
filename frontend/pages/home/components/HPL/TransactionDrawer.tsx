@@ -14,6 +14,7 @@ import { useHPL } from "@pages/hooks/hplHook";
 import { LoadingLoader } from "@components/loader";
 import TxSummary from "./TxSummary";
 import { getOwnerInfoFromPxl } from "@common/utils/hpl";
+import logger from "@/common/utils/logger";
 
 interface TransactionDrawerProps {
   setDrawerOpen(value: boolean): void;
@@ -58,11 +59,11 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
   const [clearCam, setClearCam] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-col justify-start items-between bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-      <div className="flex flex-row justify-between items-center w-full mb-3">
+    <div className="flex flex-col justify-start w-full h-full px-6 pt-8 items-between bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
+      <div className="flex flex-row items-center justify-between w-full mb-3">
         <p className="text-lg font-bold">{t("transaction")}</p>
         <CloseIcon
-          className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+          className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={onClose}
         />
       </div>
@@ -104,7 +105,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
 
     if (qrView) {
       return (
-        <div className="flex flex-col justify-start items-center w-full">
+        <div className="flex flex-col items-center justify-start w-full">
           <QRscanner qrView={qrView !== ""} onSuccess={onQRSuccess} setQRview={setQRviewClose} outsideBack={clearCam} />
         </div>
       );
@@ -112,7 +113,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
 
     return (
       <Fragment>
-        <div className="flex flex-col justify-start items-center w-full">
+        <div className="flex flex-col items-center justify-start w-full">
           <SelectTransfer
             getAssetLogo={getAssetLogo}
             getFtFromSub={getFtFromSub}
@@ -162,7 +163,7 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
             loadingNext={loadingNext}
           />
         </div>
-        <div className="w-full flex flex-row justify-end items-center mt-12 gap-4">
+        <div className="flex flex-row items-center justify-end w-full gap-4 mt-12">
           <CustomButton id="on-next-send-hpl" className="min-w-[5rem]" onClick={onNext} size={"small"}>
             {loadingNext ? <LoadingLoader className="mt-1" /> : <p>{t("next")}</p>}
           </CustomButton>
@@ -286,7 +287,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
         else if (data.principal.trim() !== "") {
           try {
             Principal.fromText(data.principal.trim());
-          } catch {
+          } catch (error) {
+            logger.debug(error);
             return false;
           }
           return true;
@@ -338,7 +340,8 @@ const TransactionDrawer: FC<TransactionDrawerProps> = ({ setDrawerOpen, drawerOp
         ],
       });
       return { ft: rem[0][1].ft.toString(), balance: auxState.remoteAccounts[0][1][0].ft.toString() };
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       return { ft: "", balance: "" };
     }
   }

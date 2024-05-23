@@ -14,6 +14,7 @@ import { CustomButton } from "@components/button";
 import { LoadingLoader } from "@components/loader";
 import AssetSymbol from "@components/AssetSymbol";
 import { db } from "@/database/db";
+import logger from "@/common/utils/logger";
 
 interface AddSubaccountProps {
   setAssetOpen(value: boolean): void;
@@ -52,15 +53,15 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
 
   return (
     <Fragment>
-      <div className="flex flex-col justify-start items-center bg-PrimaryColorLight dark:bg-PrimaryColor w-full h-full pt-8 px-6 text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
-        <div className="flex flex-row justify-between items-center w-full mb-3">
+      <div className="flex flex-col items-center justify-start w-full h-full px-6 pt-8 bg-PrimaryColorLight dark:bg-PrimaryColor text-PrimaryTextColorLight dark:text-PrimaryTextColor text-md">
+        <div className="flex flex-row items-center justify-between w-full mb-3">
           <p className="text-lg font-bold">{t("add.subaccount")}</p>
           <CloseIcon
-            className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+            className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
             onClick={onClose}
           />
         </div>
-        <p className="w-full text-left mt-2">{`${t("adding.account")}: ${nHpl.nAccounts}`}</p>
+        <p className="w-full mt-2 text-left">{`${t("adding.account")}: ${nHpl.nAccounts}`}</p>
         <div className="flex flex-col items-start w-full mt-3 mb-3">
           <p className="opacity-60">
             {t("account.name")}
@@ -75,7 +76,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
             onChange={onNameChange}
           />
         </div>
-        <div className="flex flex-col justify-between items-center w-full mb-3">
+        <div className="flex flex-col items-center justify-between w-full mb-3">
           <p className="w-full text-left opacity-60">
             {t("asset")} <span className="text-RadioCheckColor">*</span>
           </p>
@@ -95,9 +96,9 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                   "pr-0",
                 )}
               >
-                <div className="flex flex-row justify-start items-center w-full p-2 border border-BorderColorLight dark:border-BorderColor rounded-md">
+                <div className="flex flex-row items-center justify-start w-full p-2 border rounded-md border-BorderColorLight dark:border-BorderColor">
                   {!selAsset ? (
-                    <div className="flex flex-row justify-between items-center w-full">
+                    <div className="flex flex-row items-center justify-between w-full">
                       <p className="opacity-60">{t("select.asset")}</p>
                       <img
                         src={ChevIcon}
@@ -107,8 +108,8 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                       />
                     </div>
                   ) : (
-                    <div className="flex flex-row justify-between items-center w-full">
-                      <div className=" flex flex-row justify-start items-center w-full gap-2 text-sm">
+                    <div className="flex flex-row items-center justify-between w-full">
+                      <div className="flex flex-row items-center justify-start w-full gap-2 text-sm ">
                         <img src={getAssetLogo(selAsset.id)} className="w-8 h-8" alt="info-icon" />
 
                         <AssetSymbol ft={selAsset} />
@@ -133,7 +134,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                 sideOffset={5}
                 align="end"
               >
-                <div className="flex flex-col justify-start items-start w-full  gap-2">
+                <div className="flex flex-col items-start justify-start w-full gap-2">
                   <CustomInput
                     prefix={<img src={SearchIcon} className="h-[15px] w-[15px]" alt="search-icon" />}
                     sizeInput={"small"}
@@ -161,7 +162,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
                         return (
                           <button
                             key={k}
-                            className="flex flex-row justify-start items-center w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-SelectRowColorLight"
+                            className="flex flex-row items-center justify-start w-full gap-2 text-sm hover:bg-HoverColorLight dark:hover:bg-SelectRowColorLight"
                             onClick={() => {
                               onSelectAsset(ft);
                             }}
@@ -178,8 +179,8 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
         </div>
-        <div className="flex flex-row justify-between items-center w-full gap-2">
-          <p className="text-TextErrorColor text-sm">{addSubErr != "" ? addSubErr : ""}</p>
+        <div className="flex flex-row items-center justify-between w-full gap-2">
+          <p className="text-sm text-TextErrorColor">{addSubErr != "" ? addSubErr : ""}</p>
           <CustomButton className="min-w-[5rem]" onClick={onAdd} size={"small"}>
             {loading ? <LoadingLoader className="mt-1" /> : <p>{t("add")}</p>}
           </CustomButton>
@@ -226,8 +227,7 @@ const AddSubaccount = ({ setAssetOpen, open, extAsset }: AddSubaccountProps) => 
           setAssetOpen(false);
           setLoading(false);
         } catch (e) {
-          console.log("e", e);
-
+          logger.debug(e);
           setAddSubErr(t("server.error"));
           setLoading(false);
         }

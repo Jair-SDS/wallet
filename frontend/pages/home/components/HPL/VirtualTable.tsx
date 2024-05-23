@@ -25,6 +25,7 @@ import { AccountHook } from "@pages/hooks/accountHook";
 import { Actor } from "@dfinity/agent";
 import { getDecimalAmount } from "@common/utils/number";
 import { shortAddress } from "@common/utils/icrc";
+import logger from "@/common/utils/logger";
 
 interface VirtualTableProps {
   setDrawerOpen(value: boolean): void;
@@ -141,7 +142,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
                       vt.expiration,
                     )} text-left text-PrimaryTextColorLight dark:text-PrimaryTextColor px-2`}
                   >
-                    <div className="flex flex-row justify-start items-center gap-1 w-full">
+                    <div className="flex flex-row items-center justify-start w-full gap-1">
                       <div className="px-1 bg-gray-color-4 rounded-[0.2rem] ">{sub.sub_account_id}</div>
                       <p>{sub.name}</p>
                     </div>
@@ -387,7 +388,7 @@ const VirtualTable: FC<VirtualTableProps> = ({
         console.error(res.err);
       }
     } catch (error) {
-      console.error(error);
+      logger.debug(error);
     }
   }
 

@@ -14,6 +14,7 @@ import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HplContact } from "@redux/models/AccountModels";
 import AddRemoteList from "./addRemotesList";
+import logger from "@/common/utils/logger";
 
 interface AddContactProps {
   setAddOpen(value: boolean): void;
@@ -50,9 +51,9 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
 
   return (
     <Fragment>
-      <div className="reative flex flex-col justify-start items-start w-full gap-4 text-md">
+      <div className="flex flex-col items-start justify-start w-full gap-4 reative text-md">
         <CloseIcon
-          className="absolute top-5 right-5 cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
+          className="absolute cursor-pointer top-5 right-5 stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={() => {
             setAddOpen(false);
             setClearCam(true);
@@ -60,7 +61,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
         />
         <p>{edit ? t("edit.contact") : t("add.contact")}</p>
         {qrView ? (
-          <div className="flex flex-col justify-start items-center w-full gap-4 text-md ">
+          <div className="flex flex-col items-center justify-start w-full gap-4 text-md ">
             <div className="w-[50%]">
               <QRscanner
                 setQRview={setQRview}
@@ -71,7 +72,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                 outsideBack={clearCam}
               />
             </div>
-            <div className="flex flex-row justify-end items-center w-full gap-3">
+            <div className="flex flex-row items-center justify-end w-full gap-3">
               <CustomButton
                 intent="deny"
                 className="min-w-[5rem]"
@@ -84,8 +85,8 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col justify-start items-start w-full gap-4 text-md">
-            <div className="flex flex-row justify-start items-start w-full gap-3">
+          <div className="flex flex-col items-start justify-start w-full gap-4 text-md">
+            <div className="flex flex-row items-start justify-start w-full gap-3">
               <div className="flex flex-col justify-start items-start w-[50%]">
                 <p>{t("name")}</p>
                 <CustomInput
@@ -98,7 +99,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                   }}
                 />
               </div>
-              <div className="flex flex-col justify-start items-start w-full">
+              <div className="flex flex-col items-start justify-start w-full">
                 <p>{"Principal"}</p>
                 <CustomInput
                   sizeInput={"medium"}
@@ -128,7 +129,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
                 />
               </div>
             </div>
-            <div className="flex flex-row justify-start items-center gap-2">
+            <div className="flex flex-row items-center justify-start gap-2">
               <p>{t("remote.accounts")}</p>
               <CustomButton
                 className="!p-1"
@@ -149,7 +150,7 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
               nameErrs={nameErrs}
               getAssetLogo={getAssetLogo}
             />
-            <div className="flex flex-row justify-end items-center w-full gap-3">
+            <div className="flex flex-row items-center justify-end w-full gap-3">
               <p className="text-TextErrorColor">{t(newContactErr)}</p>
               <CustomButton
                 className="min-w-[5rem]"
@@ -186,7 +187,8 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
       try {
         Principal.fromText(value);
         setNewContactPrinErr(false);
-      } catch {
+      } catch (error) {
+        logger.debug(error);
         setNewContactPrinErr(true);
       }
     else setNewContactPrinErr(false);
@@ -203,7 +205,8 @@ const AddEditHplContact = ({ setAddOpen, edit }: AddContactProps) => {
         };
       });
       await searchRemotes(edit, ingressActor, princ.owner.toText(), true);
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       setNewContactErr("check.add.contact.prin.empty.err");
       setNewContactPrinErr(true);
     }

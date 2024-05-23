@@ -5,6 +5,7 @@ import { LoadingLoader } from "@components/loader";
 import { HPLVirtualSubAcc } from "@redux/models/AccountModels";
 import { useTranslation } from "react-i18next";
 import { useHPL } from "@pages/hooks/hplHook";
+import logger from "@/common/utils/logger";
 
 interface ResetVirtualModalProps {
   selectVt: HPLVirtualSubAcc | undefined;
@@ -28,18 +29,18 @@ const ResetVirtualModal = ({
   const { t } = useTranslation();
   const { ingressActor, reloadHPLBallance } = useHPL(false);
   return (
-    <div className="flex flex-col justify-start items-start w-full gap-4 text-md">
-      <div className="flex flex-row justify-between items-center w-full">
+    <div className="flex flex-col items-start justify-start w-full gap-4 text-md">
+      <div className="flex flex-row items-center justify-between w-full">
         <WarningIcon className="w-6 h-6" />
         <CloseIcon
-          className="stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor cursor-pointer"
+          className="cursor-pointer stroke-PrimaryTextColorLight dark:stroke-PrimaryTextColor"
           onClick={() => {
             setResetModal(false);
           }}
         />
       </div>
-      <p className=" text-justify w-full">{t("reset.virtual.1")}</p>
-      <div className="w-full flex flex-row justify-between items-center gap-2">
+      <p className="w-full text-justify ">{t("reset.virtual.1")}</p>
+      <div className="flex flex-row items-center justify-between w-full gap-2">
         <p className="text-sm text-TextErrorColor">{errMsg}</p>
         <CustomButton className="min-w-[5rem]" onClick={onConfirmReset} size={"small"}>
           {loading ? <LoadingLoader className="mt-1" /> : <p>{t("yes")}</p>}
@@ -65,7 +66,8 @@ const ResetVirtualModal = ({
         await reloadHPLBallance(true);
         setResetModal(false);
         setSelVt(undefined);
-      } catch {
+      } catch (error) {
+        logger.debug(error);
         setErrMsg("err.back");
       }
     }

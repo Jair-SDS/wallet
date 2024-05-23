@@ -1,5 +1,6 @@
 import { Principal } from "@dfinity/principal";
 import { _SERVICE as OwnersActor } from "@candid/Owners/service.did";
+import logger from "@/common/utils/logger";
 
 export const getCodeFromVt = async (ownersActor: OwnersActor, authClient: string, linkId: string) => {
   try {
@@ -9,7 +10,8 @@ export const getCodeFromVt = async (ownersActor: OwnersActor, authClient: string
       const link = BigInt(linkId).toString(16);
       return link.length.toString() + id + link;
     } else return undefined;
-  } catch {
+  } catch (error) {
+    logger.debug(error);
     return undefined;
   }
 };
@@ -21,7 +23,8 @@ export const getPrincipalFromCode = async (ownersActor: OwnersActor, code: strin
       const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
       const ownerPrinc = await ownersActor.get(princCode);
       return ownerPrinc;
-    } catch {
+    } catch (error) {
+      logger.debug(error);
       return undefined;
     }
   } else return undefined;

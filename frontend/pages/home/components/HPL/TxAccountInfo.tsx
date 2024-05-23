@@ -12,6 +12,7 @@ import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { getDecimalAmount } from "@common/utils/number";
 import { shortAddress } from "@common/utils/icrc";
+import logger from "@/common/utils/logger";
 
 interface TxAccountInfoProps {
   txUser: HplTxUser;
@@ -145,7 +146,8 @@ const TxAccountInfo = ({
       console.log("amount", auxState.remoteAccounts[0][1][0].ft.toString());
 
       set(auxState.remoteAccounts[0][1][0].ft.toString() || "0");
-    } catch (e) {
+    } catch (error) {
+      logger.debug(error);
       set("0");
     }
   }

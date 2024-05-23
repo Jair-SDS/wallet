@@ -16,6 +16,7 @@ import HplDefaultIcon from "@assets/svg/files/defaultHPL.svg";
 import { Principal } from "@dfinity/principal";
 import { Expiration } from "@candid/HPL/service.did";
 import { checkHexString } from "./hexadecimal";
+import logger from "@/common/utils/logger";
 
 export const parseFungibleToken = (tokens: FungibleToken[]) => {
   const auxTkns: FungibleTokenLocal[] = [];
@@ -250,7 +251,8 @@ export const getOwnerInfoFromPxl = (code: string) => {
       const princCode = BigInt(`0x${code.slice(1, code.length - size)}`);
       return { ownerId: princCode, linkId: BigInt(`0x${code.slice(-size)}`).toString() };
     } else return undefined;
-  } catch {
+  } catch (error) {
+    logger.debug(error);
     return undefined;
   }
 };

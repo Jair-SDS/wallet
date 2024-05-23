@@ -50,6 +50,7 @@ import {
   setOwnersActor,
 } from "./hpl/HplReducer";
 import { parseFungibleToken } from "@common/utils/hpl";
+import logger from "@/common/utils/logger";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -73,7 +74,7 @@ export const handleAuthenticated = async (opt: AuthNetwork) => {
         resolve();
       },
       onError: (e) => {
-        console.error("onError", e);
+        logger.debug("onError", e);
         store.dispatch(setUnauthenticated());
         store.dispatch(setDebugMode(false));
         reject();
@@ -180,9 +181,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     let hplFTsData: HPLAssetData[] | null = null;
     try {
       hplFTsData = await db().getHplAssets();
-      console.log("getHplAssets", hplFTsData);
     } catch (error) {
-      console.error("dbFtData:", error);
+      logger.error("dbFtData:", error);
     }
     // const hplFTsData = localStorage.getItem("hplFT-" + identityPrincipalStr);
     if (hplFTsData != null) {
@@ -202,7 +202,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
         const dictFTs = await dictActor.allTokens();
         store.dispatch(setHPLDictionary(parseFungibleToken(dictFTs)));
       } catch (e) {
-        console.log("dictFTs-err:", e);
+        logger.debug("dictFTs-err:", e);
         localStorage.setItem("hpl-dict-pric-" + identityPrincipalStr, "");
       }
     }
@@ -211,9 +211,8 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     let hplSubsData: HPLSubData[] | null = null;
     try {
       hplSubsData = await db().getHplSubaccounts();
-      console.log("getHplSubaccounts", hplSubsData);
     } catch (error) {
-      console.error("dbSubData:", error);
+      logger.debug("dbSubData:", error);
     }
     if (hplSubsData != null) {
       // const hplSubsDataJson = JSON.parse(hplSubsData);
@@ -223,9 +222,9 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     let hplVTsData: HPLVirtualData[] | null = null;
     try {
       hplVTsData = await db().getHplVirtuals();
-      console.log("getHplVirtuals", hplVTsData);
+      logger.debug("getHplVirtuals", hplVTsData);
     } catch (error) {
-      console.error("dbVtData:", error);
+      logger.debug("dbVtData:", error);
     }
     if (hplVTsData != null) {
       // const hplVTsDataJson = JSON.parse(hplVTsData);
@@ -238,7 +237,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     try {
       hplContactsData = await db().getHplContacts();
     } catch (error) {
-      console.error("dbHplCntcData:", error);
+      logger.debug("dbHplCntcData:", error);
     }
     // HPL OWNERS
     const ownerActor = Actor.createActor<OwnersActor>(OwnersIDLFactory, {
@@ -261,7 +260,7 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
       const feeConstant = await ingressActor.feeRatio();
       store.dispatch(setFeeConstant(Number(feeConstant.toString())));
     } catch (e) {
-      console.log("feeConstant-err", e);
+      logger.debug("feeConstant-err", e);
     }
   }
 

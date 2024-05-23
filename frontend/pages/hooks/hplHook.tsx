@@ -31,6 +31,7 @@ import {
 import dayjs from "dayjs";
 import { ChangeEvent, useEffect, useState } from "react";
 import { validateAmount } from "@common/utils/amount";
+import logger from "@/common/utils/logger";
 
 export const useHPL = (open: boolean) => {
   const dispatch = useAppDispatch();
@@ -298,7 +299,8 @@ export const useHPL = (open: boolean) => {
       try {
         Principal.fromText(e.target.value.trim());
         setAccesErr(false);
-      } catch {
+      } catch (error) {
+        logger.debug(error);
         setAccesErr(true);
       }
     else setAccesErr(false);
