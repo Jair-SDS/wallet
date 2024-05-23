@@ -26,7 +26,7 @@ export default function AllowanceList({ allowances, handleSortChange }: Allowanc
   const { isAppDataFreshing } = useAppSelector((state) => state.common);
 
   return (
-    <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light mt-4">
+    <div className="w-full max-h-[calc(100vh-13rem)] scroll-y-light mt-4 px-4">
       <UpdateAllowanceDrawer />
       <DeleteAllowanceModal />
       <table className="relative w-full text-black-color dark:text-gray-color-9">

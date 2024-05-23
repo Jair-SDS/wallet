@@ -44,10 +44,11 @@ const Menu = (props: MenuProps) => {
     },
     {
       name: "Allowances",
-      path: "/allowances",
+      path: RoutingPathEnum.Enum.ALLOWANCES,
       label: `${allowances?.length !== 1 ? t("allowance.allowances") : t("allowance.allowances")} (${
         allowances?.length
       })`,
+      show: protocol === ProtocolTypeEnum.Enum.ICRC1,
     },
     {
       name: "Contacts",
