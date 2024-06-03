@@ -49,6 +49,7 @@ import {
   updateReduxAllowance,
 } from "@redux/allowance/AllowanceReducer";
 import { Principal } from "@dfinity/principal";
+import logger from "@/common/utils/logger";
 
 addRxPlugin(RxDBUpdatePlugin);
 addRxPlugin(RxDBMigrationPlugin);
@@ -287,7 +288,7 @@ export class RxdbDatabase extends IWalletDatabase {
       this._hplcount = hplcounts;
       this._hplcontacts = hplcontacts;
     } catch (e) {
-      console.error("RxDb Init:", e);
+      logger.debug("RxDb Init:", e);
     }
   }
 
@@ -336,7 +337,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const doc = await (await this.assets)?.findOne(address).exec();
       return (doc && this._mapAssetDoc(doc)) || null;
     } catch (e) {
-      console.error("RxDb GetAsset:", e);
+      logger.debug("RxDb GetAsset:", e);
       return null;
     }
   }
@@ -351,7 +352,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const documents = await (await this.assets)?.find().exec();
       return (documents && documents.map(this._mapAssetDoc)) || [];
     } catch (e) {
-      console.error("RxDb GetAssets:", e);
+      logger.debug("RxDb GetAssets:", e);
       return [];
     }
   }
@@ -386,7 +387,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(addReduxAsset(asset));
     } catch (e) {
-      console.error("RxDb AddAsset:", e);
+      logger.debug("RxDb AddAsset:", e);
     }
   }
 
@@ -405,7 +406,7 @@ export class RxdbDatabase extends IWalletDatabase {
       );
       if (options?.sync) await this._assetStateSync();
     } catch (e) {
-      console.error("RxDb UpdateAssets:", e);
+      logger.debug("RxDb UpdateAssets:", e);
     }
   }
 
@@ -428,7 +429,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(updateReduxAsset(newDoc));
     } catch (e) {
-      console.error("RxDb UpdateAsset:", e);
+      logger.debug("RxDb UpdateAsset:", e);
     }
   }
 
@@ -443,7 +444,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(deleteReduxAsset(address));
     } catch (e) {
-      console.error("RxDb DeleteAsset", e);
+      logger.debug("RxDb DeleteAsset", e);
     }
   }
 
@@ -457,7 +458,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const document = await (await this.contacts)?.findOne(principal).exec();
       return (document && this._mapContactDoc(document)) || null;
     } catch (e) {
-      console.error("RxDb GetContact", e);
+      logger.debug("RxDb GetContact", e);
       return null;
     }
   }
@@ -479,7 +480,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const documents = await (await this.contacts)?.find().exec();
       return (documents && documents.map(this._mapContactDoc)) || [];
     } catch (e) {
-      console.error("RxDb GetContacts", e);
+      logger.debug("RxDb GetContacts", e);
       return [];
     }
   }
@@ -512,7 +513,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(addReduxContact(contact));
     } catch (e) {
-      console.error("RxDb AddContact", e);
+      logger.debug("RxDb AddContact", e);
     }
   }
 
@@ -544,7 +545,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(updateReduxContact(newDoc));
     } catch (e) {
-      console.error("RxDb UpdateContact", e);
+      logger.debug("RxDb UpdateContact", e);
     }
   }
 
@@ -577,7 +578,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       store.dispatch(setReduxContacts(newDocs));
     } catch (e) {
-      console.error("RxDb UpdateContacts", e);
+      logger.debug("RxDb UpdateContacts", e);
     }
   }
 
@@ -591,7 +592,7 @@ export class RxdbDatabase extends IWalletDatabase {
       await document?.remove();
       if (options?.sync) store.dispatch(deleteReduxContact(principal));
     } catch (e) {
-      console.error("RxDb DeleteContact", e);
+      logger.debug("RxDb DeleteContact", e);
     }
   }
 
@@ -619,7 +620,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const document = await (await this.allowances)?.findOne(id).exec();
       return (document && this._mapAllowanceDoc(document)) || null;
     } catch (e) {
-      console.error("RxDb GetAllowance", e);
+      logger.debug("RxDb GetAllowance", e);
       return null;
     }
   }
@@ -641,7 +642,7 @@ export class RxdbDatabase extends IWalletDatabase {
       const documents = await (await this.allowances)?.find().exec();
       return (documents && documents.map(this._mapAllowanceDoc)) || [];
     } catch (e) {
-      console.error("RxDb GetAllowances", e);
+      logger.debug("RxDb GetAllowances", e);
       return [];
     }
   }
@@ -669,7 +670,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(addReduxAllowance(allowance));
     } catch (e) {
-      console.error("RxDb AddAllowance", e);
+      logger.debug("RxDb AddAllowance", e);
     }
   }
 
@@ -696,7 +697,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(updateReduxAllowance(newDoc));
     } catch (e) {
-      console.error("RxDb UpdateAllowance", e);
+      logger.debug("RxDb UpdateAllowance", e);
     }
   }
 
@@ -724,7 +725,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(setReduxAllowances(newDocs));
     } catch (e) {
-      console.error("RxDb UpdateAllowances", e);
+      logger.debug("RxDb UpdateAllowances", e);
     }
   }
 
@@ -739,7 +740,7 @@ export class RxdbDatabase extends IWalletDatabase {
 
       if (options?.sync) store.dispatch(deleteReduxAllowance(id));
     } catch (e) {
-      console.error("RxDb DeleteAllowance", e);
+      logger.debug("RxDb DeleteAllowance", e);
     }
   }
 
@@ -1639,7 +1640,7 @@ export class RxdbDatabase extends IWalletDatabase {
           })),
         );
       } catch (e) {
-        console.error("RxDb DoesDBExist:", e);
+        logger.debug("RxDb DoesDBExist:", e);
       }
     }
   }

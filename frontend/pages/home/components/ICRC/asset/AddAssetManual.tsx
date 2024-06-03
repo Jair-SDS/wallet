@@ -28,6 +28,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@redux/Store";
 import useAssetMutate, { assetMutateInitialState } from "@pages/home/hooks/useAssetMutate";
 import { toFullDecimal } from "@common/utils/amount";
+import logger from "@/common/utils/logger";
 
 const AddAssetManual = () => {
   const { assetAction, assetMutated } = useAppSelector((state) => state.asset.mutation);
@@ -236,7 +237,8 @@ const AddAssetManual = () => {
       try {
         Principal.fromText(e.target.value.trim());
         setErrToken("");
-      } catch {
+      } catch (error) {
+        logger.debug("Error getting ledger", error);
         setErrToken("non");
       }
     else setErrToken("");
@@ -251,7 +253,8 @@ const AddAssetManual = () => {
       try {
         Principal.fromText(e.target.value.trim());
         setErrIndex("");
-      } catch {
+      } catch (error) {
+        logger.debug("Error getting index", error);
         setErrIndex("non");
       }
     else setErrIndex("");
@@ -338,7 +341,8 @@ const AddAssetManual = () => {
         });
         await getTransactions({ max_results: BigInt(1), account: { owner: Principal.fromText(authClient) } });
         setValidIndex(true);
-      } catch {
+      } catch (error) {
+        logger.debug("Error getting index", error);
         validData = false;
         setErrIndex(t("add.index.import.error"));
         setValidIndex(false);
@@ -439,7 +443,7 @@ const AddAssetManual = () => {
       dispatch(setSelectedAsset(newAsset));
       dispatch(setAccordionAssetIdx([newAsset.tokenSymbol]));
     } catch (error) {
-      console.error("Error adding asset", error);
+      logger.debug("Error adding asset", error);
       dispatch(setAssetMutationResult(AssetMutationResult.FAILED));
     } finally {
       dispatch(setAssetMutationAction(AssetMutationAction.NONE));

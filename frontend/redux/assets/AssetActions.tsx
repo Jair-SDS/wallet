@@ -89,7 +89,7 @@ export const updateAllBalances: UpdateAllBalances = async (params) => {
       try {
         subacc = SubAccountNNS.fromBytes(hexToUint8Array(saICP.sub_account_id)) as SubAccountNNS;
       } catch (error) {
-        logger.debug(error);
+        logger.debug("Error parsing subaccount", error);
         subacc = undefined;
       }
 

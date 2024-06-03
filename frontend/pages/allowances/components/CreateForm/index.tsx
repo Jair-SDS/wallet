@@ -20,6 +20,7 @@ import { refreshAllowance } from "@pages/allowances/helpers/refresh";
 import { getDuplicatedAllowance } from "@pages/allowances/helpers/validators";
 import { getAllowanceDetails } from "@/common/libs/icrc";
 import { isHexadecimalValid } from "@pages/home/helpers/checkers";
+import logger from "@/common/utils/logger";
 
 export default function CreateForm() {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ export default function CreateForm() {
   const { userPrincipal } = useAppSelector((state) => state.auth);
 
   return (
-    <form className="flex flex-col px-8 overflow-y-auto text-left">
+    <form className="relative flex flex-col px-6 overflow-y-auto text-left">
       <AssetFormItem
         allowance={allowance}
         assets={assets}
@@ -151,7 +152,7 @@ export default function CreateForm() {
 
       setAllowanceState({ ...newAllowance, amount: newAllowance.amount.replace(/,/g, "") });
     } catch (error) {
-      console.error(error);
+      logger.debug(error);
     } finally {
       setLoading(false);
     }
