@@ -121,7 +121,6 @@ export default function WatchOnlyRecord(props: WatchOnlyRecordProps) {
         myAgent: userAgent,
         assets: DBAssets,
         basicSearch: true,
-        loading: true,
       });
 
       await transactionCacheRefresh(assets);
