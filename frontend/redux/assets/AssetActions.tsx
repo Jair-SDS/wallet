@@ -60,7 +60,7 @@ export const updateAllBalances: UpdateAllBalances = async (params) => {
   const myPrincipal = store.getState().auth.userPrincipal;
 
   if (!myPrincipal) {
-    console.warn("No principal found");
+    logger.debug("No principal found");
     return;
   }
 

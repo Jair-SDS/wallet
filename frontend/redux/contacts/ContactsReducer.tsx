@@ -2,6 +2,7 @@ import { db } from "@/database/db";
 import { HplContact } from "@redux/models/AccountModels";
 import { Contact } from "@redux/models/ContactsModels";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import logger from "@/common/utils/logger";
 
 interface ContactsState {
   storageCode: string;
@@ -31,7 +32,7 @@ const contactsSlice = createSlice({
     updateReduxContact(state, action: PayloadAction<Contact>) {
       const index = state.contacts.findIndex((contact) => contact.principal === action.payload.principal);
       if (index !== -1) state.contacts[index] = action.payload;
-      if (index === -1) console.warn("Contact not found");
+      if (index === -1) logger.debug("Contact not found");
     },
     deleteReduxContact(state, action: PayloadAction<string>) {
       state.contacts = state.contacts.filter((contact) => contact.principal !== action.payload);

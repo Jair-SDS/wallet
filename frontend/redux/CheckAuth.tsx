@@ -34,7 +34,7 @@ import { HPLAssetData, HPLSubData, HPLVirtualData, HplContact } from "./models/A
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 import { db, DB_Type } from "@/database/db";
-import { setTransactions } from "./transaction/TransactionReducer";
+import { setTransactions, setTxWorker } from "./transaction/TransactionReducer";
 import { addWatchOnlySessionToLocal } from "@pages/helpers/watchOnlyStorage";
 import watchOnlyRefresh from "@pages/helpers/watchOnlyRefresh";
 import { setProtocol, setStorageCodeA } from "./common/CommonReducer";
@@ -295,4 +295,5 @@ export const logout = async () => {
     type: "USER_LOGGED_OUT",
   });
   store.dispatch(setTransactions([]));
+  store.dispatch(setTxWorker([]));
 };
