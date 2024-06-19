@@ -143,7 +143,6 @@ const TxAccountInfo = ({
         accounts: [],
         remoteAccounts: [{ id: [Principal.fromText(rmt.principal), BigInt(rmt.vIdx)] }],
       });
-      console.log("amount", auxState.remoteAccounts[0][1][0].ft.toString());
 
       set(auxState.remoteAccounts[0][1][0].ft.toString() || "0");
     } catch (error) {

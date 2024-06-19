@@ -151,34 +151,39 @@ const TxSummary = ({
   function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {
     const amnt = e.target.value;
     if (validateAmount(amnt, decimals) || amnt === "") {
-      setAmount(amnt);
-      if (amnt.trim() === "") {
-        setFee("");
-        setAmountReceiver("");
-      } else {
-        const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
-        const newFee = Math.ceil(Number(holeAmount) / (feeConstant + 1));
-        setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
-        setAmountReceiver(getDecimalAmount(Number(holeAmount) - newFee, getFtFromSub(ftId).decimal, true));
+      const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
+      if (BigInt(holeAmount) <= BigInt(rmtAmountFrom)) {
+        setAmount(amnt);
+        if (amnt.trim() === "") {
+          setFee("");
+          setAmountReceiver("");
+        } else {
+          // const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
+          const newFee = Math.ceil(Number(holeAmount) / (feeConstant + 1));
+          setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
+          setAmountReceiver(getDecimalAmount(Number(holeAmount) - newFee, getFtFromSub(ftId).decimal, true));
+        }
+        setErrMsg("");
       }
-      setErrMsg("");
     }
   }
 
   function onAmountReceiverChange(e: ChangeEvent<HTMLInputElement>) {
     const amnt = e.target.value;
     if (validateAmount(amnt, decimals) || amnt === "") {
-      setAmountReceiver(amnt);
-      if (amnt.trim() === "") {
-        setFee("");
-        setAmount("");
-      } else {
-        const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
-        const newFee = Math.ceil(Number(holeAmount) / feeConstant);
-        setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
-        setAmount(getDecimalAmount(newFee + Number(holeAmount), getFtFromSub(ftId).decimal, true));
+      const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
+      const newFee = Math.ceil(Number(holeAmount) / feeConstant);
+      if (BigInt(newFee + Number(holeAmount) <= BigInt(rmtAmountFrom))) {
+        setAmountReceiver(amnt);
+        if (amnt.trim() === "") {
+          setFee("");
+          setAmount("");
+        } else {
+          setFee(getDecimalAmount(newFee, getFtFromSub(ftId).decimal, true));
+          setAmount(getDecimalAmount(newFee + Number(holeAmount), getFtFromSub(ftId).decimal, true));
+        }
+        setErrMsg("");
       }
-      setErrMsg("");
     }
   }
 
