@@ -223,7 +223,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
     let hplVTsData: HPLVirtualData[] | null = null;
     try {
       hplVTsData = await db().getHplVirtuals();
-      logger.debug("getHplVirtuals", hplVTsData);
     } catch (error) {
       logger.debug("dbVtData:", error);
     }

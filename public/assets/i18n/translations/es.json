@@ -261,6 +261,7 @@
   "watchOnlyMode.title": "Modo Solo-Mirar",
   "watchOnlyMode.delete.message": "¿Estás seguro de que deseas eliminar la cuenta?",
 
+  "cound.not.pick.agreggator": "No se pudo elegir el agregador para la transferencia",
   "error.asset.empty": "El activo está vacío",
   "error.sender.empty": "El remitente está vacío",
   "error.receiver.empty": "El destinatario está vacío",

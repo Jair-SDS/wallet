@@ -261,6 +261,7 @@
   "watchOnlyMode.title": "Modalità Solo-Orologio",
   "watchOnlyMode.delete.message": "Sei sicuro di voler eliminare questo account?",
 
+  "cound.not.pick.agreggator": "Impossibile selezionare l'aggregatore per il trasferimento",
   "error.asset.empty": "L'asset è vuoto",
   "error.sender.empty": "Mittente vuoto",
   "error.receiver.empty": "Destinatario vuoto",

@@ -199,32 +199,34 @@ const TxSummary = ({
     setSummary(false);
   }
   async function onSend() {
-    const amnt = getHoleAmount(amountReceiver, getFtFromSub(ftId).decimal);
-    const amountToSend = BigInt(amnt);
-    setHplSenderTx(from);
-    setHplReceiverTx(to);
-    setHplFtTx(getFtFromSub(ftId || "0"));
-    setAmountAction(amnt.toString());
-    setLoading(true);
-    showSendDialog(true);
-    setSendingStatusAction(SendingStatusEnum.Enum.sending);
-    setInitTxTime(new Date());
-    let txFrom: TransferAccountReference;
-    if (from.subaccount)
-      txFrom = {
-        type: "sub",
-        id: BigInt(from.subaccount.sub_account_id || "0"),
-      };
-    else txFrom = { type: "vir", owner: from.principal, id: BigInt(from.vIdx) };
-
-    let txTo: TransferAccountReference;
-    if (to.subaccount) txTo = { type: "sub", id: BigInt(to.subaccount.sub_account_id || "0") };
-    else txTo = { type: "vir", owner: to.principal, id: BigInt(to.vIdx) };
-
     try {
       const aggregator = await hplClient.pickAggregator();
+
       if (aggregator) {
+        setErrMsg("");
+        const amnt = getHoleAmount(amountReceiver, getFtFromSub(ftId).decimal);
+        const amountToSend = BigInt(amnt);
+        setHplSenderTx(from);
+        setHplReceiverTx(to);
+        setHplFtTx(getFtFromSub(ftId || "0"));
+        setAmountAction(amnt.toString());
+        setLoading(true);
+        showSendDialog(true);
+        setSendingStatusAction(SendingStatusEnum.Enum.sending);
+        setInitTxTime(new Date());
+        let txFrom: TransferAccountReference;
+        if (from.subaccount)
+          txFrom = {
+            type: "sub",
+            id: BigInt(from.subaccount.sub_account_id || "0"),
+          };
+        else txFrom = { type: "vir", owner: from.principal, id: BigInt(from.vIdx) };
+
+        let txTo: TransferAccountReference;
+        if (to.subaccount) txTo = { type: "sub", id: BigInt(to.subaccount.sub_account_id || "0") };
+        else txTo = { type: "vir", owner: to.principal, id: BigInt(to.vIdx) };
         const res = await hplClient.simpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
+
         let validTx = false;
         // poll tx
         await lastValueFrom(
@@ -255,6 +257,8 @@ const TxSummary = ({
           setEndTxTime(new Date());
           setSendingStatusAction(SendingStatusEnum.Enum.error);
         }
+      } else {
+        setErrMsg("cound.not.pick.agreggator");
       }
     } catch (e) {
       logger.debug("txErr: ", e);

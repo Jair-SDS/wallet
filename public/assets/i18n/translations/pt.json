@@ -260,6 +260,7 @@
   "watchOnlyMode.title": "Modo Assistir-Apenas",
   "watchOnlyMode.delete.message": "Você está no modo de observação. Não é possível excluir contatos, subcontas ou ativos.",
 
+  "cound.not.pick.agreggator": "Não foi possível escolher o agregador para a transferência",
   "error.asset.empty": "O ativo está vazio",
   "error.sender.empty": "O remetente está vazio",
   "error.receiver.empty": "O destinatário está vazio",
