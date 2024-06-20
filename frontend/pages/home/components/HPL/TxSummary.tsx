@@ -10,7 +10,7 @@ import { LoadingLoader } from "@components/loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
 import { useAppSelector } from "@redux/Store";
-import { ProtocolTypeEnum, SendingStatusEnum } from "@common/const";
+import { HplTransactionsEnum, ProtocolTypeEnum, SendingStatusEnum } from "@common/const";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import {
   setAmountAction,
@@ -150,9 +150,14 @@ const TxSummary = ({
   );
   function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {
     const amnt = e.target.value;
+    console.log("FROM", from);
+
     if (validateAmount(amnt, decimals) || amnt === "") {
       const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
-      if (BigInt(holeAmount) <= BigInt(rmtAmountFrom)) {
+      if (
+        (from?.subaccount && BigInt(holeAmount) <= BigInt(from.subaccount.amount)) ||
+        (from.type === HplTransactionsEnum.Enum.VIRTUAL && BigInt(holeAmount) <= BigInt(rmtAmountFrom))
+      ) {
         setAmount(amnt);
         if (amnt.trim() === "") {
           setFee("");
@@ -173,7 +178,10 @@ const TxSummary = ({
     if (validateAmount(amnt, decimals) || amnt === "") {
       const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
       const newFee = Math.ceil(Number(holeAmount) / feeConstant);
-      if (BigInt(newFee + Number(holeAmount) <= BigInt(rmtAmountFrom))) {
+      if (
+        (from?.subaccount && BigInt(newFee + Number(holeAmount)) <= BigInt(from.subaccount.amount)) ||
+        (from.type === HplTransactionsEnum.Enum.VIRTUAL && BigInt(newFee + Number(holeAmount)) <= BigInt(rmtAmountFrom))
+      ) {
         setAmountReceiver(amnt);
         if (amnt.trim() === "") {
           setFee("");
