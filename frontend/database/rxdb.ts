@@ -14,7 +14,6 @@ import { RxReplicationState } from "rxdb/plugins/replication";
 import { AnonymousIdentity, HttpAgent, Identity } from "@dfinity/agent";
 import { createActor } from "@/candid/database";
 // types
-import { Contact } from "@redux/models/ContactsModels";
 import { TAllowance } from "@/@types/allowance";
 import { SupportedStandardEnum } from "@/@types/icrc";
 import {
@@ -26,6 +25,7 @@ import {
   HplAssetDocument as HplAssetRxdbDocument,
   HplCountDocument as HplCountRxdbDocument,
   HplContactDocument as HplContactRxdbDocument,
+  ServiceDocument as ServiceRxdbDocument,
 } from "@/candid/database/db.did";
 import { Asset, HPLAssetData, HPLSubData, HPLVirtualData, HplContact, nHplData } from "@redux/models/AccountModels";
 import store from "@redux/Store";
@@ -50,6 +50,8 @@ import {
 } from "@redux/allowance/AllowanceReducer";
 import { Principal } from "@dfinity/principal";
 import logger from "@/common/utils/logger";
+import { Contact } from "@redux/models/ContactsModels";
+import { ServiceData } from "@redux/models/ServiceModels";
 
 addRxPlugin(RxDBUpdatePlugin);
 addRxPlugin(RxDBMigrationPlugin);
@@ -96,6 +98,9 @@ export class RxdbDatabase extends IWalletDatabase {
   private _hplcontacts!: RxCollection<HplContactRxdbDocument> | null;
   private hplContactsReplicationState?: RxReplicationState<any, any>;
   private hplContactsPullInterval?: any;
+  private _services!: RxCollection<ServiceRxdbDocument> | null;
+  private servicesReplicationState?: RxReplicationState<any, any>;
+  private servicesPullInterval?: any;
 
   private pullingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingAssets$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -114,6 +119,8 @@ export class RxdbDatabase extends IWalletDatabase {
   private pushingHplCount$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pullingHplContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private pushingHplContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pullingServices$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private pushingServices$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   protected get assets(): Promise<RxCollection<AssetRxdbDocument> | null> {
     if (this._assets) return Promise.resolve(this._assets);
@@ -155,6 +162,11 @@ export class RxdbDatabase extends IWalletDatabase {
     return this.init().then(() => this._hplcontacts);
   }
 
+  protected get services(): Promise<RxCollection<ServiceRxdbDocument> | null> {
+    if (this._services) return Promise.resolve(this._services);
+    return this.init().then(() => this._services);
+  }
+
   /**
    * Initialize the rxdb object, adding the collections and setting up the replication.
    * @returns Promise<void>
@@ -176,7 +188,7 @@ export class RxdbDatabase extends IWalletDatabase {
         eventReduce: true,
       });
 
-      const { assets, contacts, allowances, hplsubaccounts, hplvirtuals, hplassets, hplcounts, hplcontacts } =
+      const { assets, contacts, allowances, hplsubaccounts, hplvirtuals, hplassets, hplcounts, hplcontacts, services } =
         await db.addCollections(DBSchemas);
 
       const assetsReplication = await setupReplication<AssetRxdbDocument, string>(
@@ -279,6 +291,17 @@ export class RxdbDatabase extends IWalletDatabase {
         this.pullingHplContacts$,
       ] = hplContactsReplication;
 
+      const servicesReplication = await setupReplication<ServiceRxdbDocument, string>(
+        services,
+        `services-${this.principalId}`,
+        "principal",
+        (items) => this._servicesPushHandler(items),
+        (minTimestamp, lastId, batchSize) => this._servicesPullHandler(minTimestamp, lastId, batchSize),
+      );
+
+      [this.servicesReplicationState, this.servicesPullInterval, this.pushingServices$, this.pullingServices$] =
+        servicesReplication;
+
       this._assets = assets;
       this._contacts = contacts;
       this._allowances = allowances;
@@ -287,6 +310,7 @@ export class RxdbDatabase extends IWalletDatabase {
       this._hplassets = hplassets;
       this._hplcount = hplcounts;
       this._hplcontacts = hplcontacts;
+      this._services = services;
     } catch (e) {
       logger.debug("RxDb Init:", e);
     }
@@ -364,8 +388,18 @@ export class RxdbDatabase extends IWalletDatabase {
     const documents = await (await this.assets)?.find().exec();
     const result = (documents && documents.map(this._mapAssetDoc)) || [];
     const assets = newAssets || result || [];
-    store.dispatch(setAssets(assets));
-    store.dispatch(setAccordionAssetIdx([assets[0].tokenSymbol]));
+
+    const noBalanceAssets = assets.map((asset) => ({
+      ...asset,
+      subAccounts: asset.subAccounts.map((subaccount) => ({
+        ...subaccount,
+        amount: "0",
+        currency_amount: "0",
+      })),
+    }));
+
+    store.dispatch(setAssets(noBalanceAssets));
+    assets[0]?.tokenSymbol && store.dispatch(setAccordionAssetIdx([assets[0].tokenSymbol]));
   }
 
   /**
@@ -493,20 +527,12 @@ export class RxdbDatabase extends IWalletDatabase {
   async addContact(contact: Contact, options?: DatabaseOptions): Promise<void> {
     try {
       const databaseContact = this._getStorableContact(contact);
-
       await (
         await this.contacts
       )?.insert({
         ...databaseContact,
-        accountIdentier: extractValueFromArray(databaseContact.accountIdentier),
-        assets: databaseContact.assets.map((a) => ({
-          ...a,
-          logo: extractValueFromArray(a.logo),
-          subaccounts: a.subaccounts.map((sa) => ({
-            ...sa,
-            allowance: [sa.allowance],
-          })),
-        })),
+        accountIdentifier: extractValueFromArray(databaseContact.accountIdentifier),
+        accounts: databaseContact.accounts,
         deleted: false,
         updatedAt: Date.now(),
       });
@@ -530,15 +556,8 @@ export class RxdbDatabase extends IWalletDatabase {
 
       document?.patch({
         ...databaseContact,
-        accountIdentier: extractValueFromArray(databaseContact.accountIdentier),
-        assets: databaseContact.assets.map((a) => ({
-          ...a,
-          logo: extractValueFromArray(a.logo),
-          subaccounts: a.subaccounts.map((sa) => ({
-            ...sa,
-            allowance: [sa.allowance],
-          })),
-        })),
+        accountIdentifier: extractValueFromArray(databaseContact.accountIdentifier),
+        accounts: databaseContact.accounts,
         deleted: false,
         updatedAt: Date.now(),
       });
@@ -562,20 +581,12 @@ export class RxdbDatabase extends IWalletDatabase {
       )?.bulkUpsert(
         databaseContacts.map((doc) => ({
           ...doc,
-          accountIdentier: extractValueFromArray(doc.accountIdentier),
-          assets: doc.assets.map((a) => ({
-            ...a,
-            logo: extractValueFromArray(a.logo),
-            subaccounts: a.subaccounts.map((sa) => ({
-              ...sa,
-              allowance: [sa.allowance],
-            })),
-          })),
+          accountIdentifier: extractValueFromArray(doc.accountIdentifier),
+          accounts: doc.accounts,
           deleted: false,
           updatedAt: Date.now(),
         })),
       );
-
       store.dispatch(setReduxContacts(newDocs));
     } catch (e) {
       logger.debug("RxDb UpdateContacts", e);
@@ -599,14 +610,11 @@ export class RxdbDatabase extends IWalletDatabase {
   private _getStorableContact(contact: Contact): Contact {
     return {
       ...contact,
-      assets: contact.assets.map((asset) => ({
-        ...asset,
-        subaccounts: asset.subaccounts.map((subaccount) => {
-          // eslint-disable-next-line
-          const { allowance, ...rest } = subaccount;
-          return { ...rest };
-        }),
-      })),
+      accounts: contact.accounts.map((account) => {
+        // eslint-disable-next-line
+        const { allowance, ...rest } = account;
+        return { ...rest };
+      }),
     };
   }
 
@@ -741,6 +749,50 @@ export class RxdbDatabase extends IWalletDatabase {
       if (options?.sync) store.dispatch(deleteReduxAllowance(id));
     } catch (e) {
       logger.debug("RxDb DeleteAllowance", e);
+    }
+  }
+
+  /**
+   * Get all Contact objects from active agent.
+   * @returns Array of found Contact objects or an empty
+   * array if no Contact object were found
+   */
+  async getServices(): Promise<ServiceData[]> {
+    try {
+      const documents = await (await this.services)?.find().exec();
+      return (documents && documents.map(this._mapserviceDoc)) || [];
+    } catch (e) {
+      logger.debug("RxDb Getservices", e);
+      return [];
+    }
+  }
+
+  async setServices(services: ServiceData[]): Promise<void> {
+    try {
+      await (
+        await this.services
+      )?.bulkUpsert(
+        services.map((a) => ({
+          ...a,
+          deleted: false,
+          updatedAt: Date.now(),
+        })),
+      );
+    } catch (e) {
+      logger.debug("RxDb setServices:", e);
+    }
+  }
+
+  /**
+   * Find and remove a Service object by its Principal ID.
+   * @param principal Principal ID
+   */
+  async deleteService(principal: string): Promise<void> {
+    try {
+      const document = await (await this.services)?.findOne(principal).exec();
+      await document?.remove();
+    } catch (e) {
+      logger.debug("RxDb DeleteContact", e);
     }
   }
 
@@ -1160,6 +1212,7 @@ export class RxdbDatabase extends IWalletDatabase {
       this.pullingHplAssets$,
       this.pullingHplCount$,
       this.pullingHplContacts$,
+      this.pullingServices$,
     ]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
@@ -1181,6 +1234,7 @@ export class RxdbDatabase extends IWalletDatabase {
       this.pushingHplAssets$,
       this.pushingHplCount$,
       this.pushingHplContacts$,
+      this.pushingServices$,
     ]).pipe(
       map(([a, b]) => a || b),
       distinctUntilChanged(),
@@ -1191,20 +1245,12 @@ export class RxdbDatabase extends IWalletDatabase {
     return {
       name: doc.name,
       principal: doc.principal,
-      accountIdentier: doc.accountIdentier,
-      assets: doc.assets.map((a) => ({
-        symbol: a.symbol,
+      accountIdentifier: doc.accountIdentifier,
+      accounts: doc.accounts.map((a) => ({
+        name: a.name,
+        subaccount: a.subaccount,
+        subaccountId: a.subaccountId,
         tokenSymbol: a.tokenSymbol,
-        logo: a.logo,
-        subaccounts: a.subaccounts.map((sa) => ({
-          name: sa.name,
-          subaccount_index: sa.subaccount_index,
-          sub_account_id: sa.sub_account_id,
-        })),
-        address: a.address,
-        decimal: a.decimal,
-        shortDecimal: a.shortDecimal,
-        supportedStandards: a.supportedStandards as typeof SupportedStandardEnum.options,
       })),
     };
   }
@@ -1308,6 +1354,20 @@ export class RxdbDatabase extends IWalletDatabase {
       }),
     };
   }
+  private _mapserviceDoc(doc: RxDocument<ServiceRxdbDocument>): ServiceData {
+    return {
+      name: doc.name,
+      principal: doc.principal,
+      assets: doc.assets.map((a) => ({
+        principal: a.principal,
+        logo: a.logo,
+        tokenSymbol: a.tokenSymbol,
+        tokenName: a.tokenName,
+        shortDecimal: a.shortDecimal,
+        decimal: a.decimal,
+      })),
+    };
+  }
 
   private _invalidateDb(): void {
     if (this.assetsPullInterval !== undefined) {
@@ -1343,6 +1403,10 @@ export class RxdbDatabase extends IWalletDatabase {
       this.hplContactsPullInterval = undefined;
     }
     //
+    if (this.servicesPullInterval !== undefined) {
+      clearInterval(this.servicesPullInterval);
+      this.servicesPullInterval = undefined;
+    }
     if (this.assetsReplicationState) {
       this.assetsReplicationState.cancel().then();
       this.assetsReplicationState = undefined;
@@ -1375,6 +1439,10 @@ export class RxdbDatabase extends IWalletDatabase {
       this.hplContactsReplicationState.cancel().then();
       this.hplContactsReplicationState = undefined;
     }
+    if (this.servicesReplicationState) {
+      this.servicesReplicationState.cancel().then();
+      this.servicesReplicationState = undefined;
+    }
     this._assets = null!;
     this._contacts = null!;
     this._allowances = null!;
@@ -1383,6 +1451,7 @@ export class RxdbDatabase extends IWalletDatabase {
     this._hplassets = null!;
     this._hplcount = null!;
     this._hplcontacts = null!;
+    this._services = null!;
   }
 
   private async _assetsPushHandler(items: any[]): Promise<AssetRxdbDocument[]> {
@@ -1419,31 +1488,22 @@ export class RxdbDatabase extends IWalletDatabase {
     }));
   }
 
-  private async _contactsPushHandler(items: any): Promise<ContactRxdbDocument[]> {
-    const arg = items.map((x: any) => ({
-      ...x,
-      updatedAt: Math.floor(Date.now() / 1000),
-      accountIdentier: extractValueFromArray(x.accountIdentier),
-      assets: x.assets.map((a: any) => ({
-        ...a,
-        logo: extractValueFromArray(a.logo),
-        subaccounts: a.subaccounts.map((s: any) => ({
-          ...s,
-          allowance:
-            !!s.allowance && !!s.allowance.allowance
-              ? [
-                  {
-                    allowance: [s.allowance.allowance],
-                    expires_at: [s.allowance.expires_at],
-                  },
-                ]
-              : [],
+  private async _contactsPushHandler(items: ContactRxdbDocument[]): Promise<ContactRxdbDocument[]> {
+    const arg: ContactRxdbDocument[] = items.map(
+      (currentContact: ContactRxdbDocument): ContactRxdbDocument => ({
+        ...currentContact,
+        accountIdentifier: extractValueFromArray(currentContact.accountIdentifier),
+        accounts: currentContact.accounts.map((account: any) => ({
+          name: account.name,
+          subaccount: account.subaccount,
+          subaccountId: account.subaccountId,
+          tokenSymbol: account.tokenSymbol,
         })),
-      })),
-    }));
+        updatedAt: Math.floor(Date.now() / 1000),
+      }),
+    );
 
     await this.replicaCanister?.pushContacts(arg);
-
     return arg;
   }
 
@@ -1461,16 +1521,20 @@ export class RxdbDatabase extends IWalletDatabase {
     return raw;
   }
 
-  private async _allowancesPushHandler(items: any): Promise<AllowanceRxdbDocument[]> {
-    const arg = items.map((x: any) => ({
-      ...x,
-      updatedAt: Math.floor(Date.now() / 1000),
-      expiration: extractValueFromArray(x.expiration),
-      asset: {
-        ...x.asset,
-        logo: extractValueFromArray(x.asset?.logo),
-      },
-    }));
+  private async _allowancesPushHandler(items: AllowanceRxdbDocument[]): Promise<AllowanceRxdbDocument[]> {
+    const arg = items.map(
+      (currentAllowance: AllowanceRxdbDocument): AllowanceRxdbDocument => ({
+        id: currentAllowance.id,
+        deleted: currentAllowance.deleted,
+        asset: {
+          ...currentAllowance.asset,
+          logo: extractValueFromArray(currentAllowance.asset?.logo),
+        },
+        subAccountId: currentAllowance.subAccountId,
+        spender: currentAllowance.spender,
+        updatedAt: Math.floor(Date.now() / 1000),
+      }),
+    );
 
     await this.replicaCanister?.pushAllowances(arg);
 
@@ -1617,31 +1681,59 @@ export class RxdbDatabase extends IWalletDatabase {
       lastId ? [lastId] : [],
       BigInt(batchSize),
     )) as HplContactRxdbDocument[];
+    return raw;
+  }
+  private async _servicesPushHandler(items: ServiceRxdbDocument[]): Promise<ServiceRxdbDocument[]> {
+    const arg: ServiceRxdbDocument[] = items.map(
+      (currentservice: ServiceRxdbDocument): ServiceRxdbDocument => ({
+        ...currentservice,
+        updatedAt: Math.floor(Date.now() / 1000),
+      }),
+    );
+
+    await this.replicaCanister?.pushServices(arg);
+    return arg;
+  }
+
+  private async _servicesPullHandler(
+    minTimestamp: number,
+    lastId: string | null,
+    batchSize: number,
+  ): Promise<ServiceRxdbDocument[]> {
+    const raw = (await this.replicaCanister?.pullServices(
+      minTimestamp,
+      lastId ? [lastId] : [],
+      BigInt(batchSize),
+    )) as ServiceRxdbDocument[];
 
     return raw;
   }
 
   private async _doesRecordByPrincipalExist() {
     // Look for entry record by current principal ID
-    const exist: boolean = await this.replicaCanister?.doesStorageExist();
+    try {
+      const exist: boolean = await this.replicaCanister?.doesStorageExist();
 
-    // If does not exist it means that this is a brand new account
-    if (!exist) {
-      try {
-        await (
-          await this.assets
-        )?.bulkInsert(
-          defaultTokens.map((dT) => ({
-            ...dT,
-            index: extractValueFromArray(dT.index),
-            logo: extractValueFromArray(dT.logo),
-            deleted: false,
-            updatedAt: Date.now(),
-          })),
-        );
-      } catch (e) {
-        logger.debug("RxDb DoesDBExist:", e);
+      // If does not exist it means that this is a brand new account
+      if (!exist) {
+        try {
+          await (
+            await this.assets
+          )?.bulkInsert(
+            defaultTokens.map((dT) => ({
+              ...dT,
+              index: extractValueFromArray(dT.index),
+              logo: extractValueFromArray(dT.logo),
+              deleted: false,
+              updatedAt: Date.now(),
+            })),
+          );
+        } catch (e) {
+          logger.debug("RxDb DoesDBExist:", e);
+        }
       }
+    } catch (e) {
+      logger.debug("RxDb DoesDBExist:", e);
     }
   }
 }

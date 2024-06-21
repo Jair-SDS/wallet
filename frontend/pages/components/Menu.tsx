@@ -9,15 +9,18 @@ import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 
 interface MenuProps {
   noMargin?: boolean;
+  compClass?: string;
 }
 
 const Menu = (props: MenuProps) => {
-  const { noMargin } = props;
+  const { noMargin, compClass } = props;
+
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { route } = useAppSelector((state) => state.auth);
   const { list, subaccounts, exchangeLinks, protocol, hplFTsData, ftsUsed } = AssetHook();
   const { allowances } = useAppSelector((state) => state.allowance.list);
+  const { services } = useAppSelector((state) => state.services);
   const { hplContacts, contacts } = useHplContacts();
 
   const menuList = [
@@ -59,11 +62,17 @@ const Menu = (props: MenuProps) => {
           : `${hplContacts?.length !== 1 ? t("contacts") : t("contact")} (${hplContacts?.length})`,
       show: true,
     },
+    {
+      name: "Services",
+      path: RoutingPathEnum.Enum.SERVICES,
+      label: `${services?.length !== 1 ? t("services") : t("services")} (${services.length})`,
+      show: true,
+    },
   ];
 
   return (
     <Fragment>
-      <div className="flex flex-row items-center justify-start gap-3 pl-3">
+      <div className={`flex flex-row items-center justify-start gap-3 ${compClass ? compClass : ""}`}>
         {menuList.map(
           (menu, k) =>
             menu.show && (

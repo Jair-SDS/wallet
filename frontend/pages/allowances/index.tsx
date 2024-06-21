@@ -8,9 +8,9 @@ import useAllowances from "./hooks/useAllowances";
 export default function Allowances() {
   const { allowances, handleSortChange, setSearchKey, assetFilters, setAssetFilters } = useAllowances();
   return (
-    <div className=" w-full">
-      <div className="flex items-center justify-between mt-[1.5rem] pr-4">
-        <Menu noMargin={true} />
+    <div className="pt-[1rem] px-3 w-full">
+      <div>
+        <Menu />
         <AllowanceFilter
           setSearchKey={setSearchKey}
           selectedAssets={assetFilters}

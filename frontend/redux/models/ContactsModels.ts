@@ -1,25 +1,38 @@
 import { z } from "zod";
 
-export const SubAccountContactSchema = z.object({
+export const contactAllowanceSchema = z.object({
+  expiration: z.string(),
+  amount: z.string(),
+});
+
+export type ContactAllowance = z.infer<typeof contactAllowanceSchema>;
+
+export const contactAccountSchema = z.object({
   name: z.string(),
-  subaccount_index: z.string(),
-  sub_account_id: z.string(),
-  allowance: z
-    .object({
-      allowance: z.string().default(""),
-      expires_at: z.string().default(""),
-    })
-    .optional(),
+  subaccount: z.string(),
+  subaccountId: z.string(),
+  tokenSymbol: z.string(),
+  allowance: contactAllowanceSchema.optional(), // Allow optional allowance
 });
 
-export type SubAccountContact = z.infer<typeof SubAccountContactSchema>;
+export type ContactAccount = z.infer<typeof contactAccountSchema>;
 
-const SubAccountContactErr = z.object({
-  name: z.boolean(),
-  subaccount_index: z.boolean(),
+export const contactSchema = z.object({
+  name: z.string(),
+  principal: z.string(),
+  accountIdentifier: z.string(),
+  accounts: z.array(contactAccountSchema),
 });
 
-export type SubAccountContactErr = z.infer<typeof SubAccountContactErr>;
+export type Contact = z.infer<typeof contactSchema>;
+
+export const defaultContactSubAccount: ContactAccount = {
+  name: "",
+  subaccountId: "",
+  subaccount: "",
+  tokenSymbol: "",
+  allowance: undefined,
+};
 
 const NewContactSubAccount = z.object({
   principal: z.string(),
@@ -33,27 +46,6 @@ const NewContactSubAccount = z.object({
 });
 
 export type NewContactSubAccount = z.infer<typeof NewContactSubAccount>;
-
-export const AssetContactSchema = z.object({
-  symbol: z.string(),
-  tokenSymbol: z.string(),
-  logo: z.string().optional(),
-  subaccounts: z.array(SubAccountContactSchema),
-  address: z.string(),
-  decimal: z.string(),
-  shortDecimal: z.string(),
-  supportedStandards: z.array(z.enum(["ICRC-1", "ICRC-2"])),
-});
-export type AssetContact = z.infer<typeof AssetContactSchema>;
-
-const Contact = z.object({
-  name: z.string(),
-  principal: z.string(),
-  assets: z.array(AssetContactSchema),
-  accountIdentier: z.string().optional(),
-});
-
-export type Contact = z.infer<typeof Contact>;
 
 const ContactErr = z.object({
   name: z.boolean(),

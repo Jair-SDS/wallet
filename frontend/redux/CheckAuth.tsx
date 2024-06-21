@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Actor, AnonymousIdentity, HttpAgent, Identity } from "@dfinity/agent";
 import store from "./Store";
+import logger from "@/common/utils/logger";
 import {
   clearDataAuth,
   setAuthLoading,
@@ -13,7 +14,7 @@ import {
   setUnauthenticated,
   setUserAgent,
   setUserPrincipal,
-} from "./auth/AuthReducer";
+} from "@/redux/auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateHPLBalances, getSNSTokens } from "./assets/AssetActions";
 import { clearDataAsset, setInitLoad, setICRC1SystemAssets } from "./assets/AssetReducer";
@@ -34,7 +35,7 @@ import { HPLAssetData, HPLSubData, HPLVirtualData, HplContact } from "./models/A
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 import { db, DB_Type } from "@/database/db";
-import { setTransactions, setTxWorker } from "./transaction/TransactionReducer";
+import { setTransactions, setTxWorker } from "@/redux/transaction/TransactionReducer";
 import { addWatchOnlySessionToLocal } from "@pages/helpers/watchOnlyStorage";
 import watchOnlyRefresh from "@pages/helpers/watchOnlyRefresh";
 import { setProtocol, setStorageCodeA } from "./common/CommonReducer";
@@ -50,7 +51,7 @@ import {
   setOwnersActor,
 } from "./hpl/HplReducer";
 import { parseFungibleToken } from "@common/utils/hpl";
-import logger from "@/common/utils/logger";
+import { setServices, setServicesData } from "@/redux/services/ServiceReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -60,27 +61,31 @@ export const NETWORK_AUTHORIZE_PATH = "https://identity.ic0.app/#authorize";
 export const HTTP_AGENT_HOST = "https://identity.ic0.app";
 
 export const handleAuthenticated = async (opt: AuthNetwork) => {
-  const authClient = await AuthClient.create();
-  await new Promise<void>((resolve, reject) => {
-    authClient.login({
-      maxTimeToLive: BigInt(24 * 60 * 60 * 1000 * 1000 * 1000),
-      identityProvider:
-        !!opt?.type && opt?.type === AuthNetworkTypeEnum.Values.NFID
-          ? opt?.network + AUTH_PATH
-          : NETWORK_AUTHORIZE_PATH,
-      onSuccess: () => {
-        handleLoginApp(authClient.getIdentity());
-        store.dispatch(setDebugMode(false));
-        resolve();
-      },
-      onError: (e) => {
-        logger.debug("onError", e);
-        store.dispatch(setUnauthenticated());
-        store.dispatch(setDebugMode(false));
-        reject();
-      },
+  try {
+    const authClient = await AuthClient.create();
+    await new Promise<void>((resolve, reject) => {
+      authClient.login({
+        maxTimeToLive: BigInt(24 * 60 * 60 * 1000 * 1000 * 1000),
+        identityProvider:
+          !!opt?.type && opt?.type === AuthNetworkTypeEnum.Values.NFID
+            ? opt?.network + AUTH_PATH
+            : NETWORK_AUTHORIZE_PATH,
+        onSuccess: () => {
+          handleLoginApp(authClient.getIdentity());
+          store.dispatch(setDebugMode(false));
+          resolve();
+        },
+        onError: (e) => {
+          logger.debug("onError", e);
+          store.dispatch(setUnauthenticated());
+          store.dispatch(setDebugMode(false));
+          reject();
+        },
+      });
     });
-  });
+  } catch (error) {
+    logger.debug(error);
+  }
 };
 
 export const handleSiweAuthenticated = async (identity: DelegationIdentity) => {
@@ -284,6 +289,7 @@ export const logout = async () => {
   await authClient.logout();
   store.dispatch({ type: "USER_LOGGED_OUT" });
   await db().setIdentity(null);
+  cleanEthLogin();
   store.dispatch(clearDataContacts());
   store.dispatch(clearDataAsset());
   store.dispatch(clearDataAuth());
@@ -294,5 +300,26 @@ export const logout = async () => {
     type: "USER_LOGGED_OUT",
   });
   store.dispatch(setTransactions([]));
+  store.dispatch(setServices([]));
+  store.dispatch(setServicesData([]));
   store.dispatch(setTxWorker([]));
+};
+
+export const cleanEthLogin = () => {
+  localStorage.removeItem("wagmi.store");
+  localStorage.removeItem("network_type");
+  localStorage.removeItem("rk-latest-id");
+  localStorage.removeItem("rk-recent");
+  localStorage.removeItem("wagmi.wallet");
+  localStorage.removeItem("rk-version");
+  localStorage.removeItem("wagmi.metaMask.shimDisconnect");
+  localStorage.removeItem("wagmi.connected");
+  localStorage.removeItem("-walletlink:https://www.walletlink.org:version");
+  localStorage.removeItem("-walletlink:https://www.walletlink.org:session:id");
+  localStorage.removeItem("-walletlink:https://www.walletlink.org:session:secret");
+  localStorage.removeItem("-walletlink:https://www.walletlink.org:session:linked");
+  localStorage.removeItem("wagmi.cache");
+  localStorage.removeItem("WCM_VERSION");
+  indexedDB.deleteDatabase("WALLET_CONNECT_V2_INDEXED_DB");
+  indexedDB.deleteDatabase("auth-client-db");
 };

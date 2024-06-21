@@ -7,6 +7,7 @@ import { Redirect, Router, Switch } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 import WorkersWrapper from "@/wrappers/WorkersWrapper";
 import { RoutingPathEnum } from "@common/const";
+import TransferProvider from "./home/contexts/TransferProvider";
 
 const Login = lazy(() => import("./login"));
 const Home = lazy(() => import("./home"));
@@ -14,6 +15,7 @@ const Contacts = lazy(() => import("./contacts"));
 const Assets = lazy(() => import("./assets"));
 const ExchangeLinks = lazy(() => import("./links"));
 const Allowances = lazy(() => import("./allowances"));
+const Services = lazy(() => import("@/pages/services"));
 
 const SwitchRoute = () => {
   const { authLoading, superAdmin, authenticated, route, blur } = useAppSelector((state) => state.auth);
@@ -26,18 +28,20 @@ const SwitchRoute = () => {
       <Router history={history}>
         {!superAdmin && authenticated && (
           <WorkersWrapper>
-            <LayoutComponent isLoginPage={false}>
-              <Switch>
-                <PrivateRoute
-                  exact
-                  path="/"
-                  authenticated={authenticated}
-                  allowByRole={true}
-                  Component={getComponentAuth()}
-                />
-                <Redirect to="/" />
-              </Switch>
-            </LayoutComponent>
+            <TransferProvider>
+              <LayoutComponent isLoginPage={false}>
+                <Switch>
+                  <PrivateRoute
+                    exact
+                    path="/"
+                    authenticated={authenticated}
+                    allowByRole={true}
+                    Component={getComponentAuth()}
+                  />
+                  <Redirect to="/" />
+                </Switch>
+              </LayoutComponent>
+            </TransferProvider>
           </WorkersWrapper>
         )}
         {!superAdmin && !authenticated && (
@@ -49,7 +53,6 @@ const SwitchRoute = () => {
       </Router>
     </>
   );
-
   function getComponentAuth() {
     switch (route) {
       case RoutingPathEnum.Enum.CONTACTS:
@@ -62,6 +65,8 @@ const SwitchRoute = () => {
         return ExchangeLinks;
       case RoutingPathEnum.Enum.ALLOWANCES:
         return Allowances;
+      case RoutingPathEnum.Enum.SERVICES:
+        return Services;
       default:
         return Home;
     }

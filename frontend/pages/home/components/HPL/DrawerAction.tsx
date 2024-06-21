@@ -5,7 +5,7 @@ import { Fragment, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@components/button";
 import { DrawerOption } from "@common/const";
-import { resetSendStateAction } from "@redux/transaction/TransactionActions";
+import { resetSendStateAction } from "@redux/transaction/HplTransactionActions";
 
 interface Option {
   name: string;

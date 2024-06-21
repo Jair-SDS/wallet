@@ -4,7 +4,13 @@ import store from "@redux/Store";
 import { SnsToken } from "@redux/models/TokenModels";
 import { IcrcTokenMetadataResponse } from "@dfinity/ledger-icrc";
 import { formatHPLSubaccounts, formatFtInfo, formatVirtualAccountInfo, formatAccountInfo } from "@common/utils/hpl";
-import { setTokenMarket, setICPSubaccounts, setAccordionAssetIdx, setAssets } from "./AssetReducer";
+import {
+  setTokenMarket,
+  setICPSubaccounts,
+  setAssets,
+  setSelectedAsset,
+  setSelectedAccount,
+} from "@/redux/assets/AssetReducer";
 import { AccountIdentifier, SubAccount as SubAccountNNS } from "@dfinity/ledger-icp";
 import {
   Asset,
@@ -23,11 +29,11 @@ import { idlFactory as HplMintIDLFactory } from "@candid/HplMint/candid.did";
 import { setHplContacts } from "@redux/contacts/ContactsReducer";
 import { UpdateAllBalances } from "@/@types/assets";
 import { db } from "@/database/db";
+import ICRC1SupportedStandards from "@/common/libs/icrcledger/ICRC1SupportedStandards";
+import { refreshAssetBalances } from "@pages/home/helpers/assets";
 import { hexToUint8Array } from "@common/utils/hexadecimal";
 import { getMetadataInfo } from "@common/utils/icrc";
 import { getETHRate, getTokensFromMarket } from "@common/utils/market";
-import { refreshAssetBalances } from "@pages/home/helpers/assets";
-import { getICRCSupportedStandards } from "@common/libs/icrc";
 import logger from "@/common/utils/logger";
 import {
   setHPLAssets,
@@ -49,7 +55,7 @@ import { getPrincipalGroupsQty } from "@common/utils/strings";
  * @returns An object containing updated `newAssetsUpload` and `assets` arrays.
  */
 export const updateAllBalances: UpdateAllBalances = async (params) => {
-  const { myAgent = store.getState().auth.userAgent, assets, basicSearch = false, fromLogin } = params;
+  const { myAgent = store.getState().auth.userAgent, assets, basicSearch = false } = params;
 
   const tokenMarkets = await getTokensFromMarket();
   const ETHRate = await getETHRate();
@@ -74,11 +80,19 @@ export const updateAllBalances: UpdateAllBalances = async (params) => {
   const newAssetsUpload = updateAssets.sort((a, b) => a.sortIndex - b.sortIndex);
   store.dispatch(setAssets(newAssetsUpload));
 
-  if (fromLogin) {
-    newAssetsUpload.length > 0 && store.dispatch(setAccordionAssetIdx([newAssetsUpload[0].tokenSymbol]));
-  }
-
   const icpAsset = newAssetsUpload.find((asset) => asset.tokenSymbol === "ICP");
+
+  //
+  const currentSelectedAsset = store.getState().asset.helper.selectedAsset;
+  const currentSelectedAccount = store.getState().asset.helper.selectedAccount;
+  const newSelectedAsset = newAssetsUpload.find((asset) => asset.tokenSymbol === currentSelectedAsset?.tokenSymbol);
+  const newSelectedAccount = newSelectedAsset?.subAccounts.find(
+    (subAccount) => subAccount.sub_account_id === currentSelectedAccount?.sub_account_id,
+  );
+
+  store.dispatch(setSelectedAsset(newSelectedAsset));
+  store.dispatch(setSelectedAccount(newSelectedAccount));
+  //
 
   if (icpAsset) {
     const sub: ICPSubAccount[] = [];
@@ -405,8 +419,8 @@ export const getSNSTokens = async (agent: HttpAgent): Promise<Asset[]> => {
       if (!symbolsAdded.includes(metadata.symbol)) {
         symbolsAdded.push(metadata.symbol);
 
-        const supportedStandards = await getICRCSupportedStandards({
-          assetAddress: tkn.canister_ids.ledger_canister_id,
+        const supportedStandards = await ICRC1SupportedStandards({
+          canisterId: tkn.canister_ids.ledger_canister_id,
           agent: agent,
         });
 

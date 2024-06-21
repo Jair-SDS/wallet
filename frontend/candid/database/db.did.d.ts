@@ -47,39 +47,32 @@ export interface ContactDocument {
   principal: string;
   deleted: boolean;
   name: string;
-  assets: Array<{
-    subaccounts: Array<{
-      name: string;
-      sub_account_id: string;
-      subaccount_index: string;
-    }>;
-    logo: string;
-    tokenSymbol: string;
-    supportedStandards: Array<string>;
-    address: string;
-    shortDecimal: string;
-    decimal: string;
-    symbol: string;
-  }>;
   updatedAt: number;
-  accountIdentier: string;
+  accounts: Array<{
+    subaccountId: string;
+    name: string;
+    subaccount: string;
+    tokenSymbol: string;
+  }>;
+  accountIdentifier: string;
 }
 export interface HplAssetDocument {
-  deleted: boolean;
   id: string;
   controller: string;
   decimals: string;
+  deleted: boolean;
   name: string;
   description: string;
   updatedAt: number;
-  symbol: string;
   ledger: string;
+  symbol: string;
 }
 export interface HplContactDocument {
-  deleted: boolean;
   principal: string;
+  deleted: boolean;
   name: string;
   updatedAt: number;
+  ledger: string;
   remotes: Array<{
     status: string;
     expired: string;
@@ -89,34 +82,47 @@ export interface HplContactDocument {
     index: string;
     amount: string;
   }>;
-  ledger: string;
 }
 export interface HplCountDocument {
-  deleted: boolean;
   nAccounts: string;
   principal: string;
+  deleted: boolean;
   nVirtualAccounts: string;
   updatedAt: number;
-  nFtAssets: string;
   ledger: string;
+  nFtAssets: string;
 }
 export interface HplSubAccountDocument {
-  deleted: boolean;
   id: string;
+  deleted: boolean;
   ftId: string;
   name: string;
   updatedAt: number;
   ledger: string;
 }
 export interface HplVirtualDocument {
-  deleted: boolean;
   id: string;
+  deleted: boolean;
   ftId: string;
   name: string;
   isMint: boolean;
   updatedAt: number;
-  accesBy: string;
   ledger: string;
+  accesBy: string;
+}
+export interface ServiceDocument {
+  principal: string;
+  deleted: boolean;
+  name: string;
+  assets: Array<{
+    principal: string;
+    logo: string;
+    tokenSymbol: string;
+    tokenName: string;
+    shortDecimal: string;
+    decimal: string;
+  }>;
+  updatedAt: number;
 }
 export interface WalletDatabase {
   doesStorageExist: ActorMethod<[], boolean>;
@@ -134,6 +140,7 @@ export interface WalletDatabase {
           Array<[] | [HplAssetDocument]>,
           Array<[] | [HplCountDocument]>,
           Array<[] | [HplContactDocument]>,
+          Array<[] | [ServiceDocument]>,
         ],
       ]
     >
@@ -146,6 +153,7 @@ export interface WalletDatabase {
   pullHplCount: ActorMethod<[number, [] | [string], bigint], Array<HplCountDocument>>;
   pullHplSubaccounts: ActorMethod<[number, [] | [string], bigint], Array<HplSubAccountDocument>>;
   pullHplVirtuals: ActorMethod<[number, [] | [string], bigint], Array<HplVirtualDocument>>;
+  pullServices: ActorMethod<[number, [] | [string], bigint], Array<ServiceDocument>>;
   pushAllowances: ActorMethod<[Array<AllowanceDocument>], Array<AllowanceDocument>>;
   pushAssets: ActorMethod<[Array<AssetDocument>], Array<AssetDocument>>;
   pushContacts: ActorMethod<[Array<ContactDocument>], Array<ContactDocument>>;
@@ -154,7 +162,6 @@ export interface WalletDatabase {
   pushHplCount: ActorMethod<[Array<HplCountDocument>], Array<HplCountDocument>>;
   pushHplSubaccounts: ActorMethod<[Array<HplSubAccountDocument>], Array<HplSubAccountDocument>>;
   pushHplVirtuals: ActorMethod<[Array<HplVirtualDocument>], Array<HplVirtualDocument>>;
+  pushServices: ActorMethod<[Array<ServiceDocument>], Array<ServiceDocument>>;
 }
-export type _SERVICE = WalletDatabase;
-export declare const idlFactory: IDL.InterfaceFactory;
-export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];
+export interface _SERVICE extends WalletDatabase {}

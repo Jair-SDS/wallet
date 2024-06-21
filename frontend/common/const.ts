@@ -11,7 +11,7 @@ import { Asset } from "@redux/models/AccountModels";
 import { SupportedStandardEnum } from "../@types/icrc";
 
 // Enums
-export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS", "LINKS", "ALLOWANCES"]);
+export const RoutingPathEnum = z.enum(["HOME", "CONTACTS", "LOGIN", "ASSETS", "LINKS", "ALLOWANCES", "SERVICES"]);
 export type RoutingPath = z.infer<typeof RoutingPathEnum>;
 
 export const ProtocolTypeEnum = z.enum(["ICRC1", "HPL"]);
@@ -29,7 +29,7 @@ export type OperationType = z.infer<typeof OperationTypeEnum>;
 export const DrawerOptionEnum = z.enum(["SEND", "RECEIVE", "WRAP", "HPL_QR", "ADD_VIRTUAL", "EDIT_VIRTUAL"]);
 export type DrawerOption = z.infer<typeof DrawerOptionEnum>;
 
-export const IconTypeEnum = z.enum(["ASSET", "HEADER", "FILTER", "ALLOWANCE"]);
+export const IconTypeEnum = z.enum(["ASSET", "HEADER", "FILTER", "ALLOWANCE", "SELECT"]);
 export type IconType = z.infer<typeof IconTypeEnum>;
 
 export const AssetSymbolEnum = z.enum(["ICP", "ckBTC", "CHAT", "KINIC", "SNS1", "HOT", "OGY"]);

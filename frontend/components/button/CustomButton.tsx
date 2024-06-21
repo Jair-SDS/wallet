@@ -12,6 +12,7 @@ const button = cva("button", {
     intent: {
       accept: ["bg-slate-color-info", "text-white"],
       deny: ["bg-DenyButtonColor", "text-white"],
+      error: ["bg-slate-color-error", "text-white"],
       success: ["bg-slate-color-success", "text-white"],
       neutral: ["dark:bg-HoverColor", "dark:text-white", "bg-BorderColorLight", "text-PrimaryTextColorLight"],
       noBG: ["bg-transparent", "text-AccpetButtonColor"],

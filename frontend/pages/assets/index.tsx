@@ -34,7 +34,7 @@ const Assets = () => {
   return (
     <Fragment>
       <div className="flex flex-col w-full h-full pt-6">
-        <Menu />
+        <Menu compClass="ml-3" />
         <div className="flex flex-col justify-start items-start w-full h-full px-4">
           <AssetsFilter
             searchKey={searchKey}

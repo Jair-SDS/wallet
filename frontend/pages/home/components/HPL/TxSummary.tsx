@@ -10,8 +10,12 @@ import { LoadingLoader } from "@components/loader";
 import { HPLClient, TransferAccountReference, bigIntReplacer } from "@research-ag/hpl-client";
 import { catchError, lastValueFrom, map, of } from "rxjs";
 import { useAppSelector } from "@redux/Store";
-import { HplTransactionsEnum, ProtocolTypeEnum, SendingStatusEnum } from "@common/const";
+import { HplTransactionsEnum, SendingStatusEnum } from "@common/const";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
+import { ActorSubclass } from "@dfinity/agent";
+import { getHoleAmount, validateAmount } from "@common/utils/amount";
+import { getDecimalAmount } from "@common/utils/number";
+import logger from "@/common/utils/logger";
 import {
   setAmountAction,
   setEndTxTime,
@@ -20,12 +24,8 @@ import {
   setHplSenderTx,
   setInitTxTime,
   setSendingStatusAction,
-} from "@redux/transaction/TransactionActions";
-import { ActorSubclass } from "@dfinity/agent";
-import { getHoleAmount, validateAmount } from "@common/utils/amount";
-import { getDecimalAmount } from "@common/utils/number";
-import DialogSendConfirmation from "../ICRC/transaction/DialogSendConfirmation";
-import logger from "@/common/utils/logger";
+} from "@redux/transaction/HplTransactionActions";
+import DialogSendConfirmation from "./Modals/hplTransferStatusModal";
 
 interface TxSummaryProps {
   from: HplTxUser;
@@ -141,11 +141,7 @@ const TxSummary = ({
           </CustomButton>
         </div>
       </div>
-      <DialogSendConfirmation
-        modal={sendDialog}
-        showConfirmationModal={onCloseTxDialog}
-        network={ProtocolTypeEnum.Enum.HPL}
-      />
+      <DialogSendConfirmation modal={sendDialog} showConfirmationModal={onCloseTxDialog} />
     </Fragment>
   );
   function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {

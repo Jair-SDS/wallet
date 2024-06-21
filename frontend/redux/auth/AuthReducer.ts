@@ -1,7 +1,7 @@
 import { HttpAgent } from "@dfinity/agent";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Asset } from "@redux/models/AccountModels";
-import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@common/const";
+import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@/common/const";
 import { Principal } from "@dfinity/principal";
 import { DB_Type } from "@/database/db";
 import { WatchOnlyItem } from "@pages/login/components/WatchOnlyInput";

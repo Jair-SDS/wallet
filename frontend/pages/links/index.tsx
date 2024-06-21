@@ -16,7 +16,7 @@ const ExchangeLinks = () => {
     <Fragment>
       <div className="flex flex-col justify-start w-full h-full pt-6">
         <div className="flex flex-row justify-between items-center w-full mb-2 pr-3">
-          <Menu noMargin={true} />
+          <Menu noMargin={true} compClass="ml-3" />
           <ExchangeLinksFilters
             assetFilter={assetFilter}
             setAssetFilter={setAssetFilter}

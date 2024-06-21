@@ -2,7 +2,6 @@
 import { ReactComponent as WarningIcon } from "@assets/svg/files/warning.svg";
 //
 import "./style.scss";
-import { Fragment } from "react";
 import AssetsList from "./components/ICRC/asset";
 import DetailList from "./components/ICRC/transaction";
 import { BasicModal } from "@components/modal";
@@ -13,6 +12,7 @@ import { setDisclaimer } from "@redux/auth/AuthReducer";
 import { ProtocolTypeEnum } from "@common/const";
 import SubaccountList from "./components/HPL/SubAccountList";
 import SubaccountDetail from "./components/HPL/HplSubaccountDetail";
+import { Fragment } from "react/jsx-runtime";
 
 const Home = () => {
   const { t } = useTranslation();

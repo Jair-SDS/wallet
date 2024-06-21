@@ -8,6 +8,7 @@ export function toTitleCase(title: string | undefined) {
 
 export function middleTruncation(text: string | undefined, startSize: number, endSize: number) {
   if (!text) return "-";
+  if (startSize + endSize >= text.length) return text;
   const startText = text.substring(0, startSize);
   const endText = text.substring(text.length - endSize, text.length);
   return `${startText}...${endText}`;
@@ -89,3 +90,6 @@ export const getPrincipalGroupsQty = (princ: string) => {
   const groups = princ.split("-");
   return groups.length;
 };
+export function removeExtraSpaces(text: string): string {
+  return text.replace(/\s+/g, " ");
+}
