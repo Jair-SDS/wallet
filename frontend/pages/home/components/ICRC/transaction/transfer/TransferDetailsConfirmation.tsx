@@ -19,8 +19,8 @@ import { updateServiceAssetAmounts } from "@redux/services/ServiceReducer";
 import { getElapsedSecond } from "@common/utils/datetimeFormaters";
 import { TransferStatus, useTransferStatus } from "@pages/home/contexts/TransferStatusProvider";
 import { TransferView, useTransferView } from "@pages/home/contexts/TransferViewProvider";
-import reloadBallance from "@pages/helpers/reloadBalance";
 import { LoadingLoader } from "@components/loader";
+import reloadBallance from "@pages/helpers/reloadBalance";
 
 interface ErrorResult {
   isError: boolean;
@@ -397,6 +397,7 @@ export default function TransferDetailsConfirmation() {
       const endTime = new Date();
       const duration = getElapsedSecond(initTime, endTime);
       setTransferState((prev) => ({ ...prev, duration }));
+      await reloadBallance();
     }
   }
 }

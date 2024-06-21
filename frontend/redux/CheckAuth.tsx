@@ -35,7 +35,6 @@ import { HPLAssetData, HPLSubData, HPLVirtualData, HplContact } from "./models/A
 import { Principal } from "@dfinity/principal";
 import { Secp256k1KeyIdentity } from "@dfinity/identity-secp256k1";
 import { db, DB_Type } from "@/database/db";
-import { setTransactions, setTxWorker } from "@/redux/transaction/TransactionReducer";
 import { addWatchOnlySessionToLocal } from "@pages/helpers/watchOnlyStorage";
 import watchOnlyRefresh from "@pages/helpers/watchOnlyRefresh";
 import { setProtocol, setStorageCodeA } from "./common/CommonReducer";
@@ -52,6 +51,7 @@ import {
 } from "./hpl/HplReducer";
 import { parseFungibleToken } from "@common/utils/hpl";
 import { setServices, setServicesData } from "@/redux/services/ServiceReducer";
+import { setTransactions, setTxWorker } from "./transaction/TransactionReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -285,8 +285,6 @@ export const dispatchAuths = (identityPrincipal: string, myPrincipal: Principal)
 };
 
 export const logout = async () => {
-  const authClient = await AuthClient.create();
-  await authClient.logout();
   store.dispatch({ type: "USER_LOGGED_OUT" });
   await db().setIdentity(null);
   cleanEthLogin();
@@ -303,6 +301,7 @@ export const logout = async () => {
   store.dispatch(setServices([]));
   store.dispatch(setServicesData([]));
   store.dispatch(setTxWorker([]));
+  window.location.reload();
 };
 
 export const cleanEthLogin = () => {
