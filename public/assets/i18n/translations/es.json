@@ -69,6 +69,8 @@
   "mint": "Mint",
   "transaction": "Transacción",
   "agree": "Acepto",
+  "duplicated": "Duplica",
+
   "contact": "Contacto",
   "contact.name": "Nombre del Contacto",
   "contacts": "Contactos",
