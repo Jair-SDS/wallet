@@ -66,7 +66,7 @@ const Menu = (props: MenuProps) => {
       name: "Services",
       path: RoutingPathEnum.Enum.SERVICES,
       label: `${services?.length !== 1 ? t("services") : t("services")} (${services.length})`,
-      show: true,
+      show: protocol === ProtocolTypeEnum.Enum.ICRC1,
     },
   ];
 

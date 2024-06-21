@@ -146,7 +146,6 @@ const TxSummary = ({
   );
   function onAmountChange(e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) {
     const amnt = e.target.value;
-    console.log("FROM", from);
 
     if (validateAmount(amnt, decimals) || amnt === "") {
       const holeAmount = getHoleAmount(amnt, getFtFromSub(ftId).decimal);
