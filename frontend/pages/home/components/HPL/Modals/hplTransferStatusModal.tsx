@@ -41,7 +41,9 @@ const DialogSendConfirmation = ({ showConfirmationModal, modal }: DialogSendConf
 
           <div className="flex flex-row items-start justify-center w-full gap-4 mt-1 text-sm font-light opacity-80">
             <p>
-              {sendingStatus === SendingStatusEnum.enum.done || sendingStatus === SendingStatusEnum.enum.error
+              {sendingStatus === SendingStatusEnum.enum.done ||
+              sendingStatus === SendingStatusEnum.enum.error ||
+              sendingStatus === SendingStatusEnum.enum.notEnough
                 ? `Processing took ${getElapsedSecond(initTime, endTime)} seconds`
                 : ""}
             </p>
@@ -97,6 +99,8 @@ const DialogSendConfirmation = ({ showConfirmationModal, modal }: DialogSendConf
         return t("transfer.successful");
       case SendingStatusEnum.enum.error:
         return t("sending.failed");
+      case SendingStatusEnum.enum.notEnough:
+        return t("insufficient.funds");
       default:
         return "";
     }

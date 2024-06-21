@@ -236,13 +236,16 @@ const TxSummary = ({
         const res = await hplClient.simpleTransfer(aggregator, txFrom, txTo, BigInt(ftId), amountToSend);
 
         let validTx = false;
+        let notEnough = false;
         // poll tx
         await lastValueFrom(
           hplClient.pollTx(aggregator, res).pipe(
             map((x) => {
               if (x.status === "processed") {
                 if (x.statusPayload[0].failure) {
-                  setErrMsg(getTxErrMsg(JSON.stringify(x.statusPayload, bigIntReplacer)));
+                  const msg = getTxErrMsg(JSON.stringify(x.statusPayload, bigIntReplacer));
+                  if (msg !== "") notEnough = true;
+                  setErrMsg(msg);
                 } else if (x.statusPayload[0].success) {
                   setErrMsg("");
                   validTx = true;
@@ -263,7 +266,7 @@ const TxSummary = ({
           reloadHPLBallance();
         } else {
           setEndTxTime(new Date());
-          setSendingStatusAction(SendingStatusEnum.Enum.error);
+          setSendingStatusAction(notEnough ? SendingStatusEnum.Enum.notEnough : SendingStatusEnum.Enum.error);
         }
       } else {
         setErrMsg("cound.not.pick.agreggator");

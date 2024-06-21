@@ -38,7 +38,7 @@ export type AssetSymbol = z.infer<typeof AssetSymbolEnum>;
 export const ThemesEnum = z.enum(["dark", "light"]);
 export type Themes = z.infer<typeof ThemesEnum>;
 
-export const SendingStatusEnum = z.enum(["sending", "done", "error", "none"]);
+export const SendingStatusEnum = z.enum(["sending", "done", "error", "none", "notEnough"]);
 export type SendingStatus = z.infer<typeof SendingStatusEnum>;
 
 export const TokenNetworkEnum = z.enum(["ICRC-1"]);
