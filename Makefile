@@ -2,8 +2,8 @@ deploy-provider:
 	dfx canister --ic create --all
 	dfx deploy --ic ic_siwe_provider --argument "( \
 	    record { \
-	        domain = \"vgxgm-maaaa-aaaap-abuva-cai.icp0.io\"; \
-	        uri = \"https://vgxgm-maaaa-aaaap-abuva-cai.icp0.io\"; \
+	        domain = \"bv3c6-6aaaa-aaaap-abejq-cai.icp0.io\"; \
+	        uri = \"https://bv3c6-6aaaa-aaaap-abejq-cai.icp0.io\"; \
 	        salt = \"randomsalt123\"; \
 	        chain_id = opt 1; \
 	        scheme = opt \"http\"; \
