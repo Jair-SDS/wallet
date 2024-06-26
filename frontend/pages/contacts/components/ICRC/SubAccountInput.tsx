@@ -1,13 +1,15 @@
 import { ContactAccount } from "@redux/models/ContactsModels";
 import { CustomInput } from "@components/input";
 import { asciiHex } from "@pages/contacts/constants/asciiHex";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, forwardRef, SetStateAction } from "react";
 import { getSubAccount, getSubAccountId } from "@pages/contacts/helpers/formatters";
 import { ContactAccountError } from "./AddContactAccountRow";
 import { validatePrincipal } from "@common/utils/definityIdentity";
-import Switch from "@components/switch/BasicSwitch";
 import { useAppSelector } from "@redux/Store";
 import { t } from "i18next";
+import * as RadixSwitch from "@radix-ui/react-switch";
+import clsx from "clsx";
+import { isHexadecimalValid } from "@pages/home/helpers/checkers";
 
 interface SubAccountInputProps {
   newAccount: ContactAccount | null;
@@ -19,7 +21,7 @@ interface SubAccountInputProps {
   setErrors: Dispatch<SetStateAction<ContactAccountError>>;
 }
 
-export default function SubAccountInput(props: SubAccountInputProps) {
+function SubAccountInput(props: SubAccountInputProps, testRef: any) {
   const contacts = useAppSelector((state) => state.contacts.contacts);
 
   return (
@@ -35,15 +37,18 @@ export default function SubAccountInput(props: SubAccountInputProps) {
         className="h-[2.2rem] dark:bg-level-2-color bg-white rounded-lg border-[2px]"
         inputClass="h-[1.5rem]"
         placeholder={props.isHexadecimal ? "Hexadecimal" : "Principal"}
-        sufix={props.error && isSubaccountDuplicated(props.newAccount?.subaccountId || undefined) ? <p className="text-sm capitalize text-slate-color-error">{t("duplicated")}</p> : undefined}
+        sufix={
+          props.error && isSubaccountDuplicated(props.newAccount?.subaccountId || undefined) ? (
+            <p className="text-sm capitalize text-slate-color-error">{t("duplicate")}</p>
+          ) : undefined
+        }
       />
 
       <div className="flex items-center ml-1 mr-[1rem]">
-        <p className="mr-2 text-md">{props.isHexadecimal ? "Hex" : "Principal"}</p>
-        <Switch
+        <RadixSwitch.Root
+          id=""
           checked={props.isHexadecimal}
-          size="medium"
-          onChange={() => {
+          onCheckedChange={() => {
             props.setIsHexadecimal((prev) => !prev);
             props.setErrors((prev) => ({
               ...prev,
@@ -62,7 +67,31 @@ export default function SubAccountInput(props: SubAccountInputProps) {
               return { ...prev, subaccountId: "", subaccount: "", allowance: undefined };
             });
           }}
-        />
+          className="rounded-md bg-secondary-color-1-light dark:bg-switch-principal min-h-[1.8rem] min-w-[7rem] relative"
+        >
+          <p
+            className={clsx("absolute font-medium text-gray-color-4/60 top-[0.4rem] text-sm transition-all duration-300", {
+              "left-0 ml-2": !props.isHexadecimal,
+              "right-0 mr-2": props.isHexadecimal,
+            })}
+          >
+            {!props.isHexadecimal ? "Hex" : "Principal"}
+          </p>
+
+          <RadixSwitch.Thumb
+            className={clsx(
+              "bg-primary-color absolute -top-[0.1rem] left-0 h-[1.9rem] rounded-md transition-all duration-300 flex items-center justify-center",
+              {
+                "translate-x-[2.4rem]": !props.isHexadecimal,
+                "-translate-x-[0.1rem]": props.isHexadecimal,
+                "w-8/12": !props.isHexadecimal,
+                "w-6/12": props.isHexadecimal,
+              },
+            )}
+          >
+            <p className="text-sm font-bold text-white">{props.isHexadecimal ? "Hex" : "Principal"}</p>
+          </RadixSwitch.Thumb>
+        </RadixSwitch.Root>
       </div>
     </div>
   );
@@ -70,8 +99,12 @@ export default function SubAccountInput(props: SubAccountInputProps) {
   function isSubaccountDuplicated(subaccount: string | undefined) {
     if (!subaccount) return false;
     const subaccountId = subaccount.startsWith("0x") ? subaccount : `0x${subaccount}`;
-    return contacts.some((contact) => contact.accounts.some((account) => account.subaccountId === subaccountId && account.tokenSymbol === props.newAccount?.tokenSymbol));
-  };
+    return contacts.some((contact) =>
+      contact.accounts.some(
+        (account) => account.subaccountId === subaccountId && account.tokenSymbol === props.newAccount?.tokenSymbol,
+      ),
+    );
+  }
 
   function onKeyDownIndex(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!props.isHexadecimal) {
@@ -87,7 +120,9 @@ export default function SubAccountInput(props: SubAccountInputProps) {
   }
 
   function onSubAccountChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
+    const value = e.target.value.trim().toLowerCase();
+    testRef.current = false;
+
     props.setNewAccount((prev) => {
       if (prev)
         return {
@@ -104,11 +139,18 @@ export default function SubAccountInput(props: SubAccountInputProps) {
       };
     });
 
-    if (!props.isHexadecimal) {
+    if (props.isHexadecimal) {
       props.setErrors((prev) => ({
         ...prev,
-        subaccountId: !validatePrincipal(value),
+        subaccountId: !isHexadecimalValid(value) && value !== "",
+      }));
+    } else {
+      props.setErrors((prev) => ({
+        ...prev,
+        subaccountId: !validatePrincipal(value) && value !== "",
       }));
     }
   }
 }
+
+export default forwardRef(SubAccountInput);
