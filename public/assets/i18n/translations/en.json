@@ -72,6 +72,7 @@
   "transaction": "Transfer",
   "agree": "Agree",
   "duplicated": "Duplicated",
+  "hexadecimal": "Hexadecimal",
 
   "contact": "Contact",
   "contact.name": "Contact Name",
@@ -359,6 +360,7 @@
   "error.transfer.to.service.not.valid.subaccount": "Service subaccount is not valid",
   "error.transfer.from.service.less.withdraw.minimun.plus.fee": "FROM service has less than withdraw minimun plus fee",
   "error.transfer.invalid.amount": "Amount is not valid",
+  "error.transfer.invalid.decimal.amount": "Decimal places exceeds that allowed by the token",
   "error.transfer.invalid.asset": "Asser is not valid",
   "error.transfer.allowance.insufficient": "FROM does not have enough balance",
   "error.transfer.allowance.subaccount.balance.insufficient": "FROM does not have enough balance",
