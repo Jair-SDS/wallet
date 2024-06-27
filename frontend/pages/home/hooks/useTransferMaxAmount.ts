@@ -33,16 +33,16 @@ export default function useTransferMaxAmount() {
   const assets = useAppSelector((state) => state.asset.list.assets);
   const currentAsset = assets.find((asset) => asset.tokenSymbol === transferState.tokenSymbol);
 
-  async function onMaxAmount() {
+  async function onMaxAmount(noMax?: boolean) {
     const isManualAllowance = transferState.fromType === TransferFromTypeEnum.allowanceManual;
     const isContactAllowance = transferState.fromType === TransferFromTypeEnum.allowanceContactBook;
     //
-    if (isManualAllowance || isContactAllowance) await fromAllowanceMaxAmount();
-    if (transferState.fromType === TransferFromTypeEnum.own) fromOwnBalanceMaxAmount();
-    if (transferState.fromType === TransferFromTypeEnum.service) fromServiceMaxAmount();
+    if (isManualAllowance || isContactAllowance) await fromAllowanceMaxAmount(noMax);
+    if (transferState.fromType === TransferFromTypeEnum.own) fromOwnBalanceMaxAmount(noMax);
+    if (transferState.fromType === TransferFromTypeEnum.service) fromServiceMaxAmount(noMax);
   }
 
-  function fromOwnBalanceMaxAmount() {
+  function fromOwnBalanceMaxAmount(noMax?: boolean) {
     if (!currentAsset) {
       logger.debug("current asset not found");
       return;
@@ -66,9 +66,9 @@ export default function useTransferMaxAmount() {
         availableAmount: toFullDecimal(balance, Number(currentAsset.decimal)),
         displayAvailable: false,
         isLoading: false,
-        isAmountFromMax: true,
+        isAmountFromMax: !noMax,
       });
-      setTransferState((prev) => ({ ...prev, amount: "0" }));
+      !noMax && setTransferState((prev) => ({ ...prev, amount: "0" }));
       // max: 0, available: balance
       return;
     }
@@ -78,17 +78,18 @@ export default function useTransferMaxAmount() {
       availableAmount: toFullDecimal(balance, Number(currentAsset.decimal)),
       displayAvailable: false,
       isLoading: false,
-      isAmountFromMax: true,
+      isAmountFromMax: !noMax,
     });
 
-    setTransferState((prev) => ({
-      ...prev,
-      amount: toFullDecimal(balance - fee, Number(currentAsset.decimal)),
-    }));
+    !noMax &&
+      setTransferState((prev) => ({
+        ...prev,
+        amount: toFullDecimal(balance - fee, Number(currentAsset.decimal)),
+      }));
     // max: balance - fee, available: balance
   }
 
-  async function fromAllowanceMaxAmount() {
+  async function fromAllowanceMaxAmount(noMax?: boolean) {
     if (!currentAsset) {
       logger.debug("current asset not found");
       return;
@@ -125,12 +126,13 @@ export default function useTransferMaxAmount() {
           availableAmount: "0",
           displayAvailable: false,
           isLoading: false,
-          isAmountFromMax: true,
+          isAmountFromMax: !noMax,
         });
-        setTransferState((prev) => ({
-          ...prev,
-          amount: "0",
-        }));
+        !noMax &&
+          setTransferState((prev) => ({
+            ...prev,
+            amount: "0",
+          }));
         // max: 0, available: (balance)
         return;
       }
@@ -141,12 +143,13 @@ export default function useTransferMaxAmount() {
         availableAmount: "0",
         displayAvailable: false,
         isLoading: false,
-        isAmountFromMax: true,
+        isAmountFromMax: !noMax,
       });
-      setTransferState((prev) => ({
-        ...prev,
-        amount: toFullDecimal(allowanceAmount - fee, Number(currentAsset?.decimal || "8")),
-      }));
+      !noMax &&
+        setTransferState((prev) => ({
+          ...prev,
+          amount: toFullDecimal(allowanceAmount - fee, Number(currentAsset?.decimal || "8")),
+        }));
       // max: (allowance - fee), available: 0 (not shown)
       return;
     } else {
@@ -157,12 +160,13 @@ export default function useTransferMaxAmount() {
           availableAmount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
           displayAvailable: true,
           isLoading: false,
-          isAmountFromMax: true,
+          isAmountFromMax: !noMax,
         });
-        setTransferState((prev) => ({
-          ...prev,
-          amount: "0",
-        }));
+        !noMax &&
+          setTransferState((prev) => ({
+            ...prev,
+            amount: "0",
+          }));
         // max: 0, available: (balance)
         return;
       }
@@ -173,12 +177,13 @@ export default function useTransferMaxAmount() {
           availableAmount: "0",
           displayAvailable: false,
           isLoading: false,
-          isAmountFromMax: true,
+          isAmountFromMax: !noMax,
         });
-        setTransferState((prev) => ({
-          ...prev,
-          amount: "0",
-        }));
+        !noMax &&
+          setTransferState((prev) => ({
+            ...prev,
+            amount: "0",
+          }));
         // max: 0, available: (balance)
         return;
       }
@@ -188,17 +193,18 @@ export default function useTransferMaxAmount() {
         availableAmount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
         displayAvailable: true,
         isLoading: false,
-        isAmountFromMax: true,
+        isAmountFromMax: !noMax,
       });
-      setTransferState((prev) => ({
-        ...prev,
-        amount: toFullDecimal(balance - fee, Number(currentAsset?.decimal || "8")),
-      }));
+      !noMax &&
+        setTransferState((prev) => ({
+          ...prev,
+          amount: toFullDecimal(balance - fee, Number(currentAsset?.decimal || "8")),
+        }));
       // max: balance - fee, available: balance
     }
   }
 
-  function fromServiceMaxAmount() {
+  function fromServiceMaxAmount(noMax?: boolean) {
     const service = services.find((srv) => srv.principal === transferState.fromPrincipal);
 
     if (!service) {
@@ -221,12 +227,13 @@ export default function useTransferMaxAmount() {
         availableAmount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
         displayAvailable: false,
         isLoading: false,
-        isAmountFromMax: true,
+        isAmountFromMax: !noMax,
       });
-      setTransferState((prev) => ({
-        ...prev,
-        amount: "0",
-      }));
+      !noMax &&
+        setTransferState((prev) => ({
+          ...prev,
+          amount: "0",
+        }));
       // max: 0, available: balance
       return;
     }
@@ -236,12 +243,13 @@ export default function useTransferMaxAmount() {
       availableAmount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
       displayAvailable: false,
       isLoading: false,
-      isAmountFromMax: true,
+      isAmountFromMax: !noMax,
     });
-    setTransferState((prev) => ({
-      ...prev,
-      amount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
-    }));
+    !noMax &&
+      setTransferState((prev) => ({
+        ...prev,
+        amount: toFullDecimal(balance, Number(currentAsset?.decimal || "8")),
+      }));
   }
 
   function onChangeAmount(e: ChangeEvent<HTMLInputElement>) {

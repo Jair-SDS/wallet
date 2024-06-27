@@ -2,9 +2,10 @@ import { TransferFromTypeEnum, TransferToTypeEnum, useTransfer } from "@pages/ho
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { useAppSelector } from "@redux/Store";
-import { toFullDecimal, validateAmount } from "@common/utils/amount";
+import { toFullDecimal, toHoleBigInt, validateAmount } from "@common/utils/amount";
 import useTransferMaxAmount from "@pages/home/hooks/useTransferMaxAmount";
 import { LoadingLoader } from "@components/loader";
+import { useEffect } from "react";
 
 export default function AmountDetails() {
   const { t } = useTranslation();
@@ -28,10 +29,41 @@ export default function AmountDetails() {
 
   const isAmountValid = (() => {
     if (transferState.amount === "") return true;
-    if (transferState.amount === undefined) return true;
-    if (transferState.amount === "0") return false;
-    return validateAmount(transferState.amount, Number(currentAsset?.decimal || "8"));
+    if (transferState.amount === undefined && transferState.amount === "0") return true;
+
+    const isFromOwnSubAccount = transferState.fromType === TransferFromTypeEnum.own;
+    const isMaxAmountValid = transferState.amount && maxAmount.maxAmount !== "0";
+    const isUserAmountValid = transferState.amount !== "0" && transferState.amount !== "";
+
+    const isUserAmountFormatValid = validateAmount(
+      transferState.amount,
+      Number(currentAsset?.decimal || "8")
+    );
+
+    if (!isUserAmountFormatValid) return false;
+
+    if (isFromOwnSubAccount && isMaxAmountValid && isUserAmountValid) {
+
+      const maxAmountBigInt = toHoleBigInt(
+        maxAmount.maxAmount,
+        Number(currentAsset?.decimal || "8")
+      );
+
+      const userAmountBigInt = toHoleBigInt(
+        transferState.amount,
+        Number(currentAsset?.decimal || "8")
+      );
+
+      if (maxAmountBigInt < userAmountBigInt) return false;
+
+    };
+
+    return true;
   })();
+
+  useEffect(() => {
+    onMaxAmount(true);
+  }, []);
 
   return (
     <div className="max-w-[23rem] mx-auto space-y-[0.5rem]">
@@ -48,7 +80,9 @@ export default function AmountDetails() {
         {!maxAmount.isLoading && (
           <button
             className="flex items-center justify-center p-1 mr-2 rounded cursor-pointer bg-RadioCheckColor"
-            onClick={onMaxAmount}
+            onClick={() => {
+              onMaxAmount();
+            }}
           >
             <p className="text-sm text-PrimaryTextColor">{t("max")}</p>
           </button>
@@ -91,12 +125,10 @@ export default function AmountDetails() {
 
       <div className="flex items-center justify-between w-full">
         <div className="flex">
-          {!maxAmount.isLoading && maxAmount.isAmountFromMax && (
-            <div className="flex">
-              <p className="mr-1 text-sm text-primary-color">{t("max")}: </p>
-              <p className="mr-2 text-sm text-primary-color">{maxAmount.maxAmount}</p>
-            </div>
-          )}
+          <div className="flex">
+            <p className="mr-1 text-sm text-primary-color">{t("max")}: </p>
+            <p className="mr-2 text-sm text-primary-color">{maxAmount.maxAmount}</p>
+          </div>
 
           {!maxAmount.isLoading && maxAmount.displayAvailable && maxAmount.isAmountFromMax && (
             <p className="text-sm text-primary-color">
