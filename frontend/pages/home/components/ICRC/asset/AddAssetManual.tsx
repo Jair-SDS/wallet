@@ -38,15 +38,15 @@ const AddAssetManual = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { authClient } = AccountHook();
+  const [errShortDec, serErrShortDec] = useState(false);
 
   const [tested, setTested] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
+  //
   const [validIndex, setValidIndex] = useState(false);
   const [validToken, setValidToken] = useState(false);
   //
-  const [errShortDec, serErrShortDec] = useState(false);
   const [errIndex, setErrIndex] = useState("");
-
   const isUpdate = assetAction === AssetMutationAction.UPDATE;
 
   useEffect(() => {
@@ -122,6 +122,7 @@ const AddAssetManual = () => {
           compOutClass=""
           value={newAsset.index}
           onChange={onChangeIndex}
+          border={errIndex ? "error" : undefined}
         />
         {errIndex !== "" && errIndex !== "non" && <p className="text-sm text-left text-LockColor">{errIndex}</p>}
         {validIndex && <p className="text-sm text-left text-slate-color-info">{t("index.validation.msg")}</p>}
@@ -250,6 +251,7 @@ const AddAssetManual = () => {
     setNewAsset((prev: Asset) => {
       return { ...prev, index: e.target.value };
     });
+
     setValidIndex(false);
     if (e.target.value.trim() !== "")
       try {
@@ -306,7 +308,6 @@ const AddAssetManual = () => {
     setTestLoading(true);
     let validData = false;
 
-    // function 2: check if asset address is already added
     if (checkAssetAdded(newAsset.address)) {
       setErrToken(t("adding.asset.already.imported"));
       setValidToken(false);
@@ -321,6 +322,7 @@ const AddAssetManual = () => {
           ledgerIndex: newAsset.index,
           sortIndex: newAsset.sortIndex,
         });
+
         if (newAssetUpdated)
           setNewAsset((prev: Asset) => {
             const newAsset: Asset = {
@@ -363,6 +365,8 @@ const AddAssetManual = () => {
   }
 
   async function onSave() {
+    if (errIndex !== "" || errToken !== "") return;
+
     if (isUpdate) {
       // INFO: saving an updated asset
       if (newAsset.shortDecimal === "") {

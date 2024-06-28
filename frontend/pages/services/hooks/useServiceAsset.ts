@@ -22,7 +22,7 @@ export default function useServiceAsset() {
   const dispatch = useAppDispatch();
   const { setTransferState } = useTransfer();
   const { assets } = useAppSelector((state) => state.asset.list);
-  const { userAgent } = useAppSelector((state) => state.auth);
+  const { userAgent, authClient } = useAppSelector((state) => state.auth);
 
   const [assetsToAdd, setAssetsToAdd] = useState<ServiceAsset[]>([]);
   const [notifyRes, setNotifyRes] = useState<NotifyResult>();
@@ -74,15 +74,23 @@ export default function useServiceAsset() {
   };
 
   const onDeposit = (selectedAsset: Asset, service: ServiceSubAccount) => {
+    let fromPrincipal = "";
+    let fromSubAccount = "";
+    if (selectedAsset.subAccounts.length === 1) {
+      fromPrincipal = authClient;
+      fromSubAccount = selectedAsset.subAccounts[0].sub_account_id;
+    }
+
     setTransferState({
       tokenSymbol: selectedAsset.tokenSymbol,
       fromType: TransferFromTypeEnum.own,
-      fromPrincipal: "",
-      fromSubAccount: "",
+      fromPrincipal,
+      fromSubAccount,
       toType: TransferToTypeEnum.thirdPartyService,
       toPrincipal: service.servicePrincipal,
       toSubAccount: service.subAccountId,
       amount: "",
+      usdAmount: "",
       duration: "",
     });
     setTransactionDrawerAction(TransactionDrawer.SEND);
@@ -98,6 +106,7 @@ export default function useServiceAsset() {
       toPrincipal: "",
       toSubAccount: "",
       amount: "",
+      usdAmount: "",
       duration: "",
     });
     setTransactionDrawerAction(TransactionDrawer.SEND);
