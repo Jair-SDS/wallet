@@ -285,23 +285,10 @@ export const dispatchAuths = (identityPrincipal: string, myPrincipal: Principal)
 };
 
 export const logout = async () => {
-  store.dispatch({ type: "USER_LOGGED_OUT" });
   await db().setIdentity(null);
-  cleanEthLogin();
-  store.dispatch(clearDataContacts());
-  store.dispatch(clearDataAsset());
-  store.dispatch(clearDataAuth());
+  const opt: AuthNetwork | null = db().getNetworkType();
+  if (opt && opt.name === "Ethereum") cleanEthLogin();
   store.dispatch(setUnauthenticated());
-  store.dispatch(setUserAgent(undefined));
-  store.dispatch(setUserPrincipal(undefined));
-  store.dispatch({
-    type: "USER_LOGGED_OUT",
-  });
-  store.dispatch(setTransactions([]));
-  store.dispatch(setServices([]));
-  store.dispatch(setServicesData([]));
-  store.dispatch(setTxWorker([]));
-  window.location.reload();
 };
 
 export const cleanEthLogin = () => {

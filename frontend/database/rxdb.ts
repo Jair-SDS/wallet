@@ -868,8 +868,6 @@ export class RxdbDatabase extends IWalletDatabase {
             .map(this._mapHplSubaccount)) ||
         [];
 
-      console.log("mewdata:", [...newSubs, ...subs]);
-
       await (
         await this.hplSubaccounts
       )?.bulkUpsert(
