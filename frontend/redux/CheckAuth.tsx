@@ -3,7 +3,6 @@ import { Actor, AnonymousIdentity, HttpAgent, Identity } from "@dfinity/agent";
 import store from "./Store";
 import logger from "@/common/utils/logger";
 import {
-  clearDataAuth,
   setAuthLoading,
   setAuthenticated,
   setDbLocation,
@@ -17,11 +16,11 @@ import {
 } from "@/redux/auth/AuthReducer";
 import { AuthClient } from "@dfinity/auth-client";
 import { updateHPLBalances, getSNSTokens } from "./assets/AssetActions";
-import { clearDataAsset, setInitLoad, setICRC1SystemAssets } from "./assets/AssetReducer";
+import { setInitLoad, setICRC1SystemAssets } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, ProtocolTypeEnum, RoutingPathEnum } from "@/common/const";
 import { Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
-import { clearDataContacts, setStorageCode } from "./contacts/ContactsReducer";
+import { setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
@@ -50,8 +49,6 @@ import {
   setOwnersActor,
 } from "./hpl/HplReducer";
 import { parseFungibleToken } from "@common/utils/hpl";
-import { setServices, setServicesData } from "@/redux/services/ServiceReducer";
-import { setTransactions, setTxWorker } from "./transaction/TransactionReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
