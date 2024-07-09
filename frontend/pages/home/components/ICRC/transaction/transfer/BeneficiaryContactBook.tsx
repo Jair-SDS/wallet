@@ -15,10 +15,11 @@ import { Buffer } from "buffer";
 
 interface BeneficiaryContactBookProps {
   setSelectedContact(value: Contact | undefined): void;
+  fromAllowances?: boolean;
 }
 
 export default function BeneficiaryContactBook(props: BeneficiaryContactBookProps) {
-  const { setSelectedContact } = props;
+  const { setSelectedContact, fromAllowances } = props;
   const { t } = useTranslation();
   const { setTransferState } = useTransfer();
   const { contacts } = useAppSelector((state) => state.contacts);
@@ -34,7 +35,9 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={8}
-          className="absolute w-[21rem] max-h-[24vh] bg-secondary-color-1-light dark:bg-level-1-color border border-primary-color  z-[1000] -right-5  scroll-y-light rounded-lg  shadow-sm"
+          className={`absolute ${
+            fromAllowances ? "w-[22rem]" : "w-[21rem]"
+          } max-h-[24vh] bg-secondary-color-1-light dark:bg-level-1-color border border-primary-color  z-[1000] -right-5  scroll-y-light rounded-lg  shadow-sm`}
         >
           <div className="flex items-center justify-center w-full px-2 py-2">
             <CustomInput
