@@ -6,7 +6,7 @@ import { Buffer } from "buffer";
 import { BasicSelect } from "@components/select";
 import { useAppSelector } from "@redux/Store";
 import { removeAllowanceErrorAction } from "@redux/allowance/AllowanceActions";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AvatarEmpty } from "@components/avatar";
 import { Service } from "@redux/models/ServiceModels";
