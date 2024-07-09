@@ -95,7 +95,7 @@ export default function CreateForm() {
         {(isLoading || isPending) && <LoadingLoader className="mr-2" />}
         <div className="flex">
           <CustomButton intent="success" className="mr-4" onClick={onCheckAllowance} disabled={isPending || isLoading}>
-            {t("test")}
+            {t("check.existing")}
           </CustomButton>
           <CustomButton
             onClick={onSaveAllowance}
@@ -164,6 +164,7 @@ export default function CreateForm() {
         assetDecimal: allowance.asset.decimal,
         allocatorSubaccount: allowance.subAccountId,
         spenderPrincipal: allowance.spender,
+        spenderSubaccount: isFromService ? allowance.spenderSubaccount : undefined,
       });
 
       const newAllowance = {
