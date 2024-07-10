@@ -14,10 +14,11 @@ interface ReceiverContactBeneficiarySelectorProps {
   selectedContact?: Contact;
   setSelectedContact(value: Contact | undefined): void;
   setBeneficiary(value: string): void;
+  fromAllowances?: boolean;
 }
 
 export default function ReceiverContactBeneficiarySelector(props: ReceiverContactBeneficiarySelectorProps) {
-  const { selectedContact, setSelectedContact, setBeneficiary } = props;
+  const { selectedContact, setSelectedContact, setBeneficiary, fromAllowances } = props;
   const { t } = useTranslation();
   const { setTransferState } = useTransfer();
   const [searchSubAccountValue, setSearchSubAccountValue] = useState<string | null>(null);
@@ -44,10 +45,13 @@ export default function ReceiverContactBeneficiarySelector(props: ReceiverContac
         currentValue={`${selectedContact?.principal}`}
         onSearch={onSearchChange}
         onOpenChange={onOpenChange}
-        componentWidth="21rem"
+        componentWidth={fromAllowances ? "22rem" : "21rem"}
         margin="!mt-0"
       />
-      <button className="absolute -right-4 -bottom-[2.75rem]" onClick={onClear}>
+      <button
+        className={`absolute ${fromAllowances ? "right-6 top-1" : "-right-4 -bottom-[2.75rem]"}`}
+        onClick={onClear}
+      >
         <p className="text-md text-slate-color-info underline">{t("clear")}</p>
       </button>
     </div>

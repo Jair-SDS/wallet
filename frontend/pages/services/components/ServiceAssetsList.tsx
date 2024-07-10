@@ -3,6 +3,7 @@ import { ReactComponent as DepositIcon } from "@assets/svg/files/deposit-icon.sv
 import { ReactComponent as WithdrawIcon } from "@assets/svg/files/withdraw-icon.svg";
 import { ReactComponent as NotifyIcon } from "@assets/svg/files/notify-icon.svg";
 import { ReactComponent as MoreIcon } from "@assets/svg/files/more-alt.svg";
+import { ReactComponent as MoneyHandIcon } from "@assets/svg/files/money-hand.svg";
 import { TrashIcon } from "@radix-ui/react-icons";
 //
 import { IconTypeEnum } from "@common/const";
@@ -22,6 +23,8 @@ import { assetServiceToServiceSubAccount } from "@common/utils/service";
 import { useAppSelector } from "@redux/Store";
 import { Asset } from "@redux/models/AccountModels";
 import { CustomButton } from "@components/button";
+import AddAllowanceDrawer from "@pages/allowances/components/AddAllowanceDrawer";
+import useAllowanceDrawer from "@pages/allowances/hooks/useAllowanceDrawer";
 
 interface ServiceAssetsListProps {
   service: Service;
@@ -47,6 +50,7 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
   const [deleteAsset, setDeleteAsset] = useState<ServiceAsset>();
   const [assetToNotify, setAssetToNotify] = useState<ServiceAsset>();
   const [notifyLoading, setNotifyLoading] = useState(-1);
+  const { onOpenCreateAllowanceDrawerFromService } = useAllowanceDrawer();
 
   return (
     <Fragment>
@@ -191,6 +195,28 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
                             <p className="text-sm text-SelectRowColor">{t("notify")}</p>
                           </div>
                         </CustomHoverCard>
+                        <CustomHoverCard
+                          arrowFill="fill-SelectRowColor"
+                          side="top"
+                          trigger={
+                            <button
+                              className="flex items-center justify-center w-10 h-10 p-0 rounded-md bg-SelectRowColor"
+                              onClick={() => {
+                                onAllowanceClic(ast, service.principal);
+                              }}
+                            >
+                              {notifyLoading === k ? (
+                                <LoadingLoader />
+                              ) : (
+                                <MoneyHandIcon className="fill-PrimaryColorLight" />
+                              )}
+                            </button>
+                          }
+                        >
+                          <div className="p-1 border rounded-md border-SelectRowColor bg-SecondaryColorLight dark:bg-SecondaryColor">
+                            <p className="text-sm text-SelectRowColor">{t("Allowance")}</p>
+                          </div>
+                        </CustomHoverCard>
                       </div>
                     )}
                   </td>
@@ -269,6 +295,7 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
           res={notifyRes}
         />
       )}
+      <AddAllowanceDrawer />
     </Fragment>
   );
   function onOpenMoreChange(k: number, e: boolean) {
@@ -306,5 +333,9 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
           ast,
           assetServiceToServiceSubAccount(authClient, service.name, service.principal, serviceAsset, ast!),
         );
+  }
+
+  function onAllowanceClic(myAsset: Asset | undefined, spender: string) {
+    if (myAsset) onOpenCreateAllowanceDrawerFromService(myAsset, spender);
   }
 }
