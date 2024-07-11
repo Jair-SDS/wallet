@@ -102,6 +102,7 @@ export default function ServiceBookReceiver() {
           setBeneficiary={setBeneficiary}
           selectedContact={contactBeneficiary}
           setSelectedContact={setContactBeneficiary}
+          onSelectOption={onSelectOption}
         />
       ) : (
         <CustomInput
@@ -112,7 +113,7 @@ export default function ServiceBookReceiver() {
               <button className="p-0" onClick={onSelf}>
                 <p className="text-sm text-slate-color-info underline">{t("self")}</p>
               </button>
-              <BeneficiaryContactBook setSelectedContact={setContactBeneficiary} />
+              <BeneficiaryContactBook onSelectContactBeneficiaty={onSelectContactBeneficiaty} />
             </div>
           }
           border={benefErr ? "error" : "primary"}
@@ -189,5 +190,31 @@ export default function ServiceBookReceiver() {
       ...prev,
       toSubAccount: princSubId,
     }));
+  }
+  function onSelectOption(option: SelectOption) {
+    const contact = contacts.find((contact) => `${contact.principal}` === option.value);
+
+    if (!contact) {
+      logger.debug("ReceiverContactSelector: onSelect: contact not found");
+      return;
+    }
+
+    const princBytes = Principal.fromText(contact.principal).toUint8Array();
+    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
+    setTransferState((prev) => ({
+      ...prev,
+      toSubAccount: princSubId,
+    }));
+    setContactBeneficiary(contact);
+  }
+
+  function onSelectContactBeneficiaty(contact: Contact) {
+    const princBytes = Principal.fromText(contact.principal).toUint8Array();
+    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
+    setTransferState((prev) => ({
+      ...prev,
+      toSubAccount: princSubId,
+    }));
+    setContactBeneficiary(contact);
   }
 }

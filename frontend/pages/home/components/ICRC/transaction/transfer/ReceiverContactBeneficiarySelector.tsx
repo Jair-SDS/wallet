@@ -4,10 +4,7 @@ import { AvatarEmpty } from "@components/avatar";
 import { SelectOption } from "@/@types/components";
 import { useAppSelector } from "@redux/Store";
 import { useTransfer } from "@pages/home/contexts/TransferProvider";
-import logger from "@/common/utils/logger";
 import { Contact } from "@redux/models/ContactsModels";
-import { Principal } from "@dfinity/principal";
-import { Buffer } from "buffer";
 import { useTranslation } from "react-i18next";
 
 interface ReceiverContactBeneficiarySelectorProps {
@@ -15,10 +12,11 @@ interface ReceiverContactBeneficiarySelectorProps {
   setSelectedContact(value: Contact | undefined): void;
   setBeneficiary(value: string): void;
   fromAllowances?: boolean;
+  onSelectOption(option: SelectOption): void;
 }
 
 export default function ReceiverContactBeneficiarySelector(props: ReceiverContactBeneficiarySelectorProps) {
-  const { selectedContact, setSelectedContact, setBeneficiary, fromAllowances } = props;
+  const { selectedContact, setSelectedContact, setBeneficiary, fromAllowances, onSelectOption } = props;
   const { t } = useTranslation();
   const { setTransferState } = useTransfer();
   const [searchSubAccountValue, setSearchSubAccountValue] = useState<string | null>(null);
@@ -67,20 +65,7 @@ export default function ReceiverContactBeneficiarySelector(props: ReceiverContac
 
   function onSelect(option: SelectOption) {
     setSearchSubAccountValue(null);
-    const contact = contacts.find((contact) => `${contact.principal}` === option.value);
-
-    if (!contact) {
-      logger.debug("ReceiverContactSelector: onSelect: contact not found");
-      return;
-    }
-
-    const princBytes = Principal.fromText(contact.principal).toUint8Array();
-    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
-    setTransferState((prev) => ({
-      ...prev,
-      toSubAccount: princSubId,
-    }));
-    setSelectedContact(contact);
+    onSelectOption(option);
   }
 
   function onSearchChange(searchValue: string) {

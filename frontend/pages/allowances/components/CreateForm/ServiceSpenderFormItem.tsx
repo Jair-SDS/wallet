@@ -6,7 +6,7 @@ import { Buffer } from "buffer";
 import { BasicSelect } from "@components/select";
 import { useAppSelector } from "@redux/Store";
 import { removeAllowanceErrorAction } from "@redux/allowance/AllowanceActions";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AvatarEmpty } from "@components/avatar";
 import { Service } from "@redux/models/ServiceModels";
@@ -14,6 +14,7 @@ import { Contact } from "@redux/models/ContactsModels";
 import ReceiverContactBeneficiarySelector from "@pages/home/components/ICRC/transaction/transfer/ReceiverContactBeneficiarySelector";
 import BeneficiaryContactBook from "@pages/home/components/ICRC/transaction/transfer/BeneficiaryContactBook";
 import { Principal } from "@dfinity/principal";
+import logger from "@common/utils/logger";
 
 interface IServiceSpenderFormItemProps {
   setAllowanceState: (allowanceData: Partial<TAllowance>) => void;
@@ -27,6 +28,7 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
   const { authClient } = useAppSelector((state) => state.auth);
   const { errors } = useAppSelector((state) => state.allowance);
   const { services } = useAppSelector((state) => state.services);
+  const { contacts } = useAppSelector((state) => state.contacts);
   const [search, setSearch] = useState<string | null>(null);
   const [contactBeneficiary, setContactBeneficiary] = useState<Contact>();
   const [beneficiary, setBeneficiary] = useState(authClient);
@@ -37,10 +39,31 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
   const { setAllowanceState, isLoading, allowance } = props;
 
   const options = useMemo(() => {
-    if (!search) return services?.map(formatService);
+    return services
+      ?.filter((srv) => {
+        const keyFilter = srv.name.toLowerCase().includes(search?.toLowerCase() || "");
+        let haveSelectedAsset = false;
+        srv.assets.map((ast) => {
+          if (ast.principal === allowance.asset?.address && ast.visible) haveSelectedAsset = true;
+        });
 
-    return services?.filter((srv) => srv.name.toLowerCase().includes(search?.toLowerCase() || "")).map(formatService);
-  }, [search, services]);
+        return (!search || keyFilter) && haveSelectedAsset;
+      })
+      .map(formatService);
+  }, [search, services, allowance.asset]);
+
+  useEffect(() => {
+    const findService = services.find((srv) => srv.principal === allowance?.spender);
+    let haveSelectedAsset = false;
+    if (findService) {
+      findService.assets.map((ast) => {
+        if (ast.principal === allowance.asset?.address && ast.visible) haveSelectedAsset = true;
+      });
+    }
+    if (!findService || !haveSelectedAsset) {
+      setAllowanceState({ spender: "" });
+    }
+  }, [allowance.asset]);
 
   return (
     <div className="mx-auto mt-4 w-[22rem]">
@@ -63,6 +86,7 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
           setBeneficiary={setBeneficiary}
           selectedContact={contactBeneficiary}
           setSelectedContact={setContactBeneficiary}
+          onSelectOption={onSelectOption}
           fromAllowances
         />
       ) : (
@@ -74,7 +98,7 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
               <div className="p-0 cursor-pointer" onClick={onSelf}>
                 <p className="text-sm text-slate-color-info underline">{t("self")}</p>
               </div>
-              <BeneficiaryContactBook setSelectedContact={setContactBeneficiary} fromAllowances />
+              <BeneficiaryContactBook onSelectContactBeneficiaty={onSelectContactBeneficiaty} fromAllowances />
             </div>
           }
           border={!isPrincipalValid ? "error" : "primary"}
@@ -101,7 +125,6 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
       setAllowanceState({ spenderSubaccount: princSubId });
     }
   }
-
   function onSelectedChange(option: SelectOption) {
     setSearch(null);
     const fullSpender = services.find((srv) => srv.principal === option.value);
@@ -126,5 +149,24 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
     const princBytes = Principal.fromText(authClient).toUint8Array();
     const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
     setAllowanceState({ spenderSubaccount: princSubId });
+  }
+  function onSelectOption(option: SelectOption) {
+    const contact = contacts.find((contact) => `${contact.principal}` === option.value);
+
+    if (!contact) {
+      logger.debug("ReceiverContactSelector: onSelect: contact not found");
+      return;
+    }
+
+    const princBytes = Principal.fromText(contact.principal).toUint8Array();
+    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
+    setAllowanceState({ spenderSubaccount: princSubId });
+    setContactBeneficiary(contact);
+  }
+  function onSelectContactBeneficiaty(contact: Contact) {
+    const princBytes = Principal.fromText(contact.principal).toUint8Array();
+    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
+    setAllowanceState({ spenderSubaccount: princSubId });
+    setContactBeneficiary(contact);
   }
 }
