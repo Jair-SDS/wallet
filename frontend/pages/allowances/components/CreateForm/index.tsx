@@ -167,39 +167,41 @@ export default function CreateForm() {
         spenderSubaccount: isFromService ? allowance.spenderSubaccount : undefined,
       });
 
-      const newAllowance = {
-        ...allowance,
-        amount: response?.amount || "0",
-        expiration: response?.expiration || "",
-        id: db().generateAllowancePrimaryKey(allowance),
-      };
+      if (response.amount !== "") {
+        const newAllowance = {
+          ...allowance,
+          amount: response?.amount || "0",
+          expiration: response?.expiration || "",
+          id: db().generateAllowancePrimaryKey(allowance),
+        };
 
-      const duplicated = await getDuplicatedAllowance(newAllowance);
+        const duplicated = await getDuplicatedAllowance(newAllowance);
 
-      if (duplicated?.id) {
-        // INFO: exist in ledger and local db
-        const isExpirationSame = newAllowance.expiration === duplicated.expiration;
-        const isAmountSame = newAllowance.amount === duplicated.amount;
+        if (duplicated?.id) {
+          // INFO: exist in ledger and local db
+          const isExpirationSame = newAllowance.expiration === duplicated.expiration;
+          const isAmountSame = newAllowance.amount === duplicated.amount;
 
-        if (!isExpirationSame || !isAmountSame) {
-          refreshAllowance(newAllowance);
+          if (!isExpirationSame || !isAmountSame) {
+            refreshAllowance(newAllowance);
+          }
         }
+
+        if (!duplicated?.id && newAllowance.amount !== "0") {
+          // INFO: exist in ledger but not in local db
+          const updatedAllowances = [...allowances, newAllowance];
+
+          await db().updateAllowances(
+            updatedAllowances.map((currentAllowance) => ({
+              ...currentAllowance,
+              id: db().generateAllowancePrimaryKey(currentAllowance),
+            })),
+            { sync: true },
+          );
+        }
+
+        setAllowanceState({ ...newAllowance, amount: newAllowance.amount.replace(/,/g, "") });
       }
-
-      if (!duplicated?.id && newAllowance.amount !== "0") {
-        // INFO: exist in ledger but not in local db
-        const updatedAllowances = [...allowances, newAllowance];
-
-        await db().updateAllowances(
-          updatedAllowances.map((currentAllowance) => ({
-            ...currentAllowance,
-            id: db().generateAllowancePrimaryKey(currentAllowance),
-          })),
-          { sync: true },
-        );
-      }
-
-      setAllowanceState({ ...newAllowance, amount: newAllowance.amount.replace(/,/g, "") });
     } catch (error) {
       logger.debug(error);
     } finally {

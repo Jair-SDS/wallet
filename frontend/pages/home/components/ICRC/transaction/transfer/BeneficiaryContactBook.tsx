@@ -5,23 +5,19 @@ import { ReactComponent as SendUserIcon } from "@assets/svg/files/send-user-icon
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useAppSelector } from "@redux/Store";
 import { AvatarEmpty } from "@components/avatar";
-import { useTransfer } from "@pages/home/contexts/TransferProvider";
 import { CustomInput } from "@components/input";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Contact } from "@redux/models/ContactsModels";
-import { Principal } from "@dfinity/principal";
-import { Buffer } from "buffer";
 
 interface BeneficiaryContactBookProps {
-  setSelectedContact(value: Contact | undefined): void;
   fromAllowances?: boolean;
+  onSelectContactBeneficiaty(contact: Contact): void;
 }
 
 export default function BeneficiaryContactBook(props: BeneficiaryContactBookProps) {
-  const { setSelectedContact, fromAllowances } = props;
+  const { fromAllowances, onSelectContactBeneficiaty } = props;
   const { t } = useTranslation();
-  const { setTransferState } = useTransfer();
   const { contacts } = useAppSelector((state) => state.contacts);
   const [searchKey, setSearchKey] = useState("");
   return (
@@ -87,12 +83,6 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
   }
 
   function onSelectContact(contact: Contact) {
-    const princBytes = Principal.fromText(contact.principal).toUint8Array();
-    const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
-    setTransferState((prev) => ({
-      ...prev,
-      toSubAccount: princSubId,
-    }));
-    setSelectedContact(contact);
+    onSelectContactBeneficiaty(contact);
   }
 }
