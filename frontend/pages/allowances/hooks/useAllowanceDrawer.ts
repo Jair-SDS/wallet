@@ -30,6 +30,7 @@ export default function useAllowanceDrawer(): UseAllowanceDrawer {
   const { authClient } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   function onCloseCreateAllowanceDrawer() {
+    setIsFromServicesAction(false);
     setIsCreateAllowanceAction(false);
     setFullAllowanceErrorsAction([]);
     setSelectedAllowanceAction(initialAllowanceState);

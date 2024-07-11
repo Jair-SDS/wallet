@@ -201,6 +201,8 @@ export default function CreateForm() {
         }
 
         setAllowanceState({ ...newAllowance, amount: newAllowance.amount.replace(/,/g, "") });
+      } else {
+        setAllowanceState({ ...allowance, amount: "" });
       }
     } catch (error) {
       logger.debug(error);
