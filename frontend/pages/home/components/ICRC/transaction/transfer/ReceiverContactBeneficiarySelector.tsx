@@ -27,9 +27,9 @@ export default function ReceiverContactBeneficiarySelector(props: ReceiverContac
   const formattedContacts = (() => {
     const selfOption: SelectOption = {
       value: authClient,
-      label: "Self",
+      label: t("self"),
       subLabel: `${shortAddress(authClient, 12, 10)}`,
-      icon: <AvatarEmpty title={"Self"} background={"info"} size="medium" className="mr-4" userIcon />,
+      icon: <AvatarEmpty title={t("self")} background={"info"} size="medium" className="mr-4" userIcon />,
       labelClassname: "font-semibold",
     };
 

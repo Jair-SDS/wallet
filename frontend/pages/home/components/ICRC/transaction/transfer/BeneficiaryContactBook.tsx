@@ -52,7 +52,7 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
           </div>
           {getContactOptions().map((contact, index) => {
             const { name, principal } = contact;
-            const isSelf = principal === authClient && name === "Self";
+            const isSelf = principal === authClient && name === t("self");
             return (
               <DropdownMenu.Item
                 className="flex items-center justify-start px-2 py-2 bg-opacity-50 cursor-pointer hover:bg-primary-color/50"
@@ -90,7 +90,7 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
     });
 
     const selfContact: Contact = {
-      name: "Self",
+      name: t("self"),
       principal: authClient,
       accounts: [],
       accountIdentifier: "",

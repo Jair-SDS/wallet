@@ -39,7 +39,7 @@ export default function ServiceBookReceiver() {
 
     if (selfPrincSubId === transferState.toSubAccount) {
       auxContact = {
-        name: "Self",
+        name: t("self"),
         principal: authClient,
         accountIdentifier: "",
         accounts: [],
@@ -206,7 +206,7 @@ export default function ServiceBookReceiver() {
     }));
 
     setContactBeneficiary({
-      name: "Self",
+      name: t("self"),
       principal: authClient,
       accountIdentifier: "",
       accounts: [],
@@ -215,9 +215,9 @@ export default function ServiceBookReceiver() {
   function onSelectOption(option: SelectOption) {
     let contact = contacts.find((contact) => `${contact.principal}` === option.value);
 
-    if (option.value === authClient && option.label === "Self") {
+    if (option.value === authClient && option.label === t("self")) {
       contact = {
-        name: "Self",
+        name: t("self"),
         principal: authClient,
         accountIdentifier: "",
         accounts: [],

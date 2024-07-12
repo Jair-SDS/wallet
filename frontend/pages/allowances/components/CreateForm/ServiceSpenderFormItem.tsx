@@ -150,7 +150,7 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
     const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
     setAllowanceState({ spenderSubaccount: princSubId });
     setContactBeneficiary({
-      name: "Self",
+      name: t("self"),
       principal: authClient,
       accountIdentifier: "",
       accounts: [],
@@ -159,9 +159,9 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
   function onSelectOption(option: SelectOption) {
     let contact = contacts.find((contact) => `${contact.principal}` === option.value);
 
-    if (option.value === authClient && option.label === "Self") {
+    if (option.value === authClient && option.label === t("self")) {
       contact = {
-        name: "Self",
+        name: t("self"),
         principal: authClient,
         accountIdentifier: "",
         accounts: [],
