@@ -216,17 +216,6 @@ export default function AllowanceSenderContactBook() {
     return account.allowance.amount;
   }
 
-  function getAssetLogo() {
-    const asset = assets.find((asset) => asset.tokenSymbol === transferState.tokenSymbol);
-
-    if (!asset) {
-      logger.error("getAssetLogo: Asset not found");
-      return "";
-    }
-
-    return asset.logo;
-  }
-
   // ------------ USER EVENTS ------------
 
   function onSelect(contact: ContactSubAccount) {
