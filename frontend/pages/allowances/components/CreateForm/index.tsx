@@ -28,6 +28,7 @@ import { BasicModal } from "@components/modal";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import useAllowanceDrawer from "@pages/allowances/hooks/useAllowanceDrawer";
 import ServiceSpenderFormItem from "./ServiceSpenderFormItem";
+import { useEffect } from "react";
 
 export default function CreateForm() {
   const { t } = useTranslation();
@@ -42,6 +43,15 @@ export default function CreateForm() {
   const { result, allowance, setAllowanceState, createAllowance, isPending, isLoading, setLoading, setResult } =
     useCreateAllowance();
   const { userPrincipal } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (result && result === CreateResult.SUCCESS) {
+      setTimeout(() => {
+        setResult(null);
+        onCloseCreateAllowanceDrawer();
+      }, 3000);
+    }
+  }, [result]);
 
   return (
     <form className="relative flex flex-col overflow-y-auto text-left">

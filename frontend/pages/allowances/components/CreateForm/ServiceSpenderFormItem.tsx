@@ -149,9 +149,24 @@ export default function ServiceSpenderFormItem(props: IServiceSpenderFormItemPro
     const princBytes = Principal.fromText(authClient).toUint8Array();
     const princSubId = `0x${princBytes.length.toString(16) + Buffer.from(princBytes).toString("hex")}`;
     setAllowanceState({ spenderSubaccount: princSubId });
+    setContactBeneficiary({
+      name: t("self"),
+      principal: authClient,
+      accountIdentifier: "",
+      accounts: [],
+    });
   }
   function onSelectOption(option: SelectOption) {
-    const contact = contacts.find((contact) => `${contact.principal}` === option.value);
+    let contact = contacts.find((contact) => `${contact.principal}` === option.value);
+
+    if (option.value === authClient && option.label === t("self")) {
+      contact = {
+        name: t("self"),
+        principal: authClient,
+        accountIdentifier: "",
+        accounts: [],
+      };
+    }
 
     if (!contact) {
       logger.debug("ReceiverContactSelector: onSelect: contact not found");

@@ -6,6 +6,7 @@ import { useAppSelector } from "@redux/Store";
 import { useTransfer } from "@pages/home/contexts/TransferProvider";
 import { Contact } from "@redux/models/ContactsModels";
 import { useTranslation } from "react-i18next";
+import { shortAddress } from "@common/utils/icrc";
 
 interface ReceiverContactBeneficiarySelectorProps {
   selectedContact?: Contact;
@@ -18,13 +19,22 @@ interface ReceiverContactBeneficiarySelectorProps {
 export default function ReceiverContactBeneficiarySelector(props: ReceiverContactBeneficiarySelectorProps) {
   const { selectedContact, setSelectedContact, setBeneficiary, fromAllowances, onSelectOption } = props;
   const { t } = useTranslation();
+  const { authClient } = useAppSelector((state) => state.auth);
   const { setTransferState } = useTransfer();
   const [searchSubAccountValue, setSearchSubAccountValue] = useState<string | null>(null);
   const { contacts } = useAppSelector((state) => state.contacts);
 
   const formattedContacts = (() => {
-    if (!searchSubAccountValue) return contacts.map(formatContact);
-    return contacts
+    const selfOption: SelectOption = {
+      value: authClient,
+      label: t("self"),
+      subLabel: `${shortAddress(authClient, 12, 10)}`,
+      icon: <AvatarEmpty title={t("self")} background={"info"} size="medium" className="mr-4" userIcon />,
+      labelClassname: "font-semibold",
+    };
+
+    if (!searchSubAccountValue) return [selfOption, ...contacts.map(formatContact)];
+    const res = contacts
       .filter((contact) => {
         return (
           (!selectedContact || selectedContact.principal !== contact.principal) &&
@@ -32,6 +42,8 @@ export default function ReceiverContactBeneficiarySelector(props: ReceiverContac
         );
       })
       .map(formatContact);
+
+    return [selfOption, ...res];
   })();
 
   return (
@@ -55,11 +67,12 @@ export default function ReceiverContactBeneficiarySelector(props: ReceiverContac
     </div>
   );
 
-  function formatContact(contact: Contact) {
+  function formatContact(contact: Contact): SelectOption {
     return {
       value: `${contact.principal}`,
       label: `${contact.name}`,
-      icon: <AvatarEmpty title={contact.name} background={"info"} size="medium" className="mr-4" />,
+      subLabel: `${shortAddress(contact.principal, 12, 10)}`,
+      icon: <AvatarEmpty title={contact.name} background={"info"} className="mr-4" size="medium" />,
     };
   }
 
