@@ -9,6 +9,7 @@ import { CustomInput } from "@components/input";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Contact } from "@redux/models/ContactsModels";
+import { shortAddress } from "@common/utils/icrc";
 
 interface BeneficiaryContactBookProps {
   fromAllowances?: boolean;
@@ -17,6 +18,7 @@ interface BeneficiaryContactBookProps {
 
 export default function BeneficiaryContactBook(props: BeneficiaryContactBookProps) {
   const { fromAllowances, onSelectContactBeneficiaty } = props;
+  const { authClient } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
   const { contacts } = useAppSelector((state) => state.contacts);
   const [searchKey, setSearchKey] = useState("");
@@ -49,7 +51,8 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
             />
           </div>
           {getContactOptions().map((contact, index) => {
-            const { name } = contact;
+            const { name, principal } = contact;
+            const isSelf = principal === authClient && name === "Self";
             return (
               <DropdownMenu.Item
                 className="flex items-center justify-start px-2 py-2 bg-opacity-50 cursor-pointer hover:bg-primary-color/50"
@@ -57,9 +60,16 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
                 onSelect={() => onSelectContact(contact)}
               >
                 <div className="flex items-center justify-between mr-2">
-                  <AvatarEmpty background={"info"} title={name} size="large" />
+                  <AvatarEmpty background={"info"} title={name} size="large" userIcon={isSelf} className="mr-4" />
                   <div className="ml-2">
-                    <p className="text-left text-md text-black-color dark:text-white">{name}</p>
+                    <p
+                      className={`text-left text-md text-black-color dark:text-white ${isSelf ? "font-semibold" : ""}`}
+                    >
+                      {name}
+                    </p>
+                    <p className="text-left text-md text-black-color dark:text-white opacity-50">
+                      {shortAddress(principal, 12, 10)}
+                    </p>
                   </div>
                 </div>
               </DropdownMenu.Item>
@@ -73,13 +83,20 @@ export default function BeneficiaryContactBook(props: BeneficiaryContactBookProp
     setSearchKey(e.target.value);
   }
   function getContactOptions() {
-    if (contacts?.length === 0) return [];
     const filteredContacts = contacts.filter((contact) => {
       const key = searchKey.trim().toLowerCase();
       const nameInclude = contact.name.toLowerCase().includes(key);
       return key === "" || nameInclude;
     });
-    return filteredContacts;
+
+    const selfContact: Contact = {
+      name: "Self",
+      principal: authClient,
+      accounts: [],
+      accountIdentifier: "",
+    };
+
+    return [selfContact, ...filteredContacts];
   }
 
   function onSelectContact(contact: Contact) {
