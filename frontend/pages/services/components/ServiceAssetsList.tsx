@@ -58,22 +58,22 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
         <thead>
           <tr className="border-b text-PrimaryTextColorLight dark:text-PrimaryTextColor border-BorderColorTwoLight dark:border-BorderColorTwo ">
             <th className="p-2 text-left w-[5%]"></th>
-            <th className="p-2 text-left w-[17%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
+            <th className="p-2 text-left w-[22%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
               <p>{t("asset")}</p>
             </th>
-            <th className="p-2 text-left w-[13%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
+            <th className="p-2 text-left w-[18%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
               <p>{t("deposit")}</p>
             </th>
-            <th className="p-2 text-left w-[13%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
+            <th className="p-2 text-left w-[18%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
               <p>{t("credit")}</p>
             </th>
-            <th className="p-2 text-left w-[18%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
+            {/* <th className="p-2 text-left w-[18%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal opacity-60">
               <div className="flex flex-col items-center justify-center">
                 <p>{t("deposit")}</p>
                 <p>{`${t("minimun")} | ${t("fee")}`}</p>
               </div>
-            </th>
-            <th className="p-2 w-[24%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal"></th>
+            </th> */}
+            <th className="p-2 w-[27%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal"></th>
             <th className="p-2 w-[5%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal"></th>
             <th className="p-2 w-[5%] border-b border-BorderColorTwoLight dark:border-BorderColorTwo font-normal"></th>
           </tr>
@@ -124,7 +124,7 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
                       )}`}</p>
                     </div>
                   </td>
-                  <td className="px-2 py-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
+                  {/* <td className="px-2 py-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
                     <div className="flex flex-row items-center justify-center w-full">
                       <p>{`${toFullDecimal(
                         asst.minDeposit,
@@ -136,7 +136,7 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
                         Number(asst.shortDecimal || "8"),
                       )}`}</p>
                     </div>
-                  </td>
+                  </td> */}
                   <td className="py-2 border-b border-BorderColorTwoLight dark:border-BorderColorTwo">
                     {!watchOnlyMode && (
                       <div className="flex flex-row items-center justify-center w-full gap-2 px-10">
@@ -205,11 +205,7 @@ export default function ServiceAssetsList({ service }: ServiceAssetsListProps) {
                                 onAllowanceClic(ast, service.principal);
                               }}
                             >
-                              {notifyLoading === k ? (
-                                <LoadingLoader />
-                              ) : (
-                                <MoneyHandIcon className="fill-PrimaryColorLight" />
-                              )}
+                              <MoneyHandIcon className="fill-PrimaryColorLight" />
                             </button>
                           }
                         >
