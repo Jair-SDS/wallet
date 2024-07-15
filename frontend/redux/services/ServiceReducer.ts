@@ -194,7 +194,9 @@ const servicesSlice = createSlice({
       state.serviceAssets = action.payload;
     },
     clearServiceData(state) {
-      state = initialState;
+      state.serviceAssets = [];
+      state.services = [];
+      state.servicesData = [];
     },
   },
 });

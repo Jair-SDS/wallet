@@ -30,6 +30,7 @@ import { Contact } from "@redux/models/ContactsModels";
 import { ServiceData } from "@redux/models/ServiceModels";
 import logger from "@/common/utils/logger";
 import { resetAssetAmount } from "@pages/home/helpers/assets";
+import { setServices as setServicesRedux, setServicesData } from "@redux/services/ServiceReducer";
 
 export class LocalStorageDatabase extends IWalletDatabase {
   // Singleton pattern
@@ -64,6 +65,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
     this._assetStateSync();
     this._contactStateSync();
     this._allowanceStateSync();
+    this._serviceStateSync();
   }
 
   /**
@@ -303,6 +305,16 @@ export class LocalStorageDatabase extends IWalletDatabase {
   async deleteAllowance(id: string, options?: DatabaseOptions): Promise<void> {
     this._setAllowances(this._getAllowances().filter((allowance) => allowance.id !== id));
     if (options?.sync) store.dispatch(deleteReduxAllowance(id));
+  }
+
+  /**
+   * Sync the storage with the redux state
+   */
+  private async _serviceStateSync(services?: ServiceData[]): Promise<void> {
+    const service =
+      services || (JSON.parse(localStorage.getItem(`allowances-${this.principalId}`) || "[]") as ServiceData[]);
+    store.dispatch(setServicesData(service));
+    if (service.length === 0) store.dispatch(setServicesRedux([]));
   }
 
   async getServices(): Promise<ServiceData[]> {
