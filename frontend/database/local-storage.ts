@@ -330,7 +330,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
 
   private _setAssets(allAssets: Asset[]) {
     const assets = [...allAssets].sort((a, b) => a.sortIndex - b.sortIndex);
-    localStorage.setItem(`assets-${this.principalId}`, JSON.stringify(assets));
+    this.principalId.trim() !== "" && localStorage.setItem(`assets-${this.principalId}`, JSON.stringify(assets));
   }
 
   private _getContacts(): Contact[] {
@@ -340,7 +340,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setContacts(contacts: Contact[]) {
-    localStorage.setItem(`contacts-${this.principalId}`, JSON.stringify(contacts));
+    this.principalId.trim() !== "" && localStorage.setItem(`contacts-${this.principalId}`, JSON.stringify(contacts));
   }
 
   private _getAllowances(): TAllowance[] {
@@ -349,7 +349,8 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setAllowances(allowances: Pick<TAllowance, "id" | "asset" | "subAccountId" | "spender">[]) {
-    localStorage.setItem(`allowances-${this.principalId}`, JSON.stringify(allowances));
+    this.principalId.trim() !== "" &&
+      localStorage.setItem(`allowances-${this.principalId}`, JSON.stringify(allowances));
   }
 
   private _getServices(): ServiceData[] {
@@ -359,7 +360,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setServices(services: ServiceData[]) {
-    localStorage.setItem(`services-${this.principalId}`, JSON.stringify(services));
+    this.principalId.trim() !== "" && localStorage.setItem(`services-${this.principalId}`, JSON.stringify(services));
   }
 
   /**
