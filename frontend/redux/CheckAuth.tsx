@@ -49,6 +49,7 @@ import {
   setOwnersActor,
 } from "./hpl/HplReducer";
 import { parseFungibleToken } from "@common/utils/hpl";
+import { clearServiceData } from "./services/ServiceReducer";
 
 const AUTH_PATH = `/authenticate/?applicationName=${import.meta.env.VITE_APP_NAME}&applicationLogo=${
   import.meta.env.VITE_APP_LOGO
@@ -286,6 +287,7 @@ export const logout = async () => {
   const opt: AuthNetwork | null = db().getNetworkType();
   if (opt && opt.name === "Ethereum") cleanEthLogin();
   store.dispatch(setUnauthenticated());
+  store.dispatch(clearServiceData());
 };
 
 export const cleanEthLogin = () => {

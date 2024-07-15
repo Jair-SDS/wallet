@@ -193,6 +193,9 @@ const servicesSlice = createSlice({
     setServiceAssets(state, action: PayloadAction<ServiceAsset[]>) {
       state.serviceAssets = action.payload;
     },
+    clearServiceData(state) {
+      state = initialState;
+    },
   },
 });
 
@@ -223,5 +226,6 @@ export const {
   updateServiceAssetAmounts,
   removeAssetFromServices,
   setServiceAssets,
+  clearServiceData,
 } = servicesSlice.actions;
 export default servicesSlice.reducer;

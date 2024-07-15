@@ -430,7 +430,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
 
   private _setAssets(allAssets: Asset[]) {
     const assets = [...allAssets].sort((a, b) => a.sortIndex - b.sortIndex);
-    localStorage.setItem(`assets-${this.principalId}`, JSON.stringify(assets));
+    this.principalId.trim() !== "" && localStorage.setItem(`assets-${this.principalId}`, JSON.stringify(assets));
   }
 
   private _getContacts(): Contact[] {
@@ -440,7 +440,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setContacts(contacts: Contact[]) {
-    localStorage.setItem(`contacts-${this.principalId}`, JSON.stringify(contacts));
+    this.principalId.trim() !== "" && localStorage.setItem(`contacts-${this.principalId}`, JSON.stringify(contacts));
   }
 
   private _getAllowances(): TAllowance[] {
@@ -449,7 +449,8 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setAllowances(allowances: Pick<TAllowance, "id" | "asset" | "subAccountId" | "spender">[]) {
-    localStorage.setItem(`allowances-${this.principalId}`, JSON.stringify(allowances));
+    this.principalId.trim() !== "" &&
+      localStorage.setItem(`allowances-${this.principalId}`, JSON.stringify(allowances));
   }
 
   private _getHplSubAccounts(): HPLSubData[] {
@@ -458,7 +459,9 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setHplSubAccounts(allSubaccounts: HPLSubData[]) {
-    localStorage.setItem(`hplSUB-${this.principalId}-${this.hplLedger}`, JSON.stringify(allSubaccounts));
+    this.principalId.trim() !== "" &&
+      this.hplLedger.trim() !== "" &&
+      localStorage.setItem(`hplSUB-${this.principalId}-${this.hplLedger}`, JSON.stringify(allSubaccounts));
   }
 
   private _getHplVirtuals(): HPLVirtualData[] {
@@ -467,7 +470,9 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setHplVirtuals(allVirtuals: HPLVirtualData[]) {
-    localStorage.setItem(`hplVT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allVirtuals));
+    this.principalId.trim() !== "" &&
+      this.hplLedger.trim() !== "" &&
+      localStorage.setItem(`hplVT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allVirtuals));
   }
 
   private _getHplAssets(): HPLAssetData[] {
@@ -476,7 +481,9 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setHplAssets(allFts: HPLAssetData[]) {
-    localStorage.setItem(`hplFT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allFts));
+    this.principalId.trim() !== "" &&
+      this.hplLedger.trim() !== "" &&
+      localStorage.setItem(`hplFT-${this.principalId}-${this.hplLedger}`, JSON.stringify(allFts));
   }
 
   private _getHplCounts(): nHplData[] {
@@ -485,7 +492,9 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setHplCounts(allHplData: nHplData[]) {
-    localStorage.setItem(`nhpl-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplData));
+    this.principalId.trim() !== "" &&
+      this.hplLedger.trim() !== "" &&
+      localStorage.setItem(`nhpl-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplData));
   }
 
   private _getHplContacts(): HplContact[] {
@@ -496,7 +505,9 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setHplContacts(allHplContacts: HplContact[]) {
-    localStorage.setItem(`hpl-contacts-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplContacts));
+    this.principalId.trim() !== "" &&
+      this.hplLedger.trim() !== "" &&
+      localStorage.setItem(`hpl-contacts-${this.principalId}-${this.hplLedger}`, JSON.stringify(allHplContacts));
   }
   private _getServices(): ServiceData[] {
     const stringServices = localStorage.getItem(`services-${this.principalId}`);
@@ -505,7 +516,7 @@ export class LocalStorageDatabase extends IWalletDatabase {
   }
 
   private _setServices(services: ServiceData[]) {
-    localStorage.setItem(`services-${this.principalId}`, JSON.stringify(services));
+    this.principalId.trim() !== "" && localStorage.setItem(`services-${this.principalId}`, JSON.stringify(services));
   }
 
   /**
