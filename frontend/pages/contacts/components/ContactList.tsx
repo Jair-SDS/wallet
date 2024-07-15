@@ -25,7 +25,7 @@ import {
   filterContactAccountsByAssets,
   filterContactsByAllowances,
   filterContactsByAssets,
-  filterContactsBySearchKey
+  filterContactsBySearchKey,
 } from "../helpers/filters";
 
 interface ContactListProps {
@@ -118,14 +118,12 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
                             <p className="text-PrimaryTextColor">{getInitialFromName(contact.name, 2)}</p>
                           </div>
                           <p
-                            className="text-left opacity-70 break-words max-w-[14rem]"
+                            className="text-left opacity-70 break-words max-w-[17rem]"
                             onDoubleClick={() => onEditContact(contact)}
                           >
                             {contact.name}
                           </p>
-                          {hasContactAllowance && (
-                            <MoneyHandIcon className="relative w-6 h-6 fill-primary-color" />
-                          )}
+                          {hasContactAllowance && <MoneyHandIcon className="relative w-6 h-6 fill-primary-color" />}
                         </div>
                       ) : null}
                     </div>
@@ -171,9 +169,7 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
     const sortedContacts = getSortedContacts(contacts, sortDirection);
 
     // filter by allowance
-    const contactsByAllowance = allowanceOnly
-      ? filterContactsByAllowances(sortedContacts)
-      : sortedContacts;
+    const contactsByAllowance = allowanceOnly ? filterContactsByAllowances(sortedContacts) : sortedContacts;
 
     const contactAccountByAllowance = allowanceOnly
       ? contactsByAllowance.map(filterContactAccountByAllowances)
@@ -198,7 +194,7 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
       : filterContactsBySearchKey(contactsAccountFiltered, contactSearchKey);
 
     return filteredContacts;
-  };
+  }
 
   function getSortedContacts(contacts: Contact[], sortDirection: SortDirection): Contact[] {
     return [...contacts].sort((a, b) => {
@@ -216,9 +212,10 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
   }
 
   function onContactNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setContactEdited((prev: any) => {
-      return { ...prev, name: removeExtraSpaces(e.target.value) };
-    });
+    if (e.target.value.length <= 32)
+      setContactEdited((prev: any) => {
+        return { ...prev, name: removeExtraSpaces(e.target.value) };
+      });
   }
 
   async function onSaveContact() {
