@@ -117,12 +117,24 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
                           <div className={getContactColor(index)}>
                             <p className="text-PrimaryTextColor">{getInitialFromName(contact.name, 2)}</p>
                           </div>
-                          <p
-                            className="text-left opacity-70 break-words max-w-[17rem]"
-                            onDoubleClick={() => onEditContact(contact)}
-                          >
-                            {contact.name}
-                          </p>
+                          {contact.name.length > 32 ? (
+                            <p
+                              data-popover-target="popover-default"
+                              className="text-left opacity-70 break-words max-w-[17rem]"
+                              data-toggle="popover"
+                              data-trigger="hover"
+                              title={contact.name}
+                            >
+                              {shortAddress(contact.name, 12, 12)}
+                            </p>
+                          ) : (
+                            <p
+                              className="text-left opacity-70 break-words max-w-[17rem]"
+                              onDoubleClick={() => onEditContact(contact)}
+                            >
+                              {contact.name}
+                            </p>
+                          )}
                           {hasContactAllowance && <MoneyHandIcon className="relative w-6 h-6 fill-primary-color" />}
                         </div>
                       ) : null}
