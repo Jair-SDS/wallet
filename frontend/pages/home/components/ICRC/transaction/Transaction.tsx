@@ -13,6 +13,7 @@ import { getAssetSymbol, getICRC1Acc, shortAddress } from "@common/utils/icrc";
 import { toFullDecimal } from "@common/utils/amount";
 import logger from "@/common/utils/logger";
 import { middleTruncation } from "@common/utils/strings";
+import moment from "moment";
 
 const DrawerTransaction = () => {
   const { t } = useTranslation();
@@ -174,6 +175,22 @@ const DrawerTransaction = () => {
                 BigInt(selectedAccount?.transaction_fee || "0"),
                 selectedAccount?.decimal || 8,
               )} ${assetSymbol || selectedAsset?.symbol || t("unknown")}`}</p>
+            </div>
+          </div>
+        )}
+        {selectedTransaction?.timestamp && (
+          <div className="flex flex-col justify-center items-center gap-4 w-[calc(100%-3rem)] mx-6 mt-5 p-4 bg-secondary-color-1-light dark:bg-level-1-color rounded-md">
+            <div className="flex flex-row items-center justify-between w-full font-normal">
+              <p className="font-bold">{t("date")}</p>
+              <div className="flex flex-row items-center justify-start gap-2">
+                <p className="font-bold">{moment(selectedTransaction?.timestamp).format("MM/DD/YYYY hh:mm")}</p>
+                <CustomCopy
+                  size={"small"}
+                  copyText={selectedTransaction.timestamp.toString()}
+                  copyStroke="cursor-pointer max-w-[0.7rem] h-auto"
+                  isTransaction={true}
+                />
+              </div>
             </div>
           </div>
         )}
