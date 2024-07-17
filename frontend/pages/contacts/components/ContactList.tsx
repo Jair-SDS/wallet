@@ -6,7 +6,7 @@ import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
 import { Contact } from "@redux/models/ContactsModels";
 import { CustomInput } from "@components/input";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react/jsx-runtime";
@@ -113,7 +113,12 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
                       ) : null}
 
                       {!isContactEditable ? (
-                        <div className="flex flex-row items-center justify-start w-full gap-2">
+                        <div
+                          className="flex flex-row items-center justify-start w-full gap-2"
+                          onDoubleClick={() => {
+                            onEditContact(contact);
+                          }}
+                        >
                           <div className={getContactColor(index)}>
                             <p className="text-PrimaryTextColor">{getInitialFromName(contact.name, 2)}</p>
                           </div>
