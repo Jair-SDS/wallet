@@ -6,7 +6,7 @@ import { ReactComponent as SortIcon } from "@assets/svg/files/sort.svg";
 //
 import { Contact } from "@redux/models/ContactsModels";
 import { CustomInput } from "@components/input";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Fragment } from "react/jsx-runtime";
@@ -113,28 +113,24 @@ export default function ContactList({ allowanceOnly, assetFilter, contactSearchK
                       ) : null}
 
                       {!isContactEditable ? (
-                        <div className="flex flex-row items-center justify-start w-full gap-2">
+                        <div
+                          className="flex flex-row items-center justify-start w-full gap-2"
+                          onDoubleClick={() => {
+                            onEditContact(contact);
+                          }}
+                        >
                           <div className={getContactColor(index)}>
                             <p className="text-PrimaryTextColor">{getInitialFromName(contact.name, 2)}</p>
                           </div>
-                          {contact.name.length > 32 ? (
-                            <p
-                              data-popover-target="popover-default"
-                              className="text-left opacity-70 break-words max-w-[17rem]"
-                              data-toggle="popover"
-                              data-trigger="hover"
-                              title={contact.name}
-                            >
-                              {shortAddress(contact.name, 12, 12)}
-                            </p>
-                          ) : (
-                            <p
-                              className="text-left opacity-70 break-words max-w-[17rem]"
-                              onDoubleClick={() => onEditContact(contact)}
-                            >
-                              {contact.name}
-                            </p>
-                          )}
+                          <p
+                            data-popover-target="popover-default"
+                            className="text-left opacity-70 break-words max-w-[17rem] truncate"
+                            data-toggle="popover"
+                            data-trigger="hover"
+                            title={contact.name}
+                          >
+                            {contact.name.length > 32 ? `${contact.name.slice(0, 26)}...` : contact.name}
+                          </p>
                           {hasContactAllowance && <MoneyHandIcon className="relative w-6 h-6 fill-primary-color" />}
                         </div>
                       ) : null}
