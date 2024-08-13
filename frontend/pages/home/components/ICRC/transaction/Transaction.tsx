@@ -52,7 +52,7 @@ const DrawerTransaction = () => {
             <div className="flex flex-row items-center justify-between w-full font-normal">
               <p>{`${t("acc.subacc")}`}</p>
               <div className="flex flex-row items-center justify-start gap-2">
-                <p>{`${hasSub(false) ? getSub(false) : t("unknown")}`}</p>
+                <p>{`${hasSub(false) ? middleTruncation(getSub(false), 8, 8) : t("unknown")}`}</p>
                 <CustomCopy
                   size={"small"}
                   copyText={getSub(false).substring(2)}
@@ -123,7 +123,7 @@ const DrawerTransaction = () => {
             <div className="flex flex-row items-center justify-between w-full font-normal">
               <p>{`${t("acc.subacc")}`}</p>
               <div className="flex flex-row items-center justify-start gap-2">
-                <p>{`${hasSub(true) ? getSub(true) : t("unknown")}`}</p>
+                <p>{`${hasSub(true) ? middleTruncation(getSub(true), 8, 8) : t("unknown")}`}</p>
                 <CustomCopy
                   size={"small"}
                   copyText={getSub(true).substring(2)}
@@ -229,18 +229,14 @@ const DrawerTransaction = () => {
     return undefined;
   }
 
-  function formatLargeSubaccount(subaccount: string) {
-    return subaccount.length > 15 ? middleTruncation(subaccount, 10, 10) : subaccount;
-  }
-
   function getSub(to: boolean) {
     if (isICPWithSub(to)) {
       const subaccount = ICPSubaccounts.find(
         (sub) => sub.legacy === (to ? selectedTransaction?.to : selectedTransaction?.from),
       )?.sub_account_id;
       return subaccount || "0x0";
-    } else if (to) return formatLargeSubaccount(selectedTransaction?.toSub || "0x0");
-    else return formatLargeSubaccount(selectedTransaction?.fromSub || "0x0");
+    } else if (to) return selectedTransaction?.toSub || "0x0";
+    else return selectedTransaction?.fromSub || "0x0";
   }
 
   function getICRCAccount(to: boolean): string {
