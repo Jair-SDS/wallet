@@ -34,7 +34,7 @@ export const defaultContactSubAccount: ContactAccount = {
   allowance: undefined,
 };
 
-const NewContactSubAccount = z.object({
+export const NewContactSubAccountSchema = z.object({
   principal: z.string(),
   name: z.string(),
   tokenSymbol: z.string(),
@@ -45,7 +45,7 @@ const NewContactSubAccount = z.object({
   TotalSub: z.number(),
 });
 
-export type NewContactSubAccount = z.infer<typeof NewContactSubAccount>;
+export type NewContactSubAccount = z.infer<typeof NewContactSubAccountSchema>;
 
 const ContactErr = z.object({
   name: z.boolean(),

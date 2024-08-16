@@ -147,5 +147,5 @@ const headerStyles = clsx(
 const bodyStyles = clsx(
   "text-md text-left text-black-color dark:text-gray-color-6",
   "bg-white dark:bg-level-2-color dark:bg-level-2-color",
-  "divide-y dark:divide-gray-color-1 divide-gray-color-6"
+  "divide-y dark:divide-gray-color-1 divide-gray-color-6",
 );

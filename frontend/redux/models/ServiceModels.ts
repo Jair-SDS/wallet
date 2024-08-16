@@ -26,8 +26,6 @@ export const ServiceAssetSchema = z.object({
   logo: z.string(),
   balance: z.string(),
   credit: z.string(),
-  minDeposit: z.string(),
-  minWithdraw: z.string(),
   depositFee: z.string(),
   withdrawFee: z.string(),
   principal: z.string(),

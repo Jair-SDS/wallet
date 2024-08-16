@@ -81,7 +81,6 @@ export const updateAllBalances: UpdateAllBalances = async (params) => {
 
   const newAssetsUpload = updateAssets.sort((a, b) => a.sortIndex - b.sortIndex);
   store.dispatch(setAssets(newAssetsUpload));
-
   const icpAsset = newAssetsUpload.find((asset) => asset.tokenSymbol === "ICP");
 
   //

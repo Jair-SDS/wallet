@@ -20,7 +20,6 @@ import { setInitLoad, setICRC1SystemAssets } from "./assets/AssetReducer";
 import { AuthNetwork } from "./models/TokenModels";
 import { AuthNetworkTypeEnum, ProtocolTypeEnum, RoutingPathEnum } from "@/common/const";
 import { Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
-import { setStorageCode } from "./contacts/ContactsReducer";
 import { HPLClient } from "@research-ag/hpl-client";
 import { _SERVICE as IngressActor } from "@candid/HPL/service.did";
 import { idlFactory as IngressIDLFactory } from "@candid/HPL/candid.did";
@@ -278,7 +277,6 @@ export const handleLoginApp = async (authIdentity: Identity, fromSeed?: boolean,
 export const dispatchAuths = (identityPrincipal: string, myPrincipal: Principal) => {
   store.dispatch(setUserPrincipal(myPrincipal));
   store.dispatch(setRoutingPath(RoutingPathEnum.Enum.HOME));
-  store.dispatch(setStorageCode("contacts-" + identityPrincipal));
   store.dispatch(setStorageCodeA("contacts-" + identityPrincipal));
 };
 

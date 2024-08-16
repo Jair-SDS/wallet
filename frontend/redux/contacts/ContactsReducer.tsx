@@ -5,13 +5,11 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import logger from "@/common/utils/logger";
 
 interface ContactsState {
-  storageCode: string;
   contacts: Contact[];
   hplContacts: HplContact[];
 }
 
 const initialState: ContactsState = {
-  storageCode: "",
   contacts: [],
   hplContacts: [],
 };
@@ -20,9 +18,6 @@ const contactsSlice = createSlice({
   name: "contacts",
   initialState,
   reducers: {
-    setStorageCode(state, action: PayloadAction<string>) {
-      state.storageCode = action.payload;
-    },
     setReduxContacts(state, action: PayloadAction<Contact[]>) {
       state.contacts = action.payload;
     },
@@ -40,7 +35,6 @@ const contactsSlice = createSlice({
     clearDataContacts(state) {
       state.contacts = [];
       state.hplContacts = [];
-      state.storageCode = "";
     },
     removeHplContact: {
       reducer(
@@ -96,7 +90,6 @@ const setLocalHplContacts = (contacts: HplContact[]) => {
 };
 
 export const {
-  setStorageCode,
   addReduxContact,
   updateReduxContact,
   deleteReduxContact,

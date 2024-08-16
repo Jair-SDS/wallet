@@ -3,6 +3,7 @@ import { RouteProps } from "react-router-dom";
 import "./style.scss";
 import TabNetwork from "./TabNetwork";
 import TopBarComponent from "./topbar";
+import DisclaimerModal from "@components/DisclaimerModal";
 
 interface LayoutProps extends RouteProps {
   children: any;
@@ -17,6 +18,7 @@ const LayoutComponent = ({ children, isLoginPage }: LayoutProps) => {
         <Suspense>
           <TabNetwork>{children}</TabNetwork>
         </Suspense>
+        <DisclaimerModal isLoginPage={isLoginPage} />
       </div>
     </div>
   );

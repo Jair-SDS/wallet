@@ -59,6 +59,9 @@ const authSlice = createSlice({
     setAuth(state) {
       state.authLoading = false;
     },
+    setDisclaimer(state, action) {
+      state.disclaimer = action.payload;
+    },
     setReduxWatchOnlyHistory(state, action) {
       state.watchOnlyHistory = action.payload;
     },
@@ -108,20 +111,17 @@ const authSlice = createSlice({
     setBlur(state, action) {
       state.blur = action.payload;
     },
-    setDisclaimer(state, action) {
-      state.disclaimer = action.payload;
+    setDbLocation(state, action) {
+      state.dbLocation = action.payload;
+    },
+    setCustomDbCanisterId(state, action) {
+      state.customDbCanisterId = action.payload;
     },
     setHplLedgerPrincipal(state, action) {
       state.hplLedger = action.payload;
     },
     setHplDictionaryPrincipal(state, action) {
       state.hplDictionary = action.payload;
-    },
-    setDbLocation(state, action) {
-      state.dbLocation = action.payload;
-    },
-    setCustomDbCanisterId(state, action) {
-      state.customDbCanisterId = action.payload;
     },
     setUserAgent(state, action) {
       state.userAgent = action.payload;
@@ -142,13 +142,13 @@ export const {
   clearDataAuth,
   setAuth,
   setAuthLoading,
+  setDisclaimer,
   setUnauthenticated,
   setDebugMode,
   setAuthenticated,
   setAuthClient,
   setTheme,
   setBlur,
-  setDisclaimer,
   setHplLedgerPrincipal,
   setHplDictionaryPrincipal,
   setDbLocation,

@@ -54,6 +54,13 @@ const Menu = (props: MenuProps) => {
       show: protocol === ProtocolTypeEnum.Enum.ICRC1,
     },
     {
+      name: "Allowances",
+      path: RoutingPathEnum.Enum.ALLOWANCES,
+      label: `${allowances?.length !== 1 ? t("allowance.allowances") : t("allowance.allowances")} (${
+        allowances?.length
+      })`,
+    },
+    {
       name: "Contacts",
       path: RoutingPathEnum.Enum.CONTACTS,
       label:
@@ -67,6 +74,11 @@ const Menu = (props: MenuProps) => {
       path: RoutingPathEnum.Enum.SERVICES,
       label: `${services?.length !== 1 ? t("services") : t("services")} (${services.length})`,
       show: protocol === ProtocolTypeEnum.Enum.ICRC1,
+    },
+    {
+      name: "Services",
+      path: RoutingPathEnum.Enum.SERVICES,
+      label: `${services?.length !== 1 ? t("services") : t("services")} (${services.length})`,
     },
   ];
 

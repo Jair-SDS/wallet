@@ -14,7 +14,7 @@ export const useHplContacts = () => {
   // reducer
 
   const dispatch = useAppDispatch();
-  const { contacts, hplContacts, storageCode } = useAppSelector((state) => state.contacts);
+  const { contacts, hplContacts } = useAppSelector((state) => state.contacts);
   const { ownersActor } = useAppSelector((state) => state.hpl);
   const { protocol } = useAppSelector((state) => state.common);
 
@@ -214,7 +214,6 @@ export const useHplContacts = () => {
   return {
     protocol,
     contacts,
-    storageCode,
     hplContacts,
     newContact,
     setNewContact,

@@ -28,7 +28,7 @@ const SubaccountList = () => {
   return (
     <Fragment>
       <div className="flex flex-col justify-start items-start w-[60%] max-w-[30rem] h-full pt-6 dark:bg-PrimaryColor bg-PrimaryColorLight">
-        <Menu />
+        <Menu compClass="ml-3" />
 
         <SearchSubaccount
           searchKey={searchKeyHPL}
