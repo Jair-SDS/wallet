@@ -45,6 +45,17 @@ To get started with ICRC-1 Wallet, follow these steps:
 >>>>>>> icrc1-new-features
    ```
 
+4. Add git info base file named generatedGitInfo.json inside root frontend folder:
+
+   ```
+   {
+      "gitBranch": "branch-name",
+      "gitCommitHash": "b5508aa23aeef0b6b23740d12c5029c8ae15f793",
+      "dateString": "2024.8.26",
+      "hourString": "11:46:40"
+   }
+   ```
+
 ## Local deployment
 
 1. Create canisters on local replica and save the ID shown in the output

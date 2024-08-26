@@ -14,7 +14,7 @@ dist
 dist-ssr
 *.local
 Makefile.prod
-generatedGitInfo.json
+frontend/generatedGitInfo.json*
 
 # Editor directories and files
 .vscode
