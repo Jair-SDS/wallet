@@ -1,6 +1,12 @@
 {
   "gitBranch": "icrc1-new-features",
-  "gitCommitHash": "b5508aa23aeef0b6b23740d12c5029c8ae15f793",
+<<<<<<< HEAD
+  "gitCommitHash": "25980c12777de4779f16eca70c99e9037fa10e7d",
   "dateString": "2024.8.26",
-  "hourString": "11:46:40"
+  "hourString": "12:12:31"
+=======
+  "gitCommitHash": "51046da64a3560a5b3ab0819f3116fd39d7bf87f",
+  "dateString": "2024.8.26",
+  "hourString": "12:14:30"
+>>>>>>> f040c4f9 (generatedGitInfo.json added to git ignore and update README)
 }
