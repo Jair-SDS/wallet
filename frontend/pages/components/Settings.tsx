@@ -19,6 +19,7 @@ import HplSettingsModal from "./topbar/hplSettings";
 import DbLocationModal from "./topbar/dbLocationModal";
 import i18n from "@/i18n";
 import { db } from "@/database/db";
+import AboutModal from "./topbar/AboutModal";
 
 const langOpts = [
   { abrev: "en", name: "english", flag: <UsaFlagIcon className={"mr-1 max-h-[1.5rem]"} /> },
@@ -31,6 +32,7 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
   const { t } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const [dbLocationOpen, setDbLocationOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const { themeOpen, setThemeOpen } = ThemeHook();
   const { onLanguageChange } = LanguageHook();
   return (
@@ -86,6 +88,14 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
               <p>{t("themes")}</p>
             </DropdownMenu.Item>
             <DropdownMenu.Item
+              className={clsx(gearPopItem, "!justify-between", "rounded-b-lg")}
+              onSelect={() => {
+                setAboutOpen(true);
+              }}
+            >
+              <p>{t("about")}</p>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
               className={clsx(gearPopItem, "!justify-between")}
               onSelect={() => {
                 setThemeOpen("SETTINGS");
@@ -122,6 +132,9 @@ const Setings = ({ isLoginPage, clearSiweIdentity }: { isLoginPage: boolean; cle
       </BasicModal>
       <BasicModal open={dbLocationOpen} top="top-[35%]" border="dark:border-2 dark:border-gray-color-6">
         <DbLocationModal setOpen={setDbLocationOpen} />
+      </BasicModal>
+      <BasicModal open={aboutOpen} width={"w-[20rem]"} top="top-[35%]" border="dark:border-2 dark:border-gray-color-6">
+        <AboutModal setOpen={setAboutOpen} />
       </BasicModal>
     </Fragment>
   );
