@@ -39,10 +39,7 @@ To get started with ICRC-1 Wallet, follow these steps:
    ```
    npm install
    npm i -g ic-mops
-<<<<<<< HEAD
-=======
    mops install
->>>>>>> icrc1-new-features
    ```
 
 4. Add git info base file named generatedGitInfo.json inside root frontend folder:
@@ -81,11 +78,12 @@ To get started with ICRC-1 Wallet, follow these steps:
    make deploy-local
    ```
 
-<<<<<<< HEAD
-=======
-   Step by step and arguments needed are specify in Makefile (at project root).
->>>>>>> icrc1-new-features
-   Frontend will be deployed under the canister name "assets"
+# <<<<<<< HEAD
+
+Step by step and arguments needed are specify in Makefile (at project root).
+
+> > > > > > > icrc1-new-features
+> > > > > > > Frontend will be deployed under the canister name "assets"
 
 4. For development server
 
@@ -118,11 +116,12 @@ To get started with ICRC-1 Wallet, follow these steps:
    ```
 
 <<<<<<< HEAD
-   Frontend will be deployed under the canister name "assets"
+Frontend will be deployed under the canister name "assets"
 =======
 Step by step and arguments needed are specify in Makefile (at project root).
 Frontend will be deployed under the canister name "assets"
->>>>>>> icrc1-new-features
+
+> > > > > > > icrc1-new-features
 
 ## Features
 
