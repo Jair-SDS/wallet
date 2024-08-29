@@ -30,7 +30,7 @@ import { setHplContacts } from "@redux/contacts/ContactsReducer";
 import { UpdateAllBalances } from "@/@types/assets";
 import { db } from "@/database/db";
 import ICRC1SupportedStandards from "@/common/libs/icrcledger/ICRC1SupportedStandards";
-import { getETHRate, getTokensFromMarket, getckUSDCRate } from "@/common/utils/market";
+import { getTokensFromMarket } from "@/common/utils/market";
 import { refreshAssetBalances } from "@pages/home/helpers/assets";
 import { hexToUint8Array } from "@common/utils/hexadecimal";
 import { getMetadataInfo } from "@common/utils/icrc";
@@ -57,11 +57,7 @@ import { getPrincipalGroupsQty } from "@common/utils/strings";
 export const updateAllBalances: UpdateAllBalances = async (params) => {
   const { myAgent = store.getState().auth.userAgent, assets, basicSearch = false } = params;
 
-  const tokenMarkets = await getTokensFromMarket();
-  const ckETHRate = await getETHRate();
-  const ckUSDCRate = await getckUSDCRate();
-  if (ckETHRate) tokenMarkets.push(ckETHRate);
-  tokenMarkets.push(ckUSDCRate);
+  const tokenMarkets = await getTokensFromMarket(myAgent);
   store.dispatch(setTokenMarket(tokenMarkets));
 
   const auxAssets = [...assets].sort((a, b) => a.sortIndex - b.sortIndex);
