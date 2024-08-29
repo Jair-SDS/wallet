@@ -9,12 +9,12 @@ import { CustomInput } from "@components/input";
 import { CustomButton } from "@components/button";
 import { useHplContacts } from "@pages/contacts/hooks/hplContactsHook";
 import QRscanner from "@pages/components/QRscanner";
-import { decodeIcrcAccount } from "@dfinity/ledger";
 import { Principal } from "@dfinity/principal";
 import { useHPL } from "@pages/hooks/hplHook";
 import { HplContact } from "@redux/models/AccountModels";
 import AddRemoteList from "./addRemotesList";
 import logger from "@/common/utils/logger";
+import { decodeIcrcAccount } from "@dfinity/ledger-icrc";
 
 interface AddContactProps {
   setAddOpen(value: boolean): void;
