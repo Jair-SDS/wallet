@@ -75,7 +75,10 @@ const allowanceSlice = createSlice({
       );
     },
     deleteReduxAllowance(state: AllowanceState, action: PayloadAction<string>) {
-      state.list.allowances = state.list.allowances.filter((allowance) => allowance.id !== action.payload);
+      const auxAllowances = state.list.allowances.filter((allowance) => {
+        return allowance.id !== action.payload;
+      });
+      state.list.allowances = auxAllowances;
     },
     setAllowanceError(state: AllowanceState, action: PayloadAction<string>) {
       const currentErrors = [...(state.errors ?? [])];
