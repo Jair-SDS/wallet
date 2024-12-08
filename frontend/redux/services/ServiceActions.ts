@@ -28,7 +28,6 @@ export const getServicesData = async (userAgent?: HttpAgent) => {
       try {
         const supportedAssets = await serviceActor.icrc84_supported_tokens();
         if (supportedAssets.length > 0) {
-          const credits = await serviceActor.icrc84_all_credits();
           serviceAssets = await Promise.all(
             supportedAssets.map(async (ast) => {
               const tokenInfo = await serviceActor.icrc84_token_info(ast);
@@ -36,7 +35,9 @@ export const getServicesData = async (userAgent?: HttpAgent) => {
               const asset = myAssets.find((myAst) => myAst.address === ast.toText());
               const snsAsset = snsAssets.find((myAst) => myAst.address === ast.toText());
               const assetData = assetsData.find((myAst) => myAst.principal === ast.toText());
-              const credit = credits.find((crd) => crd[0].toText() === ast.toText());
+
+              const data = await serviceActor.icrc84_query([ast]);
+              const balanceData = data.find((crd) => crd[0].toText() === ast.toText());
 
               const serviceAsset: ServiceAsset = {
                 tokenSymbol: "",
@@ -46,15 +47,12 @@ export const getServicesData = async (userAgent?: HttpAgent) => {
                 shortDecimal: "",
                 balance: "",
                 principal: ast.toText(),
-                credit: credit ? credit[1].toString() : "",
+                credit: balanceData?.[1].credit ? balanceData[1].credit.toString() : "0",
                 depositFee: tokenInfo.deposit_fee.toString(),
                 withdrawFee: tokenInfo.withdrawal_fee.toString(),
                 visible: false,
               };
 
-              const balance = (await serviceActor.icrc84_trackedDeposit(ast)) as any;
-
-              serviceAsset.balance = (balance.Ok as any) ? balance.Ok.toString() : "";
               if (assetData) {
                 serviceAsset.tokenSymbol = assetData.tokenSymbol;
                 serviceAsset.tokenName = assetData.tokenName;
@@ -126,14 +124,14 @@ export const getServiceData = async (myAgent: HttpAgent, servicePrincipal: strin
 
     let serviceAssets: ServiceAsset[] = [];
     if (supportedAssets.length > 0) {
-      const credits = await serviceActor.icrc84_all_credits();
       serviceAssets = await Promise.all(
         supportedAssets.map(async (ast) => {
           const tokenInfo = await serviceActor.icrc84_token_info(ast);
 
           const asset = myAssets.find((myAst) => myAst.address === ast.toText());
           const snsAsset = snsAssets.find((myAst) => myAst.address === ast.toText());
-          const credit = credits.find((crd) => crd[0] === ast);
+          const data = await serviceActor.icrc84_query([ast]);
+          const balanceData = data.find((crd) => crd[0].toText() === ast.toText());
 
           const serviceAsset: ServiceAsset = {
             tokenSymbol: "",
@@ -143,14 +141,12 @@ export const getServiceData = async (myAgent: HttpAgent, servicePrincipal: strin
             shortDecimal: "",
             balance: "",
             principal: ast.toText(),
-            credit: credit ? credit[1].toString() : "",
+            credit: balanceData?.[1].credit ? balanceData[1].credit.toString() : "0",
             depositFee: tokenInfo.deposit_fee.toString(),
             withdrawFee: tokenInfo.withdrawal_fee.toString(),
             visible: false,
           };
 
-          const balance = (await serviceActor.icrc84_trackedDeposit(ast)) as any;
-          serviceAsset.balance = (balance.Ok as any) ? balance.Ok.toString() : "";
           if (asset) {
             serviceAsset.tokenSymbol = asset.symbol;
             serviceAsset.tokenName = asset.name;
@@ -224,9 +220,9 @@ export const getCreditBalance = async (
       agent: myAgent,
       canisterId: servicePrincipal,
     });
-    const credit = await serviceActor.icrc84_credit(Principal.fromText(assetPrincipal));
-    const balance = (await serviceActor.icrc84_trackedDeposit(Principal.fromText(assetPrincipal))) as any;
-    return { credit: credit.toString(), balance: balance.Ok ? (balance.Ok.toString() as string) : undefined };
+    const data = await serviceActor.icrc84_query([Principal.fromText(assetPrincipal)]);
+    const balanceData = data.find((crd) => crd[0].toText() === assetPrincipal);
+    return { credit: balanceData?.[1].credit ? balanceData[1].credit.toString() : "0", balance: "0" };
   } catch (e) {
     console.error("Notify Err:", e);
     return { credit: undefined, balance: undefined };

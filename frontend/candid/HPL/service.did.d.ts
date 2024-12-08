@@ -67,7 +67,7 @@ export interface FtInfo {
   decimals: number;
   description: string;
 }
-export type GidStatus = { dropped: object } | { awaited: object } | { processed: [[] | [TxResult]] };
+export type GidStatus = { dropped: any } | { awaited: any } | { processed: [[] | [TxResult]] };
 export type GlobalId = [bigint, bigint];
 export interface HttpRequest {
   url: string;
@@ -298,10 +298,11 @@ export interface _SERVICE {
   ping: ActorMethod<[], bigint>;
   priorTxDetails: ActorMethod<[PriorId], Result_5>;
   processBatch: ActorMethod<[bigint, Array<Tx>, bigint], [bigint, ControlMessage]>;
+  pushFtRates: ActorMethod<[Array<[bigint, number]>], undefined>;
   reject: ActorMethod<[PriorId], Result_4>;
   remoteAccountInfo: ActorMethod<[RemoteAccountSelector], Array<[[Principal, bigint], { ft: AssetId }]>>;
   removeAggregator: ActorMethod<[Principal], undefined>;
-  requestAuctionFunds: ActorMethod<[AssetId], Array<[AssetId, bigint]>>;
+  requestAuctionFunds: ActorMethod<[Principal, AssetId], Array<[AssetId, bigint]>>;
   simpleTransfer: ActorMethod<
     [
       { sub: SubaccountId } | { vir: [Principal, VirtualAccountId] } | { mint: null },

@@ -26,13 +26,21 @@ type Withdraw = variant {
   TooLowQuantity;
   TooOld;
 };
+type UserOrder = record {
+  price : float64;
+  user : principal;
+  volume : nat;
+};
 type UpperResult_4 = variant {
   Err : CancelOrderError;
-  Ok;
+  Ok : CancellationResult;
 };
 type UpperResult_3 = variant {
   Err : ManageOrdersError;
-  Ok : vec OrderId;
+  Ok : record {
+    vec CancellationResult;
+    vec OrderId;
+  };
 };
 type UpperResult_2 = variant {
   Err : PlaceOrderError;
@@ -88,13 +96,14 @@ type ReplaceOrderError = variant {
   };
   NoCredit;
   PriceDigitsOverflow : record { maxDigits : nat };
+  SessionNumberMismatch : principal;
   TooLowOrder;
   UnknownAsset;
   UnknownOrder;
   UnknownPrincipal;
   VolumeStepViolated : record { baseVolumeStep : nat };
 };
-type RegisterAssetError = variant { AlreadyRegistered : nat };
+type RegisterAssetError = variant { AlreadyRegistered };
 type PriceHistoryItem = record {
   nat64;
   nat;
@@ -112,6 +121,7 @@ type PlaceOrderError = variant {
   };
   NoCredit;
   PriceDigitsOverflow : record { maxDigits : nat };
+  SessionNumberMismatch : principal;
   TooLowOrder;
   UnknownAsset;
   UnknownPrincipal;
@@ -136,6 +146,7 @@ type NotifyResult = variant {
   };
 };
 type ManageOrdersError = variant {
+  SessionNumberMismatch : principal;
   UnknownPrincipal;
   cancellation : record {
     error : variant {
@@ -145,20 +156,7 @@ type ManageOrdersError = variant {
     index : nat;
   };
   placement : record {
-    error : variant {
-      ConflictingOrder : record {
-        variant {
-          ask;
-          bid;
-        };
-        opt OrderId;
-      };
-      NoCredit;
-      PriceDigitsOverflow : record { maxDigits : nat };
-      TooLowOrder;
-      UnknownAsset;
-      VolumeStepViolated : record { baseVolumeStep : nat };
-    };
+    error : InternalPlaceOrderError;
     index : nat;
   };
 };
@@ -190,9 +188,31 @@ type LogEvent = variant {
   };
   withdrawalError : Withdraw;
 };
+type InternalPlaceOrderError = variant {
+  ConflictingOrder : record {
+    variant {
+      ask;
+      bid;
+    };
+    opt OrderId__1;
+  };
+  NoCredit;
+  PriceDigitsOverflow : record { maxDigits : nat };
+  TooLowOrder;
+  UnknownAsset;
+  VolumeStepViolated : record { baseVolumeStep : nat };
+};
 type IndicativeStats = record {
-  clearingPrice : float64;
-  clearingVolume : nat;
+  clearing : variant {
+    match : record {
+      price : float64;
+      volume : nat;
+    };
+    noMatch : record {
+      maxBidPrice : opt float64;
+      minAskPrice : opt float64;
+    };
+  };
   totalAskVolume : nat;
   totalBidVolume : nat;
 };
@@ -226,6 +246,16 @@ type DepositResult = variant {
     txid : nat;
   };
 };
+type DepositHistoryItem = record {
+  nat64;
+  variant {
+    deposit;
+    withdrawal;
+    withdrawalRollback;
+  };
+  principal;
+  nat;
+};
 type DepositFromAllowance = variant {
   BadBurn : record { min_burn_amount : nat };
   BadFee : record { expected_fee : nat };
@@ -245,7 +275,14 @@ type CreditInfo = record {
   locked : nat;
   total : nat;
 };
+type CancellationResult = record {
+  OrderId__1;
+  principal;
+  nat;
+  float64;
+};
 type CancelOrderError = variant {
+  SessionNumberMismatch : principal;
   UnknownOrder;
   UnknownPrincipal;
 };
@@ -255,17 +292,10 @@ type Account = record {
 };
 service : {
   addAdmin : (principal) -> ();
-  cancelAsks : (vec OrderId) -> (vec UpperResult_4);
-  cancelBids : (vec OrderId) -> (vec UpperResult_4);
+  cancelAsks : (vec OrderId, opt nat) -> (vec UpperResult_4);
+  cancelBids : (vec OrderId, opt nat) -> (vec UpperResult_4);
   getQuoteLedger : () -> (principal) query;
   http_request : (HttpRequest) -> (HttpResponse) query;
-  icrc84_all_credits : () -> (
-    vec record {
-      principal;
-      int;
-    }
-  ) query;
-  icrc84_credit : (principal) -> (int) query;
   icrc84_deposit : (
     record {
       amount : nat;
@@ -278,24 +308,29 @@ service : {
     }
   ) -> (DepositResult);
   icrc84_notify : (record { token : principal }) -> (NotifyResult);
-  icrc84_supported_tokens : () -> (vec principal) query;
-  icrc84_token_info : (principal) -> (TokenInfo) query;
-  icrc84_trackedDeposit : (principal) -> (
-    variant {
-      Err : variant { NotAvailable : record { message : text } };
-      Ok : nat;
+  icrc84_query : (vec principal) -> (
+    vec record {
+      principal;
+      record {
+        credit : int;
+        tracked_deposit : opt nat;
+      };
     }
   ) query;
+  icrc84_supported_tokens : () -> (vec principal) query;
+  icrc84_token_info : (principal) -> (TokenInfo) query;
   icrc84_withdraw : (
     record {
       amount : nat;
       expected_fee : opt nat;
-      to_subaccount : opt blob;
+      to : record {
+        owner : principal;
+        subaccount : opt blob;
+      };
       token : principal;
     }
   ) -> (WithdrawResult);
   indicativeStats : (principal) -> (IndicativeStats) query;
-  init : () -> ();
   isTokenHandlerFrozen : (principal) -> (bool) query;
   listAdmins : () -> (vec principal) query;
   manageOrders : (
@@ -318,6 +353,7 @@ service : {
         float64;
       };
     },
+    opt nat,
   ) -> (UpperResult_3);
   nextSession : () -> (
     record {
@@ -330,53 +366,94 @@ service : {
       principal;
       nat;
       float64;
-    }
+    },
+    opt nat,
   ) -> (vec UpperResult_2);
   placeBids : (
     vec record {
       principal;
       nat;
       float64;
-    }
+    },
+    opt nat,
   ) -> (vec UpperResult_2);
   principalToSubaccount : (principal) -> (opt blob) query;
   queryAsks : () -> (
     vec record {
       OrderId;
       Order;
+      nat;
     }
   ) query;
   queryBids : () -> (
     vec record {
       OrderId;
       Order;
+      nat;
     }
   ) query;
+  queryCredit : (principal) -> (CreditInfo, nat) query;
   queryCredits : () -> (
     vec record {
       principal;
       CreditInfo;
+      nat;
     }
   ) query;
-  queryPriceHistory : (opt principal, nat, nat) -> (vec PriceHistoryItem) query;
+  queryDepositHistory : (opt principal, nat, nat) -> (vec DepositHistoryItem) query;
+  queryOrderBook : (principal) -> (
+    record {
+      asks : vec record {
+        OrderId;
+        UserOrder;
+      };
+      bids : vec record {
+        OrderId;
+        UserOrder;
+      };
+    }
+  ) query;
+  queryPoints : () -> (nat) query;
+  queryPriceHistory : (opt principal, nat, nat, bool) -> (vec PriceHistoryItem) query;
   queryTokenAsks : (principal) -> (
     vec record {
       OrderId;
       Order;
-    }
+    },
+    nat,
   ) query;
   queryTokenBids : (principal) -> (
     vec record {
       OrderId;
       Order;
-    }
+    },
+    nat,
   ) query;
-  queryTokenHandlerJournal : (principal) -> (
+  queryTokenHandlerDepositRegistry : (principal) -> (
+    nat,
+    nat,
+    nat,
+    vec record {
+      principal;
+      record {
+        lock : bool;
+        value : nat;
+      };
+    },
+  ) query;
+  queryTokenHandlerJournal : (principal, nat, nat) -> (
     vec record {
       principal;
       LogEvent;
     }
   ) query;
+  queryTokenHandlerNotificationLock : (principal, principal) -> (
+    opt record {
+      lock : bool;
+      value : nat;
+    }
+  ) query;
+  queryTokenHandlerNotificationsOnPause : (principal) -> (bool) query;
   queryTokenHandlerState : (principal) -> (
     record {
       balance : record {
@@ -393,14 +470,38 @@ service : {
         consolidated : nat;
         withdrawn : nat;
       };
+      ledger : record { fee : nat };
       users : record { queued : nat };
     }
   ) query;
   queryTransactionHistory : (opt principal, nat, nat) -> (vec TransactionHistoryItem) query;
+  queryTransactionHistoryForward : (opt principal, nat, nat) -> (vec TransactionHistoryItem, nat, bool) query;
+  queryUserAsks : (principal) -> (
+    vec record {
+      OrderId;
+      Order;
+    }
+  ) query;
+  queryUserBids : (principal) -> (
+    vec record {
+      OrderId;
+      Order;
+    }
+  ) query;
+  queryUserCredits : (principal) -> (
+    vec record {
+      principal;
+      CreditInfo;
+    }
+  ) query;
+  queryUserCreditsInTokenHandler : (principal, principal) -> (int) query;
+  queryUserDepositHistory : (principal, opt principal, nat, nat) -> (vec DepositHistoryItem) query;
+  queryUserTransactionHistory : (principal, opt principal, nat, nat) -> (vec TransactionHistoryItem) query;
   registerAsset : (principal, nat) -> (UpperResult_1);
   removeAdmin : (principal) -> ();
-  replaceAsk : (OrderId, nat, float64) -> (UpperResult);
-  replaceBid : (OrderId, nat, float64) -> (UpperResult);
+  replaceAsk : (OrderId, nat, float64, opt nat) -> (UpperResult);
+  replaceBid : (OrderId, nat, float64, opt nat) -> (UpperResult);
+  setConsolidationTimerEnabled : (bool) -> ();
   settings : () -> (
     record {
       orderPriceDigitsLimit : nat;
@@ -408,4 +509,9 @@ service : {
       orderQuoteVolumeStep : nat;
     }
   ) query;
+  totalPointsSupply : () -> (nat) query;
+  updateTokenHandlerFee : (principal) -> (opt nat);
+  wipeOrders : () -> ();
+  wipePriceHistory : (principal) -> ();
+  wipeUsers : () -> ();
 };

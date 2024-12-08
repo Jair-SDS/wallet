@@ -1,4 +1,4 @@
-import { HttpAgent } from "@dfinity/agent";
+import { AnonymousIdentity, HttpAgent } from "@dfinity/agent";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Asset } from "@redux/models/AccountModels";
 import { RoutingPath, RoutingPathEnum, ThemesEnum } from "@/common/const";
@@ -7,6 +7,12 @@ import { DB_Type } from "@/database/db";
 import { WatchOnlyItem } from "@pages/login/components/WatchOnlyInput";
 
 const defaultValue: any = {};
+
+const defaultAgent = HttpAgent.createSync({
+  identity: new AnonymousIdentity(),
+  host: "https://identity.ic0.app",
+});
+
 interface AuthState {
   route: RoutingPath;
   authLoading: boolean;
@@ -44,7 +50,7 @@ const initialState: AuthState = {
   hplDictionary: "",
   dbLocation: DB_Type.LOCAL,
   customDbCanisterId: "",
-  userAgent: defaultValue,
+  userAgent: defaultAgent,
   userPrincipal: defaultValue,
   watchOnlyHistory: [],
 };

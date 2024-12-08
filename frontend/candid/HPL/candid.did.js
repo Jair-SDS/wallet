@@ -426,6 +426,7 @@ export const idlFactory = ({ IDL }) => {
     ping: IDL.Func([], [IDL.Int], []),
     priorTxDetails: IDL.Func([PriorId], [Result_5], ["query"]),
     processBatch: IDL.Func([IDL.Nat, IDL.Vec(Tx), IDL.Nat], [IDL.Nat64, ControlMessage], []),
+    pushFtRates: IDL.Func([IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Float64))], [], []),
     reject: IDL.Func([PriorId], [Result_4], []),
     remoteAccountInfo: IDL.Func(
       [RemoteAccountSelector],
@@ -433,7 +434,7 @@ export const idlFactory = ({ IDL }) => {
       ["query"],
     ),
     removeAggregator: IDL.Func([IDL.Principal], [], []),
-    requestAuctionFunds: IDL.Func([AssetId], [IDL.Vec(IDL.Tuple(AssetId, IDL.Nat))], []),
+    requestAuctionFunds: IDL.Func([IDL.Principal, AssetId], [IDL.Vec(IDL.Tuple(AssetId, IDL.Nat))], []),
     simpleTransfer: IDL.Func(
       [
         IDL.Variant({
